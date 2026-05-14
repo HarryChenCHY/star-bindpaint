@@ -1,8 +1,22 @@
-# 星绘智愈 Star bindPaint
+<p align="center">
+  <img src="./public/banner.svg" alt="星绘智愈 Banner" width="100%" />
+</p>
 
-> AI 辅助油画教育普惠系统 — 让每个孩子都能用画笔，将内心的孤岛连接成星海
+<h1 align="center">星绘智愈 Star BindPaint</h1>
 
-**2026 Light 创造营 · 星月绘愈社**
+<p align="center">
+  <strong>AI 辅助油画教育普惠系统 — 让每个孩子都能用画笔，将内心的孤岛连接成星海</strong>
+</p>
+
+<p align="center">
+  2026 Light 创造营 · 星月绘愈社 · 上海交通大学
+</p>
+
+<p align="center">
+  <a href="https://star-bindpaint.vercel.app">在线体验</a> ·
+  <a href="https://star-bindpaint.vercel.app/create">开始创作</a> ·
+  <a href="#核心技术">核心技术</a>
+</p>
 
 ---
 
