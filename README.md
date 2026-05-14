@@ -45,33 +45,33 @@
 # 安装依赖
 npm install
 
-# 启动开发服务器
+# 本地开发
 npm run dev
 
 # 构建生产版本
 npm run build
 ```
 
-打开 http://localhost:3000 即可使用。
+**线上访问**：https://star-bindpaint.vercel.app
 
 ## 页面路由
 
 | 路径 | 功能 |
 |------|------|
-| `/` | 首页 — 上传图片 + 选择笔触密度 |
+| `/` | 产品封面展示页 |
+| `/create` | 创作入口 — 上传图片 + 选择笔触密度 |
 | `/paint` | 作画页 — 核心交互画布 |
 | `/gallery` | 画廊 — 查看已完成作品 |
-| `/cover` | 产品展示封面页 |
 
 ## 项目结构
 
 ```
 src/
 ├── app/
-│   ├── page.tsx              # 首页
+│   ├── page.tsx              # 封面展示首页
+│   ├── create/page.tsx       # 上传图片 + 参数选择
 │   ├── paint/page.tsx        # 核心作画页
-│   ├── gallery/page.tsx      # 画廊
-│   └── cover/page.tsx        # 展示封面
+│   └── gallery/page.tsx      # 画廊
 ├── components/
 │   ├── StarrySprite.tsx      # 画笔精灵（SVG + 4 状态动画）
 │   ├── PaintCanvas.tsx       # 三层 Canvas 画布

@@ -35,7 +35,7 @@ export default function PaintPage() {
   useEffect(() => {
     const dataUrl = sessionStorage.getItem('star-bindpaint-source');
     if (!dataUrl) {
-      router.push('/');
+      router.push('/create');
       return;
     }
 
