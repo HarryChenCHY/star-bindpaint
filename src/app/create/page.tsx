@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import StarrySprite from '@/components/StarrySprite';
 import ImageUploader from '@/components/ImageUploader';
 
-export default function HomePage() {
+export default function CreatePage() {
   const router = useRouter();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [roughness, setRoughness] = useState(2);
@@ -37,47 +37,69 @@ export default function HomePage() {
     router.push('/paint');
   };
 
+  const roughnessLabels = ['精细 (~800笔)', '适中 (~300笔)', '写意 (~100笔)', '粗犷 (~50笔)'];
+
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 gap-8">
-      {/* 精灵 */}
+    <div className="flex-1 flex flex-col items-center justify-center px-6 py-16 gap-8">
+
+      {/* Sprite */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.85 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3, type: 'spring' }}
+        transition={{ delay: 0.2, type: 'spring', stiffness: 220, damping: 22 }}
       >
         <StarrySprite
           state="idle"
-          message={imageLoaded ? "点击开始创作吧！" : "上传一张图片开始吧~"}
+          message={imageLoaded ? '图片准备好了，开始创作吧！' : '上传一张图片开始吧~'}
         />
       </motion.div>
 
-      {/* 标题 */}
+      {/* Title */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
       >
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-[#A78BFA] via-[#06B6D4] to-[#F59E0B] bg-clip-text text-transparent">
-          星绘智愈
+        <h1 style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: '2.75rem',
+          fontWeight: 700,
+          letterSpacing: '-0.02em',
+          color: '#EDE9FE',
+          lineHeight: 1,
+        }}>
+          星绘<span style={{ color: '#00FFA5' }}>智愈</span>
         </h1>
-        <p className="text-[#94A3B8] mt-2 text-lg">
+        <p className="mt-2 text-base" style={{ color: 'rgba(237,233,254,0.5)', letterSpacing: '-0.01em' }}>
           让每个人都能画出大师级油画
         </p>
       </motion.div>
 
-      {/* 上传 */}
+      {/* Upload */}
       <ImageUploader onImageLoaded={handleImageLoaded} />
 
-      {/* 笔触密度选择 */}
+      {/* Roughness selector */}
       {imageLoaded && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/[0.06] rounded-2xl p-4 border border-white/[0.1] max-w-sm w-full"
+          transition={{ ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="max-w-sm w-full p-5"
+          style={{
+            background: 'var(--color-card)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-card)',
+          }}
         >
-          <label className="text-sm text-white/80 block mb-2">
-            笔触风格 <span className="text-[#94A3B8]">（值越小笔触越细密，画面越完整）</span>
-          </label>
+          <div className="flex items-center justify-between mb-4">
+            <label className="text-sm font-medium" style={{ color: '#EDE9FE', letterSpacing: '-0.02em' }}>
+              笔触风格
+            </label>
+            <span className="text-xs px-2.5 py-1 rounded-full"
+              style={{ background: 'rgba(124,58,237,0.18)', color: '#A78BFA', border: '1px solid rgba(124,58,237,0.25)' }}>
+              {roughnessLabels[roughness - 1]}
+            </span>
+          </div>
           <input
             type="range"
             min="1"
@@ -85,63 +107,69 @@ export default function HomePage() {
             step="1"
             value={roughness}
             onChange={e => setRoughness(Number(e.target.value))}
-            className="w-full accent-[#7C3AED] h-2 rounded-full appearance-none bg-white/10"
+            className="w-full h-1.5 rounded-full appearance-none"
+            style={{ accentColor: '#7C3AED', background: 'rgba(255,255,255,0.1)' }}
           />
-          <div className="flex justify-between text-xs text-[#94A3B8] mt-1">
-            <span>精细 (~800笔)</span>
-            <span>适中 (~300笔)</span>
-            <span>写意 (~100笔)</span>
-            <span>粗犷 (~50笔)</span>
+          <div className="flex justify-between mt-2">
+            {['精细', '适中', '写意', '粗犷'].map(l => (
+              <span key={l} className="text-[10px]" style={{ color: 'rgba(237,233,254,0.3)' }}>{l}</span>
+            ))}
           </div>
         </motion.div>
       )}
 
-      {/* 操作按钮 */}
+      {/* Actions */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="flex gap-4"
+        transition={{ delay: 0.4 }}
+        className="flex gap-3"
       >
         <button
           onClick={handleStart}
           disabled={!imageLoaded}
-          className={`
-            px-8 py-3 rounded-full font-bold text-white transition-all
-            ${imageLoaded
-              ? 'bg-gradient-to-r from-[#7C3AED] to-[#06B6D4] hover:scale-105 hover:shadow-lg hover:shadow-[#7C3AED]/30'
-              : 'bg-white/10 text-white/40 cursor-not-allowed'}
-          `}
+          className="btn-primary"
+          style={{
+            opacity: imageLoaded ? 1 : 0.35,
+            cursor: imageLoaded ? 'pointer' : 'not-allowed',
+            paddingLeft: '2rem',
+            paddingRight: '2rem',
+          }}
         >
           开始创作
         </button>
         <button
           onClick={() => router.push('/gallery')}
-          className="px-6 py-3 rounded-full font-medium text-white/80 bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+          className="btn-secondary"
         >
           我的画廊
         </button>
       </motion.div>
 
-      {/* 特性介绍 */}
+      {/* Mode intro cards */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mt-8"
+        transition={{ delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-2xl mt-4"
       >
         {[
-          { icon: '✏️', title: '跟画模式', desc: 'AI 画笔精灵引导你一笔一笔画' },
-          { icon: '▶️', title: '自动模式', desc: '观看 AI 逐笔重建油画' },
-          { icon: '🎨', title: '自由模式', desc: '自由创作，精灵陪伴鼓励' },
+          { icon: '✏️', title: '跟画模式', desc: 'AI 精灵引导你一笔一笔画', accent: '#A78BFA' },
+          { icon: '▶️', title: '自动模式', desc: '观看 AI 逐笔重建油画', accent: '#00FFA5' },
+          { icon: '🎨', title: '自由模式', desc: '自由创作，精灵陪伴鼓励', accent: '#7C3AED' },
         ].map((item, i) => (
           <div
             key={i}
-            className="bg-white/[0.08] rounded-2xl p-4 border border-white/[0.12] text-center"
+            className="p-4 text-center"
+            style={{
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border-subtle)',
+              borderRadius: '1.25rem',
+            }}
           >
-            <div className="text-2xl mb-2">{item.icon}</div>
-            <h3 className="text-sm font-bold text-white">{item.title}</h3>
-            <p className="text-xs text-[#94A3B8] mt-1">{item.desc}</p>
+            <div className="text-xl mb-2">{item.icon}</div>
+            <h3 className="text-sm font-semibold mb-1" style={{ color: '#EDE9FE', letterSpacing: '-0.02em' }}>{item.title}</h3>
+            <p className="text-xs" style={{ color: 'rgba(237,233,254,0.4)' }}>{item.desc}</p>
           </div>
         ))}
       </motion.div>

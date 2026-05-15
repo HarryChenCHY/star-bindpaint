@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Handle body -->
+  <line x1="28" y1="2" x2="16" y2="15" stroke="#D8D0FF" stroke-width="3" stroke-linecap="round"/>
+  <!-- Specular highlight on handle -->
+  <line x1="27" y1="3" x2="17" y2="14" stroke="rgba(255,255,255,0.45)" stroke-width="1" stroke-linecap="round"/>
+  <!-- Ferrule band -->
+  <path d="M12 18 L17 13 L19 15 L14 20 Z" fill="#8B84A8"/>
+  <line x1="13" y1="17" x2="18" y2="14" stroke="rgba(255,255,255,0.3)" stroke-width="0.6"/>
+  <!-- Bristles body -->
+  <path d="M14 20 Q10 23 6 27 Q4 29 3 30 Q3 30 4 29 Q8 26 12 22 L14 20 Z" fill="#F5C842"/>
+  <!-- Bristle texture -->
+  <line x1="13" y1="21" x2="5" y2="28" stroke="#C8960A" stroke-width="0.6" stroke-linecap="round" opacity="0.8"/>
+  <line x1="12" y1="22" x2="4" y2="29" stroke="#E6B800" stroke-width="0.5" stroke-linecap="round" opacity="0.5"/>
+  <!-- Paint drop at bristle tip — neon mint -->
+  <circle cx="3" cy="30" r="1.8" fill="#00FFA5" opacity="0.95"/>
+  <circle cx="2.5" cy="29.5" r="0.5" fill="white" opacity="0.6"/>
+</svg>

@@ -1,27 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme inline {
+  /* Brand */
   --color-primary: #7C3AED;
   --color-primary-light: #A78BFA;
   --color-primary-dark: #5B21B6;
-  --color-secondary: #06B6D4;
-  --color-secondary-light: #67E8F9;
-  --color-accent: #F59E0B;
-  --color-accent-light: #FCD34D;
+  /* Single Feather-style accent — neon mint, used sparingly */
+  --color-mint: #00FFA5;
+  --color-mint-dim: rgba(0, 255, 165, 0.15);
+  /* Functional */
   --color-success: #10B981;
-  --color-success-light: #6EE7B7;
+  --color-success-dim: rgba(16, 185, 129, 0.15);
   --color-danger: #EF4444;
-  --color-surface: rgba(255, 255, 255, 0.06);
-  --color-surface-hover: rgba(255, 255, 255, 0.1);
-  --color-card: rgba(255, 255, 255, 0.08);
-  --color-text: #F8FAFC;
-  --color-text-muted: #94A3B8;
-  --color-border: rgba(255, 255, 255, 0.12);
+  --color-danger-dim: rgba(239, 68, 68, 0.15);
+  --color-warn: #F59E0B;
+  --color-warn-dim: rgba(245, 158, 11, 0.15);
+  /* Surfaces — dark glass */
+  --color-surface: rgba(255, 255, 255, 0.045);
+  --color-surface-hover: rgba(255, 255, 255, 0.08);
+  --color-card: rgba(255, 255, 255, 0.065);
+  --color-card-hover: rgba(255, 255, 255, 0.1);
+  /* Text */
+  --color-text: #EDE9FE;
+  --color-text-muted: #9B96B4;
+  --color-text-dim: #6B6680;
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  /* Typography */
   --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Caveat", cursive;
 }
 
 :root {
-  --bg-gradient: linear-gradient(135deg, #1E1B4B 0%, #312E81 40%, #4C1D95 100%);
+  --bg-gradient: linear-gradient(145deg, #0C0A1E 0%, #130F2D 45%, #0F0C24 100%);
+  /* Feather-inspired radii tokens */
+  --radius-card: 1.75rem;
+  --radius-btn: 6rem;
+  --radius-sm: 0.75rem;
 }
 
 * {
@@ -33,27 +50,29 @@ body {
   color: var(--color-text);
   font-family: var(--font-sans);
   min-height: 100vh;
+  letter-spacing: -0.01em;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.025em;
+  line-height: 1.1;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+
+/* ── Scrollbar ────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
 }
 
-/* Canvas in painting page should not have touch actions */
+/* ── Canvas cursor ─────────────────────── */
 canvas.paint-canvas {
   touch-action: none;
-  cursor: crosshair;
+  cursor: url('/cursors/paintbrush.svg') 3 30, crosshair;
 }
 
-/* Animations */
+/* ── Animations ────────────────────────── */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   25% { transform: translateY(-8px) rotate(3deg); }
@@ -62,27 +81,29 @@ canvas.paint-canvas {
 
 @keyframes sparkle {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(0.8); }
+  50% { opacity: 0.45; transform: scale(0.82); }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(124, 58, 237, 0.6); }
+  0%, 100% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.2); }
+  50% { box-shadow: 0 0 48px rgba(124, 58, 237, 0.5); }
 }
 
-.animate-float {
-  animation: float 4s ease-in-out infinite;
+@keyframes mint-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 165, 0.25); }
+  50% { box-shadow: 0 0 28px rgba(0, 255, 165, 0.6); }
 }
 
-.animate-sparkle {
-  animation: sparkle 2s ease-in-out infinite;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
-}
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-sparkle { animation: sparkle 2s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-mint-glow { animation: mint-glow 2.5s ease-in-out infinite; }
 
-/* Stars background particles */
+/* ── Stars background particles ──────────── */
 .stars-bg {
   position: fixed;
   inset: 0;
@@ -100,26 +121,77 @@ canvas.paint-canvas {
   border-radius: 50%;
   background: white;
   box-shadow:
-    25vw 10vh 0 0 rgba(255,255,255,0.3),
-    50vw 20vh 0 0 rgba(255,255,255,0.2),
-    75vw 30vh 0 0 rgba(255,255,255,0.4),
-    10vw 50vh 0 0 rgba(255,255,255,0.2),
-    60vw 60vh 0 0 rgba(255,255,255,0.3),
-    80vw 80vh 0 0 rgba(255,255,255,0.2),
-    30vw 90vh 0 0 rgba(255,255,255,0.4),
-    90vw 40vh 0 0 rgba(255,255,255,0.3),
-    15vw 75vh 0 0 rgba(255,255,255,0.2),
-    45vw 85vh 0 0 rgba(255,255,255,0.3);
-  animation: sparkle 4s ease-in-out infinite;
+    25vw 10vh 0 0 rgba(255,255,255,0.2),
+    50vw 20vh 0 0 rgba(255,255,255,0.12),
+    75vw 30vh 0 0 rgba(255,255,255,0.28),
+    10vw 50vh 0 0 rgba(255,255,255,0.12),
+    60vw 60vh 0 0 rgba(255,255,255,0.18),
+    80vw 80vh 0 0 rgba(255,255,255,0.12),
+    30vw 90vh 0 0 rgba(255,255,255,0.28),
+    90vw 40vh 0 0 rgba(255,255,255,0.18),
+    15vw 75vh 0 0 rgba(255,255,255,0.1),
+    45vw 85vh 0 0 rgba(255,255,255,0.2);
+  animation: sparkle 5s ease-in-out infinite;
 }
 
 .stars-bg::after {
-  animation-delay: 2s;
+  animation-delay: 2.5s;
   box-shadow:
-    35vw 15vh 0 0 rgba(255,255,255,0.2),
-    65vw 25vh 0 0 rgba(255,255,255,0.3),
-    20vw 45vh 0 0 rgba(255,255,255,0.4),
-    85vw 55vh 0 0 rgba(255,255,255,0.2),
-    40vw 70vh 0 0 rgba(255,255,255,0.3),
-    70vw 95vh 0 0 rgba(255,255,255,0.2);
+    35vw 15vh 0 0 rgba(255,255,255,0.1),
+    65vw 25vh 0 0 rgba(255,255,255,0.18),
+    20vw 45vh 0 0 rgba(255,255,255,0.28),
+    85vw 55vh 0 0 rgba(255,255,255,0.1),
+    40vw 70vh 0 0 rgba(255,255,255,0.18),
+    70vw 95vh 0 0 rgba(255,255,255,0.12);
+}
+
+/* ── Feather-inspired utility classes ────── */
+.card-base {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8em 1.9em;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-btn);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.2;
+  border: 1px solid transparent;
+  transition: background 0.1s, transform 0.15s, box-shadow 0.15s;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-primary:hover {
+  background: #6D28D9;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.35);
+}
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8em 1.9em;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-btn);
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.2;
+  border: 1px solid var(--color-border);
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-secondary:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+  border-color: rgba(255,255,255,0.2);
 }

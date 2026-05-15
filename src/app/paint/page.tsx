@@ -201,9 +201,12 @@ export default function PaintPage() {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          className="w-12 h-12 border-4 border-[#7C3AED]/30 border-t-[#7C3AED] rounded-full"
+          className="w-10 h-10 rounded-full"
+          style={{ border: '3px solid rgba(124,58,237,0.25)', borderTopColor: '#7C3AED' }}
         />
-        <p className="text-[#94A3B8] text-sm">{loadingMsg || 'AI 正在分析图片中的笔触...'}</p>
+        <p className="text-sm" style={{ color: 'rgba(237,233,254,0.45)' }}>
+          {loadingMsg || 'AI 正在分析图片中的笔触...'}
+        </p>
       </div>
     );
   }
@@ -211,12 +214,16 @@ export default function PaintPage() {
   return (
     <div className="flex-1 flex flex-col h-screen">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-white/[0.08]">
+      <header className="flex items-center justify-between px-5 py-2.5"
+        style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
         <button
           onClick={() => router.push('/')}
-          className="text-white/60 hover:text-white flex items-center gap-1 text-sm"
+          className="flex items-center gap-1.5 text-sm transition-colors"
+          style={{ color: 'rgba(237,233,254,0.5)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#EDE9FE')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(237,233,254,0.5)')}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
             <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
           返回
@@ -226,7 +233,14 @@ export default function PaintPage() {
 
         <button
           onClick={handleExport}
-          className="px-4 py-1.5 rounded-full bg-[#10B981]/20 text-[#10B981] text-sm font-medium hover:bg-[#10B981]/30 transition-colors"
+          className="px-4 py-1.5 text-sm font-medium transition-colors rounded-full"
+          style={{
+            background: 'rgba(16,185,129,0.15)',
+            color: '#10B981',
+            border: '1px solid rgba(16,185,129,0.25)',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(16,185,129,0.25)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(16,185,129,0.15)'; }}
         >
           保存
         </button>
@@ -235,7 +249,7 @@ export default function PaintPage() {
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Canvas area */}
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center p-6">
           <PaintCanvas
             width={canvasSize.w}
             height={canvasSize.h}
@@ -253,17 +267,21 @@ export default function PaintPage() {
         </div>
 
         {/* Side panel */}
-        <aside className="w-64 border-l border-white/[0.08] p-4 flex flex-col gap-5 overflow-y-auto">
+        <aside className="w-64 flex flex-col gap-4 overflow-y-auto p-4"
+          style={{ borderLeft: '1px solid var(--color-border-subtle)' }}>
           {/* Sprite */}
           <StarrySprite state={spriteState} message={spriteMessage} />
 
           {/* Progress */}
-          <div className="flex justify-center">
+          <div className="flex justify-center py-1">
             <ProgressRing
               progress={progress}
               label={`${Math.round(progress * strokes.length)} / ${strokes.length} 笔`}
             />
           </div>
+
+          {/* Divider */}
+          <div style={{ height: 1, background: 'var(--color-border-subtle)' }} />
 
           {/* Tools */}
           <ToolBar

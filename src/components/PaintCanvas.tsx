@@ -178,7 +178,7 @@ export default function PaintCanvas({
   }, [sourceImage, width, height]);
 
   return (
-    <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl" style={{ width, height }}>
+    <div className="relative overflow-hidden border border-white/[0.12] shadow-[0_8px_48px_rgba(0,0,0,0.6)]" style={{ width, height, borderRadius: '1.75rem' }}>
       {/* Layer 1: Base / completed strokes */}
       <canvas
         ref={baseCanvasRef}
@@ -192,7 +192,7 @@ export default function PaintCanvas({
         width={width}
         height={height}
         className="absolute inset-0 paint-canvas"
-        style={{ cursor: mode === 'auto' ? 'default' : 'crosshair' }}
+        style={mode === 'auto' ? { cursor: 'default' } : undefined}
       />
       {/* Layer 3: Guide overlay */}
       <canvas

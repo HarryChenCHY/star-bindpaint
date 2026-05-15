@@ -36,26 +36,43 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col px-6 py-8 max-w-5xl mx-auto w-full">
+    <div className="flex-1 flex flex-col px-6 py-10 max-w-5xl mx-auto w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-10">
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push('/')}
-            className="text-white/60 hover:text-white flex items-center gap-1 text-sm"
+            className="flex items-center gap-1.5 text-sm transition-colors"
+            style={{ color: 'rgba(237,233,254,0.5)' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#EDE9FE')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(237,233,254,0.5)')}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
             返回
           </button>
-          <h1 className="text-2xl font-bold text-white">我的画廊</h1>
+          <h1 style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: '1.75rem',
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+            color: '#EDE9FE',
+          }}>
+            我的画廊
+          </h1>
         </div>
 
         {items.length > 0 && (
           <button
             onClick={handleClear}
-            className="px-4 py-1.5 rounded-full text-xs text-[#EF4444]/80 border border-[#EF4444]/20 hover:bg-[#EF4444]/10 transition-colors"
+            className="px-4 py-1.5 rounded-full text-xs font-medium transition-colors"
+            style={{
+              color: 'rgba(239,68,68,0.75)',
+              border: '1px solid rgba(239,68,68,0.2)',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.1)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
             清空全部
           </button>
@@ -64,11 +81,12 @@ export default function GalleryPage() {
 
       {/* Empty state */}
       {items.length === 0 && (
-        <div className="flex-1 flex flex-col items-center justify-center gap-4">
+        <div className="flex-1 flex flex-col items-center justify-center gap-5">
           <StarrySprite state="idle" message="还没有作品，快去创作吧！" />
           <button
             onClick={() => router.push('/')}
-            className="mt-4 px-6 py-2 rounded-full bg-gradient-to-r from-[#7C3AED] to-[#06B6D4] text-white font-medium hover:scale-105 transition-transform"
+            className="btn-primary mt-2"
+            style={{ paddingLeft: '1.75rem', paddingRight: '1.75rem' }}
           >
             开始创作
           </button>
@@ -85,10 +103,23 @@ export default function GalleryPage() {
           {items.map((item, i) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="group relative bg-white/[0.06] rounded-2xl border border-white/[0.1] overflow-hidden cursor-pointer hover:border-[#7C3AED]/50 hover:shadow-lg hover:shadow-[#7C3AED]/10 transition-all"
+              transition={{ delay: i * 0.04, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="group relative overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-1"
+              style={{
+                background: 'var(--color-card)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-card)',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(124,58,237,0.4)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 32px rgba(124,58,237,0.15)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--color-border)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+              }}
               onClick={() => setSelectedItem(item)}
             >
               <div className="aspect-square">
@@ -99,12 +130,14 @@ export default function GalleryPage() {
                 />
               </div>
               <div className="p-3">
-                <h3 className="text-sm font-medium text-white truncate">{item.title}</h3>
+                <h3 className="text-sm font-medium truncate" style={{ color: '#EDE9FE', letterSpacing: '-0.01em' }}>
+                  {item.title}
+                </h3>
                 <div className="flex items-center justify-between mt-1">
-                  <span className="text-[10px] text-[#94A3B8]">
+                  <span className="text-[10px]" style={{ color: 'rgba(237,233,254,0.35)' }}>
                     {new Date(item.date).toLocaleDateString('zh-CN')}
                   </span>
-                  <span className="text-[10px] text-[#94A3B8]">
+                  <span className="text-[10px]" style={{ color: 'rgba(237,233,254,0.35)' }}>
                     {item.strokeCount} 笔
                   </span>
                 </div>
@@ -121,41 +154,61 @@ export default function GalleryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
             onClick={() => setSelectedItem(null)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.92, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#1E1B4B] border border-white/10 rounded-3xl p-6 max-w-lg w-full"
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.175, 0.885, 0.32, 1.275] }}
+              className="max-w-lg w-full p-6"
+              style={{
+                background: '#130F2D',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 'var(--radius-card)',
+              }}
               onClick={e => e.stopPropagation()}
             >
               <img
                 src={selectedItem.imageDataUrl}
                 alt={selectedItem.title}
-                className="w-full rounded-2xl mb-4"
+                className="w-full mb-4 object-cover"
+                style={{ borderRadius: '1.25rem' }}
               />
-              <h2 className="text-lg font-bold text-white">{selectedItem.title}</h2>
-              <p className="text-sm text-[#94A3B8] mt-1">
-                {new Date(selectedItem.date).toLocaleDateString('zh-CN')} · {selectedItem.strokeCount} 笔 · {selectedItem.mode}模式
+              <h2 className="text-base font-semibold mb-1" style={{ color: '#EDE9FE', letterSpacing: '-0.02em' }}>
+                {selectedItem.title}
+              </h2>
+              <p className="text-xs mb-5" style={{ color: 'rgba(237,233,254,0.4)' }}>
+                {new Date(selectedItem.date).toLocaleDateString('zh-CN')} · {selectedItem.strokeCount} 笔 · {selectedItem.mode} 模式
               </p>
-              <div className="flex gap-3 mt-4">
+              <div className="flex gap-2">
                 <button
                   onClick={() => handleDownload(selectedItem)}
-                  className="flex-1 py-2 rounded-full bg-[#10B981]/20 text-[#10B981] text-sm font-medium hover:bg-[#10B981]/30"
+                  className="flex-1 py-2 rounded-full text-sm font-medium transition-colors"
+                  style={{ background: 'rgba(16,185,129,0.15)', color: '#10B981', border: '1px solid rgba(16,185,129,0.25)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(16,185,129,0.25)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(16,185,129,0.15)'; }}
                 >
                   下载
                 </button>
                 <button
                   onClick={() => handleDelete(selectedItem.id)}
-                  className="flex-1 py-2 rounded-full bg-[#EF4444]/20 text-[#EF4444] text-sm font-medium hover:bg-[#EF4444]/30"
+                  className="flex-1 py-2 rounded-full text-sm font-medium transition-colors"
+                  style={{ background: 'rgba(239,68,68,0.12)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.22)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.12)'; }}
                 >
                   删除
                 </button>
                 <button
                   onClick={() => setSelectedItem(null)}
-                  className="flex-1 py-2 rounded-full bg-white/10 text-white/80 text-sm font-medium hover:bg-white/20"
+                  className="flex-1 py-2 rounded-full text-sm font-medium transition-colors"
+                  style={{ background: 'var(--color-surface)', color: 'rgba(237,233,254,0.7)', border: '1px solid var(--color-border)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-surface-hover)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-surface)'; }}
                 >
                   关闭
                 </button>
