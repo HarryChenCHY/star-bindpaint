@@ -178,7 +178,7 @@ export default function PaintCanvas({
   }, [sourceImage, width, height]);
 
   return (
-    <div className="relative overflow-hidden border border-white/[0.12] shadow-[0_8px_48px_rgba(0,0,0,0.6)]" style={{ width, height, borderRadius: '1.75rem' }}>
+    <div className="relative overflow-hidden" style={{ width, height, borderRadius: '1.75rem', border: '2px solid #1A1A1A' }}>
       {/* Layer 1: Base / completed strokes */}
       <canvas
         ref={baseCanvasRef}

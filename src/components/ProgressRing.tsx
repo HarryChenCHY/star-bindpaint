@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 
 interface ProgressRingProps {
-  progress: number;  // 0-1
+  progress: number;
   size?: number;
   strokeWidth?: number;
   label?: string;
@@ -17,14 +17,13 @@ export default function ProgressRing({ progress, size = 80, strokeWidth = 6, lab
   return (
     <div className="flex flex-col items-center gap-1">
       <div className="relative" style={{ width: size, height: size }}>
-        {/* Background circle */}
         <svg width={size} height={size} className="absolute inset-0 -rotate-90">
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="rgba(255,255,255,0.1)"
+            stroke="#E5E5E5"
             strokeWidth={strokeWidth}
           />
           <motion.circle
@@ -32,29 +31,23 @@ export default function ProgressRing({ progress, size = 80, strokeWidth = 6, lab
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="url(#progressGradient)"
+            stroke="#7A51EC"
             strokeWidth={strokeWidth}
             strokeLinecap="round"
             strokeDasharray={circumference}
             animate={{ strokeDashoffset: offset }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
           />
-          <defs>
-            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#7C3AED" />
-              <stop offset="50%" stopColor="#06B6D4" />
-              <stop offset="100%" stopColor="#10B981" />
-            </linearGradient>
-          </defs>
         </svg>
-        {/* Center text */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-sm font-bold text-white">
+          <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1A1A1A' }}>
             {Math.round(progress * 100)}%
           </span>
         </div>
       </div>
-      {label && <span className="text-xs text-text-muted">{label}</span>}
+      {label && (
+        <span style={{ fontSize: '0.7rem', color: '#888888', fontWeight: 700 }}>{label}</span>
+      )}
     </div>
   );
 }

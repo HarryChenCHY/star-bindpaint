@@ -13,9 +13,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" className="h-full antialiased">
-      <body className="min-h-full flex flex-col relative">
-        <div className="stars-bg" />
-        <main className="relative z-10 flex-1 flex flex-col">
+      <body className="min-h-full flex flex-col bg-white">
+        <main className="flex-1 flex flex-col">
           {children}
         </main>
       </body>

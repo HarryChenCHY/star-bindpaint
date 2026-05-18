@@ -22,11 +22,12 @@ export default function StarrySprite({ state, message, className = '' }: StarryS
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-2 text-sm text-white max-w-[200px] text-center relative"
+            className="rounded-2xl px-4 py-2 text-sm max-w-[200px] text-center relative"
+            style={{ background: '#FFFFFF', border: '2px solid #1A1A1A', color: '#1A1A1A', fontWeight: 700 }}
           >
             {message}
-            {/* 小三角 */}
-            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/10 border-b border-r border-white/20 rotate-45" />
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45"
+              style={{ background: '#FFFFFF', borderRight: '2px solid #1A1A1A', borderBottom: '2px solid #1A1A1A' }} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -38,8 +39,6 @@ export default function StarrySprite({ state, message, className = '' }: StarryS
         className="relative"
       >
         <StarSVG state={state} />
-
-        {/* 特效粒子 */}
         {state === 'cheering' && <CheerParticles />}
       </motion.div>
     </div>
@@ -47,76 +46,47 @@ export default function StarrySprite({ state, message, className = '' }: StarryS
 }
 
 function StarSVG({ state }: { state: SpriteState }) {
-  const glowColor = state === 'cheering' ? '#FCD34D' :
-    state === 'guiding' ? '#F59E0B' :
-      state === 'thinking' ? '#A78BFA' : '#FCD34D';
+  const fillColor = state === 'cheering' ? '#F9B801' :
+    state === 'guiding' ? '#F9B801' :
+    state === 'thinking' ? '#7A51EC' : '#F9B801';
 
   return (
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" className="drop-shadow-lg">
-      {/* 外发光 */}
-      <circle cx="32" cy="32" r="28" fill={glowColor} fillOpacity="0.15" />
-
+    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
       {/* 星星主体 */}
       <path
         d="M32 8L37.5 24.5H54L40.5 34L46 50.5L32 40L18 50.5L23.5 34L10 24.5H26.5L32 8Z"
-        fill={glowColor}
-        stroke="white"
-        strokeWidth="1.5"
+        fill={fillColor}
+        stroke="#1A1A1A"
+        strokeWidth="2"
       />
-
       {/* 眼睛 */}
-      <circle cx="27" cy="30" r="2.5" fill="#1E1B4B" />
-      <circle cx="37" cy="30" r="2.5" fill="#1E1B4B" />
+      <circle cx="27" cy="30" r="2.5" fill="#1A1A1A" />
+      <circle cx="37" cy="30" r="2.5" fill="#1A1A1A" />
       <circle cx="28" cy="29" r="1" fill="white" />
       <circle cx="38" cy="29" r="1" fill="white" />
-
-      {/* 嘴巴 - 根据状态变化 */}
+      {/* 嘴巴 */}
       {state === 'cheering' && (
-        <path d="M28 36 Q32 40 36 36" stroke="#1E1B4B" strokeWidth="2" fill="none" strokeLinecap="round" />
+        <path d="M28 36 Q32 40 36 36" stroke="#1A1A1A" strokeWidth="2" fill="none" strokeLinecap="round" />
       )}
-      {state === 'guiding' && (
-        <path d="M29 36 Q32 38 35 36" stroke="#1E1B4B" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+      {(state === 'guiding' || state === 'idle') && (
+        <path d="M29 36 Q32 38 35 36" stroke="#1A1A1A" strokeWidth="1.5" fill="none" strokeLinecap="round" />
       )}
       {state === 'thinking' && (
-        <circle cx="32" cy="37" r="2" fill="#1E1B4B" />
+        <circle cx="32" cy="37" r="2" fill="#1A1A1A" />
       )}
-      {state === 'idle' && (
-        <path d="M29 36 Q32 38 35 36" stroke="#1E1B4B" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-      )}
-
-      {/* 颜料尾巴 */}
-      <path
-        d="M32 50 Q28 54 24 56 Q20 58 18 55"
-        stroke={glowColor}
-        strokeWidth="3"
-        fill="none"
-        strokeLinecap="round"
-        opacity="0.7"
-      />
-      <path
-        d="M32 50 Q36 55 40 57 Q44 58 42 55"
-        stroke="#A78BFA"
-        strokeWidth="2"
-        fill="none"
-        strokeLinecap="round"
-        opacity="0.5"
-      />
     </svg>
   );
 }
 
 function CheerParticles() {
+  const colors = ['#F9B801', '#7A51EC', '#F302C9', '#7DC353', '#F9B801', '#F302C9'];
   return (
     <div className="absolute inset-0 pointer-events-none">
       {[...Array(6)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-2 h-2 rounded-full"
-          style={{
-            background: ['#FCD34D', '#A78BFA', '#F59E0B', '#67E8F9', '#6EE7B7', '#F472B6'][i],
-            left: '50%',
-            top: '50%',
-          }}
+          style={{ background: colors[i], left: '50%', top: '50%' }}
           initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
           animate={{
             x: Math.cos(i * 60 * Math.PI / 180) * 30,

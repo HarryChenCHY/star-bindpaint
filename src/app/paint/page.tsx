@@ -12,6 +12,7 @@ import { decomposeImage, imageSourceFromImage, StrokeDrawData, drawStroke, Vec2 
 import { matchScore } from '@/lib/drawing-engine';
 import { GuideSystem } from '@/lib/guide-system';
 import { saveToGallery } from '@/lib/gallery-store';
+import { MiniStar } from '@/components/Characters';
 
 export default function PaintPage() {
   const router = useRouter();
@@ -31,15 +32,10 @@ export default function PaintPage() {
   const [canvasSize, setCanvasSize] = useState({ w: 400, h: 400 });
   const guideRef = useRef<GuideSystem>(new GuideSystem());
 
-  // 加载图片并分析
   useEffect(() => {
     const dataUrl = sessionStorage.getItem('star-bindpaint-source');
-    if (!dataUrl) {
-      router.push('/create');
-      return;
-    }
+    if (!dataUrl) { router.push('/create'); return; }
 
-    // 读取用户选择的 roughness
     const savedRoughness = parseInt(sessionStorage.getItem('star-bindpaint-roughness') || '2');
     setRoughness(savedRoughness);
 
@@ -49,7 +45,6 @@ export default function PaintPage() {
       const w = parseInt(sessionStorage.getItem('star-bindpaint-source-w') || '400');
       const h = parseInt(sessionStorage.getItem('star-bindpaint-source-h') || '400');
 
-      // 画布尺寸限制在合理范围
       const maxCanvas = 512;
       let cw = w, ch = h;
       if (Math.max(cw, ch) > maxCanvas) {
@@ -73,7 +68,6 @@ export default function PaintPage() {
         setLoadingMsg(`生成了 ${result.length} 笔触，准备中...`);
         setStrokes(result);
 
-        // 初始化引导系统
         guideRef.current.loadStrokes(result);
         const state = guideRef.current.getState();
         setCurrentGuideStroke(state.currentStroke);
@@ -89,7 +83,6 @@ export default function PaintPage() {
     img.src = dataUrl;
   }, [router]);
 
-  // 监听引导系统状态变化
   useEffect(() => {
     const guide = guideRef.current;
     guide.setMode(guideSubMode);
@@ -99,38 +92,29 @@ export default function PaintPage() {
       setProgress(state.totalStrokes > 0 ? state.currentIndex / state.totalStrokes : 0);
       setSpriteState(state.spriteState as SpriteState);
       setSpriteMessage(state.message);
-
-      if (state.completed) {
-        setProgress(1);
-      }
+      if (state.completed) setProgress(1);
     });
 
     return unsubscribe;
   }, [guideSubMode]);
 
-  // 用户完成一笔
   const handleUserStrokeDone = useCallback((userPoints: Vec2[], score: number) => {
     if (mode === 'follow') {
       const guide = guideRef.current;
       const { passed, shouldReplace } = guide.submitStroke(score);
 
       if (passed && shouldReplace) {
-        // 辅助模式：用 AI 笔触替换
         const paintCanvas = (window as unknown as Record<string, { drawAIStrokeOnBase: (s: StrokeDrawData) => void; clearUser: () => void }>).__paintCanvas;
         if (paintCanvas && currentGuideStroke) {
           paintCanvas.clearUser();
           paintCanvas.drawAIStrokeOnBase(currentGuideStroke);
         }
-      } else if (passed && !shouldReplace) {
-        // 真实模式：保留用户笔迹，把它移到 base 层
-        // 这里简化处理，用户笔迹已在 user layer 上
       }
     } else if (mode === 'free') {
       guideRef.current.freeModeFeedback();
     }
   }, [mode, currentGuideStroke]);
 
-  // 自动模式进度
   const handleAutoProgress = useCallback((current: number, total: number) => {
     setProgress(current / total);
   }, []);
@@ -141,7 +125,6 @@ export default function PaintPage() {
     setProgress(1);
   }, []);
 
-  // 操作
   const handleReset = () => {
     const paintCanvas = (window as unknown as Record<string, { clearAll: () => void }>).__paintCanvas;
     if (paintCanvas) paintCanvas.clearAll();
@@ -149,11 +132,8 @@ export default function PaintPage() {
     setProgress(0);
   };
 
-  const handleSkip = () => {
-    guideRef.current.skip();
-  };
+  const handleSkip = () => { guideRef.current.skip(); };
 
-  // 批量自动画：AI自动绘制接下来 N 笔
   const handleBatchDraw = (count: number) => {
     const paintCanvas = (window as unknown as Record<string, {
       drawAIStrokeOnBase: (s: StrokeDrawData) => void;
@@ -187,7 +167,6 @@ export default function PaintPage() {
     setSpriteMessage('作品已保存到画廊！');
     setSpriteState('cheering');
 
-    // 也提供下载
     const a = document.createElement('a');
     a.href = dataUrl;
     a.download = `星绘智愈_${Date.now()}.png`;
@@ -196,15 +175,15 @@ export default function PaintPage() {
 
   if (loading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-6">
+      <div className="flex-1 flex flex-col items-center justify-center gap-6 bg-white">
         <StarrySprite state={spriteState} message={spriteMessage} />
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
           className="w-10 h-10 rounded-full"
-          style={{ border: '3px solid rgba(124,58,237,0.25)', borderTopColor: '#7C3AED' }}
+          style={{ border: '3px solid #E5E5E5', borderTopColor: '#7A51EC' }}
         />
-        <p className="text-sm" style={{ color: 'rgba(237,233,254,0.45)' }}>
+        <p style={{ fontSize: '0.85rem', color: '#888888', fontWeight: 700 }}>
           {loadingMsg || 'AI 正在分析图片中的笔触...'}
         </p>
       </div>
@@ -212,35 +191,30 @@ export default function PaintPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-screen">
+    <div className="flex-1 flex flex-col h-screen bg-white">
       {/* Header */}
-      <header className="flex items-center justify-between px-5 py-2.5"
-        style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
+      <header className="flex items-center justify-between px-6 py-3"
+        style={{ borderBottom: '2px solid #1A1A1A' }}>
         <button
           onClick={() => router.push('/')}
-          className="flex items-center gap-1.5 text-sm transition-colors"
-          style={{ color: 'rgba(237,233,254,0.5)' }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#EDE9FE')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(237,233,254,0.5)')}
+          className="flex items-center gap-1.5 text-sm font-bold transition-colors"
+          style={{ color: '#1A1A1A' }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
           返回
         </button>
 
-        <ModeSelector current={mode} onChange={setMode} />
+        <div className="flex items-center gap-2">
+          <MiniStar color="#F9B801" size={16} />
+          <ModeSelector current={mode} onChange={setMode} />
+        </div>
 
         <button
           onClick={handleExport}
-          className="px-4 py-1.5 text-sm font-medium transition-colors rounded-full"
-          style={{
-            background: 'rgba(16,185,129,0.15)',
-            color: '#10B981',
-            border: '1px solid rgba(16,185,129,0.25)',
-          }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(16,185,129,0.25)'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(16,185,129,0.15)'; }}
+          className="btn-black"
+          style={{ padding: '0.4em 1.2em', fontSize: '0.85rem' }}
         >
           保存
         </button>
@@ -249,7 +223,8 @@ export default function PaintPage() {
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Canvas area */}
-        <div className="flex-1 flex items-center justify-center p-6">
+        <div className="flex-1 flex items-center justify-center p-6"
+          style={{ background: '#FAFAFA' }}>
           <PaintCanvas
             width={canvasSize.w}
             height={canvasSize.h}
@@ -267,8 +242,8 @@ export default function PaintPage() {
         </div>
 
         {/* Side panel */}
-        <aside className="w-64 flex flex-col gap-4 overflow-y-auto p-4"
-          style={{ borderLeft: '1px solid var(--color-border-subtle)' }}>
+        <aside className="w-64 flex flex-col gap-4 overflow-y-auto p-5 bg-white"
+          style={{ borderLeft: '2px solid #1A1A1A' }}>
           {/* Sprite */}
           <StarrySprite state={spriteState} message={spriteMessage} />
 
@@ -281,7 +256,7 @@ export default function PaintPage() {
           </div>
 
           {/* Divider */}
-          <div style={{ height: 1, background: 'var(--color-border-subtle)' }} />
+          <div style={{ height: 2, background: '#E5E5E5' }} />
 
           {/* Tools */}
           <ToolBar

@@ -19,17 +19,13 @@ interface ToolBarProps {
 
 const labelStyle = {
   fontSize: '0.7rem',
-  color: 'rgba(237,233,254,0.4)',
+  color: '#888888',
   letterSpacing: '0.06em',
   textTransform: 'uppercase' as const,
-  fontWeight: 600,
+  fontWeight: 700,
 };
 
-const sectionDivider = {
-  height: 1,
-  background: 'var(--color-border-subtle)',
-  margin: '2px 0',
-};
+const divider = { height: 1, background: '#E5E5E5', margin: '2px 0' };
 
 export default function ToolBar({
   brushWidth,
@@ -54,42 +50,38 @@ export default function ToolBar({
       <div>
         <div className="flex items-center justify-between mb-2">
           <label style={labelStyle}>笔刷大小</label>
-          <span className="text-xs" style={{ color: 'rgba(237,233,254,0.5)' }}>{brushWidth}px</span>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1A1A1A' }}>{brushWidth}px</span>
         </div>
         <input
-          type="range"
-          min="1"
-          max="20"
-          step="1"
-          value={brushWidth}
+          type="range" min="1" max="20" step="1" value={brushWidth}
           onChange={e => onBrushWidthChange(Number(e.target.value))}
           className="w-full h-1.5 rounded-full appearance-none"
-          style={{ accentColor: '#7C3AED', background: 'rgba(255,255,255,0.1)' }}
+          style={{ accentColor: '#7A51EC', background: '#E5E5E5', cursor: 'pointer' }}
         />
       </div>
 
       {/* 跟画子模式 */}
       {showSubMode && (
         <>
-          <div style={sectionDivider} />
+          <div style={divider} />
           <div>
             <label style={{ ...labelStyle, display: 'block', marginBottom: '0.5rem' }}>跟画模式</label>
-            <div className="flex gap-1 p-0.5 rounded-full" style={{ background: 'var(--color-surface)' }}>
+            <div className="flex gap-1 p-1 rounded-full" style={{ background: '#F5F5F5', border: '1.5px solid #1A1A1A' }}>
               {(['assist', 'real'] as const).map(m => (
                 <button
                   key={m}
                   onClick={() => onGuideSubModeChange(m)}
-                  className="flex-1 py-1.5 rounded-full text-xs font-medium transition-all"
+                  className="flex-1 py-1.5 rounded-full text-xs font-bold transition-all"
                   style={{
-                    background: guideSubMode === m ? '#7C3AED' : 'transparent',
-                    color: guideSubMode === m ? 'white' : 'rgba(237,233,254,0.5)',
+                    background: guideSubMode === m ? '#F9B801' : 'transparent',
+                    color: guideSubMode === m ? '#1A1A1A' : '#888888',
                   }}
                 >
                   {m === 'assist' ? '辅助' : '真实'}
                 </button>
               ))}
             </div>
-            <p className="text-[10px] mt-1.5" style={{ color: 'rgba(237,233,254,0.3)' }}>
+            <p style={{ fontSize: '0.65rem', marginTop: '0.4rem', color: '#AAAAAA', fontWeight: 600 }}>
               {guideSubMode === 'assist' ? 'AI 笔触替换你的画迹' : '保留你的原始笔迹'}
             </p>
           </div>
@@ -99,21 +91,17 @@ export default function ToolBar({
       {/* 播放速度 */}
       {showSpeed && (
         <>
-          <div style={sectionDivider} />
+          <div style={divider} />
           <div>
             <div className="flex items-center justify-between mb-2">
               <label style={labelStyle}>播放速度</label>
-              <span className="text-xs" style={{ color: 'rgba(237,233,254,0.5)' }}>{autoSpeed}ms/笔</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1A1A1A' }}>{autoSpeed}ms/笔</span>
             </div>
             <input
-              type="range"
-              min="0"
-              max="200"
-              step="10"
-              value={autoSpeed}
+              type="range" min="0" max="200" step="10" value={autoSpeed}
               onChange={e => onAutoSpeedChange(Number(e.target.value))}
               className="w-full h-1.5 rounded-full appearance-none"
-              style={{ accentColor: '#00FFA5', background: 'rgba(255,255,255,0.1)' }}
+              style={{ accentColor: '#F302C9', background: '#E5E5E5', cursor: 'pointer' }}
             />
           </div>
         </>
@@ -122,7 +110,7 @@ export default function ToolBar({
       {/* AI 批量绘制 */}
       {onBatchDraw && (
         <>
-          <div style={sectionDivider} />
+          <div style={divider} />
           <div>
             <label style={{ ...labelStyle, display: 'block', marginBottom: '0.5rem' }}>AI 帮你画</label>
             <div className="grid grid-cols-3 gap-1.5 mb-1.5">
@@ -130,14 +118,10 @@ export default function ToolBar({
                 <button
                   key={n}
                   onClick={() => onBatchDraw(n)}
-                  className="py-1.5 text-xs font-medium rounded-full transition-colors"
-                  style={{
-                    background: 'rgba(0,255,165,0.1)',
-                    color: '#00FFA5',
-                    border: '1px solid rgba(0,255,165,0.2)',
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,255,165,0.2)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,255,165,0.1)'; }}
+                  className="py-1.5 text-xs font-bold rounded-full transition-colors"
+                  style={{ background: '#F5F5F5', color: '#1A1A1A', border: '1.5px solid #1A1A1A' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F9B801'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F5F5F5'; }}
                 >
                   +{n}笔
                 </button>
@@ -145,14 +129,10 @@ export default function ToolBar({
             </div>
             <button
               onClick={() => onBatchDraw(totalStrokes - currentStrokeIdx)}
-              className="w-full py-1.5 text-xs font-medium rounded-full transition-colors"
-              style={{
-                background: 'rgba(16,185,129,0.12)',
-                color: '#10B981',
-                border: '1px solid rgba(16,185,129,0.2)',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(16,185,129,0.22)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(16,185,129,0.12)'; }}
+              className="w-full py-1.5 text-xs font-bold rounded-full transition-colors"
+              style={{ background: '#7DC353', color: '#1A1A1A', border: '1.5px solid #1A1A1A' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#6BB845'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#7DC353'; }}
             >
               全部画完（剩 {totalStrokes - currentStrokeIdx} 笔）
             </button>
@@ -161,15 +141,15 @@ export default function ToolBar({
       )}
 
       {/* 操作按钮 */}
-      <div style={sectionDivider} />
+      <div style={divider} />
       <div className="flex flex-wrap gap-1.5">
         {onSkip && (
           <button
             onClick={onSkip}
-            className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
-            style={{ background: 'rgba(245,158,11,0.12)', color: '#F59E0B', border: '1px solid rgba(245,158,11,0.2)' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(245,158,11,0.22)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(245,158,11,0.12)'; }}
+            className="px-3 py-1.5 rounded-full text-xs font-bold transition-colors"
+            style={{ background: '#FFF8E0', color: '#1A1A1A', border: '1.5px solid #F9B801' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F9B801'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FFF8E0'; }}
           >
             跳过此笔
           </button>
@@ -177,10 +157,10 @@ export default function ToolBar({
         {onReset && (
           <button
             onClick={onReset}
-            className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
-            style={{ background: 'rgba(239,68,68,0.12)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.22)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.12)'; }}
+            className="px-3 py-1.5 rounded-full text-xs font-bold transition-colors"
+            style={{ background: '#FFF0F0', color: '#F302C9', border: '1.5px solid #F302C9' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F302C9'; (e.currentTarget as HTMLButtonElement).style.color = 'white'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FFF0F0'; (e.currentTarget as HTMLButtonElement).style.color = '#F302C9'; }}
           >
             重置画布
           </button>
@@ -188,10 +168,10 @@ export default function ToolBar({
         {onExport && (
           <button
             onClick={onExport}
-            className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
-            style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981', border: '1px solid rgba(16,185,129,0.2)' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(16,185,129,0.22)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(16,185,129,0.12)'; }}
+            className="px-3 py-1.5 rounded-full text-xs font-bold transition-colors"
+            style={{ background: '#1A1A1A', color: '#FFFFFF', border: '1.5px solid #1A1A1A' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#333333'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#1A1A1A'; }}
           >
             保存作品
           </button>

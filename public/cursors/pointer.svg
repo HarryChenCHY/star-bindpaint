@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <!-- Triangle tip at (2,2), arc forms the circular body in lower-right -->
+  <path d="M 2 2 L 26 14 A 9 9 0 1 1 14 26 Z"
+        fill="white" stroke="#1A1A1A" stroke-width="1.5"
+        stroke-linejoin="round" stroke-linecap="round"/>
+</svg>
