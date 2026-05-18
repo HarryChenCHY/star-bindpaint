@@ -7,6 +7,8 @@ import StarrySprite from '@/components/StarrySprite';
 import ImageUploader from '@/components/ImageUploader';
 import { MiniStar } from '@/components/Characters';
 import { MASTER_ARTISTS, MOOD_OPTIONS, MasterArtist, Masterwork } from '@/lib/masterworks';
+import { MASTER_DIALOGUES } from '@/lib/master-dialogues';
+import MasterBubble from '@/components/MasterBubble';
 
 type SourceMode = 'masters' | 'upload';
 
@@ -18,11 +20,19 @@ export default function CreatePage() {
   const [selectedMood, setSelectedMood] = useState('original');
   const [imageLoaded, setImageLoaded] = useState(false);
   const [roughness, setRoughness] = useState(2);
+  const [dialogueMsg, setDialogueMsg] = useState('');
 
   // 选择大师作品后加载图片到 sessionStorage
   const handleSelectWork = (artist: MasterArtist, work: Masterwork) => {
     setSelectedWork(work);
     setSelectedArtist(artist);
+
+    // 设置鼓励语
+    const d = MASTER_DIALOGUES[artist.id];
+    if (d) {
+      const enc = d.encouragements[Math.floor(Math.random() * d.encouragements.length)];
+      setDialogueMsg(enc);
+    }
 
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -137,7 +147,7 @@ export default function CreatePage() {
               {!selectedArtist && (
                 <div>
                   <p className="text-center mb-6" style={{ color: '#888', fontWeight: 700, fontSize: '0.95rem' }}>
-                    选择一位大师，临摹他的经典作品
+                    选择一位大师，临摹他的经典作品，与他进行心灵对话
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {MASTER_ARTISTS.map((artist) => (
@@ -145,7 +155,12 @@ export default function CreatePage() {
                         key={artist.id}
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
-                        onClick={() => setSelectedArtist(artist)}
+                        onClick={() => {
+                          setSelectedArtist(artist);
+                          // 随机选一句招呼语
+                          const d = MASTER_DIALOGUES[artist.id];
+                          if (d) setDialogueMsg(d.greetings[Math.floor(Math.random() * d.greetings.length)]);
+                        }}
                         className="p-5 rounded-[1.5rem] text-left transition-all"
                         style={{ border: '2px solid #1A1A1A', background: 'white' }}
                       >
@@ -172,11 +187,20 @@ export default function CreatePage() {
               {selectedArtist && !selectedWork && (
                 <div>
                   <button
-                    onClick={() => setSelectedArtist(null)}
+                    onClick={() => { setSelectedArtist(null); setDialogueMsg(''); }}
                     style={{ fontWeight: 800, fontSize: '0.85rem', color: '#888', marginBottom: '16px' }}
                   >
                     ← 返回画家列表
                   </button>
+
+                  {/* 大师对话气泡 */}
+                  <MasterBubble
+                    artistId={selectedArtist.id}
+                    artistName={selectedArtist.name}
+                    message={dialogueMsg}
+                    quote={MASTER_DIALOGUES[selectedArtist.id]?.quote}
+                    className="mb-6"
+                  />
 
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center"
@@ -198,6 +222,11 @@ export default function CreatePage() {
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => handleSelectWork(selectedArtist, work)}
+                        onMouseEnter={() => {
+                          // hover 时切换为该画的创作故事
+                          const story = MASTER_DIALOGUES[selectedArtist.id]?.workStories[work.id];
+                          if (story) setDialogueMsg(story);
+                        }}
                         className="rounded-[1.25rem] overflow-hidden text-left"
                         style={{ border: '2px solid #1A1A1A' }}
                       >
@@ -219,11 +248,19 @@ export default function CreatePage() {
               {selectedWork && (
                 <div className="flex flex-col items-center gap-6">
                   <button
-                    onClick={() => { setSelectedWork(null); setImageLoaded(false); }}
+                    onClick={() => { setSelectedWork(null); setImageLoaded(false); setDialogueMsg(MASTER_DIALOGUES[selectedArtist!.id]?.greetings[0] || ''); }}
                     style={{ fontWeight: 800, fontSize: '0.85rem', color: '#888', alignSelf: 'flex-start' }}
                   >
                     ← 换一幅画
                   </button>
+
+                  {/* 大师鼓励语 */}
+                  <MasterBubble
+                    artistId={selectedArtist!.id}
+                    artistName={selectedArtist!.name}
+                    message={dialogueMsg}
+                    className="w-full"
+                  />
 
                   <div className="rounded-[1.5rem] overflow-hidden max-w-sm w-full" style={{ border: '2px solid #1A1A1A' }}>
                     <img src={selectedWork.image} alt={selectedWork.title} className="w-full" />
