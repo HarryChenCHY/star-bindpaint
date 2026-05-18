@@ -229,13 +229,13 @@ export default function PaintPage() {
       mode: mode,
     });
 
-    setSpriteMessage('作品已保存到画廊！');
+    setSpriteMessage('作品已保存！点击查看 Starry 的观察报告~');
     setSpriteState('cheering');
 
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = `星绘智愈_${Date.now()}.png`;
-    a.click();
+    // 跳转到报告页面（延迟让用户看到反馈）
+    setTimeout(() => {
+      router.push('/report');
+    }, 2000);
   };
 
   if (loading) {
