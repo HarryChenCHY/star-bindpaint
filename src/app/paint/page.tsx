@@ -12,6 +12,7 @@ import { decomposeImage, imageSourceFromImage, StrokeDrawData, drawStroke, Vec2 
 import { matchScore } from '@/lib/drawing-engine';
 import { GuideSystem } from '@/lib/guide-system';
 import { saveToGallery } from '@/lib/gallery-store';
+import { getTracker } from '@/lib/painting-tracker';
 import { MiniStar } from '@/components/Characters';
 
 export default function PaintPage() {
@@ -68,6 +69,23 @@ export default function PaintPage() {
         setLoadingMsg(`生成了 ${result.length} 笔触，准备中...`);
         setStrokes(result);
 
+        // 初始化数据采集器
+        const tracker = getTracker();
+        tracker.setMode(mode, guideSubMode);
+        tracker.setRoughness(roughness);
+        tracker.setCanvasSize(cw, ch);
+        // 读取大师作品信息（如果有）
+        const masterInfo = sessionStorage.getItem('star-bindpaint-master');
+        if (masterInfo) {
+          const { id, title, artist } = JSON.parse(masterInfo);
+          tracker.setMasterwork(id, title, artist);
+        } else {
+          tracker.setCustomUpload();
+        }
+        const savedMood = sessionStorage.getItem('star-bindpaint-mood') || '';
+        tracker.setMood(savedMood);
+        tracker.startSession(result.length);
+
         guideRef.current.loadStrokes(result);
         const state = guideRef.current.getState();
         setCurrentGuideStroke(state.currentStroke);
@@ -99,8 +117,21 @@ export default function PaintPage() {
   }, [guideSubMode]);
 
   const handleUserStrokeDone = useCallback((userPoints: Vec2[], score: number) => {
+    const tracker = getTracker();
+
     if (mode === 'follow') {
       const guide = guideRef.current;
+      const guideState = guide.getState();
+
+      // 记录笔触数据
+      const region = currentGuideStroke?.points?.[Math.floor((currentGuideStroke?.points?.length || 0) / 2)]
+        || { x: 0, y: 0 };
+      const color = currentGuideStroke
+        ? `rgba(${Math.round(currentGuideStroke.color[0]*255)},${Math.round(currentGuideStroke.color[1]*255)},${Math.round(currentGuideStroke.color[2]*255)},1)`
+        : '';
+
+      tracker.strokeCompleted(guideState.currentIndex, color, region, score);
+
       const { passed, shouldReplace } = guide.submitStroke(score);
 
       if (passed && shouldReplace) {
@@ -111,6 +142,11 @@ export default function PaintPage() {
         }
       }
     } else if (mode === 'free') {
+      // 自由模式也记录
+      const center = userPoints.length > 0
+        ? userPoints[Math.floor(userPoints.length / 2)]
+        : { x: 0, y: 0 };
+      tracker.strokeCompleted(tracker.getSession().strokes.length, '', center, score);
       guideRef.current.freeModeFeedback();
     }
   }, [mode, currentGuideStroke]);
@@ -132,7 +168,16 @@ export default function PaintPage() {
     setProgress(0);
   };
 
-  const handleSkip = () => { guideRef.current.skip(); };
+  const handleSkip = () => {
+    const tracker = getTracker();
+    const guide = guideRef.current;
+    const stroke = guide.getCurrentStroke();
+    if (stroke && stroke.points.length > 0) {
+      const mid = stroke.points[Math.floor(stroke.points.length / 2)];
+      tracker.strokeSkipped(guide.getState().currentIndex, mid);
+    }
+    guide.skip();
+  };
 
   const handleBatchDraw = (count: number) => {
     const paintCanvas = (window as unknown as Record<string, {
@@ -141,13 +186,18 @@ export default function PaintPage() {
     }>).__paintCanvas;
     if (!paintCanvas) return;
 
+    const tracker = getTracker();
     const guide = guideRef.current;
+    const startIdx = guide.getState().currentIndex;
+
     for (let i = 0; i < count; i++) {
       const stroke = guide.getCurrentStroke();
       if (!stroke) break;
       paintCanvas.drawAIStrokeOnBase(stroke);
       guide.skip();
     }
+
+    tracker.strokesBatched(startIdx, count);
   };
 
   const handleExport = () => {
@@ -157,6 +207,21 @@ export default function PaintPage() {
     if (!canvas) return;
 
     const dataUrl = canvas.toDataURL('image/png');
+
+    // 完成数据采集 session
+    const tracker = getTracker();
+    tracker.finishSession(dataUrl);
+
+    // 输出分析 prompt 到 console（后续接 LLM API 时改为网络请求）
+    const prompt = tracker.buildAnalysisPrompt();
+    console.log('[PaintingTracker] Session 完成，分析 prompt:');
+    console.log(prompt);
+    console.log('[PaintingTracker] Session 数据:', tracker.getSession());
+
+    // 存到 sessionStorage 供后续 LLM 分析页面读取
+    sessionStorage.setItem('star-bindpaint-session', JSON.stringify(tracker.getSession()));
+    sessionStorage.setItem('star-bindpaint-prompt', prompt);
+
     saveToGallery({
       imageDataUrl: dataUrl,
       title: `作品 ${new Date().toLocaleDateString('zh-CN')}`,
@@ -235,6 +300,7 @@ export default function PaintPage() {
             brushWidth={brushWidth}
             autoSpeed={autoSpeed}
             onUserStrokeDone={handleUserStrokeDone}
+            onUserStrokeStart={() => getTracker().strokeStart()}
             onAutoProgress={handleAutoProgress}
             onAutoComplete={handleAutoComplete}
             sourceImage={sourceImage}

@@ -17,6 +17,7 @@ interface PaintCanvasProps {
   brushWidth?: number;
   autoSpeed?: number;
   onUserStrokeDone?: (userPoints: Vec2[], score: number) => void;
+  onUserStrokeStart?: () => void;
   onAutoProgress?: (current: number, total: number) => void;
   onAutoComplete?: () => void;
   sourceImage?: HTMLImageElement | null;
@@ -33,6 +34,7 @@ export default function PaintCanvas({
   brushWidth = 4,
   autoSpeed = 30,
   onUserStrokeDone,
+  onUserStrokeStart,
   onAutoProgress,
   onAutoComplete,
   sourceImage,
@@ -49,6 +51,10 @@ export default function PaintCanvas({
     const userCanvas = userCanvasRef.current;
     if (!userCanvas || mode === 'auto') return;
 
+    // 监听 pointerdown 通知 tracker
+    const handlePointerDown = () => { onUserStrokeStart?.(); };
+    userCanvas.addEventListener('pointerdown', handlePointerDown);
+
     const engine = new DrawingEngine(userCanvas, (stroke) => {
       if (mode === 'follow' && currentGuideStroke && onUserStrokeDone) {
         const userPts: Vec2[] = stroke.points.map(p => ({ x: p.x, y: p.y }));
@@ -62,10 +68,11 @@ export default function PaintCanvas({
 
     drawingEngineRef.current = engine;
     return () => {
+      userCanvas.removeEventListener('pointerdown', handlePointerDown);
       engine.destroy();
       drawingEngineRef.current = null;
     };
-  }, [mode, currentGuideStroke, onUserStrokeDone]);
+  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart]);
 
   // 更新画笔颜色/宽度
   useEffect(() => {
