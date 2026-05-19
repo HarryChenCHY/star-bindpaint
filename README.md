@@ -5,7 +5,7 @@
 <h1 align="center">星绘智愈 Star BindPaint</h1>
 
 <p align="center">
-  <strong>AI 辅助油画教育普惠系统 — 让每个孩子都能用画笔，将内心的孤岛连接成星海</strong>
+  <strong>AI 辅助油画教育与艺术疗愈系统 — 临摹大师画作，在创作中感受疗愈</strong>
 </p>
 
 <p align="center">
@@ -14,8 +14,8 @@
 
 <p align="center">
   <a href="https://star-bindpaint.vercel.app">在线体验</a> ·
-  <a href="https://star-bindpaint.vercel.app/create">开始创作</a> ·
-  <a href="#核心技术">核心技术</a> ·
+  <a href="https://star-bindpaint.vercel.app/onboard">开始创作</a> ·
+  <a href="#五步疗愈流程">疗愈流程</a> ·
   <a href="#大师作品库">大师作品库</a>
 </p>
 
@@ -23,80 +23,70 @@
 
 ## 项目简介
 
-星绘智愈是一个面向孤独症儿童的 AI 辅助油画教育与艺术疗愈系统。通过 AI 笔触序列规划算法，将大师经典画作拆解为数百笔可临摹的油画笔触序列，由画笔精灵 Starry 引导儿童逐笔完成创作，在临摹过程中与大师进行"心灵对话"，达到艺术教育与疗愈的双重目标。
+星绘智愈是一个面向孤独症儿童的 AI 辅助油画教育与艺术疗愈系统。通过 AI 笔触序列规划算法，将莫奈、梵高、高更等大师经典画作拆解为可临摹的油画笔触序列。儿童在画笔精灵 Starry 的陪伴下，通过"你画1笔，AI补50笔"的陪画模式轻松完成创作，系统同步采集绘画过程数据生成疗愈观察报告。
 
-核心算法源自上海交通大学"智能媒体与创意"实验室的科研成果（AAOP 油画仿真系统），经 TypeScript 重写后实现纯浏览器端运行，零后端依赖。
+产品设计融合了 TEACCH 结构化教学法、ABA 应用行为分析、Social Story 社交故事等循证特殊教育方法，并提供安静模式、分层难度、情绪检测等 ASD 适配功能。
 
-## 核心功能
+## 五步疗愈流程
 
-### 三种创作模式
+```
+😊 选心情 → 🎨 选大师 → ✏️ 陪画创作 → 😌 再选心情 → 📋 疗愈报告
+```
 
-| 模式 | 描述 |
-|------|------|
-| **跟画模式** | 画笔精灵引导逐笔作画，支持"辅助"（AI 修正）和"真实"（保留笔迹）两种子模式 |
-| **自动模式** | AI 逐笔自动绘制，观看从空白到完成的全过程 |
-| **自由模式** | 自由涂鸦创作，精灵陪伴鼓励 |
+1. **情绪前测** — 选择今天的心情（开心/平静/紧张/难过），系统自动适配难度
+2. **选择大师** — 从 6 位大师 30 幅作品中选择，大师以第一人称讲述创作故事
+3. **陪画创作** — 你画 1 笔，AI 自动补 50 笔（可调 20-200），轻松完成全图
+4. **情绪后测** — 画完后再选一次心情，量化"这次绘画是否帮助了情绪过渡"
+5. **疗愈报告** — LLM 基于过程数据生成观察记录，供家长/治疗师参考
 
-### 大师作品库
+## 三种核心模式
 
-内置 6 位大师共 30 幅经典作品，覆盖印象派到立体主义：
+| 模式 | 描述 | 适合场景 |
+|------|------|---------|
+| **陪画模式** | 你画 1 笔，Starry 帮你补 N 笔，跟着大师笔触轻松完成 | 日常疗愈（推荐） |
+| **共同注意** | AI 边画边停顿问你问题："这是什么颜色？在哪里？" | 互动学习/社交训练 |
+| **自由表达** | 选一个主题（画心情/画天气），用颜色自由表达 | 情绪疏导/非语言表达 |
+
+## 大师作品库
+
+内置 6 位大师共 30 幅经典作品，每幅配有大师第一人称对话：
 
 | 画家 | 风格 | 代表作品 |
 |------|------|---------|
-| 莫奈 | 印象派 | 日出·印象、睡莲、议会大厦 |
-| 梵高 | 后印象派 | 星空、阿尔的卧室、野玫瑰 |
-| 高更 | 后印象派 | 塔希提女人、黄色基督 |
-| 伦勃朗 | 巴洛克 | 夜巡、自画像、浪子回头 |
-| 毕加索 | 立体主义 | 哭泣的女人、梦、三个音乐家 |
-| 萨金特 | 写实/水彩 | 威尼斯运河、康乃馨与百合 |
+| 莫奈 | 印象派 | 日出·印象、睡莲、议会大厦、罂粟花田 |
+| 梵高 | 后印象派 | 星空、阿尔的卧室、野玫瑰、蒙马特风车 |
+| 高更 | 后印象派 | 布列塔尼村庄、阿尔的洗衣妇、花卉静物 |
+| 伦勃朗 | 巴洛克 | 使徒保罗、自画像、书房中的学者 |
+| 毕加索 | 立体主义 | 埃布罗河畔的房屋、果盘静物、狂欢节丑角 |
+| 萨金特 | 水彩 | 威尼斯乞丐河、柳树下、卢卡别墅喷泉 |
 
-### 大师对话教育
+## ASD 适配功能
 
-选择画家后，大师以第一人称"活过来"与儿童互动：
-- **招呼语** — 进入画家页面时介绍自己
-- **创作故事** — 浏览作品时讲述每幅画的创作背景
-- **鼓励语** — 开始临摹前给予情感支持
-- **打字机效果** — 模拟真实对话节奏
+| 功能 | 原理 |
+|------|------|
+| **安静模式** | 低刺激界面：去动画、柔和色、大字号（感觉统合理论） |
+| **分层难度** | 小小画家(画了就算) / 小画家(宽松) / 小艺术家(标准) |
+| **视觉时间表** | TEACCH 垂直步骤条，"还剩 X 笔"（可预测性） |
+| **先看后做** | 每笔先演示一遍再让孩子画（ABA 建模学习） |
+| **情绪检测** | 被动检测 6 种行为信号，自动触发平静呼吸引导 |
+| **社交故事** | 首次使用前 6 页图文引导（Carol Gray 标准） |
+| **照护者提示** | 给旁边家长/治疗师的动态指导语 |
+| **情绪前后测** | 量化每次绘画的情绪变化 |
 
-### 情绪色调选择
-
-同一幅画可以选择不同情绪色调（温暖/安静/鲜活/梦幻/原色），让每个孩子画出独一无二的版本。
-
-### AI 绘画观察报告
-
-基于绘画过程数据（犹豫时间、跳过行为、色彩偏好、专注区域、笔触节奏），调用 LLM 生成温和的观察记录，辅助治疗师了解儿童状态。
-
-## 核心技术
+## 技术栈
 
 - **Next.js 16** — App Router + API Routes
-- **Tailwind CSS 4** — 高饱和色彩系统 + 大圆角 UI
-- **Framer Motion** — 精灵动画 + 页面过渡
-- **Canvas 2D** — 三层叠加画布（参考层 / 用户层 / 引导层）
-- **物理仿真引擎** — ETF 方向场 + 泊松采样 + 流线追踪 + Catmull-Rom 绘制
-- **阿里云百炼** — 通义千问 VL 多模态分析（绘画观察报告）
-
-## 算法原理
-
-```
-输入图片 → ETF 边缘切线流 → 密度图 → 泊松采样 → 流线追踪 → 笔触序列 → Canvas 绘制
-```
-
-1. **ETF（Edge Tangent Flow）**：Sobel 5×5 梯度 → 旋转 90° 得切线 → Ws/Wm/Wd 三权重迭代 15 次 → 平滑方向场
-2. **泊松采样 + Lloyd 迭代**：按密度图拒绝采样 → 12 次 Lloyd 均匀化 → 笔触锚点
-3. **流线追踪**：每个锚点沿 ETF 方向正反延伸，HSV 颜色阈值约束边界
-4. **Catmull-Rom 平滑**：路径点转贝塞尔曲线 → Canvas 2D 绘制
+- **Tailwind CSS 4** — 色彩系统 + 安静模式 CSS 变量
+- **Framer Motion** — 动画（安静模式下自动禁用）
+- **Canvas 2D** — 三层叠加画布 + 引导线 + 先看后做演示
+- **物理仿真引擎** — ETF 方向场 + 泊松采样 + 流线追踪
+- **阿里云百炼** — 通义千问 VL 多模态分析（疗愈报告）
 
 ## 快速开始
 
 ```bash
-# 安装依赖
 npm install
-
-# 本地开发
 npm run dev
-
-# 构建生产版本
-npm run build
 ```
 
 **线上访问**：https://star-bindpaint.vercel.app
@@ -106,66 +96,76 @@ npm run build
 | 路径 | 功能 |
 |------|------|
 | `/` | 产品封面展示页 |
-| `/create` | 创作入口 — 大师作品库 / 上传图片 + 情绪色调 + 笔触密度 |
-| `/paint` | 作画页 — 核心交互画布（跟画/自动/自由） |
-| `/gallery` | 画廊 — 查看已完成作品 |
-| `/report` | 观察报告 — LLM 生成的绘画过程分析 |
-| `/intro` | 项目介绍页 |
+| `/onboard` | 情绪前测 + 能量选择（状态入口） |
+| `/create` | 大师作品库 / 上传图片 + 情绪色调 |
+| `/paint` | 核心画布（陪画/共同注意/自由表达） |
+| `/report` | AI 疗愈观察报告 |
+| `/gallery` | 我的画廊 |
+| `/settings` | 家长/治疗师设置（密码保护） |
+| `/intro` | 项目介绍 |
 
 ## 项目结构
 
 ```
 src/
 ├── app/
-│   ├── page.tsx              # 封面展示首页
-│   ├── create/page.tsx       # 大师作品库 + 上传 + 参数选择
-│   ├── paint/page.tsx        # 核心作画页
+│   ├── page.tsx              # 封面首页
+│   ├── onboard/page.tsx      # 情绪前测 + 能量 + 社交故事
+│   ├── create/page.tsx       # 大师作品库（头像+底图卡片）
+│   ├── paint/page.tsx        # 核心画布（陪画/共同注意/自由）
+│   ├── report/page.tsx       # AI 疗愈报告（儿童版+照护者版）
 │   ├── gallery/page.tsx      # 画廊
-│   ├── report/page.tsx       # AI 观察报告
+│   ├── settings/page.tsx     # 家长设置
 │   └── api/analyze/route.ts  # LLM 分析 API
+├── contexts/
+│   └── AppContext.tsx         # 全局设置（安静模式/难度/先看后做）
 ├── components/
-│   ├── StarrySprite.tsx      # 画笔精灵（SVG + 4 状态动画）
-│   ├── MasterBubble.tsx      # 大师对话气泡（打字机效果）
-│   ├── Characters.tsx        # 角色 SVG 组件
-│   ├── PaintCanvas.tsx       # 三层 Canvas 画布
-│   ├── ModeSelector.tsx      # 模式切换
-│   ├── ToolBar.tsx           # 工具栏
-│   ├── ProgressRing.tsx      # 环形进度
-│   └── ImageUploader.tsx     # 图片上传
+│   ├── MasterBubble.tsx       # 大师对话气泡（打字机效果）
+│   ├── EmotionPicker.tsx      # 情绪前后测选择器
+│   ├── SocialStory.tsx        # 社交故事引导（6页）
+│   ├── VisualSchedule.tsx     # 视觉时间表
+│   ├── WatchDemo.tsx          # 先看后做演示动画
+│   ├── CalmBreathing.tsx      # 呼吸引导（4s膨胀6s收缩）
+│   ├── SharedAttention.tsx    # 共同注意问答
+│   ├── FreeModeThemes.tsx     # 自由模式主题脚手架
+│   ├── CaregiverTips.tsx      # 照护者陪伴提示
+│   ├── PaintCanvas.tsx        # 三层 Canvas 画布
+│   └── StarrySprite.tsx       # 画笔精灵
 ├── lib/
-│   ├── stroke-engine.ts      # 核心算法（ETF + 采样 + 规划 + 绘制）
-│   ├── drawing-engine.ts     # 手绘引擎（pointer events + 平滑）
-│   ├── guide-system.ts       # 引导系统（队列 + 判定 + 反馈）
-│   ├── painting-tracker.ts   # 绘画过程数据采集
-│   ├── masterworks.ts        # 大师作品库配置
-│   ├── master-dialogues.ts   # 大师对话数据
-│   └── gallery-store.ts      # localStorage 存储
+│   ├── stroke-engine.ts       # ETF + 采样 + 规划 + 色调偏移
+│   ├── painting-tracker.ts    # 绘画过程数据采集
+│   ├── emotion-detector.ts    # 情绪被动检测（6种信号）
+│   ├── feedback-engine.ts     # 具象化反馈 + 共同注意问答
+│   ├── guide-system.ts        # 引导系统（难度适配）
+│   ├── masterworks.ts         # 大师作品库配置
+│   ├── master-dialogues.ts    # 大师对话数据
+│   └── gallery-store.ts       # localStorage 存储
 └── public/
-    ├── masterworks/          # 30 幅大师作品（2048px 高清）
-    └── master/               # 6 位大师头像
+    ├── masterworks/            # 30 幅大师作品（2048px）
+    └── master/                 # 6 位大师头像
 ```
 
 ## 部署
-
-### Vercel（推荐）
 
 ```bash
 npx vercel --prod
 ```
 
-环境变量：在 Vercel Settings → Environment Variables 添加：
-- `DASHSCOPE_API_KEY` — 阿里云百炼 API Key（用于观察报告功能）
-
-### 微信小程序
-
-详见 [WECHAT_MINIPROGRAM.md](./WECHAT_MINIPROGRAM.md) — 核心算法可直接移植，推荐 Taro 3 + React 方案。
+环境变量（Vercel Settings → Environment Variables）：
+- `DASHSCOPE_API_KEY` — 阿里云百炼 API Key
 
 ## 技术溯源
 
-本项目算法源自 Unity C# 油画仿真系统（AAOP 4.10），参考论文：
+核心算法源自 Unity C# 油画仿真系统（AAOP 4.10），参考论文：
 
 - Kang et al. 2007 — *Coherent Line Drawing*（ETF 算法）
 - Teng Hu et al. 2023 — *Stroke-based Neural Painting with Dynamically Predicted Painting Region*
+
+ASD 适配设计基于：
+- TEACCH 结构化教学法（视觉时间表）
+- ABA 应用行为分析（先看后做/建模学习）
+- Carol Gray 社交故事方法论
+- 感觉统合理论（安静模式/感官分级）
 
 ## 团队
 

@@ -1,94 +1,125 @@
 <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1E1B4B"/>
-      <stop offset="40%" stop-color="#312E81"/>
-      <stop offset="100%" stop-color="#4C1D95"/>
-    </linearGradient>
-    <linearGradient id="starFill" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FCD34D"/>
-      <stop offset="100%" stop-color="#F59E0B"/>
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F5F5F5"/>
     </linearGradient>
     <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#FCD34D"/>
-      <stop offset="40%" stop-color="#A78BFA"/>
-      <stop offset="100%" stop-color="#67E8F9"/>
+      <stop offset="0%" stop-color="#1A1A1A"/>
+      <stop offset="100%" stop-color="#7A51EC"/>
     </linearGradient>
-    <radialGradient id="glow">
-      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.3"/>
-      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
-    </radialGradient>
   </defs>
 
   <!-- 背景 -->
   <rect width="1200" height="630" fill="url(#bg)"/>
 
-  <!-- 星空点 -->
-  <circle cx="100" cy="80" r="1.5" fill="white" opacity="0.4"/>
-  <circle cx="250" cy="150" r="1" fill="white" opacity="0.3"/>
-  <circle cx="400" cy="60" r="1.5" fill="white" opacity="0.5"/>
-  <circle cx="550" cy="120" r="1" fill="white" opacity="0.3"/>
-  <circle cx="700" cy="50" r="1.5" fill="white" opacity="0.4"/>
-  <circle cx="850" cy="100" r="1" fill="white" opacity="0.3"/>
-  <circle cx="1000" cy="70" r="1.5" fill="white" opacity="0.5"/>
-  <circle cx="1100" cy="140" r="1" fill="white" opacity="0.3"/>
-  <circle cx="150" cy="500" r="1" fill="white" opacity="0.3"/>
-  <circle cx="350" cy="550" r="1.5" fill="white" opacity="0.4"/>
-  <circle cx="900" cy="520" r="1" fill="white" opacity="0.3"/>
-  <circle cx="1050" cy="480" r="1.5" fill="white" opacity="0.4"/>
-
-  <!-- 精灵发光 -->
-  <circle cx="900" cy="315" r="150" fill="url(#glow)"/>
+  <!-- 顶部彩色条 -->
+  <rect x="0" y="0" width="150" height="8" fill="#F9B801"/>
+  <rect x="150" y="0" width="150" height="8" fill="#F302C9"/>
+  <rect x="300" y="0" width="150" height="8" fill="#7DC353"/>
+  <rect x="450" y="0" width="150" height="8" fill="#7A51EC"/>
+  <rect x="600" y="0" width="150" height="8" fill="#F9B801"/>
+  <rect x="750" y="0" width="150" height="8" fill="#F302C9"/>
+  <rect x="900" y="0" width="150" height="8" fill="#7DC353"/>
+  <rect x="1050" y="0" width="150" height="8" fill="#7A51EC"/>
 
   <!-- 精灵星星 -->
-  <path d="M900 200 L920 270H980L930 310L950 380L900 340L850 380L870 310L820 270H880L900 200Z"
-    fill="url(#starFill)" stroke="white" stroke-width="2"/>
-  <!-- 眼睛 -->
-  <circle cx="882" cy="290" r="8" fill="#1E1B4B"/>
-  <circle cx="918" cy="290" r="8" fill="#1E1B4B"/>
-  <circle cx="885" cy="287" r="3.5" fill="white"/>
-  <circle cx="921" cy="287" r="3.5" fill="white"/>
-  <!-- 嘴巴 -->
-  <path d="M886 310 Q900 324 914 310" stroke="#1E1B4B" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <!-- 腮红 -->
-  <circle cx="872" cy="305" r="6" fill="#F472B6" opacity="0.4"/>
-  <circle cx="928" cy="305" r="6" fill="#F472B6" opacity="0.4"/>
-  <!-- 颜料尾巴 -->
-  <path d="M900 380 Q882 405 860 415 Q845 420 840 410" stroke="#FCD34D" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.7"/>
-  <path d="M900 380 Q918 408 940 415 Q955 420 950 408" stroke="#A78BFA" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.5"/>
-  <!-- 小画笔 -->
-  <rect x="938" y="240" width="7" height="32" rx="3.5" fill="#8B5CF6" transform="rotate(20 941 256)"/>
-  <path d="M944 232 L949 224 L952 234 Z" fill="#FCD34D" transform="rotate(20 948 228)"/>
+  <g transform="translate(900, 200)">
+    <polygon points="0,-70 18,-22 70,-22 28,8 42,58 0,30 -42,58 -28,8 -70,-22 -18,-22" fill="#F9B801" stroke="#1A1A1A" stroke-width="2.5"/>
+    <circle cx="-15" cy="-8" r="7" fill="#1A1A1A"/>
+    <circle cx="15" cy="-8" r="7" fill="#1A1A1A"/>
+    <circle cx="-13" cy="-10" r="3" fill="white"/>
+    <circle cx="17" cy="-10" r="3" fill="white"/>
+    <path d="M-12 8 Q0 18 12 8" stroke="#1A1A1A" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- 画笔 -->
+    <rect x="45" y="-50" width="6" height="28" rx="3" fill="#7A51EC" transform="rotate(20 48 -36)"/>
+    <polygon points="48,-56 52,-64 54,-54" fill="#F9B801" transform="rotate(20 51 -58)"/>
+  </g>
 
-  <!-- 环绕点 -->
-  <circle cx="780" cy="230" r="8" fill="#F59E0B" opacity="0.8"/>
-  <circle cx="1020" cy="250" r="6" fill="#A78BFA" opacity="0.8"/>
-  <circle cx="830" cy="420" r="7" fill="#06B6D4" opacity="0.8"/>
-  <circle cx="1000" cy="400" r="5" fill="#F472B6" opacity="0.8"/>
+  <!-- 小装饰角色 -->
+  <circle cx="1020" cy="350" r="30" fill="#F302C9"/>
+  <circle cx="1012" cy="345" r="4" fill="#1A1A1A"/>
+  <circle cx="1028" cy="345" r="4" fill="#1A1A1A"/>
+  <path d="M1014 356 Q1020 362 1026 356" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/>
 
-  <!-- 文字区域 -->
-  <text x="80" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="800" fill="url(#titleGrad)">星绘智愈</text>
-  <text x="80" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="white" opacity="0.7">AI 辅助油画教育普惠系统</text>
-  <text x="80" y="350" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="white" opacity="0.5">让每个孩子都能用画笔，将内心的孤岛连接成星海</text>
+  <rect x="950" y="380" width="45" height="55" rx="22" fill="#7DC353" transform="rotate(-5 972 407)"/>
+  <circle cx="965" cy="400" r="4" fill="#1A1A1A"/>
+  <circle cx="980" cy="400" r="4" fill="#1A1A1A"/>
+  <path d="M965 412 Q972 417 980 412" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/>
 
-  <!-- Badge -->
-  <rect x="80" y="380" width="280" height="32" rx="16" fill="#7C3AED" fill-opacity="0.2" stroke="#7C3AED" stroke-opacity="0.4"/>
-  <circle cx="100" cy="396" r="4" fill="#10B981"/>
-  <text x="115" y="401" font-family="system-ui, sans-serif" font-size="13" fill="#A78BFA">2026 Light 创造营 · 星月绘愈社</text>
+  <!-- 标题 -->
+  <text x="80" y="180" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="900" fill="#1A1A1A" letter-spacing="-3">
+    星绘<tspan fill="#7A51EC">智愈</tspan>
+  </text>
 
-  <!-- 底部 tags -->
-  <rect x="80" y="560" width="80" height="26" rx="13" fill="white" fill-opacity="0.06" stroke="white" stroke-opacity="0.1"/>
-  <text x="95" y="577" font-family="system-ui, sans-serif" font-size="11" fill="white" opacity="0.5">Next.js</text>
+  <!-- 副标题 -->
+  <text x="80" y="230" font-family="system-ui, sans-serif" font-size="20" fill="#666666" font-weight="600">
+    AI 辅助油画教育与艺术疗愈系统
+  </text>
 
-  <rect x="175" y="560" width="110" height="26" rx="13" fill="white" fill-opacity="0.06" stroke="white" stroke-opacity="0.1"/>
-  <text x="187" y="577" font-family="system-ui, sans-serif" font-size="11" fill="white" opacity="0.5">物理仿真引擎</text>
+  <!-- 描述 -->
+  <text x="80" y="280" font-family="system-ui, sans-serif" font-size="16" fill="#888888" font-weight="600">
+    临摹莫奈、梵高、高更等大师经典画作
+  </text>
+  <text x="80" y="305" font-family="system-ui, sans-serif" font-size="16" fill="#888888" font-weight="600">
+    AI 陪你一笔一笔完成创作，在艺术中感受疗愈
+  </text>
 
-  <rect x="300" y="560" width="100" height="26" rx="13" fill="white" fill-opacity="0.06" stroke="white" stroke-opacity="0.1"/>
-  <text x="315" y="577" font-family="system-ui, sans-serif" font-size="11" fill="white" opacity="0.5">零依赖算法</text>
+  <!-- 五步流程 -->
+  <g transform="translate(80, 360)">
+    <rect x="0" y="0" width="80" height="80" rx="20" fill="#F9B801" stroke="#1A1A1A" stroke-width="2"/>
+    <text x="40" y="45" font-size="28" text-anchor="middle" fill="#1A1A1A">😊</text>
+    <text x="40" y="70" font-size="9" text-anchor="middle" fill="#1A1A1A" font-weight="800">选心情</text>
 
-  <rect x="415" y="560" width="90" height="26" rx="13" fill="white" fill-opacity="0.06" stroke="white" stroke-opacity="0.1"/>
-  <text x="430" y="577" font-family="system-ui, sans-serif" font-size="11" fill="white" opacity="0.5">Canvas 2D</text>
+    <text x="100" y="44" font-size="18" fill="#DDD" font-weight="900">→</text>
 
-  <rect x="520" y="560" width="80" height="26" rx="13" fill="white" fill-opacity="0.06" stroke="white" stroke-opacity="0.1"/>
-  <text x="533" y="577" font-family="system-ui, sans-serif" font-size="11" fill="white" opacity="0.5">触屏适配</text>
+    <rect x="120" y="0" width="80" height="80" rx="20" fill="#F302C9" stroke="#1A1A1A" stroke-width="2"/>
+    <text x="160" y="45" font-size="28" text-anchor="middle" fill="#1A1A1A">🎨</text>
+    <text x="160" y="70" font-size="9" text-anchor="middle" fill="#1A1A1A" font-weight="800">选大师</text>
+
+    <text x="220" y="44" font-size="18" fill="#DDD" font-weight="900">→</text>
+
+    <rect x="240" y="0" width="80" height="80" rx="20" fill="#7DC353" stroke="#1A1A1A" stroke-width="2"/>
+    <text x="280" y="45" font-size="28" text-anchor="middle" fill="#1A1A1A">✏️</text>
+    <text x="280" y="70" font-size="9" text-anchor="middle" fill="#1A1A1A" font-weight="800">陪画</text>
+
+    <text x="340" y="44" font-size="18" fill="#DDD" font-weight="900">→</text>
+
+    <rect x="360" y="0" width="80" height="80" rx="20" fill="#7BA7CC" stroke="#1A1A1A" stroke-width="2"/>
+    <text x="400" y="45" font-size="28" text-anchor="middle" fill="#1A1A1A">😌</text>
+    <text x="400" y="70" font-size="9" text-anchor="middle" fill="#1A1A1A" font-weight="800">再选心情</text>
+
+    <text x="460" y="44" font-size="18" fill="#DDD" font-weight="900">→</text>
+
+    <rect x="480" y="0" width="80" height="80" rx="20" fill="#7A51EC" stroke="#1A1A1A" stroke-width="2"/>
+    <text x="520" y="45" font-size="28" text-anchor="middle" fill="white">📋</text>
+    <text x="520" y="70" font-size="9" text-anchor="middle" fill="white" font-weight="800">疗愈报告</text>
+  </g>
+
+  <!-- 底部标签 -->
+  <rect x="80" y="490" width="90" height="28" rx="14" fill="white" stroke="#E5E5E5" stroke-width="1.5"/>
+  <text x="125" y="509" font-family="system-ui, sans-serif" font-size="11" fill="#888" font-weight="700" text-anchor="middle">大师图片库</text>
+
+  <rect x="185" y="490" width="90" height="28" rx="14" fill="white" stroke="#E5E5E5" stroke-width="1.5"/>
+  <text x="230" y="509" font-family="system-ui, sans-serif" font-size="11" fill="#888" font-weight="700" text-anchor="middle">情绪前后测</text>
+
+  <rect x="290" y="490" width="90" height="28" rx="14" fill="white" stroke="#E5E5E5" stroke-width="1.5"/>
+  <text x="335" y="509" font-family="system-ui, sans-serif" font-size="11" fill="#888" font-weight="700" text-anchor="middle">陪画模式</text>
+
+  <rect x="395" y="490" width="90" height="28" rx="14" fill="white" stroke="#E5E5E5" stroke-width="1.5"/>
+  <text x="440" y="509" font-family="system-ui, sans-serif" font-size="11" fill="#888" font-weight="700" text-anchor="middle">共同注意</text>
+
+  <rect x="500" y="490" width="90" height="28" rx="14" fill="white" stroke="#E5E5E5" stroke-width="1.5"/>
+  <text x="545" y="509" font-family="system-ui, sans-serif" font-size="11" fill="#888" font-weight="700" text-anchor="middle">疗愈报告</text>
+
+  <rect x="605" y="490" width="90" height="28" rx="14" fill="white" stroke="#E5E5E5" stroke-width="1.5"/>
+  <text x="650" y="509" font-family="system-ui, sans-serif" font-size="11" fill="#888" font-weight="700" text-anchor="middle">安静模式</text>
+
+  <!-- 底部信息 -->
+  <text x="80" y="570" font-family="system-ui, sans-serif" font-size="13" fill="#AAAAAA" font-weight="600">
+    上海交通大学 · 星月绘愈社 · 2026 Light 创造营
+  </text>
+
+  <!-- 边框 -->
+  <rect x="0" y="622" width="1200" height="8" fill="#1A1A1A"/>
 </svg>
