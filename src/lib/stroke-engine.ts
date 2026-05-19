@@ -25,6 +25,7 @@ export interface DecomposeOptions {
   lloydIter?: number;   // 1-15
   pixelStep?: number;   // 路径插值步长
   padding?: number;     // ETF padding
+  mood?: string;        // 情绪色调：warm/calm/vivid/dreamy/original
 }
 
 // ── 算法核心（从 stroke-sequence-planner 内联）──────────────────────────
@@ -616,7 +617,7 @@ export async function decomposeImage(
   canvasH = 512,
   opts: DecomposeOptions = {}
 ): Promise<StrokeDrawData[]> {
-  const { roughness = 1, lloydIter = 8, pixelStep = 10, padding = 5 } = opts;
+  const { roughness = 1, lloydIter = 8, pixelStep = 10, padding = 5, mood = 'original' } = opts;
 
   // 让 UI 有机会刷新
   await new Promise(r => setTimeout(r, 10));
@@ -633,7 +634,58 @@ export async function decomposeImage(
     if (sd.points.length >= 2) strokes.push(sd);
   }
 
+  // 根据 mood 对颜色做 HSV 偏移
+  if (mood && mood !== 'original') {
+    applyMoodShift(strokes, mood);
+  }
+
   return strokes;
+}
+
+/**
+ * 对笔触颜色做情绪色调偏移
+ * warm: 色相偏暖(+15°)，饱和度+10%
+ * calm: 色相偏冷蓝(-20°)，饱和度-10%，亮度+5%
+ * vivid: 饱和度+25%
+ * dreamy: 亮度+15%，饱和度-15%，色相偏紫(+30°)
+ */
+function applyMoodShift(strokes: StrokeDrawData[], mood: string) {
+  for (const s of strokes) {
+    let [r, g, b] = s.color; // 0-1 范围
+    // RGB → HSV
+    const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+    let h = 0, sat = max === 0 ? 0 : d / max, v = max;
+    if (d > 0) {
+      if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+      else if (max === g) h = ((b - r) / d + 2) / 6;
+      else h = ((r - g) / d + 4) / 6;
+    }
+
+    // 应用偏移
+    switch (mood) {
+      case 'warm':
+        h = (h + 15 / 360 + 1) % 1;   // 色相 +15°（偏暖）
+        sat = Math.min(1, sat + 0.1);
+        break;
+      case 'calm':
+        h = (h - 20 / 360 + 1) % 1;   // 色相 -20°（偏冷蓝）
+        sat = Math.max(0, sat - 0.1);
+        v = Math.min(1, v + 0.05);
+        break;
+      case 'vivid':
+        sat = Math.min(1, sat + 0.25); // 高饱和
+        break;
+      case 'dreamy':
+        h = (h + 30 / 360 + 1) % 1;   // 色相 +30°（偏紫）
+        sat = Math.max(0, sat - 0.15);
+        v = Math.min(1, v + 0.15);
+        break;
+    }
+
+    // HSV → RGB
+    const [nr, ng, nb] = hsvToRgb(h, sat, v);
+    s.color = [nr, ng, nb];
+  }
 }
 
 /**

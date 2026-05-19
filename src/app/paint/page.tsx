@@ -61,9 +61,11 @@ export default function PaintPage() {
       try {
         const imgSrc = imageSourceFromImage(img, 512);
         setLoadingMsg('ETF 方向场计算中...');
+        const savedMoodForEngine = sessionStorage.getItem('star-bindpaint-mood') || 'original';
         const result = await decomposeImage(imgSrc, cw, ch, {
           roughness: roughness,
           lloydIter: 12,
+          mood: savedMoodForEngine,
         });
 
         setLoadingMsg(`生成了 ${result.length} 笔触，准备中...`);
