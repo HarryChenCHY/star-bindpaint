@@ -8,6 +8,7 @@ import ModeSelector from '@/components/ModeSelector';
 import ToolBar from '@/components/ToolBar';
 import StarrySprite, { SpriteState } from '@/components/StarrySprite';
 import ProgressRing from '@/components/ProgressRing';
+import EmotionPicker, { Emotion } from '@/components/EmotionPicker';
 import { decomposeImage, imageSourceFromImage, StrokeDrawData, drawStroke, Vec2 } from '@/lib/stroke-engine';
 import { matchScore } from '@/lib/drawing-engine';
 import { GuideSystem } from '@/lib/guide-system';
@@ -33,6 +34,9 @@ export default function PaintPage() {
   const [spriteMessage, setSpriteMessage] = useState('正在分析图片...');
   const [sourceImage, setSourceImage] = useState<HTMLImageElement | null>(null);
   const [canvasSize, setCanvasSize] = useState({ w: 400, h: 400 });
+  const [showPostEmotion, setShowPostEmotion] = useState(false);
+  const [postEmotion, setPostEmotion] = useState<string>('');
+  const [savedDataUrl, setSavedDataUrl] = useState<string>('');
   const guideRef = useRef<GuideSystem>(new GuideSystem());
 
   useEffect(() => {
@@ -233,20 +237,38 @@ export default function PaintPage() {
     if (!canvas) return;
 
     const dataUrl = canvas.toDataURL('image/png');
+    setSavedDataUrl(dataUrl);
+
+    // 显示情绪后测弹窗
+    setShowPostEmotion(true);
+    setSpriteMessage('画完啦！告诉我现在感觉怎么样？');
+    setSpriteState('cheering');
+  };
+
+  const handlePostEmotionConfirm = () => {
+    const dataUrl = savedDataUrl;
+    if (!dataUrl) return;
 
     // 完成数据采集 session
     const tracker = getTracker();
+    if (postEmotion) {
+      tracker.setEmotionAfter(postEmotion);
+    }
+    // 读取情绪前测
+    const emotionBefore = sessionStorage.getItem('star-bindpaint-emotion-before') || '';
+    if (emotionBefore) {
+      tracker.setEmotionBefore(emotionBefore);
+    }
+
     tracker.finishSession(dataUrl);
 
-    // 输出分析 prompt 到 console（后续接 LLM API 时改为网络请求）
     const prompt = tracker.buildAnalysisPrompt();
-    console.log('[PaintingTracker] Session 完成，分析 prompt:');
-    console.log(prompt);
-    console.log('[PaintingTracker] Session 数据:', tracker.getSession());
+    console.log('[PaintingTracker] Session 完成');
 
     // 存到 sessionStorage 供后续 LLM 分析页面读取
     sessionStorage.setItem('star-bindpaint-session', JSON.stringify(tracker.getSession()));
     sessionStorage.setItem('star-bindpaint-prompt', prompt);
+    sessionStorage.setItem('star-bindpaint-emotion-after', postEmotion);
 
     saveToGallery({
       imageDataUrl: dataUrl,
@@ -255,13 +277,13 @@ export default function PaintPage() {
       mode: mode,
     });
 
-    setSpriteMessage('作品已保存！点击查看 Starry 的观察报告~');
-    setSpriteState('cheering');
+    setSpriteMessage('作品已保存！正在生成观察报告...');
+    setShowPostEmotion(false);
 
-    // 跳转到报告页面（延迟让用户看到反馈）
+    // 跳转到报告页面
     setTimeout(() => {
       router.push('/report');
-    }, 2000);
+    }, 1000);
   };
 
   if (loading) {
@@ -374,6 +396,52 @@ export default function PaintPage() {
           />
         </aside>
       </div>
+      {/* ═══ 情绪后测弹窗 ═══ */}
+      {showPostEmotion && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)' }}
+        >
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', damping: 20 }}
+            className="bg-white rounded-[2rem] p-8 max-w-sm w-full mx-4 shadow-2xl"
+            style={{ border: '2px solid #1A1A1A' }}
+          >
+            {/* 画作缩略图 */}
+            {savedDataUrl && (
+              <div className="flex justify-center mb-5">
+                <img src={savedDataUrl} alt="你的作品" className="w-32 h-32 rounded-2xl object-cover" style={{ border: '2px solid #E5E5E5' }} />
+              </div>
+            )}
+
+            <h3 className="text-center mb-2" style={{ fontWeight: 900, fontSize: '1.3rem', color: '#1A1A1A' }}>
+              画完啦！
+            </h3>
+            <p className="text-center mb-6" style={{ fontSize: '0.9rem', color: '#888', fontWeight: 600 }}>
+              现在感觉怎么样？
+            </p>
+
+            <EmotionPicker
+              selected={postEmotion}
+              onSelect={(e: Emotion) => setPostEmotion(e)}
+            />
+
+            <div className="flex flex-col items-center mt-6 gap-3">
+              <button
+                onClick={handlePostEmotionConfirm}
+                className="btn-black w-full"
+                style={{ fontSize: '1rem', padding: '0.9em 2em' }}
+              >
+                {postEmotion ? '查看观察报告 →' : '跳过，直接查看报告'}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }

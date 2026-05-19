@@ -26,7 +26,11 @@ export default function HomePage() {
       </nav>
 
       {/* ═══ HERO ══════════════════════════════════════════════ */}
-      <section className="px-8 md:px-16 py-16 md:py-24 max-w-7xl mx-auto w-full">
+      <section className="px-8 md:px-16 py-16 md:py-24 max-w-7xl mx-auto w-full relative">
+        {/* 微妙的艺术背景 */}
+        <div className="absolute inset-0 -z-10 overflow-hidden rounded-[3rem] mx-4 opacity-[0.06]">
+          <img src="/masterworks/monet/water_lilies_1918.jpg" alt="" className="w-full h-full object-cover" />
+        </div>
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
 
           {/* Left — text */}

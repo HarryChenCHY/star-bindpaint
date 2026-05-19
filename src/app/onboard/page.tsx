@@ -7,6 +7,15 @@ import { useAppSettings } from '@/contexts/AppContext';
 import EmotionPicker, { Emotion } from '@/components/EmotionPicker';
 import SocialStory from '@/components/SocialStory';
 
+// 用于背景的大师画作（随机选一幅）
+const BG_PAINTINGS = [
+  '/masterworks/monet/water_lilies_1918.jpg',
+  '/masterworks/monet/impression_sunrise.jpg',
+  '/masterworks/vangogh/starry_night.jpg',
+  '/masterworks/monet/water_lilies_sunset.jpg',
+  '/masterworks/sargent/willows.jpg',
+];
+
 export default function OnboardPage() {
   const router = useRouter();
   const { settings, updateSettings } = useAppSettings();
@@ -14,6 +23,7 @@ export default function OnboardPage() {
   const [emotion, setEmotion] = useState<string>('');
   const [energy, setEnergy] = useState<'low' | 'medium' | 'high'>('medium');
   const [showStory, setShowStory] = useState(false);
+  const [bgImage, setBgImage] = useState('');
 
   // 首次进入检查是否需要社交故事
   useEffect(() => {
@@ -22,6 +32,8 @@ export default function OnboardPage() {
       setShowStory(true);
       setStep('story');
     }
+    // 随机选一幅背景画
+    setBgImage(BG_PAINTINGS[Math.floor(Math.random() * BG_PAINTINGS.length)]);
   }, []);
 
   const handleStoryComplete = () => {
@@ -57,12 +69,20 @@ export default function OnboardPage() {
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-white min-h-screen" data-calm={settings.calmMode}>
+    <div className="flex-1 flex flex-col min-h-screen relative" data-calm={settings.calmMode}>
+      {/* 大师画作背景 */}
+      {bgImage && (
+        <div className="absolute inset-0 z-0">
+          <img src={bgImage} alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(2px)' }} />
+        </div>
+      )}
+
       {/* 社交故事 */}
       {showStory && <SocialStory onComplete={handleStoryComplete} />}
 
       {/* Header */}
-      <header className="flex items-center justify-between px-8 py-5" style={{ borderBottom: '2px solid #E5E5E5' }}>
+      <header className="relative z-10 flex items-center justify-between px-8 py-5" style={{ borderBottom: '2px solid #E5E5E5', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)' }}>
         <button onClick={() => router.push('/')} style={{ fontWeight: 800, fontSize: '0.9rem', color: '#888' }}>
           ← 返回
         </button>
@@ -74,7 +94,7 @@ export default function OnboardPage() {
         </button>
       </header>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 gap-10 max-w-md mx-auto w-full">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-10 gap-10 max-w-md mx-auto w-full">
         {/* 情绪选择 */}
         {step === 'emotion' && !showStory && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">

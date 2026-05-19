@@ -21,11 +21,13 @@ export default function CreatePage() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [roughness, setRoughness] = useState(2);
   const [dialogueMsg, setDialogueMsg] = useState('');
+  const [bgImage, setBgImage] = useState('/masterworks/monet/water_lilies_1918.jpg');
 
   // 选择大师作品后加载图片到 sessionStorage
   const handleSelectWork = (artist: MasterArtist, work: Masterwork) => {
     setSelectedWork(work);
     setSelectedArtist(artist);
+    setBgImage(work.image);
 
     // 设置鼓励语
     const d = MASTER_DIALOGUES[artist.id];
@@ -106,9 +108,15 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white min-h-screen">
+    <div className="flex-1 flex flex-col min-h-screen relative">
+      {/* 大师画作背景 */}
+      <div className="absolute inset-0 z-0 transition-all duration-700">
+        <img src={bgImage} alt="" className="w-full h-full object-cover transition-all duration-700" />
+        <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(3px)' }} />
+      </div>
+
       {/* Header */}
-      <header className="flex items-center justify-between px-8 py-5" style={{ borderBottom: '2px solid #1A1A1A' }}>
+      <header className="relative z-10 flex items-center justify-between px-8 py-5" style={{ borderBottom: '2px solid #1A1A1A', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)' }}>
         <button onClick={() => router.push('/')} className="flex items-center gap-2"
           style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1A1A1A' }}>
           ← 返回首页
@@ -119,7 +127,7 @@ export default function CreatePage() {
         <div style={{ width: '80px' }} />
       </header>
 
-      <div className="flex-1 overflow-y-auto px-6 py-8 max-w-4xl mx-auto w-full">
+      <div className="relative z-10 flex-1 overflow-y-auto px-6 py-8 max-w-4xl mx-auto w-full">
 
         {/* Source mode tabs */}
         <div className="flex gap-2 mb-8 justify-center">
@@ -168,6 +176,7 @@ export default function CreatePage() {
                         whileTap={{ scale: 0.97 }}
                         onClick={() => {
                           setSelectedArtist(artist);
+                          setBgImage(artist.works[0].image);
                           const d = MASTER_DIALOGUES[artist.id];
                           if (d) setDialogueMsg(d.greetings[Math.floor(Math.random() * d.greetings.length)]);
                         }}
