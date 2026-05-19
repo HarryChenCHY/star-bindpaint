@@ -168,26 +168,43 @@ export default function CreatePage() {
                         whileTap={{ scale: 0.97 }}
                         onClick={() => {
                           setSelectedArtist(artist);
-                          // 随机选一句招呼语
                           const d = MASTER_DIALOGUES[artist.id];
                           if (d) setDialogueMsg(d.greetings[Math.floor(Math.random() * d.greetings.length)]);
                         }}
-                        className="p-5 rounded-[1.5rem] text-left transition-all"
-                        style={{ border: '2px solid #1A1A1A', background: 'white' }}
+                        className="rounded-[1.5rem] overflow-hidden text-left transition-all relative"
+                        style={{ border: '2px solid #1A1A1A', minHeight: '180px' }}
                       >
-                        <div className="w-10 h-10 rounded-xl mb-3 flex items-center justify-center"
-                          style={{ background: artist.color }}>
-                          <span className="text-white text-lg font-bold">{artist.name[0]}</span>
+                        {/* 底图：第一张画作 */}
+                        <div className="absolute inset-0">
+                          <img
+                            src={artist.works[0].image}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)' }} />
                         </div>
-                        <h3 style={{ fontWeight: 900, fontSize: '1.1rem', color: '#1A1A1A', letterSpacing: '-0.02em' }}>
-                          {artist.name}
-                        </h3>
-                        <p style={{ fontSize: '0.72rem', color: '#AAA', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: '2px' }}>
-                          {artist.nameEn}
-                        </p>
-                        <p style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600, marginTop: '6px', lineHeight: 1.4 }}>
-                          {artist.style} · {artist.period}
-                        </p>
+
+                        {/* 内容 */}
+                        <div className="relative p-4 flex flex-col justify-end h-full" style={{ minHeight: '180px' }}>
+                          {/* 头像 */}
+                          <div className="absolute top-3 right-3 w-12 h-12 rounded-full overflow-hidden" style={{ border: '2px solid white', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+                            <img
+                              src={`/master/${artist.id}/image.png`}
+                              alt={artist.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+
+                          <h3 style={{ fontWeight: 900, fontSize: '1.2rem', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+                            {artist.name}
+                          </h3>
+                          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginTop: '2px' }}>
+                            {artist.nameEn}
+                          </p>
+                          <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginTop: '4px' }}>
+                            {artist.style} · {artist.period}
+                          </p>
+                        </div>
                       </motion.button>
                     ))}
                   </div>

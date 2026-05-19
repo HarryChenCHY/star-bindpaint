@@ -52,8 +52,8 @@ export default function HomePage() {
               智愈
             </h1>
 
-            <p className="mt-6 mb-10" style={{ fontSize: '1.1rem', color: '#666666', fontWeight: 600, lineHeight: 1.6, letterSpacing: '-0.01em', maxWidth: '380px' }}>
-              AI 辅助油画教育普惠系统，让每个孩子都能用画笔将内心的孤岛连接成星海
+            <p className="mt-6 mb-10" style={{ fontSize: '1.1rem', color: '#666666', fontWeight: 600, lineHeight: 1.6, letterSpacing: '-0.01em', maxWidth: '400px' }}>
+              临摹莫奈、梵高、高更等大师经典画作，AI 陪你一笔一笔完成创作，在艺术中感受疗愈
             </p>
 
             <div className="flex gap-3 flex-wrap">
@@ -101,10 +101,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto w-full">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12">
             <p style={{ fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.12em', color: '#888888', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-              三种创作模式
+              核心体验
             </p>
             <h2 style={{ fontSize: 'clamp(2.2rem, 5vw, 3.5rem)', color: '#1A1A1A', textTransform: 'uppercase' }}>
-              选择<span style={{ color: '#F302C9' }}>你的</span><br />创作方式
+              三种<span style={{ color: '#F302C9' }}>疗愈</span><br />模式
             </h2>
           </motion.div>
 
@@ -113,26 +113,26 @@ export default function HomePage() {
               {
                 bg: '#F9B801',
                 char: <StarChar size={100} />,
-                title: '跟画模式',
-                desc: 'FOLLOW MODE',
-                body: 'Starry 精灵引导你逐笔作画，AI 实时判定并给予鼓励反馈',
-                tag: '推荐新手',
+                title: '陪画模式',
+                desc: 'COMPANION MODE',
+                body: '你画1笔，Starry帮你补50笔。跟着大师的笔触，轻松完成一幅油画',
+                tag: '推荐',
               },
               {
                 bg: '#F302C9',
                 char: <FlowerChar size={90} />,
-                title: '自动模式',
-                desc: 'AUTO MODE',
-                body: '观看 AI 逐笔重建油画的全过程，感受视觉魔法',
-                tag: '观看欣赏',
+                title: '共同注意',
+                desc: 'SHARED ATTENTION',
+                body: 'AI 边画边问你问题："这是什么颜色？" 一起观察、一起学习',
+                tag: '互动学习',
               },
               {
                 bg: '#7DC353',
                 char: <BlobChar size={85} />,
-                title: '自由模式',
-                desc: 'FREE MODE',
-                body: '自由发挥创意，画笔精灵在旁陪伴鼓励，无压力享受创作',
-                tag: '随心所欲',
+                title: '自由表达',
+                desc: 'FREE EXPRESSION',
+                body: '选一个主题，用颜色画出心情。没有对错，画笔精灵在旁温暖陪伴',
+                tag: '情绪表达',
               },
             ].map((item, i) => (
               <motion.div
@@ -213,16 +213,17 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto w-full">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
             <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)', color: '#1A1A1A', textTransform: 'uppercase' }}>
-              四步<span style={{ color: '#7DC353' }}>完成</span>创作
+              五步<span style={{ color: '#7DC353' }}>完成</span>疗愈
             </h2>
           </motion.div>
 
           <div className="flex items-start justify-center gap-2 md:gap-4 flex-wrap">
             {[
-              { num: '01', icon: '📷', label: '上传图片', desc: '选择想画的照片', color: '#F9B801' },
-              { num: '02', icon: '🧠', label: 'AI 拆解', desc: 'ETF 分析+笔触规划', color: '#F302C9' },
-              { num: '03', icon: '✏️', label: '交互作画', desc: '精灵引导逐笔创作', color: '#7DC353' },
-              { num: '04', icon: '🖼️', label: '作品完成', desc: '保存导出分享', color: '#7A51EC' },
+              { num: '01', icon: '😊', label: '选心情', desc: '告诉我今天感觉怎样', color: '#F9B801' },
+              { num: '02', icon: '🎨', label: '选大师', desc: '莫奈/梵高/高更...', color: '#F302C9' },
+              { num: '03', icon: '✏️', label: '陪画创作', desc: '你画1笔 AI补50笔', color: '#7DC353' },
+              { num: '04', icon: '😌', label: '选心情', desc: '画完后感觉变了吗', color: '#7BA7CC' },
+              { num: '05', icon: '📋', label: '观察报告', desc: 'AI生成疗愈记录', color: '#7A51EC' },
             ].map((step, i) => (
               <div key={i} className="flex items-center gap-2 md:gap-4">
                 <motion.div
@@ -240,7 +241,7 @@ export default function HomePage() {
                   <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.02em' }}>{step.label}</span>
                   <span style={{ fontSize: '0.75rem', color: '#888888', fontWeight: 600, textAlign: 'center' }}>{step.desc}</span>
                 </motion.div>
-                {i < 3 && <span style={{ color: '#DDDDDD', fontSize: '1.5rem', fontWeight: 900, marginBottom: '2.5rem' }} className="hidden md:block">→</span>}
+                {i < 4 && <span style={{ color: '#DDDDDD', fontSize: '1.5rem', fontWeight: 900, marginBottom: '2.5rem' }} className="hidden md:block">→</span>}
               </div>
             ))}
           </div>
