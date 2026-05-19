@@ -19,7 +19,7 @@ export default function HomePage() {
           <button onClick={() => router.push('/gallery')} className="btn-black" style={{ padding: '0.55em 1.4em', fontSize: '0.9rem' }}>
             我的画廊
           </button>
-          <button onClick={() => router.push('/create')} className="btn-purple" style={{ padding: '0.55em 1.4em', fontSize: '0.9rem' }}>
+          <button onClick={() => router.push('/onboard')} className="btn-purple" style={{ padding: '0.55em 1.4em', fontSize: '0.9rem' }}>
             开始创作
           </button>
         </div>
@@ -57,7 +57,7 @@ export default function HomePage() {
             </p>
 
             <div className="flex gap-3 flex-wrap">
-              <button onClick={() => router.push('/create')} className="btn-black" style={{ fontSize: '1.05rem', paddingLeft: '2.2rem', paddingRight: '2.2rem' }}>
+              <button onClick={() => router.push('/onboard')} className="btn-black" style={{ fontSize: '1.05rem', paddingLeft: '2.2rem', paddingRight: '2.2rem' }}>
                 开始创作
               </button>
               <button onClick={() => router.push('/intro')} className="btn-purple" style={{ fontSize: '1.05rem' }}>
@@ -246,7 +246,7 @@ export default function HomePage() {
           </div>
 
           <div className="flex justify-center mt-12">
-            <button onClick={() => router.push('/create')} className="btn-black" style={{ fontSize: '1.05rem', paddingLeft: '3rem', paddingRight: '3rem', paddingTop: '1em', paddingBottom: '1em' }}>
+            <button onClick={() => router.push('/onboard')} className="btn-black" style={{ fontSize: '1.05rem', paddingLeft: '3rem', paddingRight: '3rem', paddingTop: '1em', paddingBottom: '1em' }}>
               立即体验
             </button>
           </div>

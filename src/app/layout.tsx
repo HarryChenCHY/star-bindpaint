@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AppProvider } from "@/contexts/AppContext";
 
 export const metadata: Metadata = {
   title: "星绘智愈 - AI 辅助油画创作",
@@ -14,9 +15,11 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-white">
-        <main className="flex-1 flex flex-col">
-          {children}
-        </main>
+        <AppProvider>
+          <main className="flex-1 flex flex-col">
+            {children}
+          </main>
+        </AppProvider>
       </body>
     </html>
   );

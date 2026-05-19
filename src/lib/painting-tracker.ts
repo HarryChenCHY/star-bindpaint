@@ -54,6 +54,14 @@ export interface PaintingSession {
   guideSubMode: 'assist' | 'real';
   /** 笔触密度参数 */
   roughness: number;
+  /** 情绪前测（画前） */
+  emotionBefore: string;
+  /** 情绪后测（画后） */
+  emotionAfter: string;
+  /** 平静协议触发次数 */
+  calmTriggered: number;
+  /** 共同注意问答记录 */
+  sharedAttentionResponses: { question: string; answer: string; correct: boolean }[];
   /** Session 开始时间 */
   startTime: number;
   /** Session 结束时间（点击"完成"时写入） */
@@ -94,6 +102,10 @@ export class PaintingTracker {
       mode: 'follow',
       guideSubMode: 'assist',
       roughness: 2,
+      emotionBefore: '',
+      emotionAfter: '',
+      calmTriggered: 0,
+      sharedAttentionResponses: [],
       startTime: 0,
       endTime: 0,
       totalStrokes: 0,
@@ -118,6 +130,26 @@ export class PaintingTracker {
   setCustomUpload() {
     this.session.masterwork = null;
     this.session.isCustomUpload = true;
+  }
+
+  /** 设置情绪前测 */
+  setEmotionBefore(emotion: string) {
+    this.session.emotionBefore = emotion;
+  }
+
+  /** 设置情绪后测 */
+  setEmotionAfter(emotion: string) {
+    this.session.emotionAfter = emotion;
+  }
+
+  /** 记录平静协议触发 */
+  recordCalmTriggered() {
+    this.session.calmTriggered++;
+  }
+
+  /** 记录共同注意问答 */
+  recordSharedAttention(question: string, answer: string, correct: boolean) {
+    this.session.sharedAttentionResponses.push({ question, answer, correct });
   }
 
   /** 设置情绪/色调选择 */
@@ -369,15 +401,25 @@ export class PaintingTracker {
       ? colors.map(c => `${c.color}(${c.percentage}%)`).join('、')
       : '未记录';
 
+    const emotionMap: Record<string, string> = { happy: '开心', calm: '平静', anxious: '紧张', sad: '难过' };
+    const emotionBeforeStr = emotionMap[s.emotionBefore] || s.emotionBefore || '未选择';
+    const emotionAfterStr = emotionMap[s.emotionAfter] || s.emotionAfter || '未选择';
+    const calmInfo = s.calmTriggered > 0 ? `，平静协议触发 ${s.calmTriggered} 次` : '';
+    const attentionInfo = s.sharedAttentionResponses.length > 0
+      ? `\n【共同注意】回答了 ${s.sharedAttentionResponses.length} 个问题，正确率 ${Math.round(s.sharedAttentionResponses.filter(r => r.correct).length / s.sharedAttentionResponses.length * 100)}%`
+      : '';
+
     return `你是一位温和专业的儿童艺术治疗观察员。以下是一位儿童今天的绘画过程数据。请基于数据写一份简短的观察记录。
 
 要求：
 - 用温暖、非诊断性的语言
-- 关注：色彩偏好、专注区域、笔触节奏、情绪状态的可能线索
+- 关注：情绪变化趋势、色彩偏好、专注区域、笔触节奏、参与度
 - 不使用任何医学/心理学诊断术语
 - 以"观察"和"发现"的口吻，不下定论
 - 输出 3-5 句话的观察段落 + 一个简短的"今日关键词"（1-3个词）
+- 如果情绪前后有变化，特别关注并描述这个变化
 
+【情绪状态】画前：${emotionBeforeStr} → 画后：${emotionAfterStr}${calmInfo}
 【作品选择】${workInfo}${moodInfo}
 【作画模式】${s.mode === 'follow' ? '跟画模式' : s.mode === 'auto' ? '自动观看' : '自由创作'}（${s.guideSubMode === 'assist' ? '辅助' : '真实'}）
 【时间数据】总用时 ${duration} 分钟，完成 ${completion}% 笔触（共 ${s.totalStrokes} 笔，手动 ${s.completedStrokes} 笔，跳过 ${s.skippedStrokes} 笔，AI辅助 ${s.batchedStrokes} 笔）
@@ -385,7 +427,7 @@ export class PaintingTracker {
 【匹配度】平均匹配分数 ${(avgScore * 100).toFixed(0)}%
 【专注区域】停留最久的区域：${focusRegion}
 【跳过区域】${skippedRegion}
-【色彩偏好】主要使用：${colorInfo}
+【色彩偏好】主要使用：${colorInfo}${attentionInfo}
 【附图】见附图（用户最终完成的画作）`;
   }
 
