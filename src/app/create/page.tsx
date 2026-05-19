@@ -94,6 +94,17 @@ export default function CreatePage() {
   const roughnessLabels = ['精细 ~800笔', '适中 ~300笔', '写意 ~100笔', '粗犷 ~50笔'];
   const ready = imageLoaded;
 
+  // 情绪色调对应的 CSS 滤镜（实时预览用）
+  function getMoodFilter(mood: string): string {
+    switch (mood) {
+      case 'warm': return 'sepia(0.2) saturate(1.2) hue-rotate(-10deg)';
+      case 'calm': return 'saturate(0.8) brightness(1.05) hue-rotate(15deg)';
+      case 'vivid': return 'saturate(1.5)';
+      case 'dreamy': return 'saturate(0.7) brightness(1.15) hue-rotate(20deg)';
+      default: return 'none';
+    }
+  }
+
   return (
     <div className="flex-1 flex flex-col bg-white min-h-screen">
       {/* Header */}
@@ -263,7 +274,12 @@ export default function CreatePage() {
                   />
 
                   <div className="rounded-[1.5rem] overflow-hidden max-w-sm w-full" style={{ border: '2px solid #1A1A1A' }}>
-                    <img src={selectedWork.image} alt={selectedWork.title} className="w-full" />
+                    <img
+                      src={selectedWork.image}
+                      alt={selectedWork.title}
+                      className="w-full transition-all duration-500"
+                      style={{ filter: getMoodFilter(selectedMood) }}
+                    />
                     <div className="p-4 bg-white">
                       <h3 style={{ fontWeight: 900, fontSize: '1.2rem', color: '#1A1A1A' }}>
                         {selectedArtist?.name} ·《{selectedWork.title}》
