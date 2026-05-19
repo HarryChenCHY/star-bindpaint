@@ -145,17 +145,26 @@ export default function PaintPage() {
           paintCanvas.drawAIStrokeOnBase(currentGuideStroke);
         }
 
-        // 陪画模式：用户画完1笔后，AI自动补 N 笔
+        // 陪画模式：用户画完1笔后，AI 逐笔动画补 N 笔
         if (fillMode === 'companion' && autoFillRatio > 0 && paintCanvas) {
+          // 先短暂暂停，让用户看到自己的笔触
           setTimeout(() => {
-            for (let i = 0; i < autoFillRatio; i++) {
+            let drawn = 0;
+            const drawNext = () => {
+              if (drawn >= autoFillRatio) {
+                // 补笔完毕，1秒后再刷新引导线（"轮到你了"）
+                tracker.strokesBatched(guideState.currentIndex + 1, autoFillRatio);
+                return;
+              }
               const nextStroke = guide.getCurrentStroke();
-              if (!nextStroke) break;
+              if (!nextStroke) return;
               paintCanvas.drawAIStrokeOnBase(nextStroke);
               guide.skip();
-            }
-            tracker.strokesBatched(guideState.currentIndex + 1, autoFillRatio);
-          }, 300); // 短暂延迟让用户看到自己的笔触先
+              drawn++;
+              setTimeout(drawNext, 60); // 每笔间隔60ms，有动画感
+            };
+            drawNext();
+          }, 500);
         }
       }
     } else if (mode === 'free') {

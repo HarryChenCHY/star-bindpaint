@@ -729,15 +729,15 @@ export function drawGuideStroke(ctx: CanvasRenderingContext2D, stroke: StrokeDra
   const pts = stroke.points;
   if (pts.length < 2) return;
 
-  // Glow layer
+  // 外发光层（更亮更宽，确保可见）
   ctx.save();
-  ctx.shadowColor = 'rgba(245, 158, 11, 0.6)';
-  ctx.shadowBlur = 12;
-  ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
-  ctx.lineWidth = Math.max(2, stroke.width + 4);
+  ctx.shadowColor = 'rgba(122, 81, 236, 0.8)';
+  ctx.shadowBlur = 16;
+  ctx.strokeStyle = 'rgba(122, 81, 236, 0.5)';
+  ctx.lineWidth = Math.max(4, stroke.width + 6);
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  ctx.setLineDash([8, 6]);
+  ctx.setLineDash([10, 6]);
 
   ctx.beginPath();
   ctx.moveTo(pts[0].x, pts[0].y);
@@ -757,6 +757,22 @@ export function drawGuideStroke(ctx: CanvasRenderingContext2D, stroke: StrokeDra
     }
   }
   ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 起点标记（绿色圆点）
+  ctx.beginPath();
+  ctx.arc(pts[0].x, pts[0].y, 8, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(16, 185, 129, 0.9)';
+  ctx.shadowColor = 'rgba(16, 185, 129, 0.6)';
+  ctx.shadowBlur = 10;
+  ctx.fill();
+
+  // 终点标记（红色小方块）
+  const end = pts[pts.length - 1];
+  ctx.shadowColor = 'rgba(239, 68, 68, 0.5)';
+  ctx.fillStyle = 'rgba(239, 68, 68, 0.8)';
+  ctx.fillRect(end.x - 5, end.y - 5, 10, 10);
+
   ctx.restore();
 }
 
