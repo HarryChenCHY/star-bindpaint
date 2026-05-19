@@ -22,7 +22,7 @@ export default function PaintPage() {
   const [brushWidth, setBrushWidth] = useState(4);
   const [autoSpeed, setAutoSpeed] = useState(30);
   const [roughness, setRoughness] = useState(2);
-  const [autoFillRatio, setAutoFillRatio] = useState(20); // 用户画1笔，AI自动补N笔
+  const [autoFillRatio, setAutoFillRatio] = useState(50); // 用户画1笔，AI自动补N笔
   const [fillMode, setFillMode] = useState<'companion' | 'precise'>('companion'); // companion=陪画 precise=精确逐笔
   const [strokes, setStrokes] = useState<StrokeDrawData[]>([]);
   const [currentGuideStroke, setCurrentGuideStroke] = useState<StrokeDrawData | null>(null);

@@ -142,7 +142,7 @@ export default function ToolBar({
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1A1A1A' }}>1:{autoFillRatio}</span>
                 </div>
                 <input
-                  type="range" min="5" max="50" step="5" value={autoFillRatio}
+                  type="range" min="20" max="200" step="10" value={autoFillRatio}
                   onChange={e => onAutoFillRatioChange(Number(e.target.value))}
                   className="w-full h-1.5 rounded-full appearance-none"
                   style={{ background: '#E5E5E5', accentColor: '#7A51EC' }}
