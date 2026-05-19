@@ -7,8 +7,13 @@ interface ToolBarProps {
   onGuideSubModeChange: (m: 'assist' | 'real') => void;
   autoSpeed: number;
   onAutoSpeedChange: (s: number) => void;
+  fillMode?: 'companion' | 'precise';
+  onFillModeChange?: (m: 'companion' | 'precise') => void;
+  autoFillRatio?: number;
+  onAutoFillRatioChange?: (n: number) => void;
   showSubMode?: boolean;
   showSpeed?: boolean;
+  showFillMode?: boolean;
   onReset?: () => void;
   onSkip?: () => void;
   onBatchDraw?: (count: number) => void;
@@ -34,8 +39,13 @@ export default function ToolBar({
   onGuideSubModeChange,
   autoSpeed,
   onAutoSpeedChange,
+  fillMode = 'companion',
+  onFillModeChange,
+  autoFillRatio = 20,
+  onAutoFillRatioChange,
   showSubMode = false,
   showSpeed = false,
+  showFillMode = false,
   onReset,
   onSkip,
   onBatchDraw,
@@ -84,6 +94,65 @@ export default function ToolBar({
             <p style={{ fontSize: '0.65rem', marginTop: '0.4rem', color: '#AAAAAA', fontWeight: 600 }}>
               {guideSubMode === 'assist' ? 'AI 笔触替换你的画迹' : '保留你的原始笔迹'}
             </p>
+          </div>
+        </>
+      )}
+
+      {/* 绘画节奏（陪画/精确） */}
+      {showFillMode && onFillModeChange && (
+        <>
+          <div style={divider} />
+          <div>
+            <label style={labelStyle}>绘画节奏</label>
+            <div className="flex gap-1 mt-2 p-0.5 rounded-xl" style={{ background: '#F5F5F5' }}>
+              <button
+                onClick={() => onFillModeChange('companion')}
+                className="flex-1 px-2 py-2 rounded-lg text-center transition-all"
+                style={{
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
+                  background: fillMode === 'companion' ? '#1A1A1A' : 'transparent',
+                  color: fillMode === 'companion' ? '#FFF' : '#888',
+                }}
+              >
+                陪画模式
+              </button>
+              <button
+                onClick={() => onFillModeChange('precise')}
+                className="flex-1 px-2 py-2 rounded-lg text-center transition-all"
+                style={{
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
+                  background: fillMode === 'precise' ? '#1A1A1A' : 'transparent',
+                  color: fillMode === 'precise' ? '#FFF' : '#888',
+                }}
+              >
+                逐笔模式
+              </button>
+            </div>
+            <p style={{ fontSize: '0.7rem', color: '#AAA', fontWeight: 600, marginTop: 4 }}>
+              {fillMode === 'companion'
+                ? `你画1笔 → Starry自动补${autoFillRatio}笔`
+                : '每一笔都由你亲自画'}
+            </p>
+            {fillMode === 'companion' && onAutoFillRatioChange && (
+              <div className="mt-2">
+                <div className="flex items-center justify-between mb-1">
+                  <span style={{ fontSize: '0.7rem', color: '#888', fontWeight: 600 }}>补笔数量</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1A1A1A' }}>1:{autoFillRatio}</span>
+                </div>
+                <input
+                  type="range" min="5" max="50" step="5" value={autoFillRatio}
+                  onChange={e => onAutoFillRatioChange(Number(e.target.value))}
+                  className="w-full h-1.5 rounded-full appearance-none"
+                  style={{ background: '#E5E5E5', accentColor: '#7A51EC' }}
+                />
+                <div className="flex justify-between">
+                  <span style={{ fontSize: '0.6rem', color: '#BBB', fontWeight: 600 }}>少补(慢)</span>
+                  <span style={{ fontSize: '0.6rem', color: '#BBB', fontWeight: 600 }}>多补(快)</span>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}

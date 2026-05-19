@@ -22,6 +22,8 @@ export default function PaintPage() {
   const [brushWidth, setBrushWidth] = useState(4);
   const [autoSpeed, setAutoSpeed] = useState(30);
   const [roughness, setRoughness] = useState(2);
+  const [autoFillRatio, setAutoFillRatio] = useState(20); // 用户画1笔，AI自动补N笔
+  const [fillMode, setFillMode] = useState<'companion' | 'precise'>('companion'); // companion=陪画 precise=精确逐笔
   const [strokes, setStrokes] = useState<StrokeDrawData[]>([]);
   const [currentGuideStroke, setCurrentGuideStroke] = useState<StrokeDrawData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -142,6 +144,19 @@ export default function PaintPage() {
           paintCanvas.clearUser();
           paintCanvas.drawAIStrokeOnBase(currentGuideStroke);
         }
+
+        // 陪画模式：用户画完1笔后，AI自动补 N 笔
+        if (fillMode === 'companion' && autoFillRatio > 0 && paintCanvas) {
+          setTimeout(() => {
+            for (let i = 0; i < autoFillRatio; i++) {
+              const nextStroke = guide.getCurrentStroke();
+              if (!nextStroke) break;
+              paintCanvas.drawAIStrokeOnBase(nextStroke);
+              guide.skip();
+            }
+            tracker.strokesBatched(guideState.currentIndex + 1, autoFillRatio);
+          }, 300); // 短暂延迟让用户看到自己的笔触先
+        }
       }
     } else if (mode === 'free') {
       // 自由模式也记录
@@ -151,7 +166,7 @@ export default function PaintPage() {
       tracker.strokeCompleted(tracker.getSession().strokes.length, '', center, score);
       guideRef.current.freeModeFeedback();
     }
-  }, [mode, currentGuideStroke]);
+  }, [mode, currentGuideStroke, fillMode, autoFillRatio]);
 
   const handleAutoProgress = useCallback((current: number, total: number) => {
     setProgress(current / total);
@@ -334,8 +349,13 @@ export default function PaintPage() {
             onGuideSubModeChange={setGuideSubMode}
             autoSpeed={autoSpeed}
             onAutoSpeedChange={setAutoSpeed}
+            fillMode={fillMode}
+            onFillModeChange={setFillMode}
+            autoFillRatio={autoFillRatio}
+            onAutoFillRatioChange={setAutoFillRatio}
             showSubMode={mode === 'follow'}
             showSpeed={mode === 'auto'}
+            showFillMode={mode === 'follow'}
             onReset={handleReset}
             onSkip={mode === 'follow' ? handleSkip : undefined}
             onBatchDraw={mode === 'follow' ? handleBatchDraw : undefined}
