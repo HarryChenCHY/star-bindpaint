@@ -63,11 +63,11 @@ export const MASTER_ARTISTS: MasterArtist[] = [
     color: '#E85D04',
     description: '逃离文明寻找原始之美，用大面积色块构建梦幻世界',
     works: [
-      { id: 'tahitian_women', title: '塔希提女人', titleEn: 'Tahitian Women on the Beach', year: '1891', image: '/masterworks/gauguin/tahitian_women.jpg' },
-      { id: 'yellow_christ', title: '塔希提的马', titleEn: 'Landscape with Horse', year: '1898', image: '/masterworks/gauguin/yellow_christ.jpg' },
-      { id: 'spirit_of_dead', title: '水果静物', titleEn: 'Still Life with Fruit', year: '1888', image: '/masterworks/gauguin/spirit_of_dead.jpg' },
-      { id: 'when_will_you_marry', title: '你何时嫁人', titleEn: 'When Will You Marry?', year: '1892', image: '/masterworks/gauguin/when_will_you_marry.jpg' },
-      { id: 'landscape_tahiti', title: '塔希提风景', titleEn: 'Landscape in Tahiti', year: '1893', image: '/masterworks/gauguin/landscape_tahiti.jpg' },
+      { id: 'breton_village', title: '布列塔尼村庄', titleEn: 'The Field of Derout-Lollichon', year: '1886', image: '/masterworks/gauguin/breton_village.jpg' },
+      { id: 'washerwomen_arles', title: '阿尔的洗衣妇', titleEn: 'Washerwomen at Arles', year: '1888', image: '/masterworks/gauguin/washerwomen_arles.jpg' },
+      { id: 'landscape_pouldu', title: '勒普尔杜的风景', titleEn: 'Landscape at Le Pouldu', year: '1890', image: '/masterworks/gauguin/landscape_pouldu.jpg' },
+      { id: 'flower_still_life', title: '花卉静物', titleEn: 'Still Life with Flowers', year: '1884', image: '/masterworks/gauguin/flower_still_life.jpg' },
+      { id: 'martinique', title: '马提尼克的来去', titleEn: 'Coming and Going, Martinique', year: '1887', image: '/masterworks/gauguin/martinique.jpg' },
     ],
   },
   {
