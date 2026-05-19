@@ -83,6 +83,13 @@ export default function OnboardPage() {
               onSelect={(e: Emotion) => { setEmotion(e); setTimeout(() => setStep('energy'), 400); }}
               label="今天感觉怎么样？"
             />
+            <button
+              onClick={() => setStep('energy')}
+              className="mt-6 mx-auto block"
+              style={{ color: '#BBB', fontWeight: 600, fontSize: '0.85rem' }}
+            >
+              不想选，直接开始 →
+            </button>
           </motion.div>
         )}
 
