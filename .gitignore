@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# internal plan docs (not for public repo)
+ASD_IMPROVEMENT_PLAN.md
+GPTimprovement.md
+PLAN_COMPARISON.md
+WECHAT_MINIPROGRAM.md
+docs/
