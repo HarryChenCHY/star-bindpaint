@@ -21,6 +21,7 @@ import { saveToGallery } from '@/lib/gallery-store';
 import { getTracker } from '@/lib/painting-tracker';
 import { EmotionDetector, EmotionLevel } from '@/lib/emotion-detector';
 import { generateAttentionQuestion, generateCalmPrompt } from '@/lib/feedback-engine';
+import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
 import { useAppSettings } from '@/contexts/AppContext';
 import { MiniStar } from '@/components/Characters';
 
@@ -57,6 +58,10 @@ export default function PaintPage() {
   const [showFreeThemes, setShowFreeThemes] = useState(true); // 自由模式初始显示主题选择
   const [caregiverState, setCaregiverState] = useState<'painting' | 'stuck' | 'completed' | 'resting'>('painting');
   const [userStrokeCount, setUserStrokeCount] = useState(0);
+
+  // 自由创作风格化
+  const [selectedStyle, setSelectedStyle] = useState<MasterStyleProfile | null>(null);
+  const [freeColor, setFreeColor] = useState<[number, number, number]>([0.1, 0.3, 0.7]);
 
   const guideRef = useRef<GuideSystem>(new GuideSystem());
   const emotionDetectorRef = useRef<EmotionDetector | null>(null);
@@ -96,6 +101,26 @@ export default function PaintPage() {
   }, [loading, showCalm, showPostEmotion]);
 
   useEffect(() => {
+    // 检查是否是自由创作模式（无需源图片）
+    const freeStyleId = sessionStorage.getItem('star-bindpaint-free-style');
+    if (freeStyleId) {
+      const style = MASTER_STYLES.find(s => s.id === freeStyleId) || MASTER_STYLES[1]; // 默认梵高
+      setSelectedStyle(style);
+      setMode('free');
+      setCanvasSize({ w: 512, h: 512 });
+      setStrokes([]);
+      setLoading(false);
+      setSpriteState('guiding');
+      setSpriteMessage(`自由创作 · ${style.name}风格 — 画出你想画的！`);
+
+      const tracker = getTracker();
+      tracker.setMode('free', 'assist');
+      tracker.setCanvasSize(512, 512);
+      tracker.setCustomUpload();
+      tracker.startSession(0);
+      return;
+    }
+
     const dataUrl = sessionStorage.getItem('star-bindpaint-source');
     if (!dataUrl) { router.push('/create'); return; }
 
@@ -480,6 +505,8 @@ export default function PaintPage() {
             guideSubMode={guideSubMode}
             brushWidth={brushWidth}
             autoSpeed={autoSpeed}
+            masterStyle={selectedStyle}
+            freeColor={freeColor}
             onUserStrokeDone={handleUserStrokeDone}
             onUserStrokeStart={() => {
               getTracker().strokeStart();
@@ -518,6 +545,70 @@ export default function PaintPage() {
 
           {/* Divider */}
           <div style={{ height: 2, background: '#E5E5E5' }} />
+
+          {/* 自由创作风格选择器 */}
+          {mode === 'free' && (
+            <div>
+              <label style={{ fontSize: '0.7rem', color: '#888', letterSpacing: '0.06em', textTransform: 'uppercase' as const, fontWeight: 700, display: 'block', marginBottom: '0.5rem' }}>
+                大师风格
+              </label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {MASTER_STYLES.map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => setSelectedStyle(s)}
+                    className="flex flex-col items-center gap-1 p-2 rounded-xl transition-all"
+                    style={{
+                      border: selectedStyle?.id === s.id ? `2px solid ${s.color}` : '1.5px solid #E5E5E5',
+                      background: selectedStyle?.id === s.id ? `${s.color}15` : 'white',
+                    }}
+                  >
+                    <div className="w-6 h-6 rounded-full" style={{ background: s.color }} />
+                    <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#1A1A1A' }}>{s.name}</span>
+                  </button>
+                ))}
+              </div>
+              {selectedStyle && (
+                <p style={{ fontSize: '0.65rem', color: '#AAA', fontWeight: 600, marginTop: 6 }}>
+                  {selectedStyle.description}
+                </p>
+              )}
+
+              {/* 调色板 */}
+              <label style={{ fontSize: '0.7rem', color: '#888', letterSpacing: '0.06em', textTransform: 'uppercase' as const, fontWeight: 700, display: 'block', marginTop: '12px', marginBottom: '0.4rem' }}>
+                画笔颜色
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  { color: [0.9, 0.2, 0.2] as [number, number, number], label: '红' },
+                  { color: [0.95, 0.6, 0.1] as [number, number, number], label: '橙' },
+                  { color: [0.95, 0.85, 0.1] as [number, number, number], label: '黄' },
+                  { color: [0.2, 0.7, 0.3] as [number, number, number], label: '绿' },
+                  { color: [0.1, 0.3, 0.7] as [number, number, number], label: '蓝' },
+                  { color: [0.5, 0.2, 0.8] as [number, number, number], label: '紫' },
+                  { color: [0.85, 0.4, 0.6] as [number, number, number], label: '粉' },
+                  { color: [0.1, 0.1, 0.1] as [number, number, number], label: '黑' },
+                  { color: [0.95, 0.93, 0.88] as [number, number, number], label: '白' },
+                ].map(c => (
+                  <button
+                    key={c.label}
+                    onClick={() => setFreeColor(c.color)}
+                    className="w-7 h-7 rounded-full transition-all"
+                    title={c.label}
+                    style={{
+                      background: `rgb(${Math.round(c.color[0]*255)},${Math.round(c.color[1]*255)},${Math.round(c.color[2]*255)})`,
+                      border: freeColor[0] === c.color[0] && freeColor[1] === c.color[1] && freeColor[2] === c.color[2]
+                        ? '3px solid #1A1A1A'
+                        : '2px solid #E5E5E5',
+                      transform: freeColor[0] === c.color[0] && freeColor[1] === c.color[1] && freeColor[2] === c.color[2]
+                        ? 'scale(1.15)' : 'scale(1)',
+                    }}
+                  />
+                ))}
+              </div>
+              <div style={{ height: 2, background: '#E5E5E5', margin: '12px 0' }} />
+            </div>
+          )}
 
           {/* Tools */}
           <ToolBar

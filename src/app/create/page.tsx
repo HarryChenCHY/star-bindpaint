@@ -8,9 +8,10 @@ import ImageUploader from '@/components/ImageUploader';
 import { MiniStar } from '@/components/Characters';
 import { MASTER_ARTISTS, MOOD_OPTIONS, MasterArtist, Masterwork } from '@/lib/masterworks';
 import { MASTER_DIALOGUES } from '@/lib/master-dialogues';
+import { MASTER_STYLES } from '@/lib/style-transfer';
 import MasterBubble from '@/components/MasterBubble';
 
-type SourceMode = 'masters' | 'upload';
+type SourceMode = 'masters' | 'upload' | 'free';
 
 export default function CreatePage() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function CreatePage() {
   const [roughness, setRoughness] = useState(2);
   const [dialogueMsg, setDialogueMsg] = useState('');
   const [bgImage, setBgImage] = useState('/masterworks/monet/water_lilies_1918.jpg');
+  const [selectedFreeStyle, setSelectedFreeStyle] = useState('vangogh');
 
   // 选择大师作品后加载图片到 sessionStorage
   const handleSelectWork = (artist: MasterArtist, work: Masterwork) => {
@@ -90,6 +92,13 @@ export default function CreatePage() {
   const handleStart = () => {
     sessionStorage.setItem('star-bindpaint-roughness', String(roughness));
     sessionStorage.setItem('star-bindpaint-mood', selectedMood);
+    sessionStorage.removeItem('star-bindpaint-free-style');
+    router.push('/paint');
+  };
+
+  const handleStartFree = () => {
+    sessionStorage.setItem('star-bindpaint-free-style', selectedFreeStyle);
+    sessionStorage.removeItem('star-bindpaint-source');
     router.push('/paint');
   };
 
@@ -130,7 +139,7 @@ export default function CreatePage() {
       <div className="relative z-10 flex-1 overflow-y-auto px-6 py-8 max-w-4xl mx-auto w-full">
 
         {/* Source mode tabs */}
-        <div className="flex gap-2 mb-8 justify-center">
+        <div className="flex gap-2 mb-8 justify-center flex-wrap">
           <button
             onClick={() => { setSourceMode('masters'); setImageLoaded(false); setSelectedWork(null); }}
             className="px-5 py-2.5 rounded-full text-sm transition-all"
@@ -144,6 +153,18 @@ export default function CreatePage() {
             大师作品库
           </button>
           <button
+            onClick={() => { setSourceMode('free'); setImageLoaded(false); setSelectedWork(null); }}
+            className="px-5 py-2.5 rounded-full text-sm transition-all"
+            style={{
+              fontWeight: 800,
+              background: sourceMode === 'free' ? '#7A51EC' : '#F5F5F5',
+              color: sourceMode === 'free' ? '#FFFFFF' : '#1A1A1A',
+              border: `2px solid ${sourceMode === 'free' ? '#7A51EC' : '#1A1A1A'}`,
+            }}
+          >
+            自由创作
+          </button>
+          <button
             onClick={() => { setSourceMode('upload'); setImageLoaded(false); setSelectedWork(null); }}
             className="px-5 py-2.5 rounded-full text-sm transition-all"
             style={{
@@ -153,7 +174,7 @@ export default function CreatePage() {
               border: '2px solid #1A1A1A',
             }}
           >
-            上传我的图片
+            上传图片
           </button>
         </div>
 
@@ -328,6 +349,51 @@ export default function CreatePage() {
                 上传你自己的图片，AI 将分析并生成笔触
               </p>
               <ImageUploader onImageLoaded={handleImageUploaded} />
+            </motion.div>
+          )}
+
+          {/* ===== 自由创作模式 ===== */}
+          {sourceMode === 'free' && (
+            <motion.div key="free" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+              className="flex flex-col items-center gap-6">
+              <div className="text-center">
+                <h3 style={{ fontWeight: 900, fontSize: '1.3rem', color: '#1A1A1A', marginBottom: 8 }}>
+                  自由画，AI 实时变成油画
+                </h3>
+                <p style={{ color: '#888', fontWeight: 600, fontSize: '0.9rem', maxWidth: 360 }}>
+                  画任何你想画的内容，每一笔都会被实时转化为大师的油画风格
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full max-w-lg">
+                {MASTER_STYLES.map(style => (
+                  <button
+                    key={style.id}
+                    onClick={() => setSelectedFreeStyle(style.id)}
+                    className="rounded-[1.25rem] p-4 text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    style={{
+                      border: selectedFreeStyle === style.id ? `3px solid ${style.color}` : '2px solid #E5E5E5',
+                      background: selectedFreeStyle === style.id ? `${style.color}12` : 'white',
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full" style={{ background: style.color }} />
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1A1A1A' }}>{style.name}</div>
+                        <div style={{ fontSize: '0.6rem', color: '#AAA', fontWeight: 600, textTransform: 'uppercase' }}>{style.nameEn}</div>
+                      </div>
+                    </div>
+                    <p style={{ fontSize: '0.75rem', color: '#888', fontWeight: 600, lineHeight: 1.4 }}>
+                      {style.description}
+                    </p>
+                  </button>
+                ))}
+              </div>
+
+              <button onClick={handleStartFree} className="btn-purple mt-4"
+                style={{ fontSize: '1.1rem', padding: '1em 3em' }}>
+                开始自由创作 →
+              </button>
             </motion.div>
           )}
         </AnimatePresence>

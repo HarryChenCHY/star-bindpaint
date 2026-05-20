@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { DrawingEngine, matchScore } from '@/lib/drawing-engine';
 import { drawStroke, drawGuideStroke, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
+import { MasterStyleProfile, stylizeStroke, drawStylizedStroke } from '@/lib/style-transfer';
 
 export type PaintMode = 'follow' | 'auto' | 'free';
 
@@ -16,6 +17,8 @@ interface PaintCanvasProps {
   brushColor?: string;
   brushWidth?: number;
   autoSpeed?: number;
+  masterStyle?: MasterStyleProfile | null;
+  freeColor?: [number, number, number];
   onUserStrokeDone?: (userPoints: Vec2[], score: number) => void;
   onUserStrokeStart?: () => void;
   onAutoProgress?: (current: number, total: number) => void;
@@ -33,6 +36,8 @@ export default function PaintCanvas({
   brushColor,
   brushWidth = 4,
   autoSpeed = 30,
+  masterStyle,
+  freeColor,
   onUserStrokeDone,
   onUserStrokeStart,
   onAutoProgress,
@@ -62,6 +67,25 @@ export default function PaintCanvas({
         onUserStrokeDone(userPts, score);
       } else if (mode === 'free' && onUserStrokeDone) {
         const userPts: Vec2[] = stroke.points.map(p => ({ x: p.x, y: p.y }));
+
+        // 风格化：如果有 masterStyle，将笔迹转换为油画风格
+        if (masterStyle) {
+          const pressures = stroke.points.map(p => p.pressure);
+          const color: [number, number, number] = freeColor || [0.2, 0.2, 0.2];
+          const segments = stylizeStroke(userPts, pressures, color, masterStyle);
+
+          // 清除用户层的原始笔迹
+          const userCtx = userCanvas.getContext('2d');
+          if (userCtx) userCtx.clearRect(0, 0, width, height);
+
+          // 渲染风格化笔触到基础层
+          const baseCanvas = baseCanvasRef.current;
+          if (baseCanvas) {
+            const baseCtx = baseCanvas.getContext('2d');
+            if (baseCtx) drawStylizedStroke(baseCtx, segments);
+          }
+        }
+
         onUserStrokeDone(userPts, 1);
       }
     });
@@ -72,7 +96,7 @@ export default function PaintCanvas({
       engine.destroy();
       drawingEngineRef.current = null;
     };
-  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart]);
+  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, width, height]);
 
   // 更新画笔颜色/宽度
   useEffect(() => {
