@@ -505,10 +505,32 @@ export default function PaintPage() {
     }
   };
 
-  const handleSDSave = (imageBase64: string) => {
+  // 压缩图片用于 localStorage 存储（SD 返回的图太大）
+  const compressImage = (dataUrl: string, maxSize = 512, quality = 0.75): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (Math.max(w, h) > maxSize) {
+          const scale = maxSize / Math.max(w, h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = dataUrl;
+    });
+  };
+
+  const handleSDSave = async (imageBase64: string) => {
     try {
+      const compressed = await compressImage(imageBase64);
       saveToGallery({
-        imageDataUrl: imageBase64,
+        imageDataUrl: compressed,
         title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
         strokeCount: 0,
         mode: 'free',
@@ -516,17 +538,18 @@ export default function PaintPage() {
       setSpriteMessage('油画版已放进画廊！');
       setSpriteState('cheering');
     } catch (err) {
-      setSpriteMessage('保存失败，图片可能太大了');
+      setSpriteMessage('保存失败，请重试');
     }
     setSdResult(null);
   };
 
   // SD 渲染后 → 保存油画版 + 进入心理分析流程（用原始简笔画做分析）
-  const handleSDFinish = (oilImageBase64: string) => {
-    // 保存油画版到画廊
+  const handleSDFinish = async (oilImageBase64: string) => {
+    // 保存油画版到画廊（压缩后）
     try {
+      const compressed = await compressImage(oilImageBase64);
       saveToGallery({
-        imageDataUrl: oilImageBase64,
+        imageDataUrl: compressed,
         title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
         strokeCount: 0,
         mode: 'free',
