@@ -1,10 +1,10 @@
 /**
- * gallery-store.ts — localStorage 画廊存储
+ * gallery-store.ts — 画廊存储（支持 OSS URL 或 base64 降级）
  */
 
 export interface GalleryItem {
   id: string;
-  imageDataUrl: string;  // Canvas toDataURL
+  imageDataUrl: string;  // OSS URL 或 base64 data URL
   title: string;
   date: string;          // ISO date string
   strokeCount: number;
@@ -31,10 +31,48 @@ export function saveToGallery(item: Omit<GalleryItem, 'id' | 'date'>): GalleryIt
     date: new Date().toISOString(),
   };
   gallery.unshift(newItem);
-  // 最多保存 20 张
-  const trimmed = gallery.slice(0, 20);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+  // 最多保存 50 张（URL 模式下每条只占几百字节）
+  const trimmed = gallery.slice(0, 50);
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+  } catch {
+    // localStorage 满了，删一半旧的再试
+    const half = trimmed.slice(0, Math.floor(trimmed.length / 2));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(half));
+  }
   return newItem;
+}
+
+/**
+ * 上传图片到 OSS 并保存到画廊（推荐方式）
+ * 如果 OSS 未配置会自动降级为 base64 存储
+ */
+export async function uploadAndSaveToGallery(
+  imageBase64: string,
+  title: string,
+  strokeCount: number,
+  mode: string,
+): Promise<GalleryItem> {
+  let imageUrl = imageBase64;
+
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64 }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.url && !data.fallback) {
+        imageUrl = data.url; // 用 OSS URL（几十字节）
+      }
+    }
+  } catch {
+    // OSS 上传失败，降级用 base64
+  }
+
+  return saveToGallery({ imageDataUrl: imageUrl, title, strokeCount, mode });
 }
 
 export function deleteFromGallery(id: string) {

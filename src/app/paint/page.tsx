@@ -18,7 +18,7 @@ import SDRenderResult from '@/components/SDRenderResult';
 import { decomposeImage, imageSourceFromImage, StrokeDrawData, drawStroke, Vec2 } from '@/lib/stroke-engine';
 import { matchScore } from '@/lib/drawing-engine';
 import { GuideSystem } from '@/lib/guide-system';
-import { saveToGallery } from '@/lib/gallery-store';
+import { saveToGallery, uploadAndSaveToGallery } from '@/lib/gallery-store';
 import { getTracker } from '@/lib/painting-tracker';
 import { EmotionDetector, EmotionLevel } from '@/lib/emotion-detector';
 import { generateAttentionQuestion, generateCalmPrompt } from '@/lib/feedback-engine';
@@ -534,30 +534,12 @@ export default function PaintPage() {
 
   const handleSDSave = async (imageBase64: string) => {
     try {
-      const compressed = await compressImage(imageBase64);
-      // 如果 localStorage 满了，先清理旧数据
-      try {
-        saveToGallery({
-          imageDataUrl: compressed,
-          title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
-          strokeCount: 0,
-          mode: 'free',
-        });
-      } catch {
-        // localStorage 满了，清理最旧的几张再试
-        const gallery = JSON.parse(localStorage.getItem('star-bindpaint-gallery') || '[]');
-        if (gallery.length > 5) {
-          localStorage.setItem('star-bindpaint-gallery', JSON.stringify(gallery.slice(0, 5)));
-        } else {
-          localStorage.removeItem('star-bindpaint-gallery');
-        }
-        saveToGallery({
-          imageDataUrl: compressed,
-          title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
-          strokeCount: 0,
-          mode: 'free',
-        });
-      }
+      await uploadAndSaveToGallery(
+        imageBase64,
+        `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
+        0,
+        'free'
+      );
       setSpriteMessage('油画版已放进画廊！');
       setSpriteState('cheering');
     } catch (err) {
@@ -569,20 +551,14 @@ export default function PaintPage() {
 
   // SD 渲染后 → 保存油画版 + 进入心理分析流程（用原始简笔画做分析）
   const handleSDFinish = async (oilImageBase64: string) => {
-    // 保存油画版到画廊（压缩后）
+    // 保存油画版到画廊
     try {
-      const compressed = await compressImage(oilImageBase64);
-      try {
-        saveToGallery({
-          imageDataUrl: compressed,
-          title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
-          strokeCount: 0,
-          mode: 'free',
-        });
-      } catch {
-        // 存储满了就清理
-        localStorage.removeItem('star-bindpaint-gallery');
-      }
+      await uploadAndSaveToGallery(
+        oilImageBase64,
+        `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
+        0,
+        'free'
+      );
     } catch {}
 
     setSdResult(null);
