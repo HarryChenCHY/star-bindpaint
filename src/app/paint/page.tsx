@@ -438,13 +438,13 @@ export default function PaintPage() {
         style={{ borderBottom: '2px solid #1A1A1A' }}>
         <button
           onClick={() => router.push('/')}
-          className="flex items-center gap-1.5 text-sm font-bold transition-colors"
-          style={{ color: '#1A1A1A' }}
+          className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+          style={{ background: '#F5F5F5', border: '2px solid #E5E5E5' }}
+          title="回去"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18l-6-6 6-6" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
-          返回
         </button>
 
         <div className="flex items-center gap-2">
@@ -454,10 +454,16 @@ export default function PaintPage() {
 
         <button
           onClick={handleExport}
-          className="btn-black"
-          style={{ padding: '0.4em 1.2em', fontSize: '0.85rem' }}
+          className="flex items-center gap-1.5 rounded-full px-4 py-2 transition-colors"
+          style={{ background: '#1A1A1A', border: '2px solid #1A1A1A' }}
+          title="放进画廊"
         >
-          保存
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" strokeWidth="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5" fill="white"/>
+            <path d="M21 15l-5-5L5 21" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          <span style={{ color: 'white', fontWeight: 800, fontSize: '0.8rem' }}>完成</span>
         </button>
       </header>
 
