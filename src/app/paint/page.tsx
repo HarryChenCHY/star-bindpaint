@@ -12,7 +12,7 @@ import EmotionPicker, { Emotion } from '@/components/EmotionPicker';
 import VisualSchedule from '@/components/VisualSchedule';
 import CalmBreathing from '@/components/CalmBreathing';
 import SharedAttention from '@/components/SharedAttention';
-import FreeModeThemes from '@/components/FreeModeThemes';
+import FreeModeThemes, { FreeTheme, ThemeStepGuide } from '@/components/FreeModeThemes';
 import CaregiverTips from '@/components/CaregiverTips';
 import SDRenderResult from '@/components/SDRenderResult';
 import { decomposeImage, imageSourceFromImage, StrokeDrawData, drawStroke, Vec2 } from '@/lib/stroke-engine';
@@ -55,7 +55,8 @@ export default function PaintPage() {
   const [showCalm, setShowCalm] = useState(false);
   const [showAttention, setShowAttention] = useState(false);
   const [attentionQ, setAttentionQ] = useState<{ question: string; options: { label: string; correct: boolean }[] } | null>(null);
-  const [freeTheme, setFreeTheme] = useState<string>('');
+  const [freeTheme, setFreeTheme] = useState<FreeTheme | null>(null);
+  const [freeThemeStep, setFreeThemeStep] = useState(0);
   const [showFreeThemes, setShowFreeThemes] = useState(true); // 自由模式初始显示主题选择
   const [caregiverState, setCaregiverState] = useState<'painting' | 'stuck' | 'completed' | 'resting'>('painting');
   const [userStrokeCount, setUserStrokeCount] = useState(0);
@@ -474,6 +475,7 @@ export default function PaintPage() {
 
     const dataUrl = canvas.toDataURL('image/png');
     const styleId = selectedStyle?.id || 'vangogh';
+    const themePrompt = freeTheme?.sdPrompt || '';
 
     setSdRendering(true);
     setSpriteMessage('✨ Starry 正在施魔法...');
@@ -483,7 +485,7 @@ export default function PaintPage() {
       const res = await fetch('/api/sd-render', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: dataUrl, style: styleId, mode: 'stylization' }),
+        body: JSON.stringify({ imageBase64: dataUrl, style: styleId, mode: 'stylization', themePrompt }),
       });
 
       if (!res.ok) {
@@ -590,18 +592,33 @@ export default function PaintPage() {
           {mode === 'free' && showFreeThemes && (
             <div className="absolute inset-0 z-20 flex items-center justify-center" style={{ background: 'rgba(250,250,250,0.95)' }}>
               <FreeModeThemes
-                onSelect={(theme) => { setFreeTheme(theme); setShowFreeThemes(false); }}
+                onSelect={(theme) => {
+                  setFreeTheme(theme);
+                  setFreeThemeStep(0);
+                  setShowFreeThemes(false);
+                  setSpriteMessage(theme.steps[0]?.hint || '开始画吧~');
+                }}
                 onSkip={() => setShowFreeThemes(false)}
               />
             </div>
           )}
 
-          {/* 自由模式提示 */}
+          {/* 自由模式分步引导 */}
           {mode === 'free' && freeTheme && !showFreeThemes && (
-            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 px-4 py-2 rounded-full"
-              style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid #E5E5E5', fontSize: '0.8rem', fontWeight: 700, color: '#666' }}>
-              {freeTheme}
-            </div>
+            <ThemeStepGuide
+              theme={freeTheme}
+              currentStep={freeThemeStep}
+              onNextStep={() => {
+                if (freeThemeStep < freeTheme.steps.length - 1) {
+                  const next = freeThemeStep + 1;
+                  setFreeThemeStep(next);
+                  setSpriteMessage(freeTheme.steps[next].hint);
+                } else {
+                  setSpriteMessage('全部画完了！试试点 ✨变成油画 看看效果~');
+                  setSpriteState('cheering');
+                }
+              }}
+            />
           )}
 
           <PaintCanvas

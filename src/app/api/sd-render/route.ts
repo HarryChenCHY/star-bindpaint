@@ -22,7 +22,7 @@ const STYLE_PROMPTS: Record<string, string> = {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { imageBase64, style = 'vangogh', mode = 'stylization' } = body;
+    const { imageBase64, style = 'vangogh', mode = 'stylization', themePrompt = '' } = body;
 
     if (!imageBase64) {
       return NextResponse.json({ error: '缺少图片数据' }, { status: 400 });
@@ -35,6 +35,11 @@ export async function POST(req: NextRequest) {
 
     const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.vangogh;
     const functionType = mode === 'doodle' ? 'doodle' : 'stylization_all';
+
+    // 组合 prompt：主题内容（如果有）+ 大师风格（始终注入）
+    const finalPrompt = themePrompt
+      ? `${themePrompt}, ${stylePrompt}`
+      : stylePrompt;
 
     // 确保 imageBase64 是正确的 data URI 格式
     const imageUrl = imageBase64.startsWith('data:')
@@ -52,7 +57,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: 'wanx2.1-imageedit',
         input: {
-          prompt: stylePrompt,
+          prompt: finalPrompt,
           base_image_url: imageUrl,
           function: functionType,
         },
