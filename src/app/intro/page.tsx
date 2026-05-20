@@ -7,8 +7,8 @@ import { StarChar, FlowerChar, BlobChar, MiniStar, MiniCircle } from '@/componen
 
 const chapters = [
   { id: 'overview',   label: '产品概述',  num: '01', color: '#F9B801' },
-  { id: 'features',   label: '功能介绍',  num: '02', color: '#F302C9' },
-  { id: 'workflow',   label: '使用流程',  num: '03', color: '#7DC353' },
+  { id: 'features',   label: '两步体验',  num: '02', color: '#F302C9' },
+  { id: 'workflow',   label: '疗愈流程',  num: '03', color: '#7DC353' },
   { id: 'therapy',    label: '艺术疗愈',  num: '04', color: '#7A51EC' },
   { id: 'ai-tech',    label: 'AI 技术',   num: '05', color: '#F9B801' },
   { id: 'algorithm',  label: '算法原理',  num: '06', color: '#F302C9' },
@@ -310,18 +310,17 @@ export default function IntroPage() {
                   STAR<br/><span style={{ color: '#7A51EC' }}>PAINT</span><br/>智愈
                 </h2>
                 <p className="mt-5" style={{ fontSize: '1rem', color: '#555555', fontWeight: 600, lineHeight: 1.75 }}>
-                  星绘智愈是一套基于 AI 算法的<strong style={{ color: '#1A1A1A' }}>交互式油画教育普惠系统</strong>，
-                  将计算机视觉与艺术疗愈深度融合，让每个孩子——尤其是孤独症谱系儿童——
-                  都能通过画笔与世界建立连接。
+                  星绘智愈是一套面向孤独症儿童的 <strong style={{ color: '#1A1A1A' }}>AI 辅助油画教育与艺术疗愈系统</strong>，
+                  通过"<strong style={{ color: '#7A51EC' }}>从学到创</strong>"的递进式体验，
+                  让每个孩子都能在画笔精灵 Starry 的陪伴下完成创作，在艺术中感受疗愈。
                 </p>
                 <p className="mt-4" style={{ fontSize: '1rem', color: '#555555', fontWeight: 600, lineHeight: 1.75 }}>
-                  系统采用<strong style={{ color: '#7A51EC' }}>ETF 边缘切线流</strong>、
-                  <strong style={{ color: '#F302C9' }}>泊松自适应采样</strong>、
-                  <strong style={{ color: '#7DC353' }}>流线路径规划</strong>等前沿算法，
-                  实时将任意照片拆解为有序笔触序列，引导用户逐笔完成一幅油画。
+                  <strong style={{ color: '#F9B801' }}>第一步 · 临摹学习</strong>：AI 将大师画作拆解为笔触序列，你画1笔系统补50笔，轻松完成。<br/>
+                  <strong style={{ color: '#F302C9' }}>第二步 · 自由创作</strong>：随意画任何内容，每一笔实时变成大师的油画风格。<br/>
+                  系统同步采集绘画过程数据，生成 AI 疗愈观察报告。
                 </p>
                 <div className="flex gap-2 flex-wrap mt-6">
-                  {['AI 驱动', '艺术疗愈', '零门槛', '交大实验室', '开源算法'].map(tag => (
+                  {['AI 陪画', '实时风格化', '疗愈观察', 'ASD 适配', '零门槛', '交大实验室'].map(tag => (
                     <span key={tag} style={{ background: '#F5F5F5', border: '1.5px solid #1A1A1A', borderRadius: 99, padding: '0.25em 0.75em', fontSize: '0.75rem', fontWeight: 700, color: '#1A1A1A' }}>
                       {tag}
                     </span>
@@ -359,37 +358,29 @@ export default function IntroPage() {
 
           {/* ════ 02 功能介绍 ════════════════════════ */}
           <Section id="features">
-            <ChapterLabel num="02" label="功能介绍" color="#F302C9" />
+            <ChapterLabel num="02" label="两步体验" color="#F302C9" />
             <motion.h2 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.5rem)', fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.04em', textTransform: 'uppercase', marginBottom: '2rem' }}>
-              三种<span style={{ color: '#F302C9' }}>创作</span>模式
+              从<span style={{ color: '#F9B801' }}>学</span>到<span style={{ color: '#F302C9' }}>创</span>递进式体验
             </motion.h2>
 
-            <div className="grid md:grid-cols-3 gap-5 mb-10">
+            <div className="grid md:grid-cols-2 gap-5 mb-10">
               {[
                 {
                   color: '#F9B801',
-                  title: '跟画模式',
-                  sub: 'Follow Mode',
+                  title: '第一步：临摹学习',
+                  sub: 'Guided Learning',
                   char: <StarChar size={72} />,
-                  tag: '推荐新手',
-                  points: ['AI 实时生成金色引导线', '精灵逐笔打分鼓励', '辅助/真实双子模式', '超出偏差自动矫正'],
+                  tag: '教育',
+                  points: ['选择莫奈/梵高/高更等6位大师30幅经典画作', '你画1笔，AI自动补50笔（可调20-200）', '物理仿真算法拆解油画笔触序列', 'TEACCH视觉时间表实时显示进度'],
                 },
                 {
                   color: '#F302C9',
-                  title: '自动模式',
-                  sub: 'Auto Mode',
+                  title: '第二步：自由创作',
+                  sub: 'Free Creation + Style Transfer',
                   char: <FlowerChar size={65} />,
-                  tag: '观看欣赏',
-                  points: ['逐笔动态重建油画', '可调节播放速度', '实时进度环显示', '支持导出成品'],
-                },
-                {
-                  color: '#7DC353',
-                  title: '自由模式',
-                  sub: 'Free Mode',
-                  char: <BlobChar size={60} />,
-                  tag: '随心创作',
-                  points: ['无引导无压力', '精灵陪伴随机鼓励', '保留所有原始笔迹', '适合情绪表达'],
+                  tag: '疗愈',
+                  points: ['画任何你想画的内容（内容是你的）', '每一笔实时变成大师油画风格（风格是大师的）', '6种风格：莫奈柔光/梵高厚涂/高更色块...', 'AI 分析绘画内容生成疗愈观察报告'],
                 },
               ].map((item, i) => (
                 <motion.div key={i}
@@ -419,15 +410,19 @@ export default function IntroPage() {
               ))}
             </div>
 
-            {/* Additional features */}
+            {/* ASD 适配功能 */}
             <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
-              <p style={{ fontWeight: 800, fontSize: '0.75rem', color: '#888888', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1rem' }}>辅助功能</p>
+              <p style={{ fontWeight: 800, fontSize: '0.75rem', color: '#888888', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1rem' }}>ASD 适配功能</p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { icon: '🖌️', label: '笔刷宽度调节', color: '#F9B801' },
-                  { icon: '⏩', label: 'AI 批量代画', color: '#F302C9' },
-                  { icon: '🖼️', label: '画廊保存导出', color: '#7DC353' },
-                  { icon: '🔁', label: '一键重置画布', color: '#7A51EC' },
+                  { icon: '🌙', label: '安静模式', color: '#7BA7CC' },
+                  { icon: '👀', label: '共同注意问答', color: '#F9B801' },
+                  { icon: '💨', label: '平静呼吸引导', color: '#7DC353' },
+                  { icon: '📋', label: '疗愈观察报告', color: '#7A51EC' },
+                  { icon: '👤', label: '照护者提示', color: '#F302C9' },
+                  { icon: '😊', label: '情绪前后测', color: '#F59E0B' },
+                  { icon: '👁️', label: '先看后做演示', color: '#8B6914' },
+                  { icon: '📖', label: '社交故事引导', color: '#94A3B8' },
                 ].map((f, i) => (
                   <div key={i} className="flex items-center gap-3 p-4 rounded-[1.25rem]"
                     style={{ background: '#FAFAFA', border: '1.5px solid #E5E5E5' }}>
@@ -444,75 +439,38 @@ export default function IntroPage() {
 
           {/* ════ 03 使用流程 ════════════════════════ */}
           <Section id="workflow">
-            <ChapterLabel num="03" label="使用流程" color="#7DC353" />
+            <ChapterLabel num="03" label="疗愈流程" color="#7DC353" />
             <motion.h2 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.5rem)', fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.04em', textTransform: 'uppercase', marginBottom: '2.5rem' }}>
-              四步<span style={{ color: '#7DC353' }}>完成</span>一幅画
+              五步<span style={{ color: '#7DC353' }}>完成</span>疗愈
             </motion.h2>
 
             <div className="space-y-6">
               {[
                 {
-                  num: '01', icon: '📷', color: '#F9B801',
-                  title: '上传参考图片',
-                  detail: '支持任意照片或图像，JPG/PNG 均可。系统会自动识别图像内容、色彩分布和边缘结构，为后续算法拆解做准备。',
-                  demo: (
-                    <div className="flex items-center justify-center gap-3 py-4">
-                      <div className="w-16 h-16 rounded-[1rem] flex items-center justify-center text-3xl"
-                        style={{ background: '#F9B801', border: '2px solid #1A1A1A' }}>📷</div>
-                      <motion.div animate={{ x: [0, 6, 0] }} transition={{ duration: 1.2, repeat: Infinity }}>
-                        <span style={{ fontSize: '1.5rem', color: '#CCCCCC' }}>→</span>
-                      </motion.div>
-                      <div className="w-16 h-16 rounded-[1rem]" style={{ background: '#E5E5E5', border: '2px solid #1A1A1A', overflow: 'hidden' }}>
-                        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #F9B801 0%, #F302C9 100%)', opacity: 0.5 }} />
-                      </div>
-                    </div>
-                  ),
+                  num: '01', icon: '😊', color: '#F9B801',
+                  title: '情绪前测 — 选心情',
+                  detail: '进入时选择今天的心情（开心/平静/紧张/难过）和能量等级，系统自动适配难度和笔触数量。首次使用会有社交故事引导。',
                 },
                 {
-                  num: '02', icon: '🧠', color: '#F302C9',
-                  title: 'AI 拆解为笔触序列',
-                  detail: 'ETF 算法计算每像素笔触方向，泊松采样生成锚点，流线追踪规划完整路径，最终生成数百条有序笔触数据。',
-                  demo: <ETFFieldSVG />,
+                  num: '02', icon: '🎨', color: '#F302C9',
+                  title: '选择大师 / 自由创作',
+                  detail: '从6位大师30幅经典画作中选择临摹目标，大师以第一人称讲述创作故事。或选择"自由创作"，用大师风格画出自己想画的内容。',
                 },
                 {
                   num: '03', icon: '✏️', color: '#7DC353',
-                  title: '精灵引导交互作画',
-                  detail: 'Starry 精灵在画布旁实时引导，金色虚线指示当前笔触路径，你每画完一笔就会得到评分和鼓励，一步步完成整幅作品。',
-                  demo: (
-                    <div className="flex items-center justify-center py-4 gap-6">
-                      <div className="animate-bounce-gentle">
-                        <StarChar size={60} />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        {['太棒了！继续加油 ⭐', '笔触路径正确 +10分', '再画3笔就完成啦~'].map((msg, i) => (
-                          <motion.div key={i}
-                            initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.4 + 0.2 }}
-                            style={{ background: '#FFFFFF', border: '1.5px solid #1A1A1A', borderRadius: 99, padding: '0.3em 0.9em', fontSize: '0.75rem', fontWeight: 700, color: '#1A1A1A', whiteSpace: 'nowrap' }}>
-                            {msg}
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-                  ),
+                  title: '陪画创作',
+                  detail: '你画1笔，AI自动补50笔（可调20-200），跟着引导线轻松完成全图。画布旁有视觉时间表、共同注意问答、照护者提示。连续失败时自动触发平静呼吸引导。',
                 },
                 {
-                  num: '04', icon: '🖼️', color: '#7A51EC',
-                  title: '保存作品到画廊',
-                  detail: '完成后一键导出高清 PNG，自动保存到本地画廊，可随时回顾历史作品，每件作品都记录了你的创作日期与笔触数量。',
-                  demo: (
-                    <div className="flex items-center justify-center py-4 gap-4">
-                      {['#F9B801', '#F302C9', '#7DC353', '#7A51EC'].map((c, i) => (
-                        <motion.div key={i}
-                          initial={{ rotate: -5, scale: 0.9 }}
-                          animate={{ rotate: i % 2 === 0 ? 2 : -2, scale: 1 }}
-                          transition={{ delay: i * 0.1, type: 'spring' }}
-                          className="w-14 h-14 rounded-[0.75rem]"
-                          style={{ background: c, border: '2px solid #1A1A1A', opacity: 0.9 }} />
-                      ))}
-                    </div>
-                  ),
+                  num: '04', icon: '😌', color: '#7BA7CC',
+                  title: '情绪后测 — 再选心情',
+                  detail: '画完后再选一次心情，量化"这次绘画是否帮助了情绪过渡"。系统对比画前画后的情绪变化。',
+                },
+                {
+                  num: '05', icon: '📋', color: '#7A51EC',
+                  title: 'AI 疗愈观察报告',
+                  detail: 'LLM 基于绘画过程数据（犹豫时间、色彩偏好、专注区域、笔触节奏、情绪变化）生成温暖的观察记录，供家长/治疗师参考。',
                 },
               ].map((step, i) => (
                 <motion.div key={i}
@@ -527,10 +485,7 @@ export default function IntroPage() {
                   </div>
                   <div className="flex-1 p-5">
                     <h3 style={{ fontWeight: 900, fontSize: '1.1rem', color: '#1A1A1A', letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>{step.title}</h3>
-                    <p style={{ fontSize: '0.875rem', color: '#666666', fontWeight: 600, lineHeight: 1.7, marginBottom: '0.75rem' }}>{step.detail}</p>
-                    <div className="rounded-[1rem]" style={{ background: '#FAFAFA', border: '1.5px solid #E5E5E5' }}>
-                      {step.demo}
-                    </div>
+                    <p style={{ fontSize: '0.875rem', color: '#666666', fontWeight: 600, lineHeight: 1.7 }}>{step.detail}</p>
                   </div>
                 </motion.div>
               ))}
@@ -635,8 +590,9 @@ export default function IntroPage() {
               源自<span style={{ color: '#F9B801' }}>交大</span>实验室
             </motion.h2>
             <p style={{ fontSize: '1rem', color: '#666666', fontWeight: 600, lineHeight: 1.75, maxWidth: 600, marginBottom: '2.5rem' }}>
-              整套算法在<strong style={{ color: '#1A1A1A' }}>纯前端 JavaScript</strong> 中实现，无需服务端，无需 GPU，
-              基于经典计算机视觉研究（Kang 2007, Bridson 2007）在浏览器中实时运行。
+              整套算法在<strong style={{ color: '#1A1A1A' }}>纯前端 JavaScript</strong> 中实现，无需服务端 GPU。
+              临摹模式基于经典计算机视觉研究，自由创作模式实现了<strong style={{ color: '#F302C9' }}>实时笔触风格化引擎</strong>，
+              疗愈报告由阿里云百炼通义千问 VL 多模态大模型生成。
             </p>
 
             <div className="grid md:grid-cols-2 gap-5">
@@ -838,7 +794,7 @@ export default function IntroPage() {
                 <span style={{ fontWeight: 600, fontSize: '0.8rem', color: '#888888', marginLeft: '0.75rem' }}>上海交通大学 · 星月绘愈社</span>
               </div>
               <div className="flex gap-2 flex-wrap justify-center">
-                {['ETF 算法', 'Catmull-Rom', '泊松采样', '艺术疗愈', 'Canvas 2D', 'Framer Motion'].map(t => (
+                {['ETF 算法', '实时风格化', '泊松采样', '情绪检测', 'Canvas 2D', '通义千问 VL'].map(t => (
                   <span key={t} style={{ background: 'white', border: '1.5px solid #1A1A1A', borderRadius: 99, fontSize: '0.72rem', fontWeight: 700, padding: '0.25em 0.7em', color: '#1A1A1A' }}>{t}</span>
                 ))}
               </div>
