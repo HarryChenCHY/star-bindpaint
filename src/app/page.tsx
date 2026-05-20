@@ -57,7 +57,7 @@ export default function HomePage() {
             </h1>
 
             <p className="mt-6 mb-10" style={{ fontSize: '1.1rem', color: '#666666', fontWeight: 600, lineHeight: 1.6, letterSpacing: '-0.01em', maxWidth: '400px' }}>
-              临摹莫奈、梵高、高更等大师经典画作，AI 陪你一笔一笔完成创作，在艺术中感受疗愈
+              临摹大师经典画作，或自由画出你想画的——AI 实时将每一笔变成油画风格，在创作中感受疗愈
             </p>
 
             <div className="flex gap-3 flex-wrap">
@@ -108,7 +108,7 @@ export default function HomePage() {
               核心体验
             </p>
             <h2 style={{ fontSize: 'clamp(2.2rem, 5vw, 3.5rem)', color: '#1A1A1A', textTransform: 'uppercase' }}>
-              三种<span style={{ color: '#F302C9' }}>疗愈</span><br />模式
+              从<span style={{ color: '#F9B801' }}>学</span>到<span style={{ color: '#F302C9' }}>创</span><br />两步体验
             </h2>
           </motion.div>
 
@@ -117,26 +117,26 @@ export default function HomePage() {
               {
                 bg: '#F9B801',
                 char: <StarChar size={100} />,
-                title: '陪画模式',
-                desc: 'COMPANION MODE',
-                body: '你画1笔，Starry帮你补50笔。跟着大师的笔触，轻松完成一幅油画',
-                tag: '推荐',
+                title: '临摹学习',
+                desc: 'GUIDED LEARNING',
+                body: '选择6位大师30幅经典画作，你画1笔AI补100笔，跟着引导线轻松完成一幅油画',
+                tag: '第一步',
               },
               {
                 bg: '#F302C9',
                 char: <FlowerChar size={90} />,
-                title: '共同注意',
-                desc: 'SHARED ATTENTION',
-                body: 'AI 边画边问你问题："这是什么颜色？" 一起观察、一起学习',
-                tag: '互动学习',
+                title: '自由创作',
+                desc: 'FREE CREATION + STYLE TRANSFER',
+                body: '画任何你想画的，每一笔实时变成大师油画风格，还能一键"变成油画"',
+                tag: '第二步',
               },
               {
                 bg: '#7DC353',
                 char: <BlobChar size={85} />,
-                title: '自由表达',
-                desc: 'FREE EXPRESSION',
-                body: '选一个主题，用颜色画出心情。没有对错，画笔精灵在旁温暖陪伴',
-                tag: '情绪表达',
+                title: '疗愈观察',
+                desc: 'AI THERAPY REPORT',
+                body: '情绪前后测 + AI 分析绘画行为（色彩/节奏/专注区域），生成温暖的观察报告',
+                tag: '闭环',
               },
             ].map((item, i) => (
               <motion.div
@@ -185,10 +185,10 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              { icon: '🧠', title: 'ETF 边缘切线流', desc: '基于 Kang 2007 算法，精准计算每像素笔触走向，15次迭代平滑连贯', color: '#F9B801' },
-              { icon: '📍', title: '泊松采样 + Lloyd 迭代', desc: '密度自适应笔触锚点生成，暗处边缘密、亮处平面疏', color: '#F302C9' },
-              { icon: '🖌️', title: '流线追踪路径规划', desc: '沿方向场正反向追踪笔触路径，HSV 颜色约束防止跨越物体边界', color: '#7DC353' },
-              { icon: '✨', title: 'Catmull-Rom 曲线绘制', desc: '贝塞尔平滑渲染自然笔触，支持压感宽度变化，模拟真实画笔', color: '#7A51EC' },
+              { icon: '🧠', title: 'ETF 笔触规划算法', desc: '边缘切线流 + 泊松采样 + 流线追踪，实时将图片拆解为有序笔触序列', color: '#F9B801' },
+              { icon: '🎨', title: '实时风格化引擎', desc: '6种大师风格（莫奈/梵高/高更/伦勃朗/毕加索/萨金特），逐笔实时变换', color: '#F302C9' },
+              { icon: '✨', title: '变成油画 · AI 渲染', desc: '通义万相 doodle 模式，将简笔画一键渲染为完整的大师级油画', color: '#7DC353' },
+              { icon: '📋', title: 'LLM 疗愈报告', desc: '通义千问 VL 多模态分析绘画行为数据，生成温暖的观察记录', color: '#7A51EC' },
             ].map((item, i) => (
               <motion.div
                 key={i}
