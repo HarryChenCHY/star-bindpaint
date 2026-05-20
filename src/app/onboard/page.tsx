@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useAppSettings } from '@/contexts/AppContext';
 import EmotionPicker, { Emotion } from '@/components/EmotionPicker';
 import SocialStory from '@/components/SocialStory';
+import MasterQuoteCard from '@/components/MasterQuoteCard';
 
 // 用于背景的大师画作（随机选一幅）
 const BG_PAINTINGS = [
@@ -162,6 +163,9 @@ export default function OnboardPage() {
                 开始画画 →
               </button>
             </motion.div>
+
+            {/* 大师名言 */}
+            <MasterQuoteCard variant="compact" className="mt-6" />
 
             {/* 返回情绪选择 */}
             <button

@@ -10,6 +10,7 @@ import { MASTER_ARTISTS, MOOD_OPTIONS, MasterArtist, Masterwork } from '@/lib/ma
 import { MASTER_DIALOGUES } from '@/lib/master-dialogues';
 import { MASTER_STYLES } from '@/lib/style-transfer';
 import MasterBubble from '@/components/MasterBubble';
+import MasterQuoteCard from '@/components/MasterQuoteCard';
 
 type SourceMode = 'masters' | 'upload' | 'free';
 
@@ -349,6 +350,7 @@ export default function CreatePage() {
                 上传你自己的图片，AI 将分析并生成笔触
               </p>
               <ImageUploader onImageLoaded={handleImageUploaded} />
+              <MasterQuoteCard variant="compact" className="mt-4" />
             </motion.div>
           )}
 

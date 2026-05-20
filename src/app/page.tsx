@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { StarChar, FlowerChar, BlobChar, MiniStar, MiniCircle } from '@/components/Characters';
+import MasterQuoteCard from '@/components/MasterQuoteCard';
 
 export default function HomePage() {
   const router = useRouter();
@@ -211,6 +212,11 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ═══ MASTER QUOTE ═══ */}
+      <div className="px-8 md:px-16 py-8 max-w-3xl mx-auto">
+        <MasterQuoteCard variant="banner" />
+      </div>
 
       {/* ═══ FLOW ══════════════════════════════════════════════ */}
       <section className="px-8 md:px-16 py-20 bg-white">

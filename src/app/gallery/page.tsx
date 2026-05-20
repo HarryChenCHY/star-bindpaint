@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { loadGallery, deleteFromGallery, clearGallery, GalleryItem } from '@/lib/gallery-store';
 import StarrySprite from '@/components/StarrySprite';
+import MasterQuoteCard from '@/components/MasterQuoteCard';
 import { MiniStar } from '@/components/Characters';
 
 const MODE_COLOR: Record<string, string> = {
@@ -99,6 +100,13 @@ export default function GalleryPage() {
               </motion.div>
             ))}
           </motion.div>
+        )}
+
+        {/* 大师名言 */}
+        {items.length > 0 && (
+          <div className="mt-10">
+            <MasterQuoteCard variant="default" />
+          </div>
         )}
       </div>
 
