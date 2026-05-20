@@ -534,8 +534,10 @@ export default function PaintPage() {
 
   const handleSDSave = async (imageBase64: string) => {
     try {
+      // 始终先压缩（SD返回的图太大，无论存 OSS 还是 localStorage 都先压缩）
+      const compressed = await compressImage(imageBase64);
       await uploadAndSaveToGallery(
-        imageBase64,
+        compressed,
         `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
         0,
         'free'
@@ -551,10 +553,11 @@ export default function PaintPage() {
 
   // SD 渲染后 → 保存油画版 + 进入心理分析流程（用原始简笔画做分析）
   const handleSDFinish = async (oilImageBase64: string) => {
-    // 保存油画版到画廊
+    // 保存油画版到画廊（压缩后）
     try {
+      const compressed = await compressImage(oilImageBase64);
       await uploadAndSaveToGallery(
-        oilImageBase64,
+        compressed,
         `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
         0,
         'free'
