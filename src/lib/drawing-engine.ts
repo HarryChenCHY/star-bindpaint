@@ -50,14 +50,17 @@ export class DrawingEngine {
     this.canvas.addEventListener('pointerdown', this.handleDown);
     this.canvas.addEventListener('pointermove', this.handleMove);
     this.canvas.addEventListener('pointerup', this.handleUp);
-    this.canvas.addEventListener('pointerleave', this.handleUp);
+    this.canvas.addEventListener('pointerleave', this.handleLeave);
+    // 安全网：document 级别的 pointerup 确保释放捕获
+    document.addEventListener('pointerup', this.handleDocumentUp);
   }
 
   destroy() {
     this.canvas.removeEventListener('pointerdown', this.handleDown);
     this.canvas.removeEventListener('pointermove', this.handleMove);
     this.canvas.removeEventListener('pointerup', this.handleUp);
-    this.canvas.removeEventListener('pointerleave', this.handleUp);
+    this.canvas.removeEventListener('pointerleave', this.handleLeave);
+    document.removeEventListener('pointerup', this.handleDocumentUp);
   }
 
   private getCanvasPoint(e: PointerEvent): DrawingPoint {
@@ -118,9 +121,25 @@ export class DrawingEngine {
   private handleUp = (e: PointerEvent) => {
     if (!this.isDrawing) return;
     if (e.pointerId !== this.activePointerId) return;
-    this.isDrawing = false;
-    this.canvas.releasePointerCapture(e.pointerId);
+    this.finishStroke();
+    try { this.canvas.releasePointerCapture(e.pointerId); } catch {}
+  };
 
+  private handleLeave = (e: PointerEvent) => {
+    if (!this.isDrawing) return;
+    this.finishStroke();
+    try { this.canvas.releasePointerCapture(e.pointerId); } catch {}
+  };
+
+  private handleDocumentUp = () => {
+    // 安全网：无论如何确保绘画状态结束
+    if (this.isDrawing) {
+      this.finishStroke();
+    }
+  };
+
+  private finishStroke() {
+    this.isDrawing = false;
     if (this.currentStroke.length >= 2 && this.onStrokeEnd) {
       this.onStrokeEnd({
         points: [...this.currentStroke],
@@ -129,7 +148,7 @@ export class DrawingEngine {
       });
     }
     this.currentStroke = [];
-  };
+  }
 
   private drawSegment(p0: DrawingPoint, p1: DrawingPoint, p2: DrawingPoint, p3: DrawingPoint, pressure: number) {
     const ctx = this.ctx;
