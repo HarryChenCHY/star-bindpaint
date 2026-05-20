@@ -9,9 +9,10 @@ interface SDRenderResultProps {
   duration: number;
   onClose: () => void;
   onSave: (imageBase64: string) => void;
+  onFinish: (imageBase64: string) => void; // 保存并进入心理分析
 }
 
-export default function SDRenderResult({ originalImage, renderedImage, style, duration, onClose, onSave }: SDRenderResultProps) {
+export default function SDRenderResult({ originalImage, renderedImage, style, duration, onClose, onSave, onFinish }: SDRenderResultProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -68,20 +69,32 @@ export default function SDRenderResult({ originalImage, renderedImage, style, du
         </div>
 
         {/* 按钮 */}
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-3">
+            <button
+              onPointerDown={(e) => { e.stopPropagation(); }}
+              onClick={(e) => { e.stopPropagation(); onClose(); }}
+              className="flex-1 py-3 rounded-full font-bold text-sm"
+              style={{ background: '#F5F5F5', color: '#1A1A1A', border: '2px solid #E5E5E5', cursor: 'pointer' }}
+            >
+              继续画
+            </button>
+            <button
+              onPointerDown={(e) => { e.stopPropagation(); }}
+              onClick={(e) => { e.stopPropagation(); onSave(renderedImage); }}
+              className="flex-1 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2"
+              style={{ background: '#1A1A1A', color: 'white', border: '2px solid #1A1A1A', cursor: 'pointer' }}
+            >
+              <span>🖼️</span> 放进画廊
+            </button>
+          </div>
           <button
-            onClick={onClose}
-            className="flex-1 py-3 rounded-full font-bold text-sm transition-colors"
-            style={{ background: '#F5F5F5', color: '#1A1A1A', border: '2px solid #E5E5E5' }}
+            onPointerDown={(e) => { e.stopPropagation(); }}
+            onClick={(e) => { e.stopPropagation(); onFinish(renderedImage); }}
+            className="w-full py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2"
+            style={{ background: '#7A51EC', color: 'white', border: '2px solid #7A51EC', cursor: 'pointer' }}
           >
-            继续画
-          </button>
-          <button
-            onClick={() => onSave(renderedImage)}
-            className="flex-1 py-3 rounded-full font-bold text-sm transition-colors flex items-center justify-center gap-2"
-            style={{ background: '#1A1A1A', color: 'white', border: '2px solid #1A1A1A' }}
-          >
-            <span>🖼️</span> 保存油画版
+            ✨ 完成创作，看看 Starry 的观察
           </button>
         </div>
       </motion.div>

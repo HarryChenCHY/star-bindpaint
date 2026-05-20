@@ -506,14 +506,48 @@ export default function PaintPage() {
   };
 
   const handleSDSave = (imageBase64: string) => {
-    saveToGallery({
-      imageDataUrl: imageBase64,
-      title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
-      strokeCount: 0,
-      mode: 'free',
-    });
+    try {
+      saveToGallery({
+        imageDataUrl: imageBase64,
+        title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
+        strokeCount: 0,
+        mode: 'free',
+      });
+      setSpriteMessage('油画版已放进画廊！');
+      setSpriteState('cheering');
+    } catch (err) {
+      setSpriteMessage('保存失败，图片可能太大了');
+    }
     setSdResult(null);
-    setSpriteMessage('油画版已放进画廊！');
+  };
+
+  // SD 渲染后 → 保存油画版 + 进入心理分析流程（用原始简笔画做分析）
+  const handleSDFinish = (oilImageBase64: string) => {
+    // 保存油画版到画廊
+    try {
+      saveToGallery({
+        imageDataUrl: oilImageBase64,
+        title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
+        strokeCount: 0,
+        mode: 'free',
+      });
+    } catch {}
+
+    setSdResult(null);
+
+    // 用原始简笔画（不是油画版）做心理分析 — 简笔画才反映内心
+    const paintCanvas = (window as unknown as Record<string, { getBaseCanvas: () => HTMLCanvasElement | null }>).__paintCanvas;
+    if (paintCanvas) {
+      const canvas = paintCanvas.getBaseCanvas();
+      if (canvas) {
+        const sketchDataUrl = canvas.toDataURL('image/png');
+        setSavedDataUrl(sketchDataUrl);
+      }
+    }
+
+    // 触发情绪后测
+    setShowPostEmotion(true);
+    setSpriteMessage('画完啦！告诉我现在感觉怎么样？');
     setSpriteState('cheering');
   };
 
@@ -586,7 +620,7 @@ export default function PaintPage() {
 
         {/* Canvas area */}
         <div className="flex-1 flex items-center justify-center p-6 relative"
-          style={{ background: '#FAFAFA' }}>
+          style={{ background: '#FAFAFA', pointerEvents: (sdResult || showPostEmotion || showCalm) ? 'none' : 'auto' }}>
 
           {/* 自由模式主题选择 */}
           {mode === 'free' && showFreeThemes && (
@@ -803,6 +837,7 @@ export default function PaintPage() {
             duration={sdResult.duration}
             onClose={() => setSdResult(null)}
             onSave={handleSDSave}
+            onFinish={handleSDFinish}
           />
         )}
       </AnimatePresence>
