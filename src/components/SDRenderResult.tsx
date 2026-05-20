@@ -17,15 +17,17 @@ export default function SDRenderResult({ originalImage, renderedImage, style, du
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}
+      className="fixed inset-0 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', zIndex: 9999, pointerEvents: 'auto' }}
+      onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         transition={{ type: 'spring', damping: 20 }}
         className="bg-white rounded-[2rem] p-6 max-w-2xl w-full shadow-2xl"
-        style={{ border: '2px solid #1A1A1A' }}
+        style={{ border: '2px solid #1A1A1A', pointerEvents: 'auto' }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* 标题 */}
         <div className="text-center mb-5">

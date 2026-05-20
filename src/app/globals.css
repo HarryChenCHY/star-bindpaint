@@ -30,7 +30,15 @@
 *,
 *::before,
 *::after {
-  cursor: url('/cursors/pointer.svg') 2 2, default !important;
+  cursor: url('/cursors/pointer.svg') 2 2, default;
+}
+
+button,
+a,
+[role="button"],
+input[type="range"],
+label {
+  cursor: url('/cursors/pointer.svg') 2 2, pointer !important;
 }
 
 :disabled,

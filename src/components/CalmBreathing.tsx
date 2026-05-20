@@ -51,8 +51,14 @@ export default function CalmBreathing({ onReturn }: CalmBreathingProps) {
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 5 }} // 至少 5 秒后才显示
-        onClick={() => setReady(true)}
+        transition={{ delay: 5 }}
+        onClick={() => {
+          if (ready) {
+            onReturn();
+          } else {
+            setReady(true);
+          }
+        }}
         className="px-6 py-3 rounded-full transition-all"
         style={{
           background: ready ? '#7BA7CC' : '#E8F0F6',
