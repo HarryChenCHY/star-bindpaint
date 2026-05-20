@@ -144,8 +144,8 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 | 🖌️ | **Canvas 2D** | 三层画布 + 引导线 + 演示 |
 | 🧠 | **物理仿真引擎** | ETF + 泊松采样 + 流线追踪 |
 | 🎭 | **实时风格化引擎** | 6种大师风格纯前端实时运行 |
-| ✨ | **DashScope wanx2.1** | "变成油画" doodle 深度渲染 |
-| 📋 | **通义千问 VL** | 多模态分析生成疗愈报告 |
+| ✨ | **腾讯混元生图 hy-image-v3.0** | "变成油画" 深度渲染 |
+| 📋 | **腾讯混元大模型** | 多模态分析生成疗愈报告 |
 | ☁️ | **阿里云 OSS** | 画廊图片云端存储 |
 
 ---
@@ -238,7 +238,8 @@ npx vercel --prod
 
 | 变量 | 说明 |
 |------|------|
-| `DASHSCOPE_API_KEY` | 阿里云百炼 API Key |
+| `HUNYUAN_API_KEY` | 腾讯混元 API Key（TokenHub） |
+| `DASHSCOPE_API_KEY` | 阿里云百炼 API Key（降级备用） |
 | `OSS_BUCKET` | OSS Bucket 名称 |
 | `OSS_REGION` | OSS 地域（如 oss-cn-shenzhen） |
 | `OSS_ACCESS_KEY_ID` | OSS AccessKey ID |

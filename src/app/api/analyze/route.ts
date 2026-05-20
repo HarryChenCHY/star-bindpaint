@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * POST /api/analyze
- * 接收绘画 session 数据，调用阿里云百炼（通义千问 VL）生成观察报告
+ * 接收绘画 session 数据，调用腾讯混元大模型生成疗愈观察报告
+ * 降级：如果混元不可用，fallback 到阿里云百炼
  */
 export async function POST(req: NextRequest) {
   try {
@@ -13,46 +14,64 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '缺少 prompt' }, { status: 400 });
     }
 
-    // 构造消息：文本 + 图片（多模态）
-    const messages: Array<{ role: string; content: Array<{ type: string; text?: string; image_url?: { url: string } }> }> = [
-      {
+    // 构造消息：文本 + 图片（多模态，OpenAI 兼容格式）
+    const messages: Array<{ role: string; content: string | Array<{ type: string; text?: string; image_url?: { url: string } }> }> = [];
+
+    if (imageBase64) {
+      messages.push({
         role: 'user',
         content: [
           { type: 'text', text: prompt },
+          {
+            type: 'image_url',
+            image_url: {
+              url: imageBase64.startsWith('data:') ? imageBase64 : `data:image/png;base64,${imageBase64}`,
+            },
+          },
         ],
-      },
-    ];
-
-    // 如果有画作图片，加入多模态内容
-    if (imageBase64) {
-      messages[0].content.push({
-        type: 'image_url',
-        image_url: {
-          url: imageBase64.startsWith('data:') ? imageBase64 : `data:image/png;base64,${imageBase64}`,
-        },
       });
+    } else {
+      messages.push({ role: 'user', content: prompt });
     }
 
-    // 调用阿里云百炼 OpenAI 兼容接口
-    const apiKey = process.env.DASHSCOPE_API_KEY;
+    // 优先使用腾讯混元
+    const hunyuanKey = process.env.HUNYUAN_API_KEY;
+    const dashscopeKey = process.env.DASHSCOPE_API_KEY;
 
-    const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'qwen-vl-plus',
-        messages,
-        max_tokens: 1024,
-        temperature: 0.7,
-      }),
-    });
+    let response: Response;
+
+    if (hunyuanKey) {
+      // 腾讯混元（TokenHub OpenAI 兼容接口）
+      response = await fetch('https://tokenhub.tencentmaas.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${hunyuanKey}`,
+        },
+        body: JSON.stringify({
+          model: imageBase64 ? 'hunyuan-vision' : 'hy3-preview',
+          messages,
+          max_tokens: 1024,
+          temperature: 0.7,
+          stream: false,
+        }),
+      });
+
+      // 如果混元失败且有 dashscope key，降级
+      if (!response.ok && dashscopeKey) {
+        console.warn('[/api/analyze] 混元失败，降级到百炼');
+        response = await callDashScope(dashscopeKey, messages, imageBase64);
+      }
+    } else if (dashscopeKey) {
+      // 降级：阿里云百炼
+      response = await callDashScope(dashscopeKey, messages, imageBase64);
+    } else {
+      return NextResponse.json({ error: 'API Key 未配置（HUNYUAN_API_KEY 或 DASHSCOPE_API_KEY）' }, { status: 500 });
+    }
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error('[/api/analyze] 百炼 API 错误:', response.status, errText);
+      console.error('[/api/analyze] API 错误:', response.status, errText);
       return NextResponse.json(
         { error: `LLM API 调用失败: ${response.status}`, detail: errText },
         { status: 502 }
@@ -64,7 +83,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       report: content,
-      model: data.model,
+      model: data.model || 'unknown',
       usage: data.usage,
     });
   } catch (err) {
@@ -74,4 +93,22 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// 阿里云百炼降级调用
+async function callDashScope(apiKey: string, messages: unknown[], hasImage: boolean): Promise<Response> {
+  // 百炼需要特定的消息格式
+  return fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: hasImage ? 'qwen-vl-plus' : 'qwen-turbo',
+      messages,
+      max_tokens: 1024,
+      temperature: 0.7,
+    }),
+  });
 }
