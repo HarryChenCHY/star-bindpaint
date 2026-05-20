@@ -34,14 +34,16 @@ export async function POST(req: NextRequest) {
     }
 
     const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.vangogh;
-    const functionType = mode === 'doodle' ? 'doodle' : 'stylization_all';
 
     // 组合 prompt：主题内容（如果有）+ 大师风格（始终注入）
     const finalPrompt = themePrompt
       ? `${themePrompt}, ${stylePrompt}`
       : stylePrompt;
 
-    // 确保 imageBase64 是正确的 data URI 格式
+    // 模式选择：
+    // - 有主题 prompt（用户画的是简笔画）→ 用 doodle 模式（AI 根据草图重新生成完整画作）
+    // - 无主题（纯风格化）→ 用 stylization_all（保留原图结构，改变风格）
+    const functionType = themePrompt ? 'doodle' : (mode === 'doodle' ? 'doodle' : 'stylization_all');
     const imageUrl = imageBase64.startsWith('data:')
       ? imageBase64
       : `data:image/png;base64,${imageBase64}`;
