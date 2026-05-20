@@ -14,6 +14,7 @@ import CalmBreathing from '@/components/CalmBreathing';
 import SharedAttention from '@/components/SharedAttention';
 import FreeModeThemes from '@/components/FreeModeThemes';
 import CaregiverTips from '@/components/CaregiverTips';
+import SDRenderResult from '@/components/SDRenderResult';
 import { decomposeImage, imageSourceFromImage, StrokeDrawData, drawStroke, Vec2 } from '@/lib/stroke-engine';
 import { matchScore } from '@/lib/drawing-engine';
 import { GuideSystem } from '@/lib/guide-system';
@@ -62,6 +63,10 @@ export default function PaintPage() {
   // 自由创作风格化
   const [selectedStyle, setSelectedStyle] = useState<MasterStyleProfile | null>(null);
   const [freeColor, setFreeColor] = useState<[number, number, number]>([0.1, 0.3, 0.7]);
+
+  // SD 渲染
+  const [sdRendering, setSdRendering] = useState(false);
+  const [sdResult, setSdResult] = useState<{ original: string; rendered: string; duration: number } | null>(null);
 
   const guideRef = useRef<GuideSystem>(new GuideSystem());
   const emotionDetectorRef = useRef<EmotionDetector | null>(null);
@@ -413,6 +418,56 @@ export default function PaintPage() {
     setSpriteState('guiding');
   };
 
+  // ── SD 渲染（变成油画）──
+  const handleSDRender = async () => {
+    const paintCanvas = (window as unknown as Record<string, { getBaseCanvas: () => HTMLCanvasElement | null }>).__paintCanvas;
+    if (!paintCanvas) return;
+    const canvas = paintCanvas.getBaseCanvas();
+    if (!canvas) return;
+
+    const dataUrl = canvas.toDataURL('image/png');
+    const styleId = selectedStyle?.id || 'vangogh';
+
+    setSdRendering(true);
+    setSpriteMessage('✨ Starry 正在施魔法...');
+    setSpriteState('thinking');
+
+    try {
+      const res = await fetch('/api/sd-render', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: dataUrl, style: styleId, mode: 'stylization' }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || '渲染失败');
+      }
+
+      const data = await res.json();
+      setSdResult({ original: dataUrl, rendered: data.imageBase64, duration: data.duration });
+      setSpriteMessage('魔法完成！看看你的画变成了什么~');
+      setSpriteState('cheering');
+    } catch (err) {
+      setSpriteMessage(`渲染失败：${err instanceof Error ? err.message : '未知错误'}`);
+      setSpriteState('idle');
+    } finally {
+      setSdRendering(false);
+    }
+  };
+
+  const handleSDSave = (imageBase64: string) => {
+    saveToGallery({
+      imageDataUrl: imageBase64,
+      title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
+      strokeCount: 0,
+      mode: 'free',
+    });
+    setSdResult(null);
+    setSpriteMessage('油画版已放进画廊！');
+    setSpriteState('cheering');
+  };
+
   // ── Loading ──
   if (loading) {
     return (
@@ -612,6 +667,29 @@ export default function PaintPage() {
                   />
                 ))}
               </div>
+
+              {/* ✨ 变成油画 按钮 */}
+              <button
+                onClick={handleSDRender}
+                disabled={sdRendering}
+                className="w-full mt-3 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all"
+                style={{
+                  background: sdRendering ? '#E5E5E5' : 'linear-gradient(135deg, #7A51EC, #F302C9)',
+                  color: 'white',
+                  border: 'none',
+                  opacity: sdRendering ? 0.6 : 1,
+                }}
+              >
+                {sdRendering ? (
+                  <>
+                    <motion.span animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>⏳</motion.span>
+                    施魔法中...
+                  </>
+                ) : (
+                  <>✨ 变成油画</>
+                )}
+              </button>
+
               <div style={{ height: 2, background: '#E5E5E5', margin: '12px 0' }} />
             </div>
           )}
@@ -648,6 +726,20 @@ export default function PaintPage() {
       <AnimatePresence>
         {showCalm && (
           <CalmBreathing onReturn={handleCalmReturn} />
+        )}
+      </AnimatePresence>
+
+      {/* ═══ SD 渲染结果 ═══ */}
+      <AnimatePresence>
+        {sdResult && (
+          <SDRenderResult
+            originalImage={sdResult.original}
+            renderedImage={sdResult.rendered}
+            style={selectedStyle?.name || '梵高'}
+            duration={sdResult.duration}
+            onClose={() => setSdResult(null)}
+            onSave={handleSDSave}
+          />
         )}
       </AnimatePresence>
 
