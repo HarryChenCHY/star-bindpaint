@@ -180,7 +180,7 @@ export default function HomePage() {
               核心技术
             </p>
             <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)', color: '#FFFFFF', textTransform: 'uppercase' }}>
-              源自<span style={{ color: '#F9B801' }}>交大</span>实验室
+              <span style={{ color: '#F9B801' }}>交大</span>算法 + <span style={{ color: '#7A51EC' }}>混元</span>大模型
             </h2>
           </motion.div>
 
@@ -188,8 +188,8 @@ export default function HomePage() {
             {[
               { icon: '🧠', title: 'ETF 笔触规划算法', desc: '边缘切线流 + 泊松采样 + 流线追踪，实时将图片拆解为有序笔触序列', color: '#F9B801' },
               { icon: '🎨', title: '实时风格化引擎', desc: '6种大师风格（莫奈/梵高/高更/伦勃朗/毕加索/萨金特），逐笔实时变换', color: '#F302C9' },
-              { icon: '✨', title: '变成油画 · AI 渲染', desc: '通义万相 doodle 模式，将简笔画一键渲染为完整的大师级油画', color: '#7DC353' },
-              { icon: '📋', title: 'LLM 疗愈报告', desc: '通义千问 VL 多模态分析绘画行为数据，生成温暖的观察记录', color: '#7A51EC' },
+              { icon: '✨', title: '变成油画 · AI 渲染', desc: '腾讯混元生图 hy-image-v3.0，将简笔画一键渲染为完整的大师级油画', color: '#7DC353' },
+              { icon: '📋', title: 'LLM 疗愈报告', desc: '腾讯混元大模型多模态分析绘画行为数据，生成温暖的观察记录', color: '#7A51EC' },
             ].map((item, i) => (
               <motion.div
                 key={i}

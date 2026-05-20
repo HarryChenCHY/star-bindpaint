@@ -592,7 +592,7 @@ export default function IntroPage() {
             <p style={{ fontSize: '1rem', color: '#666666', fontWeight: 600, lineHeight: 1.75, maxWidth: 600, marginBottom: '2.5rem' }}>
               整套算法在<strong style={{ color: '#1A1A1A' }}>纯前端 JavaScript</strong> 中实现，无需服务端 GPU。
               临摹模式基于经典计算机视觉研究，自由创作模式实现了<strong style={{ color: '#F302C9' }}>实时笔触风格化引擎</strong>，
-              疗愈报告由阿里云百炼通义千问 VL 多模态大模型生成。
+              疗愈报告由腾讯混元大模型多模态分析生成。
             </p>
 
             <div className="grid md:grid-cols-2 gap-5">
@@ -794,7 +794,7 @@ export default function IntroPage() {
                 <span style={{ fontWeight: 600, fontSize: '0.8rem', color: '#888888', marginLeft: '0.75rem' }}>上海交通大学 · 星月绘愈社</span>
               </div>
               <div className="flex gap-2 flex-wrap justify-center">
-                {['ETF 算法', '实时风格化', '泊松采样', '情绪检测', 'Canvas 2D', '通义千问 VL'].map(t => (
+                {['ETF 算法', '实时风格化', '混元生图', '混元大模型', 'Canvas 2D', '情绪检测'].map(t => (
                   <span key={t} style={{ background: 'white', border: '1.5px solid #1A1A1A', borderRadius: 99, fontSize: '0.72rem', fontWeight: 700, padding: '0.25em 0.7em', color: '#1A1A1A' }}>{t}</span>
                 ))}
               </div>
