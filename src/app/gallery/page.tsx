@@ -60,7 +60,7 @@ export default function GalleryPage() {
         {/* Empty */}
         {items.length === 0 && (
           <div className="flex flex-col items-center justify-center gap-6 py-20">
-            <StarrySprite state="idle" message="还没有作品，快去创作吧！" />
+            <StarrySprite state="idle" message="空白的画布正等着你的色彩..." />
             <button onClick={() => router.push('/create')} className="btn-black" style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>
               开始创作 →
             </button>

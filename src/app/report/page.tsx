@@ -167,13 +167,13 @@ export default function ReportPage() {
             {emotionBefore && emotionAfter && emotionBefore !== emotionAfter && (
               <p className="text-center mt-3" style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600 }}>
                 {emotionAfter === 'happy' || emotionAfter === 'calm'
-                  ? '绘画帮助情绪变得更好了 ✨'
-                  : '情绪有所变化，已记录在观察报告中'}
+                  ? '你的笔触温柔地改变了心情 ✨'
+                  : '颜色记录了你的变化，这就是表达'}
               </p>
             )}
             {emotionBefore && emotionAfter && emotionBefore === emotionAfter && (
               <p className="text-center mt-3" style={{ fontSize: '0.8rem', color: '#666', fontWeight: 600 }}>
-                情绪保持稳定 🌿
+                从开始到结束，你一直是稳定的 🌿
               </p>
             )}
           </motion.div>
@@ -189,7 +189,7 @@ export default function ReportPage() {
               style={{ border: '3px solid #E5E5E5', borderTopColor: '#7A51EC' }}
             />
             <p style={{ color: '#888', fontSize: '0.9rem' }}>
-              Starry 正在观察你的画作...
+              Starry 正在读你画里的故事...
             </p>
           </div>
         )}

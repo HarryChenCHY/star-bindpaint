@@ -209,17 +209,17 @@ export default function PaintPage() {
       if (mode === 'follow' && !state.completed) {
         const percent = Math.round(prog * 100);
         if (percent < 10) {
-          setSpriteMessage('从底色开始~ 一步步来就好');
+          setSpriteMessage('好的画作从底色开始，让我们耐心铺上第一层~');
         } else if (percent < 25) {
-          setSpriteMessage('背景慢慢出来了，继续加油~');
+          setSpriteMessage('背景慢慢浮现了，像晨雾中的风景...');
         } else if (percent < 50) {
-          setSpriteMessage('快一半了！画面越来越完整了');
+          setSpriteMessage('快一半了！画面像一首正在写的诗~');
         } else if (percent < 75) {
-          setSpriteMessage('过半了！细节部分开始出现了~');
+          setSpriteMessage('细节开始出现了，每一笔都是你的语言');
         } else if (percent < 95) {
-          setSpriteMessage('快完成了！最后一点点~');
+          setSpriteMessage('快完成了！大师看到也会微笑的~');
         } else {
-          setSpriteMessage('几乎完成了！再画几笔就好');
+          setSpriteMessage('最后几笔...你的画正在呼吸了');
         }
       } else {
         setSpriteMessage(state.message);
@@ -315,7 +315,7 @@ export default function PaintPage() {
 
   const handleAutoComplete = useCallback(() => {
     setSpriteState('cheering');
-    setSpriteMessage('自动绘制完成！');
+    setSpriteMessage('你的画完成了一场和色彩的对话 ✨');
     setProgress(1);
     setCaregiverState('completed');
   }, []);
@@ -462,7 +462,7 @@ export default function PaintPage() {
     setShowCalm(false);
     setCaregiverState('painting');
     emotionDetectorRef.current?.reset();
-    setSpriteMessage('欢迎回来~继续画吧');
+    setSpriteMessage('深呼吸之后，画笔也变轻了~');
     setSpriteState('guiding');
   };
 
@@ -478,7 +478,7 @@ export default function PaintPage() {
     const themePrompt = freeTheme?.sdPrompt || '';
 
     setSdRendering(true);
-    setSpriteMessage('✨ Starry 正在施魔法...');
+    setSpriteMessage('Starry 正在把你的画变成一首诗...');
     setSpriteState('thinking');
 
     try {
@@ -495,7 +495,7 @@ export default function PaintPage() {
 
       const data = await res.json();
       setSdResult({ original: dataUrl, rendered: data.imageBase64, duration: data.duration });
-      setSpriteMessage('魔法完成！看看你的画变成了什么~');
+      setSpriteMessage('看！你的涂鸦变成了一幅画~');
       setSpriteState('cheering');
     } catch (err) {
       setSpriteMessage(`渲染失败：${err instanceof Error ? err.message : '未知错误'}`);
@@ -594,7 +594,7 @@ export default function PaintPage() {
           style={{ border: '3px solid #E5E5E5', borderTopColor: '#7A51EC' }}
         />
         <p style={{ fontSize: '0.85rem', color: '#888888', fontWeight: 700 }}>
-          {loadingMsg || 'AI 正在分析图片中的笔触...'}
+          {loadingMsg || '每一笔都在等待它的故事...'}
         </p>
       </div>
     );

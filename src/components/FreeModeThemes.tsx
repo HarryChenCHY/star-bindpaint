@@ -93,7 +93,7 @@ export default function FreeModeThemes({ onSelect, onSkip }: FreeModeThemesProps
       className="flex flex-col gap-3 w-full max-w-sm"
     >
       <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#888', textAlign: 'center' }}>
-        想画什么？选一个主题，Starry 会引导你
+        选一个梦想，让 Starry 陪你把它画出来
       </p>
       <div className="grid grid-cols-1 gap-2">
         {FREE_THEMES.map(t => (
@@ -118,7 +118,7 @@ export default function FreeModeThemes({ onSelect, onSkip }: FreeModeThemesProps
         className="text-center mt-2"
         style={{ color: '#BBB', fontWeight: 600, fontSize: '0.8rem' }}
       >
-        不需要主题，自由画
+        或者，跟着心画...
       </button>
     </motion.div>
   );

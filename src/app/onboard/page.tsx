@@ -134,7 +134,7 @@ export default function OnboardPage() {
         {step === 'energy' && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
             <p className="text-center mb-4" style={{ fontWeight: 700, fontSize: '1rem', color: '#1A1A1A' }}>
-              今天想画多久？
+              今天有多少热情想放进画里？
             </p>
             <div className="flex flex-col gap-3">
               {energyOptions.map(opt => (
