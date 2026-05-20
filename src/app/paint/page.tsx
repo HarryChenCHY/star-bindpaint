@@ -506,22 +506,28 @@ export default function PaintPage() {
   };
 
   // 压缩图片用于 localStorage 存储（SD 返回的图太大）
-  const compressImage = (dataUrl: string, maxSize = 512, quality = 0.75): Promise<string> => {
-    return new Promise((resolve) => {
+  const compressImage = (dataUrl: string, maxSize = 400, quality = 0.6): Promise<string> => {
+    return new Promise((resolve, reject) => {
       const img = new window.Image();
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let w = img.naturalWidth, h = img.naturalHeight;
-        if (Math.max(w, h) > maxSize) {
-          const scale = maxSize / Math.max(w, h);
-          w = Math.round(w * scale);
-          h = Math.round(h * scale);
+        try {
+          const canvas = document.createElement('canvas');
+          let w = img.naturalWidth, h = img.naturalHeight;
+          if (Math.max(w, h) > maxSize) {
+            const scale = maxSize / Math.max(w, h);
+            w = Math.round(w * scale);
+            h = Math.round(h * scale);
+          }
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+          const result = canvas.toDataURL('image/jpeg', quality);
+          resolve(result);
+        } catch (err) {
+          reject(err);
         }
-        canvas.width = w;
-        canvas.height = h;
-        canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', quality));
       };
+      img.onerror = () => reject(new Error('图片加载失败'));
       img.src = dataUrl;
     });
   };
@@ -529,16 +535,34 @@ export default function PaintPage() {
   const handleSDSave = async (imageBase64: string) => {
     try {
       const compressed = await compressImage(imageBase64);
-      saveToGallery({
-        imageDataUrl: compressed,
-        title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
-        strokeCount: 0,
-        mode: 'free',
-      });
+      // 如果 localStorage 满了，先清理旧数据
+      try {
+        saveToGallery({
+          imageDataUrl: compressed,
+          title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
+          strokeCount: 0,
+          mode: 'free',
+        });
+      } catch {
+        // localStorage 满了，清理最旧的几张再试
+        const gallery = JSON.parse(localStorage.getItem('star-bindpaint-gallery') || '[]');
+        if (gallery.length > 5) {
+          localStorage.setItem('star-bindpaint-gallery', JSON.stringify(gallery.slice(0, 5)));
+        } else {
+          localStorage.removeItem('star-bindpaint-gallery');
+        }
+        saveToGallery({
+          imageDataUrl: compressed,
+          title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
+          strokeCount: 0,
+          mode: 'free',
+        });
+      }
       setSpriteMessage('油画版已放进画廊！');
       setSpriteState('cheering');
     } catch (err) {
-      setSpriteMessage('保存失败，请重试');
+      console.error('[SD Save] 失败:', err);
+      setSpriteMessage(`保存失败: ${err instanceof Error ? err.message : '未知错误'}`);
     }
     setSdResult(null);
   };
@@ -548,12 +572,17 @@ export default function PaintPage() {
     // 保存油画版到画廊（压缩后）
     try {
       const compressed = await compressImage(oilImageBase64);
-      saveToGallery({
-        imageDataUrl: compressed,
-        title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
-        strokeCount: 0,
-        mode: 'free',
-      });
+      try {
+        saveToGallery({
+          imageDataUrl: compressed,
+          title: `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
+          strokeCount: 0,
+          mode: 'free',
+        });
+      } catch {
+        // 存储满了就清理
+        localStorage.removeItem('star-bindpaint-gallery');
+      }
     } catch {}
 
     setSdResult(null);
