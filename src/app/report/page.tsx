@@ -84,7 +84,7 @@ export default function ReportPage() {
       {bgImage && (
         <div className="absolute inset-0 z-0">
           <img src={bgImage} alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.90)', backdropFilter: 'blur(4px)' }} />
+          <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(3px)' }} />
         </div>
       )}
 

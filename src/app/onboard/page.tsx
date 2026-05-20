@@ -74,7 +74,7 @@ export default function OnboardPage() {
       {bgImage && (
         <div className="absolute inset-0 z-0">
           <img src={bgImage} alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(2px)' }} />
+          <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(2px)' }} />
         </div>
       )}
 

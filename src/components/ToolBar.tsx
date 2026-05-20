@@ -225,7 +225,7 @@ export default function ToolBar({
         )}
         {onReset && (
           <button
-            onClick={onReset}
+            onClick={() => { if (confirm('确定重置画布吗？已画的内容将清除。')) onReset(); }}
             className="px-3 py-1.5 rounded-full text-xs font-bold transition-colors"
             style={{ background: '#FFF0F0', color: '#F302C9', border: '1.5px solid #F302C9' }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F302C9'; (e.currentTarget as HTMLButtonElement).style.color = 'white'; }}

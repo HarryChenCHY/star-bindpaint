@@ -2,29 +2,38 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import PaintCanvas, { PaintMode } from '@/components/PaintCanvas';
 import ModeSelector from '@/components/ModeSelector';
 import ToolBar from '@/components/ToolBar';
 import StarrySprite, { SpriteState } from '@/components/StarrySprite';
 import ProgressRing from '@/components/ProgressRing';
 import EmotionPicker, { Emotion } from '@/components/EmotionPicker';
+import VisualSchedule from '@/components/VisualSchedule';
+import CalmBreathing from '@/components/CalmBreathing';
+import SharedAttention from '@/components/SharedAttention';
+import FreeModeThemes from '@/components/FreeModeThemes';
+import CaregiverTips from '@/components/CaregiverTips';
 import { decomposeImage, imageSourceFromImage, StrokeDrawData, drawStroke, Vec2 } from '@/lib/stroke-engine';
 import { matchScore } from '@/lib/drawing-engine';
 import { GuideSystem } from '@/lib/guide-system';
 import { saveToGallery } from '@/lib/gallery-store';
 import { getTracker } from '@/lib/painting-tracker';
+import { EmotionDetector, EmotionLevel } from '@/lib/emotion-detector';
+import { generateAttentionQuestion, generateCalmPrompt } from '@/lib/feedback-engine';
+import { useAppSettings } from '@/contexts/AppContext';
 import { MiniStar } from '@/components/Characters';
 
 export default function PaintPage() {
   const router = useRouter();
+  const { settings } = useAppSettings();
   const [mode, setMode] = useState<PaintMode>('follow');
   const [guideSubMode, setGuideSubMode] = useState<'assist' | 'real'>('assist');
   const [brushWidth, setBrushWidth] = useState(4);
   const [autoSpeed, setAutoSpeed] = useState(30);
   const [roughness, setRoughness] = useState(2);
-  const [autoFillRatio, setAutoFillRatio] = useState(50); // 用户画1笔，AI自动补N笔
-  const [fillMode, setFillMode] = useState<'companion' | 'precise'>('companion'); // companion=陪画 precise=精确逐笔
+  const [autoFillRatio, setAutoFillRatio] = useState(50);
+  const [fillMode, setFillMode] = useState<'companion' | 'precise'>('companion');
   const [strokes, setStrokes] = useState<StrokeDrawData[]>([]);
   const [currentGuideStroke, setCurrentGuideStroke] = useState<StrokeDrawData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,10 +43,57 @@ export default function PaintPage() {
   const [spriteMessage, setSpriteMessage] = useState('正在分析图片...');
   const [sourceImage, setSourceImage] = useState<HTMLImageElement | null>(null);
   const [canvasSize, setCanvasSize] = useState({ w: 400, h: 400 });
+
+  // 情绪后测
   const [showPostEmotion, setShowPostEmotion] = useState(false);
   const [postEmotion, setPostEmotion] = useState<string>('');
   const [savedDataUrl, setSavedDataUrl] = useState<string>('');
+
+  // ASD 集成状态
+  const [showCalm, setShowCalm] = useState(false);
+  const [showAttention, setShowAttention] = useState(false);
+  const [attentionQ, setAttentionQ] = useState<{ question: string; options: { label: string; correct: boolean }[] } | null>(null);
+  const [freeTheme, setFreeTheme] = useState<string>('');
+  const [showFreeThemes, setShowFreeThemes] = useState(true); // 自由模式初始显示主题选择
+  const [caregiverState, setCaregiverState] = useState<'painting' | 'stuck' | 'completed' | 'resting'>('painting');
+  const [userStrokeCount, setUserStrokeCount] = useState(0);
+
   const guideRef = useRef<GuideSystem>(new GuideSystem());
+  const emotionDetectorRef = useRef<EmotionDetector | null>(null);
+  const attentionIntervalRef = useRef(5); // 每 N 笔问一次
+
+  // 初始化情绪检测器
+  useEffect(() => {
+    const detector = new EmotionDetector((level: EmotionLevel) => {
+      if (level === 'moderate' || level === 'severe') {
+        setShowCalm(true);
+        setCaregiverState('stuck');
+        const tracker = getTracker();
+        tracker.recordCalmTriggered();
+      } else if (level === 'mild') {
+        setSpriteMessage(generateCalmPrompt('mild'));
+      }
+    });
+    emotionDetectorRef.current = detector;
+    return () => { emotionDetectorRef.current = null; };
+  }, []);
+
+  // 空闲检测定时器
+  useEffect(() => {
+    if (loading || showCalm || showPostEmotion) return;
+    const interval = setInterval(() => {
+      const detector = emotionDetectorRef.current;
+      if (detector) {
+        const level = detector.checkIdle();
+        if (level === 'moderate' || level === 'severe') {
+          setShowCalm(true);
+          setCaregiverState('stuck');
+          getTracker().recordCalmTriggered();
+        }
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [loading, showCalm, showPostEmotion]);
 
   useEffect(() => {
     const dataUrl = sessionStorage.getItem('star-bindpaint-source');
@@ -82,7 +138,6 @@ export default function PaintPage() {
         tracker.setMode(mode, guideSubMode);
         tracker.setRoughness(roughness);
         tracker.setCanvasSize(cw, ch);
-        // 读取大师作品信息（如果有）
         const masterInfo = sessionStorage.getItem('star-bindpaint-master');
         if (masterInfo) {
           const { id, title, artist } = JSON.parse(masterInfo);
@@ -98,7 +153,7 @@ export default function PaintPage() {
         const state = guideRef.current.getState();
         setCurrentGuideStroke(state.currentStroke);
         setSpriteState('guiding');
-        setSpriteMessage(`共 ${result.length} 笔，跟着金色虚线画吧~`);
+        setSpriteMessage(`共 ${result.length} 笔，跟着引导线画吧~`);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -118,7 +173,10 @@ export default function PaintPage() {
       setProgress(state.totalStrokes > 0 ? state.currentIndex / state.totalStrokes : 0);
       setSpriteState(state.spriteState as SpriteState);
       setSpriteMessage(state.message);
-      if (state.completed) setProgress(1);
+      if (state.completed) {
+        setProgress(1);
+        setCaregiverState('completed');
+      }
     });
 
     return unsubscribe;
@@ -126,12 +184,12 @@ export default function PaintPage() {
 
   const handleUserStrokeDone = useCallback((userPoints: Vec2[], score: number) => {
     const tracker = getTracker();
+    const detector = emotionDetectorRef.current;
 
     if (mode === 'follow') {
       const guide = guideRef.current;
       const guideState = guide.getState();
 
-      // 记录笔触数据
       const region = currentGuideStroke?.points?.[Math.floor((currentGuideStroke?.points?.length || 0) / 2)]
         || { x: 0, y: 0 };
       const color = currentGuideStroke
@@ -142,6 +200,13 @@ export default function PaintPage() {
 
       const { passed, shouldReplace } = guide.submitStroke(score);
 
+      // 情绪检测
+      if (passed) {
+        detector?.reportSuccess();
+      } else {
+        detector?.reportFailure();
+      }
+
       if (passed && shouldReplace) {
         const paintCanvas = (window as unknown as Record<string, { drawAIStrokeOnBase: (s: StrokeDrawData) => void; clearUser: () => void }>).__paintCanvas;
         if (paintCanvas && currentGuideStroke) {
@@ -149,14 +214,28 @@ export default function PaintPage() {
           paintCanvas.drawAIStrokeOnBase(currentGuideStroke);
         }
 
-        // 陪画模式：用户画完1笔后，AI 逐笔动画补 N 笔
+        // 更新用户手绘笔数
+        setUserStrokeCount(prev => {
+          const newCount = prev + 1;
+          // 共同注意：每 N 笔弹出一个问题
+          if (newCount % attentionIntervalRef.current === 0 && fillMode === 'companion' && currentGuideStroke) {
+            const q = generateAttentionQuestion(
+              currentGuideStroke.color,
+              region,
+              { w: canvasSize.w, h: canvasSize.h }
+            );
+            setAttentionQ(q);
+            setShowAttention(true);
+          }
+          return newCount;
+        });
+
+        // 陪画模式
         if (fillMode === 'companion' && autoFillRatio > 0 && paintCanvas) {
-          // 先短暂暂停，让用户看到自己的笔触
           setTimeout(() => {
             let drawn = 0;
             const drawNext = () => {
               if (drawn >= autoFillRatio) {
-                // 补笔完毕，1秒后再刷新引导线（"轮到你了"）
                 tracker.strokesBatched(guideState.currentIndex + 1, autoFillRatio);
                 return;
               }
@@ -165,21 +244,21 @@ export default function PaintPage() {
               paintCanvas.drawAIStrokeOnBase(nextStroke);
               guide.skip();
               drawn++;
-              setTimeout(drawNext, 60); // 每笔间隔60ms，有动画感
+              setTimeout(drawNext, 60);
             };
             drawNext();
           }, 500);
         }
       }
     } else if (mode === 'free') {
-      // 自由模式也记录
       const center = userPoints.length > 0
         ? userPoints[Math.floor(userPoints.length / 2)]
         : { x: 0, y: 0 };
       tracker.strokeCompleted(tracker.getSession().strokes.length, '', center, score);
       guideRef.current.freeModeFeedback();
+      detector?.reportSuccess();
     }
-  }, [mode, currentGuideStroke, fillMode, autoFillRatio]);
+  }, [mode, currentGuideStroke, fillMode, autoFillRatio, canvasSize]);
 
   const handleAutoProgress = useCallback((current: number, total: number) => {
     setProgress(current / total);
@@ -189,6 +268,7 @@ export default function PaintPage() {
     setSpriteState('cheering');
     setSpriteMessage('自动绘制完成！');
     setProgress(1);
+    setCaregiverState('completed');
   }, []);
 
   const handleReset = () => {
@@ -196,6 +276,8 @@ export default function PaintPage() {
     if (paintCanvas) paintCanvas.clearAll();
     guideRef.current.reset();
     setProgress(0);
+    setUserStrokeCount(0);
+    emotionDetectorRef.current?.reset();
   };
 
   const handleSkip = () => {
@@ -207,6 +289,7 @@ export default function PaintPage() {
       tracker.strokeSkipped(guide.getState().currentIndex, mid);
     }
     guide.skip();
+    emotionDetectorRef.current?.reportSkip();
   };
 
   const handleBatchDraw = (count: number) => {
@@ -230,6 +313,24 @@ export default function PaintPage() {
     tracker.strokesBatched(startIdx, count);
   };
 
+  // ── 共同注意回答 ──
+  const handleAttentionAnswer = (option: { label: string; correct: boolean }) => {
+    const tracker = getTracker();
+    tracker.recordSharedAttention(attentionQ?.question || '', option.label, option.correct);
+    setShowAttention(false);
+    setAttentionQ(null);
+    if (option.correct) {
+      setSpriteMessage('答对了！');
+      setSpriteState('cheering');
+    } else {
+      setSpriteMessage('没关系，我们继续画~');
+    }
+    setTimeout(() => {
+      setSpriteState('guiding');
+    }, 1500);
+  };
+
+  // ── 保存 & 情绪后测 ──
   const handleExport = () => {
     const paintCanvas = (window as unknown as Record<string, { getBaseCanvas: () => HTMLCanvasElement | null }>).__paintCanvas;
     if (!paintCanvas) return;
@@ -238,8 +339,6 @@ export default function PaintPage() {
 
     const dataUrl = canvas.toDataURL('image/png');
     setSavedDataUrl(dataUrl);
-
-    // 显示情绪后测弹窗
     setShowPostEmotion(true);
     setSpriteMessage('画完啦！告诉我现在感觉怎么样？');
     setSpriteState('cheering');
@@ -249,23 +348,18 @@ export default function PaintPage() {
     const dataUrl = savedDataUrl;
     if (!dataUrl) return;
 
-    // 完成数据采集 session
     const tracker = getTracker();
     if (postEmotion) {
       tracker.setEmotionAfter(postEmotion);
     }
-    // 读取情绪前测
     const emotionBefore = sessionStorage.getItem('star-bindpaint-emotion-before') || '';
     if (emotionBefore) {
       tracker.setEmotionBefore(emotionBefore);
     }
 
     tracker.finishSession(dataUrl);
-
     const prompt = tracker.buildAnalysisPrompt();
-    console.log('[PaintingTracker] Session 完成');
 
-    // 存到 sessionStorage 供后续 LLM 分析页面读取
     sessionStorage.setItem('star-bindpaint-session', JSON.stringify(tracker.getSession()));
     sessionStorage.setItem('star-bindpaint-prompt', prompt);
     sessionStorage.setItem('star-bindpaint-emotion-after', postEmotion);
@@ -280,12 +374,21 @@ export default function PaintPage() {
     setSpriteMessage('作品已保存！正在生成观察报告...');
     setShowPostEmotion(false);
 
-    // 跳转到报告页面
     setTimeout(() => {
       router.push('/report');
     }, 1000);
   };
 
+  // ── 呼吸引导返回 ──
+  const handleCalmReturn = () => {
+    setShowCalm(false);
+    setCaregiverState('painting');
+    emotionDetectorRef.current?.reset();
+    setSpriteMessage('欢迎回来~继续画吧');
+    setSpriteState('guiding');
+  };
+
+  // ── Loading ──
   if (loading) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-6 bg-white">
@@ -304,7 +407,7 @@ export default function PaintPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-white">
+    <div className="flex-1 flex flex-col h-screen bg-white" data-calm={settings.calmMode}>
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-3"
         style={{ borderBottom: '2px solid #1A1A1A' }}>
@@ -335,9 +438,39 @@ export default function PaintPage() {
 
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
+        {/* Visual Schedule（左侧进度条） */}
+        {mode === 'follow' && (
+          <div className="hidden md:flex" style={{ borderRight: '1px solid #E5E5E5', background: '#FAFAFA' }}>
+            <VisualSchedule
+              currentStep={Math.round(progress * strokes.length)}
+              totalSteps={strokes.length}
+              calmMode={settings.calmMode}
+            />
+          </div>
+        )}
+
         {/* Canvas area */}
-        <div className="flex-1 flex items-center justify-center p-6"
+        <div className="flex-1 flex items-center justify-center p-6 relative"
           style={{ background: '#FAFAFA' }}>
+
+          {/* 自由模式主题选择 */}
+          {mode === 'free' && showFreeThemes && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center" style={{ background: 'rgba(250,250,250,0.95)' }}>
+              <FreeModeThemes
+                onSelect={(theme) => { setFreeTheme(theme); setShowFreeThemes(false); }}
+                onSkip={() => setShowFreeThemes(false)}
+              />
+            </div>
+          )}
+
+          {/* 自由模式提示 */}
+          {mode === 'free' && freeTheme && !showFreeThemes && (
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 px-4 py-2 rounded-full"
+              style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid #E5E5E5', fontSize: '0.8rem', fontWeight: 700, color: '#666' }}>
+              {freeTheme}
+            </div>
+          )}
+
           <PaintCanvas
             width={canvasSize.w}
             height={canvasSize.h}
@@ -348,11 +481,25 @@ export default function PaintPage() {
             brushWidth={brushWidth}
             autoSpeed={autoSpeed}
             onUserStrokeDone={handleUserStrokeDone}
-            onUserStrokeStart={() => getTracker().strokeStart()}
+            onUserStrokeStart={() => {
+              getTracker().strokeStart();
+              emotionDetectorRef.current?.reportPointerDown();
+            }}
             onAutoProgress={handleAutoProgress}
             onAutoComplete={handleAutoComplete}
             sourceImage={sourceImage}
           />
+
+          {/* 共同注意弹窗 */}
+          <AnimatePresence>
+            {showAttention && attentionQ && (
+              <SharedAttention
+                question={attentionQ.question}
+                options={attentionQ.options}
+                onAnswer={handleAttentionAnswer}
+              />
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Side panel */}
@@ -396,6 +543,17 @@ export default function PaintPage() {
           />
         </aside>
       </div>
+
+      {/* ═══ 照护者陪伴提示 ═══ */}
+      <CaregiverTips currentState={caregiverState} mode={mode} />
+
+      {/* ═══ 平静呼吸引导 ═══ */}
+      <AnimatePresence>
+        {showCalm && (
+          <CalmBreathing onReturn={handleCalmReturn} />
+        )}
+      </AnimatePresence>
+
       {/* ═══ 情绪后测弹窗 ═══ */}
       {showPostEmotion && (
         <motion.div
@@ -411,7 +569,6 @@ export default function PaintPage() {
             className="bg-white rounded-[2rem] p-8 max-w-sm w-full mx-4 shadow-2xl"
             style={{ border: '2px solid #1A1A1A' }}
           >
-            {/* 画作缩略图 */}
             {savedDataUrl && (
               <div className="flex justify-center mb-5">
                 <img src={savedDataUrl} alt="你的作品" className="w-32 h-32 rounded-2xl object-cover" style={{ border: '2px solid #E5E5E5' }} />

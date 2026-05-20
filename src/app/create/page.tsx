@@ -112,7 +112,7 @@ export default function CreatePage() {
       {/* 大师画作背景 */}
       <div className="absolute inset-0 z-0 transition-all duration-700">
         <img src={bgImage} alt="" className="w-full h-full object-cover transition-all duration-700" />
-        <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(3px)' }} />
+        <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.78)', backdropFilter: 'blur(2px)' }} />
       </div>
 
       {/* Header */}
