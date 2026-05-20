@@ -18,6 +18,8 @@ export class EmotionDetector {
   private state: DetectorState;
   private onLevelChange?: (level: EmotionLevel) => void;
   private currentLevel: EmotionLevel = 'normal';
+  private lastCalmTriggeredTime = 0; // 冷却：上次触发呼吸的时间
+  private cooldownMs = 120000; // 2 分钟冷却期
 
   constructor(onLevelChange?: (level: EmotionLevel) => void) {
     this.onLevelChange = onLevelChange;
@@ -81,11 +83,14 @@ export class EmotionDetector {
 
   /** 检查是否长时间未操作 */
   checkIdle(): EmotionLevel {
+    // 冷却期内不触发
+    if (Date.now() - this.lastCalmTriggeredTime < this.cooldownMs) return this.currentLevel;
+
     const idle = Date.now() - this.state.lastStrokeEndTime;
-    if (idle > 20000 && this.state.consecutiveFailures > 0) {
+    if (idle > 60000 && this.state.consecutiveFailures > 0) {
       return 'severe';
     }
-    if (idle > 15000) {
+    if (idle > 45000) {
       return 'moderate';
     }
     return this.currentLevel;
@@ -111,14 +116,17 @@ export class EmotionDetector {
   // ── 内部评估 ────────────────────────────────────────────────────
 
   private evaluate() {
+    // 冷却期内不触发升级
+    if (Date.now() - this.lastCalmTriggeredTime < this.cooldownMs) return;
+
     let newLevel: EmotionLevel = 'normal';
 
-    // 连续失败
-    if (this.state.consecutiveFailures >= 4) newLevel = 'moderate';
-    else if (this.state.consecutiveFailures >= 2) newLevel = 'mild';
+    // 连续失败（6次以上才触发）
+    if (this.state.consecutiveFailures >= 6) newLevel = 'moderate';
+    else if (this.state.consecutiveFailures >= 3) newLevel = 'mild';
 
-    // 连续跳过
-    if (this.state.consecutiveSkips >= 3) {
+    // 连续跳过（5次以上）
+    if (this.state.consecutiveSkips >= 5) {
       newLevel = this.max(newLevel, 'moderate');
     }
 
@@ -141,6 +149,9 @@ export class EmotionDetector {
     }
 
     if (newLevel !== this.currentLevel) {
+      if (newLevel === 'moderate' || newLevel === 'severe') {
+        this.lastCalmTriggeredTime = Date.now();
+      }
       this.currentLevel = newLevel;
       this.onLevelChange?.(newLevel);
     }

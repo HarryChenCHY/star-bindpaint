@@ -89,9 +89,9 @@ export default function PaintPage() {
     return () => { emotionDetectorRef.current = null; };
   }, []);
 
-  // 空闲检测定时器
+  // 空闲检测定时器（仅跟画模式，自由模式不检测）
   useEffect(() => {
-    if (loading || showCalm || showPostEmotion) return;
+    if (loading || showCalm || showPostEmotion || mode === 'free') return;
     const interval = setInterval(() => {
       const detector = emotionDetectorRef.current;
       if (detector) {
@@ -102,9 +102,9 @@ export default function PaintPage() {
           getTracker().recordCalmTriggered();
         }
       }
-    }, 5000);
+    }, 15000); // 每 15 秒检查一次（而非 5 秒）
     return () => clearInterval(interval);
-  }, [loading, showCalm, showPostEmotion]);
+  }, [loading, showCalm, showPostEmotion, mode]);
 
   useEffect(() => {
     // 检查是否是自由创作模式（无需源图片）
