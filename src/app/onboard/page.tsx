@@ -100,9 +100,26 @@ export default function OnboardPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
             <EmotionPicker
               selected={emotion}
-              onSelect={(e: Emotion) => { setEmotion(e); setTimeout(() => setStep('energy'), 400); }}
+              onSelect={(e: Emotion) => {
+                setEmotion(e);
+                setTimeout(() => setStep('energy'), 800);
+              }}
               label="今天感觉怎么样？"
             />
+            {/* 选择心情后的温暖反馈 */}
+            {emotion && (
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center mt-4"
+                style={{ fontSize: '0.9rem', fontWeight: 600, color: '#666' }}
+              >
+                {emotion === 'happy' && '太好了！开心的时候画画特别棒 ☀️'}
+                {emotion === 'calm' && '平静的心情很适合慢慢画~ ☁️'}
+                {emotion === 'anxious' && '没关系，画画可以帮你放松 🌿'}
+                {emotion === 'sad' && '抱抱你，让颜色陪伴你 💙'}
+              </motion.p>
+            )}
             <button
               onClick={() => setStep('energy')}
               className="mt-6 mx-auto block"

@@ -102,7 +102,7 @@ export default function CreatePage() {
     router.push('/paint');
   };
 
-  const roughnessLabels = ['精细 ~800笔', '适中 ~300笔', '写意 ~100笔', '粗犷 ~50笔'];
+  const roughnessLabels = ['很多很多笔 🐢', '不多不少 🌿', '大大的笔触 🎨', '超大笔刷 🖌️'];
   const ready = imageLoaded;
 
   // 情绪色调对应的 CSS 滤镜（实时预览用）
@@ -465,7 +465,7 @@ export default function CreatePage() {
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="mt-4 p-6 rounded-[1.5rem]" style={{ background: '#F5F5F5', border: '2px solid #1A1A1A' }}>
             <div className="flex items-center justify-between mb-4">
-              <label style={{ fontWeight: 800, fontSize: '1rem', color: '#1A1A1A' }}>笔触风格</label>
+              <label style={{ fontWeight: 800, fontSize: '1rem', color: '#1A1A1A' }}>🖌️ 笔画大小</label>
               <span className="rounded-full px-3 py-1" style={{ background: '#F9B801', fontSize: '0.75rem', fontWeight: 800, color: '#1A1A1A' }}>
                 {roughnessLabels[roughness - 1]}
               </span>
@@ -475,7 +475,7 @@ export default function CreatePage() {
               className="w-full h-2 rounded-full appearance-none"
               style={{ accentColor: '#7A51EC', background: '#DDD' }} />
             <div className="flex justify-between mt-2">
-              {['精细', '适中', '写意', '粗犷'].map(l => (
+              {['细细的', '刚刚好', '大一点', '超大的'].map(l => (
                 <span key={l} style={{ fontSize: '0.7rem', fontWeight: 700, color: '#AAA' }}>{l}</span>
               ))}
             </div>

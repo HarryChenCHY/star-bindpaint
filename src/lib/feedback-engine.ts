@@ -100,18 +100,20 @@ export function generateAttentionQuestion(strokeColor: [number, number, number],
       ]),
     };
   } else {
-    // 情感联想
+    // 情感联想 — 没有对错之分，用 "selected" 标记用户选的
     const feelings: Record<string, string> = {
       '红色': '热情', '蓝色': '安静', '绿色': '自然',
       '黄色': '开心', '紫色': '神秘', '橙色': '温暖',
+      '青色': '清凉', '白色': '纯净', '黑色': '沉默',
+      '灰色': '平静', '粉色': '甜蜜',
     };
     const feeling = feelings[colorName] || '有趣';
     return {
       question: `${colorName}让你想到什么感觉？`,
       options: [
-        { label: feeling, correct: true },
-        { label: '不确定', correct: true }, // 情感题没有错误答案
-        { label: '其他感觉', correct: true },
+        { label: feeling, correct: false }, // 不用 correct 标记，让回调处理
+        { label: '不确定', correct: false },
+        { label: '其他感觉', correct: false },
       ],
     };
   }

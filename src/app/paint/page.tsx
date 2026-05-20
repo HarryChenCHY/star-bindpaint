@@ -34,7 +34,7 @@ export default function PaintPage() {
   const [brushWidth, setBrushWidth] = useState(4);
   const [autoSpeed, setAutoSpeed] = useState(30);
   const [roughness, setRoughness] = useState(2);
-  const [autoFillRatio, setAutoFillRatio] = useState(50);
+  const [autoFillRatio, setAutoFillRatio] = useState(100);
   const [fillMode, setFillMode] = useState<'companion' | 'precise'>('companion');
   const [strokes, setStrokes] = useState<StrokeDrawData[]>([]);
   const [currentGuideStroke, setCurrentGuideStroke] = useState<StrokeDrawData | null>(null);
@@ -70,7 +70,7 @@ export default function PaintPage() {
 
   const guideRef = useRef<GuideSystem>(new GuideSystem());
   const emotionDetectorRef = useRef<EmotionDetector | null>(null);
-  const attentionIntervalRef = useRef(5); // 每 N 笔问一次
+  const attentionIntervalRef = useRef(3); // 每 N 笔问一次（用户画3笔问1次）
 
   // 初始化情绪检测器
   useEffect(() => {
@@ -200,9 +200,30 @@ export default function PaintPage() {
 
     const unsubscribe = guide.subscribe((state) => {
       setCurrentGuideStroke(state.currentStroke);
-      setProgress(state.totalStrokes > 0 ? state.currentIndex / state.totalStrokes : 0);
+      const prog = state.totalStrokes > 0 ? state.currentIndex / state.totalStrokes : 0;
+      setProgress(prog);
       setSpriteState(state.spriteState as SpriteState);
-      setSpriteMessage(state.message);
+
+      // 给用户有意义的进度引导（不只是默认消息）
+      if (mode === 'follow' && !state.completed) {
+        const percent = Math.round(prog * 100);
+        if (percent < 10) {
+          setSpriteMessage('从底色开始~ 一步步来就好');
+        } else if (percent < 25) {
+          setSpriteMessage('背景慢慢出来了，继续加油~');
+        } else if (percent < 50) {
+          setSpriteMessage('快一半了！画面越来越完整了');
+        } else if (percent < 75) {
+          setSpriteMessage('过半了！细节部分开始出现了~');
+        } else if (percent < 95) {
+          setSpriteMessage('快完成了！最后一点点~');
+        } else {
+          setSpriteMessage('几乎完成了！再画几笔就好');
+        }
+      } else {
+        setSpriteMessage(state.message);
+      }
+
       if (state.completed) {
         setProgress(1);
         setCaregiverState('completed');
@@ -260,24 +281,21 @@ export default function PaintPage() {
           return newCount;
         });
 
-        // 陪画模式
+        // 陪画模式：用户画完1笔后，AI 一次性画 N 笔（不逐笔动画）
         if (fillMode === 'companion' && autoFillRatio > 0 && paintCanvas) {
           setTimeout(() => {
             let drawn = 0;
-            const drawNext = () => {
-              if (drawn >= autoFillRatio) {
-                tracker.strokesBatched(guideState.currentIndex + 1, autoFillRatio);
-                return;
-              }
+            for (let i = 0; i < autoFillRatio; i++) {
               const nextStroke = guide.getCurrentStroke();
-              if (!nextStroke) return;
+              if (!nextStroke) break;
               paintCanvas.drawAIStrokeOnBase(nextStroke);
               guide.skip();
               drawn++;
-              setTimeout(drawNext, 60);
-            };
-            drawNext();
-          }, 500);
+            }
+            if (drawn > 0) {
+              tracker.strokesBatched(guideState.currentIndex + 1, drawn);
+            }
+          }, 300);
         }
       }
     } else if (mode === 'free') {
@@ -348,16 +366,45 @@ export default function PaintPage() {
     const tracker = getTracker();
     tracker.recordSharedAttention(attentionQ?.question || '', option.label, option.correct);
     setShowAttention(false);
-    setAttentionQ(null);
-    if (option.correct) {
-      setSpriteMessage('答对了！');
-      setSpriteState('cheering');
+
+    // 根据问题类型给有意义的反馈（不只是"答对了"）
+    const question = attentionQ?.question || '';
+    let feedback = '';
+
+    if (question.includes('什么颜色')) {
+      if (option.correct) {
+        feedback = `对！这是${option.label}~ 你的眼睛真厉害`;
+      } else {
+        feedback = `这个其实是${attentionQ?.options.find(o => o.correct)?.label}哦，没关系~`;
+      }
+    } else if (question.includes('画在哪里')) {
+      if (option.correct) {
+        feedback = `没错！就是在${option.label}~ 你观察得很仔细`;
+      } else {
+        feedback = `是在${attentionQ?.options.find(o => o.correct)?.label}哦，继续看~`;
+      }
+    } else if (question.includes('想到什么感觉')) {
+      // 情感联想题没有对错，给肯定
+      const colorName = question.replace('让你想到什么感觉？', '');
+      const colorMeaning: Record<string, string> = {
+        '红色': '在梵高的画里，红色常常代表热烈的生命力',
+        '蓝色': '莫奈最爱用蓝色画水面，代表宁静和深远',
+        '绿色': '高更用绿色画大自然，代表生命和自由',
+        '黄色': '梵高的向日葵就是金黄色的，代表温暖和希望',
+        '紫色': '莫奈的睡莲里有很多紫色，神秘又美丽',
+        '橙色': '伦勃朗喜欢用橙色画烛光，温暖又亲切',
+      };
+      feedback = colorMeaning[colorName] || `每种颜色都有自己的故事~`;
     } else {
-      setSpriteMessage('没关系，我们继续画~');
+      feedback = '继续画吧~';
     }
+
+    setSpriteMessage(feedback);
+    setSpriteState('guiding');
+    setAttentionQ(null);
     setTimeout(() => {
       setSpriteState('guiding');
-    }, 1500);
+    }, 3000);
   };
 
   // ── 保存 & 情绪后测 ──
