@@ -379,7 +379,7 @@ export default function CreatePage() {
                       className="rounded-[1.5rem] overflow-hidden text-left relative"
                       style={{
                         border: selectedFreeStyle === style.id ? `3px solid ${style.color}` : '2px solid #1A1A1A',
-                        minHeight: '160px',
+                        minHeight: '180px',
                         boxShadow: selectedFreeStyle === style.id ? `0 4px 20px ${style.color}40` : 'none',
                       }}
                     >

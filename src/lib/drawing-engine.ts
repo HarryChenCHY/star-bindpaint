@@ -25,6 +25,7 @@ export class DrawingEngine {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private isDrawing = false;
+  private activePointerId = -1;
   private currentStroke: DrawingPoint[] = [];
   private color = 'rgba(100, 100, 100, 0.85)';
   private baseWidth = 4;
@@ -73,29 +74,35 @@ export class DrawingEngine {
 
   private handleDown = (e: PointerEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     // 只处理主指针（防止多点触控干扰）
-    if (e.pointerType === 'touch' && !e.isPrimary) return;
+    if (!e.isPrimary) return;
     this.canvas.setPointerCapture(e.pointerId);
     this.isDrawing = true;
+    this.activePointerId = e.pointerId;
     this.currentStroke = [this.getCanvasPoint(e)];
   };
 
   private handleMove = (e: PointerEvent) => {
     if (!this.isDrawing) return;
-    // 只处理主指针
-    if (e.pointerType === 'touch' && !e.isPrimary) return;
+    // 只处理同一个 pointer（核心防飞线逻辑）
+    if (e.pointerId !== this.activePointerId) return;
     e.preventDefault();
+    e.stopPropagation();
 
     const point = this.getCanvasPoint(e);
 
-    // 防飞线：如果新点和上一个点距离太远（>200px），忽略
+    // 边界检查：坐标必须在画布内
+    if (point.x < -5 || point.y < -5 || point.x > this.canvas.width + 5 || point.y > this.canvas.height + 5) return;
+
+    // 防飞线：距离阈值 + 速度检测
     if (this.currentStroke.length > 0) {
       const last = this.currentStroke[this.currentStroke.length - 1];
       const dx = point.x - last.x;
       const dy = point.y - last.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist > 200) return; // 跳跃过大，忽略这个点
-      if (dist < 0.5) return; // 太近，也忽略
+      if (dist > 80) return;  // 单帧跳跃超过 80px = 飞线
+      if (dist < 0.5) return; // 太近无意义
     }
 
     this.currentStroke.push(point);
@@ -110,7 +117,7 @@ export class DrawingEngine {
 
   private handleUp = (e: PointerEvent) => {
     if (!this.isDrawing) return;
-    if (e.pointerType === 'touch' && !e.isPrimary) return;
+    if (e.pointerId !== this.activePointerId) return;
     this.isDrawing = false;
 
     if (this.currentStroke.length >= 2 && this.onStrokeEnd) {

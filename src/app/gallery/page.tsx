@@ -80,7 +80,7 @@ export default function GalleryPage() {
                 style={{ border: '2px solid #1A1A1A' }}
                 onClick={() => setSelected(item)}
               >
-                <div className="aspect-square overflow-hidden" style={{ background: MODE_COLOR[item.mode] || '#F9B801' }}>
+                <div className="aspect-square overflow-hidden" style={{ background: '#FFFFFF' }}>
                   <img src={item.imageDataUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <div className="p-3 bg-white">

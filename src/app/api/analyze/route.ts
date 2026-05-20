@@ -34,11 +34,13 @@ export async function POST(req: NextRequest) {
     }
 
     // 调用阿里云百炼 OpenAI 兼容接口
+    const apiKey = process.env.DASHSCOPE_API_KEY;
+
     const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.DASHSCOPE_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: 'qwen-vl-plus',
