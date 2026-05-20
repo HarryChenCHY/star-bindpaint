@@ -119,6 +119,7 @@ export class DrawingEngine {
     if (!this.isDrawing) return;
     if (e.pointerId !== this.activePointerId) return;
     this.isDrawing = false;
+    this.canvas.releasePointerCapture(e.pointerId);
 
     if (this.currentStroke.length >= 2 && this.onStrokeEnd) {
       this.onStrokeEnd({
