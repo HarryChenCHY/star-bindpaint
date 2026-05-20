@@ -14,6 +14,8 @@ export function StarChar({ size = 120, className = '' }: { size?: number; classN
       <polygon
         points="60,6 73,38 108,38 81,59 91,91 60,71 29,91 39,59 12,38 47,38"
         fill="#F9B801"
+        stroke="#1A1A1A"
+        strokeWidth="2.5"
       />
       {/* Left cheek blush */}
       <ellipse cx="30" cy="55" rx="7" ry="5" fill="#F9B801" opacity="0.4" />
@@ -53,11 +55,11 @@ export function FlowerChar({ size = 120, className = '' }: { size?: number; clas
       className={className}
     >
       {/* 5 petals (overlapping circles create flower) */}
-      <circle cx="60" cy="27" r="24" fill="#F302C9" />
-      <circle cx="84" cy="44" r="24" fill="#F302C9" />
-      <circle cx="76" cy="70" r="24" fill="#F302C9" />
-      <circle cx="44" cy="70" r="24" fill="#F302C9" />
-      <circle cx="36" cy="44" r="24" fill="#F302C9" />
+      <circle cx="60" cy="27" r="24" fill="#F302C9" stroke="#1A1A1A" strokeWidth="2" />
+      <circle cx="84" cy="44" r="24" fill="#F302C9" stroke="#1A1A1A" strokeWidth="2" />
+      <circle cx="76" cy="70" r="24" fill="#F302C9" stroke="#1A1A1A" strokeWidth="2" />
+      <circle cx="44" cy="70" r="24" fill="#F302C9" stroke="#1A1A1A" strokeWidth="2" />
+      <circle cx="36" cy="44" r="24" fill="#F302C9" stroke="#1A1A1A" strokeWidth="2" />
       {/* Center fill to smooth */}
       <circle cx="60" cy="52" r="26" fill="#F302C9" />
       {/* Eyes */}
@@ -93,7 +95,7 @@ export function BlobChar({ size = 110, className = '' }: { size?: number; classN
       className={className}
     >
       {/* Rounded rect body — slightly tilted */}
-      <rect x="15" y="10" width="80" height="95" rx="40" ry="40" fill="#7DC353" transform="rotate(-3 55 57)" />
+      <rect x="15" y="10" width="80" height="95" rx="40" ry="40" fill="#7DC353" stroke="#1A1A1A" strokeWidth="2.5" transform="rotate(-3 55 57)" />
       {/* Belt / band detail */}
       <rect x="15" y="52" width="80" height="12" rx="6" fill="#6BB845" transform="rotate(-3 55 58)" />
       {/* Eyes */}
