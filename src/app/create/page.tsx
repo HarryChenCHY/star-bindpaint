@@ -360,37 +360,69 @@ export default function CreatePage() {
                 <h3 style={{ fontWeight: 900, fontSize: '1.3rem', color: '#1A1A1A', marginBottom: 8 }}>
                   自由画，AI 实时变成油画
                 </h3>
-                <p style={{ color: '#888', fontWeight: 600, fontSize: '0.9rem', maxWidth: 360 }}>
+                <p style={{ color: '#888', fontWeight: 600, fontSize: '0.9rem', maxWidth: 400 }}>
                   画任何你想画的内容，每一笔都会被实时转化为大师的油画风格
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full max-w-lg">
-                {MASTER_STYLES.map(style => (
-                  <button
-                    key={style.id}
-                    onClick={() => setSelectedFreeStyle(style.id)}
-                    className="rounded-[1.25rem] p-4 text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
-                    style={{
-                      border: selectedFreeStyle === style.id ? `3px solid ${style.color}` : '2px solid #E5E5E5',
-                      background: selectedFreeStyle === style.id ? `${style.color}12` : 'white',
-                    }}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full" style={{ background: style.color }} />
-                      <div>
-                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1A1A1A' }}>{style.name}</div>
-                        <div style={{ fontSize: '0.6rem', color: '#AAA', fontWeight: 600, textTransform: 'uppercase' }}>{style.nameEn}</div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-xl">
+                {MASTER_STYLES.map(style => {
+                  // 找到对应画家的第一张作品作为背景
+                  const artist = MASTER_ARTISTS.find(a => a.id === style.id);
+                  const bgWork = artist?.works[0]?.image || '';
+                  return (
+                    <motion.button
+                      key={style.id}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => setSelectedFreeStyle(style.id)}
+                      className="rounded-[1.5rem] overflow-hidden text-left relative"
+                      style={{
+                        border: selectedFreeStyle === style.id ? `3px solid ${style.color}` : '2px solid #1A1A1A',
+                        minHeight: '160px',
+                        boxShadow: selectedFreeStyle === style.id ? `0 4px 20px ${style.color}40` : 'none',
+                      }}
+                    >
+                      {/* 画作背景 */}
+                      <div className="absolute inset-0">
+                        {bgWork && <img src={bgWork} alt="" className="w-full h-full object-cover" />}
+                        <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, ${style.color}30 50%, rgba(0,0,0,0.2) 100%)` }} />
                       </div>
-                    </div>
-                    <p style={{ fontSize: '0.75rem', color: '#888', fontWeight: 600, lineHeight: 1.4 }}>
-                      {style.description}
-                    </p>
-                  </button>
-                ))}
+
+                      {/* 选中标记 */}
+                      {selectedFreeStyle === style.id && (
+                        <div className="absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: style.color }}>
+                          <span style={{ color: 'white', fontSize: '0.7rem', fontWeight: 900 }}>✓</span>
+                        </div>
+                      )}
+
+                      {/* 头像 */}
+                      <div className="absolute top-3 right-3 w-10 h-10 rounded-full overflow-hidden" style={{ border: '2px solid white', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+                        <img
+                          src={`/master/${style.id}/image.png`}
+                          alt={style.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      {/* 文字内容 */}
+                      <div className="relative p-4 flex flex-col justify-end h-full" style={{ minHeight: '160px' }}>
+                        <h4 style={{ fontWeight: 900, fontSize: '1.1rem', color: '#FFFFFF' }}>
+                          {style.name}风格
+                        </h4>
+                        <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.7)', fontWeight: 700, textTransform: 'uppercase', marginTop: '2px' }}>
+                          {style.nameEn} Style
+                        </p>
+                        <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginTop: '4px', lineHeight: 1.3 }}>
+                          {style.description}
+                        </p>
+                      </div>
+                    </motion.button>
+                  );
+                })}
               </div>
 
-              <button onClick={handleStartFree} className="btn-purple mt-4"
+              <button onClick={handleStartFree} className="btn-black mt-4"
                 style={{ fontSize: '1.1rem', padding: '1em 3em' }}>
                 开始自由创作 →
               </button>

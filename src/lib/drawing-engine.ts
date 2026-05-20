@@ -73,6 +73,8 @@ export class DrawingEngine {
 
   private handleDown = (e: PointerEvent) => {
     e.preventDefault();
+    // 只处理主指针（防止多点触控干扰）
+    if (e.pointerType === 'touch' && !e.isPrimary) return;
     this.canvas.setPointerCapture(e.pointerId);
     this.isDrawing = true;
     this.currentStroke = [this.getCanvasPoint(e)];
@@ -80,9 +82,22 @@ export class DrawingEngine {
 
   private handleMove = (e: PointerEvent) => {
     if (!this.isDrawing) return;
+    // 只处理主指针
+    if (e.pointerType === 'touch' && !e.isPrimary) return;
     e.preventDefault();
 
     const point = this.getCanvasPoint(e);
+
+    // 防飞线：如果新点和上一个点距离太远（>200px），忽略
+    if (this.currentStroke.length > 0) {
+      const last = this.currentStroke[this.currentStroke.length - 1];
+      const dx = point.x - last.x;
+      const dy = point.y - last.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > 200) return; // 跳跃过大，忽略这个点
+      if (dist < 0.5) return; // 太近，也忽略
+    }
+
     this.currentStroke.push(point);
 
     // Draw incrementally
@@ -95,6 +110,7 @@ export class DrawingEngine {
 
   private handleUp = (e: PointerEvent) => {
     if (!this.isDrawing) return;
+    if (e.pointerType === 'touch' && !e.isPrimary) return;
     this.isDrawing = false;
 
     if (this.currentStroke.length >= 2 && this.onStrokeEnd) {
