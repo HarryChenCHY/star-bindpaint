@@ -1,10 +1,16 @@
 /**
- * stroke-engine.ts — 封装 stroke-sequence-planner 算法
- * 直接在主线程运行（算法纯CPU，~1-5s）
- * 后续可移入 Web Worker
+ * stroke-engine.ts — Hertzmann 1998 油画笔触规划算法
+ *
+ * 基于论文：Aaron Hertzmann, "Painterly Rendering with Curved Brush Strokes
+ * of Multiple Sizes", SIGGRAPH 1998
+ *
+ * 算法思路：多层从粗到细，每层找误差大的区域画曲线笔触。
+ * 完全独立实现，不依赖任何第三方代码。
+ *
+ * 纯 CPU / JavaScript，无需 GPU，浏览器内 ~1-3s 完成。
  */
 
-// ── 类型定义（从原库复制核心类型，避免 DOM 依赖问题）──────────────────
+// ── 类型定义 ────────────────────────────────────────────────────────────
 
 export interface Vec2 { x: number; y: number }
 
@@ -21,42 +27,30 @@ export interface StrokeDrawData {
 }
 
 export interface DecomposeOptions {
-  roughness?: number;   // 1-5
-  lloydIter?: number;   // 1-15
+  roughness?: number;   // 1-4, 控制笔刷层数和大小
+  lloydIter?: number;   // 保留接口兼容（本算法不使用）
   pixelStep?: number;   // 路径插值步长
-  padding?: number;     // ETF padding
+  padding?: number;     // 保留接口兼容
   mood?: string;        // 情绪色调：warm/calm/vivid/dreamy/original
 }
 
-// ── 算法核心（从 stroke-sequence-planner 内联）──────────────────────────
+// ── 公共工具函数 ────────────────────────────────────────────────────────
 
-// 由于 stroke-sequence-planner 依赖 DOM (document.createElement)，
-// 我们在这里直接接受 ImageData/Canvas 提取后的数据
-
-/**
- * 从 Canvas 元素提取 ImageSource
- */
 export function imageSourceFromCanvas(canvas: HTMLCanvasElement): ImageSource {
   const ctx = canvas.getContext('2d')!;
   const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
   return { width: canvas.width, height: canvas.height, data: id.data };
 }
 
-/**
- * 从 HTMLImageElement 提取 ImageSource
- */
 export function imageSourceFromImage(img: HTMLImageElement, maxSize = 512): ImageSource {
   const canvas = document.createElement('canvas');
   let w = img.naturalWidth;
   let h = img.naturalHeight;
-
-  // 限制尺寸
   if (Math.max(w, h) > maxSize) {
     const scale = maxSize / Math.max(w, h);
     w = Math.round(w * scale);
     h = Math.round(h * scale);
   }
-
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext('2d')!;
@@ -65,10 +59,295 @@ export function imageSourceFromImage(img: HTMLImageElement, maxSize = 512): Imag
   return { width: w, height: h, data: id.data };
 }
 
-// ── ETF 算法 ────────────────────────────────────────────────────────────
+// ── 主入口 ──────────────────────────────────────────────────────────────
 
-function bilinearResize(src: Float32Array, sw: number, sh: number, dw: number, dh: number): Float32Array {
-  const dst = new Float32Array(dw * dh);
+/**
+ * 将图像拆解为油画笔触序列（Hertzmann 1998 多层绘画算法）
+ */
+export async function decomposeImage(
+  src: ImageSource,
+  canvasW: number,
+  canvasH: number,
+  opts: DecomposeOptions = {}
+): Promise<StrokeDrawData[]> {
+  const { roughness = 2, mood = 'original' } = opts;
+
+  await new Promise(r => setTimeout(r, 10));
+
+  // 确定笔刷层级（从大到小）
+  // roughness 1 = 4层(精细), 2 = 3层, 3 = 2层, 4 = 1层(粗犷)
+  const layerCount = Math.max(1, 5 - roughness);
+  const brushSizes: number[] = [];
+  for (let i = 0; i < layerCount; i++) {
+    // 从大到小：最大笔刷 = 图像短边/8, 最小 = 2
+    const maxBrush = Math.max(4, Math.round(Math.min(canvasW, canvasH) / 8));
+    const t = layerCount > 1 ? i / (layerCount - 1) : 0;
+    const size = Math.round(maxBrush * (1 - t * 0.85));
+    brushSizes.push(Math.max(2, size));
+  }
+
+  // 缩放源图到画布尺寸
+  const refImage = resizeImage(src, canvasW, canvasH);
+
+  // 虚拟画布（RGB float，模拟当前已画的内容）
+  const currentCanvas = new Float32Array(canvasW * canvasH * 3).fill(1); // 白色背景
+
+  const allStrokes: StrokeDrawData[] = [];
+
+  // 多层绘制（从大笔刷到小笔刷）
+  for (let layer = 0; layer < brushSizes.length; layer++) {
+    const brushRadius = brushSizes[layer];
+    const sigma = brushRadius * 0.5; // 高斯模糊核
+
+    await new Promise(r => setTimeout(r, 5));
+
+    // 模糊参考图到当前笔刷尺度
+    const blurredRef = gaussianBlur(refImage, canvasW, canvasH, sigma);
+
+    // 找误差大的区域，生成笔触
+    const layerStrokes = paintLayer(
+      currentCanvas, blurredRef, refImage,
+      canvasW, canvasH, brushRadius
+    );
+
+    // 将笔触"画"到虚拟画布上
+    for (const stroke of layerStrokes) {
+      renderStrokeToBuffer(currentCanvas, canvasW, canvasH, stroke);
+    }
+
+    allStrokes.push(...layerStrokes);
+  }
+
+  // 情绪色调偏移
+  if (mood && mood !== 'original') {
+    applyMoodShift(allStrokes, mood);
+  }
+
+  return allStrokes;
+}
+
+// ── Hertzmann 核心：单层绘制 ─────────────────────────────────────────────
+
+function paintLayer(
+  canvas: Float32Array,     // 当前画布状态 [H*W*3] RGB 0-1
+  blurredRef: Float32Array, // 模糊后的参考图
+  originalRef: Float32Array, // 原始参考图（用于取色）
+  w: number, h: number,
+  brushRadius: number
+): StrokeDrawData[] {
+  const strokes: StrokeDrawData[] = [];
+  const gridSize = Math.max(1, Math.round(brushRadius * 0.8)); // 采样网格间距
+  const errorThreshold = 25 / 255; // 误差阈值
+
+  // 在网格上找误差大的点
+  for (let gy = 0; gy < h; gy += gridSize) {
+    for (let gx = 0; gx < w; gx += gridSize) {
+      // 计算该网格区域的平均误差
+      let maxError = 0;
+      let maxX = gx, maxY = gy;
+
+      for (let dy = 0; dy < gridSize && gy + dy < h; dy++) {
+        for (let dx = 0; dx < gridSize && gx + dx < w; dx++) {
+          const x = gx + dx, y = gy + dy;
+          const idx = (y * w + x) * 3;
+          const er = Math.abs(canvas[idx] - blurredRef[idx]);
+          const eg = Math.abs(canvas[idx + 1] - blurredRef[idx + 1]);
+          const eb = Math.abs(canvas[idx + 2] - blurredRef[idx + 2]);
+          const error = (er + eg + eb) / 3;
+          if (error > maxError) {
+            maxError = error;
+            maxX = x; maxY = y;
+          }
+        }
+      }
+
+      // 误差超阈值才画
+      if (maxError > errorThreshold) {
+        const stroke = makeSplineStroke(
+          maxX, maxY, blurredRef, originalRef, w, h, brushRadius
+        );
+        if (stroke.points.length >= 2) {
+          strokes.push(stroke);
+        }
+      }
+    }
+  }
+
+  // 随机打乱笔触顺序（避免机械感）
+  shuffleArray(strokes);
+  return strokes;
+}
+
+// ── 曲线笔触生成（Hertzmann 论文 Section 4）────────────────────────────
+
+function makeSplineStroke(
+  startX: number, startY: number,
+  blurredRef: Float32Array,
+  originalRef: Float32Array,
+  w: number, h: number,
+  brushRadius: number
+): StrokeDrawData {
+  const maxStrokeLen = Math.round(brushRadius * 6);
+  const minStrokeLen = Math.round(brushRadius * 1.5);
+
+  // 取笔触颜色（从原始参考图采样）
+  const cIdx = (startY * w + startX) * 3;
+  const color: [number, number, number] = [
+    originalRef[cIdx],
+    originalRef[cIdx + 1],
+    originalRef[cIdx + 2],
+  ];
+
+  const points: Vec2[] = [{ x: startX, y: startY }];
+  let cx = startX, cy = startY;
+  let lastDx = 0, lastDy = 0;
+
+  for (let i = 1; i < maxStrokeLen; i++) {
+    // 超出边界
+    if (cx < 1 || cx >= w - 1 || cy < 1 || cy >= h - 1) break;
+
+    // 颜色差异检测（防止跨物体边界）
+    const curIdx = (Math.round(cy) * w + Math.round(cx)) * 3;
+    const refR = originalRef[curIdx], refG = originalRef[curIdx + 1], refB = originalRef[curIdx + 2];
+    const colorDiff = Math.abs(refR - color[0]) + Math.abs(refG - color[1]) + Math.abs(refB - color[2]);
+    if (i > minStrokeLen && colorDiff > 0.3) break;
+
+    // 计算梯度方向（Sobel 3x3）
+    const { gx, gy } = sobelAt(blurredRef, w, h, Math.round(cx), Math.round(cy));
+
+    // 笔触方向 = 梯度的垂直方向（沿等值线走）
+    let dx = -gy;
+    let dy = gx;
+
+    // 归一化
+    const len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 1e-6) {
+      // 梯度为零（平坦区域），继续上一次方向
+      dx = lastDx || 1;
+      dy = lastDy || 0;
+    } else {
+      dx /= len;
+      dy /= len;
+    }
+
+    // 方向一致性（和上一步方向点积为负则翻转）
+    if (lastDx * dx + lastDy * dy < 0) {
+      dx = -dx;
+      dy = -dy;
+    }
+
+    // 曲率滤波（和上一方向混合，使曲线更平滑）
+    const filterWeight = 0.5;
+    if (i > 1) {
+      dx = filterWeight * dx + (1 - filterWeight) * lastDx;
+      dy = filterWeight * dy + (1 - filterWeight) * lastDy;
+      const l2 = Math.sqrt(dx * dx + dy * dy);
+      if (l2 > 1e-6) { dx /= l2; dy /= l2; }
+    }
+
+    // 步进
+    cx += dx * 1.5;
+    cy += dy * 1.5;
+    lastDx = dx;
+    lastDy = dy;
+
+    points.push({ x: Math.round(cx), y: Math.round(cy) });
+  }
+
+  return {
+    width: brushRadius * 1.2,
+    color,
+    points,
+  };
+}
+
+// ── 图像处理工具 ────────────────────────────────────────────────────────
+
+/** Sobel 梯度计算（单点） */
+function sobelAt(img: Float32Array, w: number, h: number, x: number, y: number): { gx: number; gy: number } {
+  x = Math.max(1, Math.min(w - 2, x));
+  y = Math.max(1, Math.min(h - 2, y));
+
+  // 用亮度通道计算梯度
+  const L = (px: number, py: number) => {
+    const i = (py * w + px) * 3;
+    return 0.299 * img[i] + 0.587 * img[i + 1] + 0.114 * img[i + 2];
+  };
+
+  const gx = -L(x-1,y-1) + L(x+1,y-1)
+           - 2*L(x-1,y) + 2*L(x+1,y)
+           - L(x-1,y+1) + L(x+1,y+1);
+
+  const gy = -L(x-1,y-1) - 2*L(x,y-1) - L(x+1,y-1)
+           + L(x-1,y+1) + 2*L(x,y+1) + L(x+1,y+1);
+
+  return { gx, gy };
+}
+
+/** 高斯模糊（可分离，水平+垂直） */
+function gaussianBlur(img: Float32Array, w: number, h: number, sigma: number): Float32Array {
+  if (sigma < 0.5) return new Float32Array(img);
+
+  const radius = Math.min(Math.ceil(sigma * 2.5), 15);
+  const kernel = makeGaussKernel(radius, sigma);
+  const tmp = new Float32Array(w * h * 3);
+  const out = new Float32Array(w * h * 3);
+
+  // 水平
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let r = 0, g = 0, b = 0;
+      for (let k = -radius; k <= radius; k++) {
+        const sx = Math.max(0, Math.min(w - 1, x + k));
+        const idx = (y * w + sx) * 3;
+        const wt = kernel[k + radius];
+        r += img[idx] * wt;
+        g += img[idx + 1] * wt;
+        b += img[idx + 2] * wt;
+      }
+      const oi = (y * w + x) * 3;
+      tmp[oi] = r; tmp[oi + 1] = g; tmp[oi + 2] = b;
+    }
+  }
+
+  // 垂直
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let r = 0, g = 0, b = 0;
+      for (let k = -radius; k <= radius; k++) {
+        const sy = Math.max(0, Math.min(h - 1, y + k));
+        const idx = (sy * w + x) * 3;
+        const wt = kernel[k + radius];
+        r += tmp[idx] * wt;
+        g += tmp[idx + 1] * wt;
+        b += tmp[idx + 2] * wt;
+      }
+      const oi = (y * w + x) * 3;
+      out[oi] = r; out[oi + 1] = g; out[oi + 2] = b;
+    }
+  }
+
+  return out;
+}
+
+function makeGaussKernel(radius: number, sigma: number): Float32Array {
+  const size = radius * 2 + 1;
+  const kernel = new Float32Array(size);
+  let sum = 0;
+  for (let i = 0; i < size; i++) {
+    const x = i - radius;
+    kernel[i] = Math.exp(-x * x / (2 * sigma * sigma));
+    sum += kernel[i];
+  }
+  for (let i = 0; i < size; i++) kernel[i] /= sum;
+  return kernel;
+}
+
+/** 缩放图像到目标尺寸，返回 RGB float [H*W*3] 0-1 */
+function resizeImage(src: ImageSource, dw: number, dh: number): Float32Array {
+  const { width: sw, height: sh, data } = src;
+  const out = new Float32Array(dw * dh * 3);
+
   for (let dy = 0; dy < dh; dy++) {
     for (let dx = 0; dx < dw; dx++) {
       const sx = (dx + 0.5) * sw / dw - 0.5;
@@ -78,581 +357,56 @@ function bilinearResize(src: Float32Array, sw: number, sh: number, dw: number, d
       const x1 = Math.min(sw - 1, x0 + 1);
       const y1 = Math.min(sh - 1, y0 + 1);
       const fx = sx - x0, fy = sy - y0;
-      dst[dy * dw + dx] =
-        src[y0 * sw + x0] * (1 - fx) * (1 - fy) +
-        src[y0 * sw + x1] * fx * (1 - fy) +
-        src[y1 * sw + x0] * (1 - fx) * fy +
-        src[y1 * sw + x1] * fx * fy;
-    }
-  }
-  return dst;
-}
 
-function replicatePad(src: Float32Array, sw: number, sh: number, pad: number): Float32Array {
-  const pw = sw + pad * 2, ph = sh + pad * 2;
-  const dst = new Float32Array(pw * ph);
-  for (let y = 0; y < ph; y++) {
-    for (let x = 0; x < pw; x++) {
-      const sy = Math.max(0, Math.min(sh - 1, y - pad));
-      const sx = Math.max(0, Math.min(sw - 1, x - pad));
-      dst[y * pw + x] = src[sy * sw + sx];
-    }
-  }
-  return dst;
-}
-
-function separableConv(src: Float32Array, w: number, h: number, kRow: number[], kCol: number[]): Float32Array {
-  const r = (kRow.length / 2) | 0;
-  const tmp = new Float32Array(w * h);
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      let s = 0;
-      for (let k = -r; k <= r; k++) {
-        s += src[y * w + Math.max(0, Math.min(w - 1, x + k))] * kRow[k + r];
-      }
-      tmp[y * w + x] = s;
-    }
-  }
-  const dst = new Float32Array(w * h);
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      let s = 0;
-      for (let k = -r; k <= r; k++) {
-        s += tmp[Math.max(0, Math.min(h - 1, y + k)) * w + x] * kCol[k + r];
-      }
-      dst[y * w + x] = s;
-    }
-  }
-  return dst;
-}
-
-function computeETF(grayPixels: Float32Array, width: number, height: number, kernelRadius = 5, iterTime = 15) {
-  let newW: number, newH: number;
-  if (height > width) { newW = Math.round(512 * width / height); newH = 512; }
-  else { newW = 512; newH = Math.round(512 * height / width); }
-
-  const resized = bilinearResize(grayPixels, width, height, newW, newH);
-  const pad = kernelRadius;
-  const padW = newW + pad * 2;
-  const padH = newH + pad * 2;
-  const padded = replicatePad(resized, newW, newH, pad);
-
-  // Sobel 5x5
-  const kRow = [-1, -2, 0, 2, 1];
-  const kCol = [1, 4, 6, 4, 1];
-  const gx = separableConv(padded, padW, padH, kRow, kCol);
-  const gy = separableConv(padded, padW, padH, kCol, kRow);
-
-  const total = padW * padH;
-  const mag = new Float32Array(total);
-  let maxMag = 0;
-  for (let i = 0; i < total; i++) {
-    mag[i] = Math.sqrt(gx[i] * gx[i] + gy[i] * gy[i]);
-    if (mag[i] > maxMag) maxMag = mag[i];
-  }
-  if (maxMag > 1e-6) for (let i = 0; i < total; i++) mag[i] /= maxMag;
-
-  const tx = new Float32Array(total);
-  const ty = new Float32Array(total);
-  for (let i = 0; i < total; i++) {
-    const m = Math.max(mag[i], 1e-12);
-    tx[i] = -gy[i] / m;
-    ty[i] = gx[i] / m;
-  }
-
-  // ETF iteration
-  for (let iter = 0; iter < iterTime; iter++) {
-    const newTX = new Float32Array(padW * padH);
-    const newTY = new Float32Array(padW * padH);
-
-    for (let py = pad; py < padH - pad; py++) {
-      for (let px = pad; px < padW - pad; px++) {
-        const ci = py * padW + px;
-        const txC = tx[ci], tyC = ty[ci], gC = mag[ci];
-        let sumX = 0, sumY = 0;
-
-        for (let ky = -pad; ky <= pad; ky++) {
-          for (let kx = -pad; kx <= pad; kx++) {
-            const ni = (py + ky) * padW + (px + kx);
-            const txN = tx[ni], tyN = ty[ni], gN = mag[ni];
-            const wm = 0.5 * (1 + Math.tanh(gN - gC));
-            const dot = txC * txN + tyC * tyN;
-            const wd = Math.abs(dot);
-            const phi = dot >= 0 ? 1 : -1;
-            const w = wm * wd;
-            sumX += phi * txN * w;
-            sumY += phi * tyN * w;
-          }
-        }
-
-        const len = Math.max(Math.sqrt(sumX * sumX + sumY * sumY), 1e-12);
-        newTX[ci] = sumX / len;
-        newTY[ci] = sumY / len;
-      }
-    }
-
-    for (let py = pad; py < padH - pad; py++) {
-      for (let px = pad; px < padW - pad; px++) {
-        const ci = py * padW + px;
-        tx[ci] = newTX[ci];
-        ty[ci] = newTY[ci];
-      }
-    }
-  }
-
-  const angle = new Float32Array(newW * newH);
-  const RAD2DEG = 180 / Math.PI;
-  for (let y = 0; y < newH; y++) {
-    for (let x = 0; x < newW; x++) {
-      const pi = (y + pad) * padW + (x + pad);
-      const txv = tx[pi] || 1e-12;
-      const tyv = ty[pi];
-      angle[y * newW + x] = Math.atan(-tyv / txv) * RAD2DEG;
-    }
-  }
-
-  return { angle, workW: newW, workH: newH, gradient: mag, padW, padH, pad };
-}
-
-// ── HSV 工具 ────────────────────────────────────────────────────────────
-
-function rgbToHsv(r: number, g: number, b: number): [number, number, number] {
-  const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
-  let h = 0;
-  const s = max === 0 ? 0 : d / max, v = max;
-  if (d > 0) {
-    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-    else if (max === g) h = ((b - r) / d + 2) / 6;
-    else h = ((r - g) / d + 4) / 6;
-  }
-  return [h, s, v];
-}
-
-function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
-  const i = Math.floor(h * 6), f = h * 6 - i;
-  const p = v * (1 - s), q = v * (1 - f * s), t = v * (1 - (1 - f) * s);
-  switch (i % 6) {
-    case 0: return [v, t, p];
-    case 1: return [q, v, p];
-    case 2: return [p, v, t];
-    case 3: return [p, q, v];
-    case 4: return [t, p, v];
-    default: return [v, p, q];
-  }
-}
-
-// ── 完整分析 ────────────────────────────────────────────────────────────
-
-interface AnalysisResult {
-  width: number;
-  height: number;
-  angleETF: Float32Array;
-  angleHatch: Float32Array;
-  gradient: Float32Array;
-  hsv: Float32Array;
-  density: Float32Array;
-}
-
-function analyze(src: ImageSource, padding = 5): AnalysisResult {
-  const { width: origW, height: origH, data } = src;
-
-  // Extract gray
-  const gray = new Float32Array(origW * origH);
-  for (let i = 0; i < origW * origH; i++) {
-    gray[i] = (0.299 * data[i * 4] + 0.587 * data[i * 4 + 1] + 0.114 * data[i * 4 + 2]) / 255;
-  }
-
-  // Extract HSV
-  const hsv = new Float32Array(origW * origH * 3);
-  for (let i = 0; i < origW * origH; i++) {
-    const [h, s, v] = rgbToHsv(data[i * 4] / 255, data[i * 4 + 1] / 255, data[i * 4 + 2] / 255);
-    hsv[i * 3] = h * 180;
-    hsv[i * 3 + 1] = s * 255;
-    hsv[i * 3 + 2] = v * 255;
-  }
-
-  // Pad gray
-  const grayPad = replicatePad(gray, origW, origH, padding);
-  const padW = origW + padding * 2;
-  const padH = origH + padding * 2;
-
-  // ETF
-  const etf = computeETF(grayPad, padW, padH, 5, 15);
-  const { angle: angleETF, workW, workH } = etf;
-
-  // Hatch = ETF + 90
-  const angleHatch = new Float32Array(angleETF.length);
-  for (let i = 0; i < angleETF.length; i++) {
-    let h = angleETF[i] + 90;
-    if (h > 90) h -= 180;
-    if (h < -90) h += 180;
-    angleHatch[i] = h;
-  }
-
-  // Gradient at work resolution
-  const grayWork = bilinearResize(grayPad, padW, padH, workW, workH);
-  const gradMag = new Float32Array(workW * workH);
-  for (let y = 1; y < workH - 1; y++) {
-    for (let x = 1; x < workW - 1; x++) {
-      const gx =
-        -grayWork[(y - 1) * workW + (x - 1)] + grayWork[(y - 1) * workW + (x + 1)]
-        - 2 * grayWork[y * workW + (x - 1)] + 2 * grayWork[y * workW + (x + 1)]
-        - grayWork[(y + 1) * workW + (x - 1)] + grayWork[(y + 1) * workW + (x + 1)];
-      const gy =
-        -grayWork[(y - 1) * workW + (x - 1)] - 2 * grayWork[(y - 1) * workW + x] - grayWork[(y - 1) * workW + (x + 1)]
-        + grayWork[(y + 1) * workW + (x - 1)] + 2 * grayWork[(y + 1) * workW + x] + grayWork[(y + 1) * workW + (x + 1)];
-      gradMag[y * workW + x] = Math.sqrt(gx * gx + gy * gy);
-    }
-  }
-
-  // Density
-  const DENSITY_P_MAX = 0.25;
-  const DENSITY_P_MIN = 0.0025;
-  let maxGrad = 0;
-  for (let i = 0; i < gradMag.length; i++) if (gradMag[i] > maxGrad) maxGrad = gradMag[i];
-  const invMax = maxGrad > 1e-6 ? 1 / maxGrad : 1;
-  const density = new Float32Array(workW * workH);
-  for (let i = 0; i < density.length; i++) {
-    const g = grayWork[i];
-    const gr = gradMag[i] * invMax;
-    const d = (1 - g + gr) * 0.5;
-    density[i] = DENSITY_P_MIN + d * (DENSITY_P_MAX - DENSITY_P_MIN);
-  }
-
-  // HSV resize
-  const hsvWork = new Float32Array(workW * workH * 3);
-  for (let dy = 0; dy < workH; dy++) {
-    for (let dx = 0; dx < workW; dx++) {
-      const sx = (dx + 0.5) * origW / workW - 0.5;
-      const sy = (dy + 0.5) * origH / workH - 0.5;
-      const x0 = Math.max(0, Math.min(origW - 1, Math.floor(sx)));
-      const y0 = Math.max(0, Math.min(origH - 1, Math.floor(sy)));
-      const x1 = Math.min(origW - 1, x0 + 1), y1 = Math.min(origH - 1, y0 + 1);
-      const fx = sx - x0, fy = sy - y0;
       for (let c = 0; c < 3; c++) {
-        hsvWork[(dy * workW + dx) * 3 + c] =
-          hsv[(y0 * origW + x0) * 3 + c] * (1 - fx) * (1 - fy) + hsv[(y0 * origW + x1) * 3 + c] * fx * (1 - fy) +
-          hsv[(y1 * origW + x0) * 3 + c] * (1 - fx) * fy + hsv[(y1 * origW + x1) * 3 + c] * fx * fy;
+        const v = data[(y0 * sw + x0) * 4 + c] * (1-fx) * (1-fy)
+                + data[(y0 * sw + x1) * 4 + c] * fx * (1-fy)
+                + data[(y1 * sw + x0) * 4 + c] * (1-fx) * fy
+                + data[(y1 * sw + x1) * 4 + c] * fx * fy;
+        out[(dy * dw + dx) * 3 + c] = v / 255;
       }
     }
   }
-
-  return { width: workW, height: workH, angleETF, angleHatch, gradient: gradMag, hsv: hsvWork, density };
+  return out;
 }
 
-// ── 泊松采样 ────────────────────────────────────────────────────────────
+/** 将笔触渲染到虚拟画布缓冲区 */
+function renderStrokeToBuffer(
+  canvas: Float32Array, w: number, h: number,
+  stroke: StrokeDrawData
+) {
+  const radius = Math.max(1, Math.round(stroke.width / 2));
+  const [cr, cg, cb] = stroke.color;
+  const alpha = 0.85;
 
-function sampleAnchors(density: Float32Array, width: number, height: number, nIter = 15): Vec2[] {
-  let sum = 0;
-  for (let i = 0; i < density.length; i++) sum += density[i];
-  const pointNum = Math.max(1, Math.round(sum));
-
-  // Rejection sampling
-  let maxD = 0;
-  for (let i = 0; i < density.length; i++) if (density[i] > maxD) maxD = density[i];
-  if (maxD < 1e-8) maxD = 1;
-
-  let points: Vec2[] = [];
-  const maxTry = pointNum * 100;
-  let tryCount = 0;
-  while (points.length < pointNum && tryCount < maxTry) {
-    tryCount++;
-    const rx = Math.random() * width;
-    const ry = Math.random() * height;
-    const ix = Math.min(width - 1, Math.floor(rx));
-    const iy = Math.min(height - 1, Math.floor(ry));
-    if (Math.random() < density[iy * width + ix] / maxD) {
-      points.push({ x: rx, y: ry });
-    }
-  }
-  while (points.length < pointNum) {
-    points.push({ x: Math.random() * width, y: Math.random() * height });
-  }
-
-  // Lloyd iteration
-  for (let iter = 0; iter < nIter; iter++) {
-    const n = points.length;
-    if (n === 0) break;
-    const cellSize = Math.max(1, Math.sqrt(width * height / n));
-    const gcW = Math.ceil(width / cellSize) + 1;
-    const gcH = Math.ceil(height / cellSize) + 1;
-
-    const buckets: number[][] = Array.from({ length: gcW * gcH }, () => []);
-    for (let i = 0; i < n; i++) {
-      const gx = Math.min(gcW - 1, Math.floor(points[i].x / cellSize));
-      const gy = Math.min(gcH - 1, Math.floor(points[i].y / cellSize));
-      buckets[gy * gcW + gx].push(i);
-    }
-
-    const sumX = new Float64Array(n);
-    const sumY = new Float64Array(n);
-    const sumW = new Float64Array(n);
-
-    for (let py = 0; py < height; py++) {
-      for (let px = 0; px < width; px++) {
-        const dv = density[py * width + px];
-        if (dv < 1e-10) continue;
-        const gcx = Math.min(gcW - 1, Math.floor(px / cellSize));
-        const gcy = Math.min(gcH - 1, Math.floor(py / cellSize));
-
-        let minDist2 = Infinity, nearest = 0;
-        for (let dy = -2; dy <= 2; dy++) {
-          for (let dx = -2; dx <= 2; dx++) {
-            const nx = gcx + dx, ny = gcy + dy;
-            if (nx < 0 || nx >= gcW || ny < 0 || ny >= gcH) continue;
-            for (const idx of buckets[ny * gcW + nx]) {
-              const ex = px - points[idx].x, ey = py - points[idx].y;
-              const d2 = ex * ex + ey * ey;
-              if (d2 < minDist2) { minDist2 = d2; nearest = idx; }
-            }
-          }
-        }
-        sumX[nearest] += px * dv;
-        sumY[nearest] += py * dv;
-        sumW[nearest] += dv;
-      }
-    }
-
-    points = points.map((p, i) =>
-      sumW[i] > 1e-10 ? { x: sumX[i] / sumW[i], y: sumY[i] / sumW[i] } : p
-    );
-  }
-  return points;
-}
-
-// ── 路径规划 ────────────────────────────────────────────────────────────
-
-interface StrokePatch {
-  coordinate: Vec2;
-  angleETF: number;
-  pathETF: Vec2[];
-  lengthPositive: number;
-  lengthNegative: number;
-  angleHatch: number;
-  widthPositive: number;
-  widthNegative: number;
-  grayscale: number;
-  hsv: [number, number, number];
-  gradient: number;
-  density: number;
-  importance: number;
-}
-
-function getHSV(r: AnalysisResult, x: number, y: number): [number, number, number] {
-  const i = (y * r.width + x) * 3;
-  return [r.hsv[i], r.hsv[i + 1], r.hsv[i + 2]];
-}
-
-function getRGB(r: AnalysisResult, x: number, y: number): [number, number, number] {
-  const [h, s, v] = getHSV(r, x, y);
-  return hsvToRgb(h / 180, s / 255, v / 255);
-}
-
-function findPath(
-  analysis: AnalysisResult, startX: number, startY: number,
-  angleField: Float32Array, minLength: number, maxLength: number
-): { path: Vec2[]; negLen: number; posLen: number } {
-  const { width: w, height: h } = analysis;
-  const path: Vec2[] = [{ x: startY, y: startX }];
-  const angleRad = angleField[startY * w + startX] * (Math.PI / 180);
-  const hsv0 = getHSV(analysis, startX, startY);
-
-  let px = startX, py = startY;
-  let nx = startX, ny = startY;
-  let goPos = true, goNeg = true;
-  let posLen = 0, negLen = 0;
-  const dx = Math.cos(angleRad);
-  const dy = Math.sin(angleRad);
-
-  while (goPos || goNeg) {
-    if (goPos) {
-      px += dx; py -= dy;
-      if (px < 0 || px >= w || py < 0 || py >= h) { goPos = false; }
-      else {
-        const ix = Math.max(0, Math.min(w - 1, Math.round(px)));
-        const iy = Math.max(0, Math.min(h - 1, Math.round(py)));
-        const hsvN = getHSV(analysis, ix, iy);
-        let dH = Math.abs(hsv0[0] - hsvN[0]);
-        dH = Math.min(dH, Math.abs(dH - 180));
-        const colorOk = dH <= 30 && Math.abs(hsv0[2] - hsvN[2]) <= 15;
-        if (posLen < minLength || (colorOk && posLen < maxLength)) {
-          path.push({ x: iy, y: ix }); posLen++;
-        } else { goPos = false; }
-      }
-    }
-    if (goNeg) {
-      nx -= dx; ny += dy;
-      if (nx < 0 || nx >= w || ny < 0 || ny >= h) { goNeg = false; }
-      else {
-        const ix = Math.max(0, Math.min(w - 1, Math.round(nx)));
-        const iy = Math.max(0, Math.min(h - 1, Math.round(ny)));
-        const hsvN = getHSV(analysis, ix, iy);
-        let dH = Math.abs(hsv0[0] - hsvN[0]);
-        dH = Math.min(dH, Math.abs(dH - 180));
-        const colorOk = dH <= 30 && Math.abs(hsv0[2] - hsvN[2]) <= 15;
-        if (negLen < minLength || (colorOk && negLen < maxLength)) {
-          path.unshift({ x: iy, y: ix }); negLen++;
-        } else { goNeg = false; }
+  for (const pt of stroke.points) {
+    const px = Math.round(pt.x), py = Math.round(pt.y);
+    // 简化：只画中心点（完整圆形渲染太慢）
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        const x = px + dx, y = py + dy;
+        if (x < 0 || x >= w || y < 0 || y >= h) continue;
+        const idx = (y * w + x) * 3;
+        canvas[idx]     = canvas[idx]     * (1 - alpha) + cr * alpha;
+        canvas[idx + 1] = canvas[idx + 1] * (1 - alpha) + cg * alpha;
+        canvas[idx + 2] = canvas[idx + 2] * (1 - alpha) + cb * alpha;
       }
     }
   }
-  return { path, negLen, posLen };
 }
 
-function planStrokes(analysis: AnalysisResult, roughness = 1, lloydIter = 15): StrokePatch[] {
-  const { width: w, height: h } = analysis;
-  const pSize = (roughness + 1) ** 2;
-  const pMax = 1 / pSize;
-  const pMin = pMax / 100;
-  const ratio = 3;
-  const maxWidth = Math.sqrt(1 / pMin);
-  const minWidth = Math.sqrt(1 / pMax) - 1;
-  const maxLen = Math.round(ratio * maxWidth);
-  const minLen = Math.round(ratio * minWidth);
-  const iMinW = Math.round(minWidth);
-
-  const anchors = sampleAnchors(analysis.density, w, h, lloydIter);
-  const patches: StrokePatch[] = [];
-
-  for (const anchor of anchors) {
-    const ix = Math.max(0, Math.min(w - 1, Math.round(anchor.x)));
-    const iy = Math.max(0, Math.min(h - 1, Math.round(anchor.y)));
-
-    const patch: StrokePatch = {
-      coordinate: { x: iy, y: ix },
-      angleETF: analysis.angleETF[iy * w + ix],
-      pathETF: [],
-      lengthPositive: 0,
-      lengthNegative: 0,
-      angleHatch: analysis.angleHatch[iy * w + ix],
-      widthPositive: 0,
-      widthNegative: 0,
-      grayscale: 0,
-      hsv: getHSV(analysis, ix, iy),
-      gradient: analysis.gradient[iy * w + ix],
-      density: analysis.density[iy * w + ix],
-      importance: 0,
-    };
-
-    const etfResult = findPath(analysis, ix, iy, analysis.angleETF, minLen, maxLen);
-    patch.pathETF = etfResult.path;
-    patch.lengthNegative = etfResult.negLen;
-    patch.lengthPositive = etfResult.posLen;
-
-    const hatchResult = findPath(analysis, ix, iy, analysis.angleHatch, iMinW, Math.round(maxWidth));
-    patch.widthNegative = hatchResult.negLen;
-    patch.widthPositive = hatchResult.posLen;
-
-    const [r, g, b] = getRGB(analysis, ix, iy);
-    patch.grayscale = Math.round((0.299 * r + 0.587 * g + 0.114 * b) * 255);
-
-    const maxLocalW = Math.sqrt(1 / Math.max(patch.density, 1e-6));
-    patch.widthNegative = Math.max(iMinW, Math.min(patch.widthNegative, Math.round(maxLocalW)));
-    patch.widthPositive = Math.max(iMinW, Math.min(patch.widthPositive, Math.round(maxLocalW)));
-    patch.lengthNegative = Math.max(minLen, Math.min(patch.lengthNegative, Math.round(ratio * maxLocalW)));
-    patch.lengthPositive = Math.max(minLen, Math.min(patch.lengthPositive, Math.round(ratio * maxLocalW)));
-
-    const totalW = patch.widthPositive + patch.widthNegative + 1;
-    const totalL = patch.lengthPositive + patch.lengthNegative + 1;
-    patch.importance = totalW * totalL + (Math.random() - 0.5);
-    patches.push(patch);
+function shuffleArray<T>(arr: T[]) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-
-  patches.sort((a, b) => b.importance - a.importance);
-  return patches;
 }
 
-// ── Patch → DrawData 转换 ───────────────────────────────────────────────
+// ── 情绪色调偏移 ────────────────────────────────────────────────────────
 
-function patchToDrawData(
-  patch: StrokePatch, analysisW: number, analysisH: number,
-  canvasW: number, canvasH: number, pixelStep = 10
-): StrokeDrawData {
-  const scaleX = canvasW / analysisW;
-  const scaleY = canvasH / analysisH;
-  const totalW = patch.widthPositive + patch.widthNegative + 1;
-  const [r, g, b] = hsvToRgb(patch.hsv[0] / 180, patch.hsv[1] / 255, patch.hsv[2] / 255);
-
-  const data: StrokeDrawData = {
-    width: totalW * scaleX,
-    color: [r, g, b],
-    points: [],
-  };
-
-  const path = patch.pathETF;
-  if (!path || path.length < 2) return data;
-
-  let totalLen = 0;
-  for (let i = 1; i < path.length; i++) {
-    const dx = path[i].x - path[i - 1].x, dy = path[i].y - path[i - 1].y;
-    totalLen += Math.sqrt(dx * dx + dy * dy);
-  }
-
-  const numPts = Math.max(2, Math.round(totalLen / pixelStep));
-  for (let j = 0; j < numPts; j++) {
-    const t = j / (numPts - 1);
-    const pathPos = t * (path.length - 1);
-    const idx = Math.min(Math.floor(pathPos), path.length - 2);
-    const frac = pathPos - idx;
-
-    const colF = path[idx].y + (path[idx + 1].y - path[idx].y) * frac;
-    const rowF = path[idx].x + (path[idx + 1].x - path[idx].x) * frac;
-
-    const cx = Math.round(colF * scaleX);
-    const cy = Math.round(rowF * scaleY);
-    if (cx < 0 || cx >= canvasW || cy < 0 || cy >= canvasH) continue;
-    data.points.push({ x: cx, y: cy });
-  }
-  return data;
-}
-
-// ── 公共 API ────────────────────────────────────────────────────────────
-
-/**
- * 完整流水线：图像 → 笔触序列
- */
-export async function decomposeImage(
-  src: ImageSource,
-  canvasW = 512,
-  canvasH = 512,
-  opts: DecomposeOptions = {}
-): Promise<StrokeDrawData[]> {
-  const { roughness = 1, lloydIter = 8, pixelStep = 10, padding = 5, mood = 'original' } = opts;
-
-  // 让 UI 有机会刷新
-  await new Promise(r => setTimeout(r, 10));
-
-  const analysis = analyze(src, padding);
-
-  await new Promise(r => setTimeout(r, 10));
-
-  const patches = planStrokes(analysis, roughness, lloydIter);
-
-  const strokes: StrokeDrawData[] = [];
-  for (const p of patches) {
-    const sd = patchToDrawData(p, analysis.width, analysis.height, canvasW, canvasH, pixelStep);
-    if (sd.points.length >= 2) strokes.push(sd);
-  }
-
-  // 根据 mood 对颜色做 HSV 偏移
-  if (mood && mood !== 'original') {
-    applyMoodShift(strokes, mood);
-  }
-
-  return strokes;
-}
-
-/**
- * 对笔触颜色做情绪色调偏移
- * warm: 色相偏暖(+15°)，饱和度+10%
- * calm: 色相偏冷蓝(-20°)，饱和度-10%，亮度+5%
- * vivid: 饱和度+25%
- * dreamy: 亮度+15%，饱和度-15%，色相偏紫(+30°)
- */
 function applyMoodShift(strokes: StrokeDrawData[], mood: string) {
   for (const s of strokes) {
-    let [r, g, b] = s.color; // 0-1 范围
-    // RGB → HSV
+    let [r, g, b] = s.color;
     const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
     let h = 0, sat = max === 0 ? 0 : d / max, v = max;
     if (d > 0) {
@@ -661,32 +415,41 @@ function applyMoodShift(strokes: StrokeDrawData[], mood: string) {
       else h = ((r - g) / d + 4) / 6;
     }
 
-    // 应用偏移
     switch (mood) {
       case 'warm':
-        h = (h + 15 / 360 + 1) % 1;   // 色相 +15°（偏暖）
+        h = (h + 15 / 360 + 1) % 1;
         sat = Math.min(1, sat + 0.1);
         break;
       case 'calm':
-        h = (h - 20 / 360 + 1) % 1;   // 色相 -20°（偏冷蓝）
+        h = (h - 20 / 360 + 1) % 1;
         sat = Math.max(0, sat - 0.1);
         v = Math.min(1, v + 0.05);
         break;
       case 'vivid':
-        sat = Math.min(1, sat + 0.25); // 高饱和
+        sat = Math.min(1, sat + 0.25);
         break;
       case 'dreamy':
-        h = (h + 30 / 360 + 1) % 1;   // 色相 +30°（偏紫）
+        h = (h + 30 / 360 + 1) % 1;
         sat = Math.max(0, sat - 0.15);
         v = Math.min(1, v + 0.15);
         break;
     }
 
     // HSV → RGB
-    const [nr, ng, nb] = hsvToRgb(h, sat, v);
-    s.color = [nr, ng, nb];
+    const i = Math.floor(h * 6), f = h * 6 - i;
+    const p = v * (1 - sat), q = v * (1 - f * sat), t2 = v * (1 - (1 - f) * sat);
+    switch (i % 6) {
+      case 0: s.color = [v, t2, p]; break;
+      case 1: s.color = [q, v, p]; break;
+      case 2: s.color = [p, v, t2]; break;
+      case 3: s.color = [p, q, v]; break;
+      case 4: s.color = [t2, p, v]; break;
+      default: s.color = [v, p, q]; break;
+    }
   }
 }
+
+// ── Canvas 绘制函数 ─────────────────────────────────────────────────────
 
 /**
  * 在 Canvas 上绘制单笔（Catmull-Rom 平滑）
@@ -723,21 +486,22 @@ export function drawStroke(ctx: CanvasRenderingContext2D, stroke: StrokeDrawData
 }
 
 /**
- * 绘制引导线（虚线 + 发光效果）
+ * 绘制引导线（紫色虚线 + 绿色起点 + 红色终点）
  */
 export function drawGuideStroke(ctx: CanvasRenderingContext2D, stroke: StrokeDrawData) {
   const pts = stroke.points;
   if (pts.length < 2) return;
 
-  // 外发光层（更亮更宽，确保可见）
   ctx.save();
-  ctx.shadowColor = 'rgba(122, 81, 236, 0.8)';
-  ctx.shadowBlur = 16;
-  ctx.strokeStyle = 'rgba(122, 81, 236, 0.5)';
-  ctx.lineWidth = Math.max(4, stroke.width + 6);
+  ctx.setLineDash([6, 4]);
+  ctx.lineWidth = Math.max(2, stroke.width * 0.5);
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  ctx.setLineDash([10, 6]);
+
+  // 主线（紫色发光）
+  ctx.shadowColor = '#7A51EC';
+  ctx.shadowBlur = 8;
+  ctx.strokeStyle = 'rgba(122, 81, 236, 0.7)';
 
   ctx.beginPath();
   ctx.moveTo(pts[0].x, pts[0].y);
@@ -758,26 +522,24 @@ export function drawGuideStroke(ctx: CanvasRenderingContext2D, stroke: StrokeDra
   }
   ctx.stroke();
   ctx.setLineDash([]);
+  ctx.shadowBlur = 0;
 
-  // 起点标记（绿色圆点）
+  // 起点（绿色圆点）
+  ctx.fillStyle = '#7DC353';
   ctx.beginPath();
-  ctx.arc(pts[0].x, pts[0].y, 8, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(16, 185, 129, 0.9)';
-  ctx.shadowColor = 'rgba(16, 185, 129, 0.6)';
-  ctx.shadowBlur = 10;
+  ctx.arc(pts[0].x, pts[0].y, 5, 0, Math.PI * 2);
   ctx.fill();
 
-  // 终点标记（红色小方块）
-  const end = pts[pts.length - 1];
-  ctx.shadowColor = 'rgba(239, 68, 68, 0.5)';
-  ctx.fillStyle = 'rgba(239, 68, 68, 0.8)';
-  ctx.fillRect(end.x - 5, end.y - 5, 10, 10);
+  // 终点（红色方块）
+  const last = pts[pts.length - 1];
+  ctx.fillStyle = '#F302C9';
+  ctx.fillRect(last.x - 4, last.y - 4, 8, 8);
 
   ctx.restore();
 }
 
 /**
- * 序列化笔触为 DrawData.txt 格式
+ * 序列化笔触数据为文本
  */
 export function serializeStrokes(strokes: StrokeDrawData[]): string {
   return strokes
