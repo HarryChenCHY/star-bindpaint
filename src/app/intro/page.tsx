@@ -48,63 +48,57 @@ function StrokeDemoSVG() {
   );
 }
 
-/* ── ETF direction field animation ───────────────── */
-function ETFFieldSVG() {
-  const arrows = [];
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col < 8; col++) {
-      const x = 20 + col * 22;
-      const y = 18 + row * 18;
-      const angle = Math.sin(row * 0.8 + col * 0.6) * 45 + Math.cos(row * 0.5) * 20;
-      arrows.push({ x, y, angle, key: `${row}-${col}` });
-    }
-  }
+/* ── Multi-layer painting animation ───────────────── */
+function MultiLayerSVG() {
+  // Simulates coarse-to-fine layers: big strokes first, small strokes later
+  const strokes = [
+    // Layer 1 - coarse (thick, short)
+    { d: 'M20 80 Q50 70 80 75', w: 8, color: '#F9B801', delay: 0 },
+    { d: 'M60 30 Q100 20 140 35', w: 7, color: '#7A51EC', delay: 0.2 },
+    { d: 'M120 70 Q150 60 180 65', w: 8, color: '#F302C9', delay: 0.4 },
+    // Layer 2 - medium
+    { d: 'M30 55 Q55 45 75 50', w: 4, color: '#7DC353', delay: 0.8 },
+    { d: 'M90 50 Q115 42 135 48', w: 4, color: '#F9B801', delay: 1.0 },
+    { d: 'M145 40 Q165 35 180 42', w: 3.5, color: '#7A51EC', delay: 1.2 },
+    // Layer 3 - fine (thin, detail)
+    { d: 'M40 90 Q55 85 70 88', w: 2, color: '#F302C9', delay: 1.6 },
+    { d: 'M100 85 Q115 80 130 83', w: 1.8, color: '#7DC353', delay: 1.8 },
+    { d: 'M155 90 Q168 86 180 88', w: 2, color: '#F9B801', delay: 2.0 },
+  ];
   return (
     <svg viewBox="0 0 200 110" className="w-full" style={{ maxWidth: 360, background: '#F5F5F5', borderRadius: 12 }}>
-      {arrows.map(({ x, y, angle, key }, i) => (
-        <motion.g key={key} transform={`translate(${x},${y}) rotate(${angle})`}
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ delay: i * 0.015, duration: 0.3 }}>
-          <line x1="-6" y1="0" x2="6" y2="0" stroke="#7A51EC" strokeWidth="1.2" strokeLinecap="round" />
-          <polygon points="6,0 3,-2 3,2" fill="#7A51EC" />
-        </motion.g>
+      {strokes.map((s, i) => (
+        <motion.path key={i} d={s.d} stroke={s.color} strokeWidth={s.w} fill="none" strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ delay: s.delay, duration: 0.6, ease: 'easeOut', repeat: Infinity, repeatDelay: 3 }}
+        />
       ))}
-      <motion.path
-        d="M18 90 Q40 50 75 65 Q110 80 145 45 Q170 25 185 35"
-        stroke="#F302C9" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeDasharray="4 3"
-        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-        transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity, repeatDelay: 2 }}
-      />
+      {/* Layer labels */}
+      <text x="5" y="12" fontSize="7" fill="#888888" fontWeight="700">粗 → 细</text>
     </svg>
   );
 }
 
-/* ── Poisson sampling dot animation ─────────────── */
-function PoissonDotsSVG() {
-  const dots = [
-    { x: 30,  y: 25,  r: 2.5, delay: 0 },
-    { x: 62,  y: 18,  r: 3,   delay: 0.1 },
-    { x: 100, y: 30,  r: 2,   delay: 0.2 },
-    { x: 140, y: 15,  r: 3.5, delay: 0.05 },
-    { x: 170, y: 28,  r: 2,   delay: 0.15 },
-    { x: 45,  y: 55,  r: 2,   delay: 0.25 },
-    { x: 80,  y: 70,  r: 2.5, delay: 0.08 },
-    { x: 115, y: 60,  r: 3,   delay: 0.18 },
-    { x: 155, y: 72,  r: 2,   delay: 0.3 },
-    { x: 25,  y: 85,  r: 3.5, delay: 0.12 },
-    { x: 60,  y: 92,  r: 2,   delay: 0.22 },
-    { x: 95,  y: 88,  r: 2.5, delay: 0.07 },
-    { x: 130, y: 95,  r: 3,   delay: 0.17 },
-    { x: 165, y: 85,  r: 2,   delay: 0.27 },
-    { x: 185, y: 55,  r: 3.5, delay: 0.03 },
+/* ── Error-driven region detection animation ─────────────── */
+function ErrorRegionSVG() {
+  // Shows high-error regions being detected and painted
+  const regions = [
+    { x: 30, y: 25, w: 35, h: 30, delay: 0, color: '#F9B801' },
+    { x: 80, y: 45, w: 40, h: 35, delay: 0.3, color: '#F302C9' },
+    { x: 135, y: 20, w: 30, h: 40, delay: 0.6, color: '#7DC353' },
+    { x: 50, y: 70, w: 45, h: 25, delay: 0.9, color: '#7A51EC' },
+    { x: 130, y: 70, w: 35, h: 30, delay: 1.2, color: '#F9B801' },
   ];
   return (
     <svg viewBox="0 0 200 110" className="w-full" style={{ maxWidth: 360, background: '#F5F5F5', borderRadius: 12 }}>
-      {dots.map((d, i) => (
-        <motion.circle key={i} cx={d.x} cy={d.y} r={d.r} fill="#F9B801" stroke="#1A1A1A" strokeWidth="1"
-          initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: d.delay + i * 0.06, type: 'spring', stiffness: 260 }} />
+      {regions.map((r, i) => (
+        <motion.rect key={i} x={r.x} y={r.y} width={r.w} height={r.h} rx="4"
+          fill={r.color} fillOpacity="0.2" stroke={r.color} strokeWidth="1.5" strokeDasharray="3 2"
+          initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: r.delay, duration: 0.4, repeat: Infinity, repeatDelay: 3 }}
+        />
       ))}
+      <text x="10" y="108" fontSize="7" fill="#888888" fontWeight="700">误差检测 → 局部修补</text>
     </svg>
   );
 }
@@ -372,7 +366,7 @@ export default function IntroPage() {
                   sub: 'Guided Learning',
                   char: <StarChar size={72} />,
                   tag: '教育',
-                  points: ['选择莫奈/梵高/高更等6位大师30幅经典画作', '你画1笔，AI自动补50笔（可调20-200）', '物理仿真算法拆解油画笔触序列', 'TEACCH视觉时间表实时显示进度'],
+                  points: ['选择莫奈/梵高/高更等6位大师30幅经典画作', '你画1笔，AI自动补50笔（可调20-200）', '多层误差驱动算法智能拆解油画笔触序列', 'TEACCH视觉时间表实时显示进度'],
                 },
                 {
                   color: '#F302C9',
@@ -599,24 +593,24 @@ export default function IntroPage() {
               {[
                 {
                   icon: '🧠', color: '#F9B801',
-                  title: 'ETF 边缘切线流',
-                  badge: 'Kang 2007',
-                  desc: '基于图像梯度计算每个像素点的笔触主方向，经过多轮迭代平滑得到连贯的方向场。这决定了每一笔"应该往哪个方向画"。',
-                  tags: ['梯度计算', '迭代平滑', '方向场'],
+                  title: '多层误差驱动分解',
+                  badge: '笔触规划',
+                  desc: '从粗到细多层扫描：先用大笔触铺底色，再逐层用更细的笔触修补高误差区域。每层只在"画得不够像"的地方补笔，逐步逼近原画。',
+                  tags: ['从粗到细', '误差驱动', '逐层修补'],
                 },
                 {
-                  icon: '📍', color: '#F302C9',
-                  title: '泊松盘采样 + Lloyd 迭代',
-                  badge: 'Bridson 2007',
-                  desc: '在图像上生成密度自适应的笔触锚点：边缘与暗部密集、亮部平坦处稀疏，确保笔触覆盖合理且自然。',
-                  tags: ['密度自适应', '泊松盘', 'Lloyd 松弛'],
+                  icon: '🖌️', color: '#F302C9',
+                  title: '梯度追踪弯曲笔触',
+                  badge: '路径生成',
+                  desc: '每一笔沿图像梯度的垂直方向延伸——自动贴合物体边缘和纹理走向，形成自然弯曲的笔触路径，仿佛画笔跟着画面的光影在游走。',
+                  tags: ['梯度垂直', '自然弯曲', '纹理对齐'],
                 },
                 {
-                  icon: '🖌️', color: '#7DC353',
-                  title: '流线追踪路径规划',
-                  badge: '路径算法',
-                  desc: '从锚点出发，沿 ETF 方向场正反向延伸追踪，加入 HSV 色彩约束防止跨越物体边界，最终生成完整笔触路径。',
-                  tags: ['双向追踪', 'HSV 约束', '边界感知'],
+                  icon: '🚧', color: '#7DC353',
+                  title: '颜色边界感知',
+                  badge: '智能截断',
+                  desc: '笔触延伸过程中实时检测颜色变化：当笔尖即将"画到另一个物体上"时自动停笔，保护物体边缘清晰度，不会涂出轮廓外。',
+                  tags: ['边界检测', '自动停笔', '轮廓保护'],
                 },
                 {
                   icon: '✨', color: '#7A51EC',
@@ -660,11 +654,11 @@ export default function IntroPage() {
                 {[
                   { label: '输入图像', color: '#F5F5F5', text: '#1A1A1A' },
                   { label: '→', color: 'transparent', text: '#CCCCCC' },
-                  { label: 'ETF 方向场', color: '#F9B801', text: '#1A1A1A' },
+                  { label: '高斯模糊', color: '#F9B801', text: '#1A1A1A' },
                   { label: '→', color: 'transparent', text: '#CCCCCC' },
-                  { label: '泊松采样', color: '#F302C9', text: '#1A1A1A' },
+                  { label: '误差检测', color: '#F302C9', text: '#1A1A1A' },
                   { label: '→', color: 'transparent', text: '#CCCCCC' },
-                  { label: '流线追踪', color: '#7DC353', text: '#1A1A1A' },
+                  { label: '梯度追踪', color: '#7DC353', text: '#1A1A1A' },
                   { label: '→', color: 'transparent', text: '#CCCCCC' },
                   { label: 'Catmull-Rom', color: '#7A51EC', text: '#FFFFFF' },
                   { label: '→', color: 'transparent', text: '#CCCCCC' },
@@ -697,54 +691,59 @@ export default function IntroPage() {
               深入<span style={{ color: '#F302C9' }}>原理</span>解析
             </motion.h2>
 
-            {/* ETF section */}
+            {/* Multi-layer section */}
             <div className="grid md:grid-cols-2 gap-8 mb-10">
               <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
                 <h3 style={{ fontWeight: 900, fontSize: '1.1rem', color: '#1A1A1A', letterSpacing: '-0.03em', marginBottom: '0.75rem' }}>
-                  <span style={{ color: '#F9B801' }}>①</span> ETF 边缘切线流
+                  <span style={{ color: '#F9B801' }}>①</span> 多层从粗到细
                 </h3>
                 <p style={{ fontSize: '0.875rem', color: '#666666', fontWeight: 600, lineHeight: 1.8, marginBottom: '1rem' }}>
-                  每个像素的笔触方向由图像梯度的<strong style={{ color: '#1A1A1A' }}>垂直方向</strong>决定——沿边缘切线方向，而非穿越边缘。
-                  迭代公式：
+                  像真正的画家一样，先用<strong style={{ color: '#1A1A1A' }}>大笔刷</strong>铺出整体色调和构图，
+                  再逐层换小笔刷补充细节。每一层都对参考图做高斯模糊（模糊程度与笔刷大小成正比），
+                  只在"当前画布和参考图差距较大"的区域补新笔触。
                 </p>
                 <div className="p-3 rounded-[0.75rem] font-mono text-sm" style={{ background: '#1A1A1A', color: '#F9B801', border: '1.5px solid #1A1A1A' }}>
-                  <div>t'(x) = Σ t(y) · φ(x,y)</div>
-                  <div style={{ color: '#888888', fontSize: '0.75rem', marginTop: '0.25rem' }}>φ(x,y) = sign(t(x)·t(y)) · w_s · w_m · w_d</div>
+                  <div>for layer in [大, 中, 小]:</div>
+                  <div style={{ paddingLeft: '1rem' }}>ref = blur(原图, σ=layer.size)</div>
+                  <div style={{ paddingLeft: '1rem' }}>diff = |canvas - ref|</div>
+                  <div style={{ paddingLeft: '1rem' }}>paint where diff {'>'} threshold</div>
                 </div>
                 <p style={{ fontSize: '0.82rem', color: '#888888', fontWeight: 600, marginTop: '0.75rem', lineHeight: 1.7 }}>
-                  经过 15 次迭代后，方向场趋于平滑，笔触走向自然流畅，与图像结构完美对齐。
+                  这样每层新增的笔触数量自然递减，最终形成疏密有致、有呼吸感的画面。
                 </p>
               </motion.div>
               <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
                 className="flex flex-col gap-2">
-                <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#888888', letterSpacing: '0.1em', textTransform: 'uppercase' }}>动态演示：ETF 方向场</p>
-                <ETFFieldSVG />
-                <p style={{ fontSize: '0.72rem', color: '#AAAAAA', fontWeight: 600 }}>紫色箭头为方向场，粉色虚线为沿方向场追踪的笔触路径</p>
+                <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#888888', letterSpacing: '0.1em', textTransform: 'uppercase' }}>动态演示：多层叠加绘制</p>
+                <MultiLayerSVG />
+                <p style={{ fontSize: '0.72rem', color: '#AAAAAA', fontWeight: 600 }}>粗笔触先铺底，细笔触逐层补充细节</p>
               </motion.div>
             </div>
 
-            {/* Poisson section */}
+            {/* Error-driven section */}
             <div className="grid md:grid-cols-2 gap-8 mb-10">
               <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.05 }}
                 className="flex flex-col gap-2">
-                <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#888888', letterSpacing: '0.1em', textTransform: 'uppercase' }}>动态演示：泊松锚点生成</p>
-                <PoissonDotsSVG />
-                <p style={{ fontSize: '0.72rem', color: '#AAAAAA', fontWeight: 600 }}>锚点按亮度密度自适应分布，边缘处密集，平坦处稀疏</p>
+                <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#888888', letterSpacing: '0.1em', textTransform: 'uppercase' }}>动态演示：误差区域检测</p>
+                <ErrorRegionSVG />
+                <p style={{ fontSize: '0.72rem', color: '#AAAAAA', fontWeight: 600 }}>虚线框标出高误差区域，算法只在这些区域补新笔触</p>
               </motion.div>
               <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
                 <h3 style={{ fontWeight: 900, fontSize: '1.1rem', color: '#1A1A1A', letterSpacing: '-0.03em', marginBottom: '0.75rem' }}>
-                  <span style={{ color: '#F302C9' }}>②</span> 泊松盘采样
+                  <span style={{ color: '#F302C9' }}>②</span> 梯度追踪弯曲笔触
                 </h3>
                 <p style={{ fontSize: '0.875rem', color: '#666666', fontWeight: 600, lineHeight: 1.8, marginBottom: '1rem' }}>
-                  基于 Bridson 2007 快速泊松盘采样，在图像上生成<strong style={{ color: '#1A1A1A' }}>互相排斥的锚点</strong>，
-                  密度由局部亮度控制：
+                  确定"在哪画"之后，下一步是决定<strong style={{ color: '#1A1A1A' }}>"往哪方向画"</strong>。
+                  算法用 Sobel 算子计算每个像素的亮度梯度，笔触沿梯度的<strong style={{ color: '#F302C9' }}>垂直方向</strong>延伸——
+                  这意味着笔触自动贴合纹理走向，而非穿越边缘：
                 </p>
                 <div className="p-3 rounded-[0.75rem] font-mono text-sm" style={{ background: '#1A1A1A', color: '#F302C9', border: '1.5px solid #1A1A1A' }}>
-                  <div>r(x) = r_min + (1 - L(x)) · r_range</div>
-                  <div style={{ color: '#888888', fontSize: '0.75rem', marginTop: '0.25rem' }}>L(x) = 像素亮度 ∈ [0,1]</div>
+                  <div>gradient = sobel(image, x, y)</div>
+                  <div>direction = perpendicular(gradient)</div>
+                  <div>stroke.extend(direction, step)</div>
                 </div>
                 <p style={{ fontSize: '0.82rem', color: '#888888', fontWeight: 600, marginTop: '0.75rem', lineHeight: 1.7 }}>
-                  再经过 Lloyd 质心迭代将锚点移至各自 Voronoi 格的亮度重心，确保视觉均匀感。
+                  同时施加曲率过滤：如果笔触弯得太急就自动截短，保证视觉美观。
                 </p>
               </motion.div>
             </div>
@@ -753,15 +752,16 @@ export default function IntroPage() {
             <div className="grid md:grid-cols-2 gap-8">
               <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
                 <h3 style={{ fontWeight: 900, fontSize: '1.1rem', color: '#1A1A1A', letterSpacing: '-0.03em', marginBottom: '0.75rem' }}>
-                  <span style={{ color: '#7A51EC' }}>③</span> Catmull-Rom 笔触渲染
+                  <span style={{ color: '#7A51EC' }}>③</span> 边界感知 + 曲线渲染
                 </h3>
                 <p style={{ fontSize: '0.875rem', color: '#666666', fontWeight: 600, lineHeight: 1.8, marginBottom: '1rem' }}>
-                  将流线路径上的离散点用 Catmull-Rom 样条平滑，每段由相邻 4 个控制点决定，
-                  笔触宽度按路径长度变化实现<strong style={{ color: '#1A1A1A' }}>压感效果</strong>。
+                  笔触延伸过程中实时对比起点颜色与当前位置颜色——一旦色差超过阈值，说明笔触即将"跨越物体边界"，
+                  自动停笔。最终路径用 Catmull-Rom 样条平滑，模拟<strong style={{ color: '#1A1A1A' }}>真实画笔</strong>的压感效果。
                 </p>
                 <div className="p-3 rounded-[0.75rem] font-mono text-sm" style={{ background: '#1A1A1A', color: '#7A51EC', border: '1.5px solid #1A1A1A' }}>
-                  <div>P(t) = 0.5 · [1,t,t²,t³] · M · [P0,P1,P2,P3]ᵀ</div>
-                  <div style={{ color: '#888888', fontSize: '0.75rem', marginTop: '0.25rem' }}>M: Catmull-Rom 系数矩阵</div>
+                  <div>if |color(current) - color(start)| {'>'} T:</div>
+                  <div style={{ paddingLeft: '1rem' }}>break  // 停笔，保护边缘</div>
+                  <div style={{ marginTop: '0.5rem' }}>render: Catmull-Rom spline + 压感宽度</div>
                 </div>
               </motion.div>
               <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
@@ -794,7 +794,7 @@ export default function IntroPage() {
                 <span style={{ fontWeight: 600, fontSize: '0.8rem', color: '#888888', marginLeft: '0.75rem' }}>上海交通大学 · 星月绘愈社</span>
               </div>
               <div className="flex gap-2 flex-wrap justify-center">
-                {['ETF 算法', '实时风格化', '混元生图', '混元大模型', 'Canvas 2D', '情绪检测'].map(t => (
+                {['笔触分解', '实时风格化', '混元生图', '混元大模型', 'Canvas 2D', '情绪检测'].map(t => (
                   <span key={t} style={{ background: 'white', border: '1.5px solid #1A1A1A', borderRadius: 99, fontSize: '0.72rem', fontWeight: 700, padding: '0.25em 0.7em', color: '#1A1A1A' }}>{t}</span>
                 ))}
               </div>

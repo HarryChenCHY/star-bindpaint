@@ -142,7 +142,7 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 | 🎨 | **Tailwind CSS 4** | 色彩系统 + 安静模式变量 |
 | ✨ | **Framer Motion** | 动画（安静模式自动禁用） |
 | 🖌️ | **Canvas 2D** | 三层画布 + 引导线 + 演示 |
-| 🧠 | **物理仿真引擎** | ETF + 泊松采样 + 流线追踪 |
+| 🧠 | **笔触分解引擎** | 多层误差驱动 + 梯度追踪 + 边界感知 |
 | 🎭 | **实时风格化引擎** | 6种大师风格纯前端实时运行 |
 | ✨ | **腾讯混元生图 hy-image-v3.0** | "变成油画" 深度渲染 |
 | 📋 | **腾讯混元大模型** | 多模态分析生成疗愈报告 |
@@ -211,7 +211,7 @@ src/
 │   ├── StarrySprite.tsx       # 画笔精灵 Starry
 │   └── ToolBar.tsx            # 工具栏（图标化按钮）
 ├── lib/
-│   ├── stroke-engine.ts       # ETF + 采样 + 规划 + 色调偏移
+│   ├── stroke-engine.ts       # 多层误差驱动笔触分解 + 色调偏移
 │   ├── style-transfer.ts     # 6种大师风格实时转换引擎
 │   ├── painting-tracker.ts    # 绘画过程数据采集
 │   ├── emotion-detector.ts    # 情绪被动检测（行为信号）
@@ -249,10 +249,12 @@ npx vercel --prod
 
 ## 📚 技术溯源
 
-核心算法源自 Unity C# 油画仿真系统（AAOP 4.10），参考论文：
+核心笔触分解算法基于经典计算机视觉中的"多层误差驱动弯曲笔触渲染"方法，纯前端 JavaScript 独立实现：
 
-- Kang et al. 2007 — *Coherent Line Drawing*（ETF 算法）
-- Teng Hu et al. 2023 — *Stroke-based Neural Painting with Dynamically Predicted Painting Region*
+- 多尺度从粗到细：高斯模糊 + 误差区域检测 + 逐层修补
+- 梯度追踪弯曲路径：Sobel 梯度垂直方向延伸 + 曲率过滤
+- 颜色边界感知：跨物体边缘自动截断，保护轮廓清晰度
+- Catmull-Rom 样条渲染：平滑曲线 + 压感宽度变化
 
 ASD 适配设计基于：
 - TEACCH 结构化教学法（视觉时间表）

@@ -186,7 +186,7 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              { icon: '🧠', title: 'ETF 笔触规划算法', desc: '边缘切线流 + 泊松采样 + 流线追踪，实时将图片拆解为有序笔触序列', color: '#F9B801' },
+              { icon: '🧠', title: '多层笔触分解算法', desc: '多尺度误差驱动 + 梯度追踪弯曲笔触 + 边界感知，将图片智能拆解为有序笔触序列', color: '#F9B801' },
               { icon: '🎨', title: '实时风格化引擎', desc: '6种大师风格（莫奈/梵高/高更/伦勃朗/毕加索/萨金特），逐笔实时变换', color: '#F302C9' },
               { icon: '✨', title: '变成油画 · AI 渲染', desc: '腾讯混元生图 hy-image-v3.0，将简笔画一键渲染为完整的大师级油画', color: '#7DC353' },
               { icon: '📋', title: 'LLM 疗愈报告', desc: '腾讯混元大模型多模态分析绘画行为数据，生成温暖的观察记录', color: '#7A51EC' },
@@ -276,7 +276,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="flex gap-2 flex-wrap justify-center">
-            {['Next.js', '物理仿真', 'Canvas 2D', '触屏适配', '零依赖算法'].map(tag => (
+            {['Next.js', '笔触分解', 'Canvas 2D', '触屏适配', '零依赖算法'].map(tag => (
               <span key={tag} className="px-3 py-1 rounded-full"
                 style={{ background: 'white', border: '1.5px solid #1A1A1A', fontSize: '0.75rem', fontWeight: 700, color: '#1A1A1A' }}>
                 {tag}
