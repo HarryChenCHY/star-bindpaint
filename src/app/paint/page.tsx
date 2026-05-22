@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ImagePlus } from 'lucide-react';
 import PaintCanvas, { PaintMode } from '@/components/PaintCanvas';
-import ModeSelector from '@/components/ModeSelector';
-import ToolBar from '@/components/ToolBar';
+import PaintBottomBar from '@/components/PaintBottomBar';
 import StarrySprite, { SpriteState } from '@/components/StarrySprite';
 import ProgressRing from '@/components/ProgressRing';
 import EmotionPicker, { Emotion } from '@/components/EmotionPicker';
@@ -24,7 +24,6 @@ import { EmotionDetector, EmotionLevel } from '@/lib/emotion-detector';
 import { generateAttentionQuestion, generateCalmPrompt } from '@/lib/feedback-engine';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
 import { useAppSettings } from '@/contexts/AppContext';
-import { MiniStar } from '@/components/Characters';
 
 export default function PaintPage() {
   const router = useRouter();
@@ -113,7 +112,7 @@ export default function PaintPage() {
       const style = MASTER_STYLES.find(s => s.id === freeStyleId) || MASTER_STYLES[1]; // 默认梵高
       setSelectedStyle(style);
       setMode('free');
-      setCanvasSize({ w: 512, h: 512 });
+      setCanvasSize({ w: 768, h: 768 });
       setStrokes([]);
       setLoading(false);
       setSpriteState('guiding');
@@ -121,7 +120,7 @@ export default function PaintPage() {
 
       const tracker = getTracker();
       tracker.setMode('free', 'assist');
-      tracker.setCanvasSize(512, 512);
+      tracker.setCanvasSize(768, 768);
       tracker.setCustomUpload();
       tracker.startSession(0);
       return;
@@ -139,7 +138,7 @@ export default function PaintPage() {
       const w = parseInt(sessionStorage.getItem('star-bindpaint-source-w') || '400');
       const h = parseInt(sessionStorage.getItem('star-bindpaint-source-h') || '400');
 
-      const maxCanvas = 512;
+      const maxCanvas = 768;
       let cw = w, ch = h;
       if (Math.max(cw, ch) > maxCanvas) {
         const scale = maxCanvas / Math.max(cw, ch);
@@ -603,37 +602,45 @@ export default function PaintPage() {
   return (
     <div className="flex-1 flex flex-col h-screen bg-white" data-calm={settings.calmMode}>
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-3"
+      <header className="flex items-center justify-between px-3 sm:px-6 py-3 gap-2"
         style={{ borderBottom: '2px solid #1A1A1A' }}>
         <button
           onClick={() => router.push('/')}
-          className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
-          style={{ background: '#F5F5F5', border: '2px solid #E5E5E5' }}
+          className="flex items-center gap-1.5 rounded-full transition-all"
+          style={{
+            background: '#FFFFFF',
+            border: '2px solid #1A1A1A',
+            boxShadow: '3px 3px 0 #1A1A1A',
+            padding: '0.5em 1.1em',
+          }}
           title="回去"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M15 18l-6-6 6-6" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round" />
-          </svg>
+          <ChevronLeft size={16} strokeWidth={2.8} color="#1A1A1A" />
+          <span style={{ color: '#1A1A1A', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '-0.01em' }}>
+            返回
+          </span>
         </button>
 
-        <div className="flex items-center gap-2">
-          <MiniStar color="#F9B801" size={16} />
-          <ModeSelector current={mode} onChange={setMode} />
-        </div>
+        <span style={{ fontWeight: 900, fontSize: '0.95rem', color: '#1A1A1A', letterSpacing: '-0.02em' }}>
+          {mode === 'follow' && '跟画'}
+          {mode === 'auto' && '自动播放'}
+          {mode === 'free' && '自由创作'}
+        </span>
 
         <button
           onPointerDown={(e) => e.stopPropagation()}
           onClick={handleExport}
-          className="flex items-center gap-1.5 rounded-full px-4 py-2 transition-colors"
-          style={{ background: '#1A1A1A', border: '2px solid #1A1A1A' }}
+          className="flex items-center gap-1.5 rounded-full transition-all"
+          style={{
+            background: '#7A51EC',
+            border: '2px solid #1A1A1A',
+            boxShadow: '3px 3px 0 #1A1A1A',
+            padding: '0.5em 1.2em',
+          }}
           title="放进画廊"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" strokeWidth="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5" fill="white"/>
-            <path d="M21 15l-5-5L5 21" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-          <span style={{ color: 'white', fontWeight: 800, fontSize: '0.8rem' }}>完成</span>
+          <ImagePlus size={15} strokeWidth={2.5} color="#FFFFFF" />
+          <span style={{ color: 'white', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '-0.01em' }}>完成</span>
         </button>
       </header>
 
@@ -651,7 +658,7 @@ export default function PaintPage() {
         )}
 
         {/* Canvas area */}
-        <div className="flex-1 flex items-center justify-center p-6 relative"
+        <div className="flex-1 flex items-center justify-center p-2 sm:p-3 pb-28 relative min-w-0 min-h-0"
           style={{ background: '#FAFAFA', pointerEvents: (sdResult || showPostEmotion || showCalm) ? 'none' : 'auto' }}>
 
           {/* 自由模式主题选择 */}
@@ -720,134 +727,30 @@ export default function PaintPage() {
           </AnimatePresence>
         </div>
 
-        {/* Side panel */}
-        <aside className="w-64 flex flex-col gap-4 overflow-y-auto p-5 bg-white"
-          style={{ borderLeft: '2px solid #1A1A1A' }}>
-          {/* Sprite */}
-          <StarrySprite state={spriteState} message={spriteMessage} />
-
-          {/* Progress */}
-          <div className="flex justify-center py-1">
-            <ProgressRing
-              progress={progress}
-              label={`${Math.round(progress * strokes.length)} / ${strokes.length} 笔`}
-            />
-          </div>
-
-          {/* Divider */}
-          <div style={{ height: 2, background: '#E5E5E5' }} />
-
-          {/* 自由创作风格选择器 */}
-          {mode === 'free' && (
-            <div>
-              <label style={{ fontSize: '0.7rem', color: '#888', letterSpacing: '0.06em', textTransform: 'uppercase' as const, fontWeight: 700, display: 'block', marginBottom: '0.5rem' }}>
-                大师风格
-              </label>
-              <div className="grid grid-cols-3 gap-1.5">
-                {MASTER_STYLES.map(s => (
-                  <button
-                    key={s.id}
-                    onClick={() => setSelectedStyle(s)}
-                    className="flex flex-col items-center gap-1 p-2 rounded-xl transition-all"
-                    style={{
-                      border: selectedStyle?.id === s.id ? `2px solid ${s.color}` : '1.5px solid #E5E5E5',
-                      background: selectedStyle?.id === s.id ? `${s.color}15` : 'white',
-                    }}
-                  >
-                    <div className="w-6 h-6 rounded-full" style={{ background: s.color }} />
-                    <span style={{ fontSize: '0.6rem', fontWeight: 700, color: '#1A1A1A' }}>{s.name}</span>
-                  </button>
-                ))}
-              </div>
-              {selectedStyle && (
-                <p style={{ fontSize: '0.65rem', color: '#AAA', fontWeight: 600, marginTop: 6 }}>
-                  {selectedStyle.description}
-                </p>
-              )}
-
-              {/* 调色板 */}
-              <label style={{ fontSize: '0.7rem', color: '#888', letterSpacing: '0.06em', textTransform: 'uppercase' as const, fontWeight: 700, display: 'block', marginTop: '12px', marginBottom: '0.4rem' }}>
-                画笔颜色
-              </label>
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  { color: [0.9, 0.2, 0.2] as [number, number, number], label: '红' },
-                  { color: [0.95, 0.6, 0.1] as [number, number, number], label: '橙' },
-                  { color: [0.95, 0.85, 0.1] as [number, number, number], label: '黄' },
-                  { color: [0.2, 0.7, 0.3] as [number, number, number], label: '绿' },
-                  { color: [0.1, 0.3, 0.7] as [number, number, number], label: '蓝' },
-                  { color: [0.5, 0.2, 0.8] as [number, number, number], label: '紫' },
-                  { color: [0.85, 0.4, 0.6] as [number, number, number], label: '粉' },
-                  { color: [0.1, 0.1, 0.1] as [number, number, number], label: '黑' },
-                  { color: [0.95, 0.93, 0.88] as [number, number, number], label: '白' },
-                ].map(c => (
-                  <button
-                    key={c.label}
-                    onClick={() => setFreeColor(c.color)}
-                    className="w-7 h-7 rounded-full transition-all"
-                    title={c.label}
-                    style={{
-                      background: `rgb(${Math.round(c.color[0]*255)},${Math.round(c.color[1]*255)},${Math.round(c.color[2]*255)})`,
-                      border: freeColor[0] === c.color[0] && freeColor[1] === c.color[1] && freeColor[2] === c.color[2]
-                        ? '3px solid #1A1A1A'
-                        : '2px solid #E5E5E5',
-                      transform: freeColor[0] === c.color[0] && freeColor[1] === c.color[1] && freeColor[2] === c.color[2]
-                        ? 'scale(1.15)' : 'scale(1)',
-                    }}
-                  />
-                ))}
-              </div>
-
-              {/* ✨ 变成油画 按钮 */}
-              <button
-                onClick={handleSDRender}
-                disabled={sdRendering}
-                className="w-full mt-3 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all"
-                style={{
-                  background: sdRendering ? '#E5E5E5' : 'linear-gradient(135deg, #7A51EC, #F302C9)',
-                  color: 'white',
-                  border: 'none',
-                  opacity: sdRendering ? 0.6 : 1,
-                }}
-              >
-                {sdRendering ? (
-                  <>
-                    <motion.span animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>⏳</motion.span>
-                    施魔法中...
-                  </>
-                ) : (
-                  <>✨ 变成油画</>
-                )}
-              </button>
-
-              <div style={{ height: 2, background: '#E5E5E5', margin: '12px 0' }} />
-            </div>
-          )}
-
-          {/* Tools */}
-          <ToolBar
-            brushWidth={brushWidth}
-            onBrushWidthChange={setBrushWidth}
-            guideSubMode={guideSubMode}
-            onGuideSubModeChange={setGuideSubMode}
-            autoSpeed={autoSpeed}
-            onAutoSpeedChange={setAutoSpeed}
-            fillMode={fillMode}
-            onFillModeChange={setFillMode}
-            autoFillRatio={autoFillRatio}
-            onAutoFillRatioChange={setAutoFillRatio}
-            showSubMode={mode === 'follow'}
-            showSpeed={mode === 'auto'}
-            showFillMode={mode === 'follow'}
-            onReset={handleReset}
-            onSkip={mode === 'follow' ? handleSkip : undefined}
-            onBatchDraw={mode === 'follow' ? handleBatchDraw : undefined}
-            onExport={handleExport}
-            totalStrokes={strokes.length}
-            currentStrokeIdx={Math.round(progress * strokes.length)}
-          />
-        </aside>
       </div>
+
+      {/* Floating Sprite + Progress card (top-right) */}
+      <motion.div
+        initial={{ opacity: 0, x: 20, y: -10 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+        className="fixed z-30 flex flex-col items-center gap-2 px-3 py-3 rounded-[1.25rem] bg-white"
+        style={{
+          top: 'clamp(64px, 10vw, 80px)',
+          right: 'clamp(8px, 2vw, 16px)',
+          width: 'clamp(132px, 32vw, 196px)',
+          border: '2px solid #1A1A1A',
+          boxShadow: '4px 4px 0 #1A1A1A',
+        }}
+      >
+        <StarrySprite state={spriteState} message={spriteMessage} />
+        <div className="flex justify-center pt-1">
+          <ProgressRing
+            progress={progress}
+            label={mode === 'free' ? '自由创作' : `${Math.round(progress * strokes.length)} / ${strokes.length} 笔`}
+          />
+        </div>
+      </motion.div>
 
       {/* ═══ 照护者陪伴提示 ═══ */}
       <CaregiverTips currentState={caregiverState} mode={mode} />
@@ -873,6 +776,38 @@ export default function PaintPage() {
           />
         )}
       </AnimatePresence>
+
+      {/* ═══ Bottom Toolbar (Figma-style) ═══ */}
+      <PaintBottomBar
+        mode={mode}
+        onModeChange={(m) => {
+          setMode(m);
+          if (m === 'free' && !selectedStyle) {
+            setSelectedStyle(MASTER_STYLES[1]);
+          }
+        }}
+        brushWidth={brushWidth}
+        onBrushWidthChange={setBrushWidth}
+        guideSubMode={guideSubMode}
+        onGuideSubModeChange={setGuideSubMode}
+        fillMode={fillMode}
+        onFillModeChange={setFillMode}
+        autoFillRatio={autoFillRatio}
+        onAutoFillRatioChange={setAutoFillRatio}
+        autoSpeed={autoSpeed}
+        onAutoSpeedChange={setAutoSpeed}
+        totalStrokes={strokes.length}
+        currentStrokeIdx={Math.round(progress * strokes.length)}
+        onBatchDraw={handleBatchDraw}
+        onSkip={handleSkip}
+        onReset={handleReset}
+        selectedStyle={selectedStyle}
+        onSelectStyle={setSelectedStyle}
+        freeColor={freeColor}
+        onFreeColorChange={setFreeColor}
+        onSDRender={handleSDRender}
+        sdRendering={sdRendering}
+      />
 
       {/* ═══ 情绪后测弹窗 ═══ */}
       {showPostEmotion && (

@@ -80,28 +80,28 @@ export default function ReportPage() {
 
   return (
     <div className="flex-1 flex flex-col min-h-screen relative">
-      {/* 画作背景 */}
+      {/* 画作背景（fixed：滚动时永远覆盖视口） */}
       {bgImage && (
-        <div className="absolute inset-0 z-0">
+        <div className="fixed inset-0 z-0 pointer-events-none">
           <img src={bgImage} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(3px)' }} />
         </div>
       )}
 
-      <div className="relative z-10 flex-1 flex flex-col items-center px-6 py-12 max-w-2xl mx-auto w-full">
+      <div className="relative z-10 flex-1 flex flex-col items-center px-4 sm:px-6 py-8 sm:py-12 max-w-2xl mx-auto w-full">
         {/* Header */}
-        <div className="w-full flex items-center justify-between mb-8">
+        <div className="w-full flex items-center justify-between mb-6 sm:mb-8 gap-2">
           <button
             onClick={() => router.push('/gallery')}
-            className="text-sm font-medium"
+            className="text-xs sm:text-sm font-medium flex-shrink-0"
             style={{ color: '#666' }}
           >
-            ← 返回画廊
+            ← <span className="hidden sm:inline">返回画廊</span><span className="sm:hidden">画廊</span>
           </button>
-          <h1 className="text-xl font-bold" style={{ color: '#1A1A1A' }}>
+          <h1 className="text-base sm:text-xl font-bold" style={{ color: '#1A1A1A' }}>
             绘画观察报告
           </h1>
-          <div className="w-16" />
+          <div className="w-10 sm:w-16 flex-shrink-0" />
         </div>
 
         {/* 画作预览 */}

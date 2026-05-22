@@ -40,15 +40,15 @@ export default function SettingsPage() {
 
   return (
     <div className="flex-1 flex flex-col bg-white min-h-screen">
-      <header className="flex items-center justify-between px-8 py-5" style={{ borderBottom: '2px solid #1A1A1A' }}>
-        <button onClick={() => router.push('/')} style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1A1A1A' }}>
-          ← 返回首页
+      <header className="flex items-center justify-between px-3 sm:px-8 py-4 sm:py-5 gap-2" style={{ borderBottom: '2px solid #1A1A1A' }}>
+        <button onClick={() => router.push('/')} style={{ fontWeight: 800, fontSize: 'clamp(0.8rem, 2.4vw, 0.9rem)', color: '#1A1A1A' }}>
+          ← <span className="hidden sm:inline">返回首页</span><span className="sm:hidden">返回</span>
         </button>
-        <span style={{ fontWeight: 900, fontSize: '1.1rem', color: '#1A1A1A' }}>家长设置</span>
-        <div style={{ width: 80 }} />
+        <span style={{ fontWeight: 900, fontSize: 'clamp(0.95rem, 3vw, 1.1rem)', color: '#1A1A1A' }}>家长设置</span>
+        <div className="hidden sm:block" style={{ width: 80 }} />
       </header>
 
-      <div className="max-w-md mx-auto w-full px-6 py-10 flex flex-col gap-8">
+      <div className="max-w-md mx-auto w-full px-4 sm:px-6 py-6 sm:py-10 flex flex-col gap-6 sm:gap-8">
         {/* 孩子名字 */}
         <div>
           <label style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1A1A1A', display: 'block', marginBottom: 8 }}>

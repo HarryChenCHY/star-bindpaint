@@ -1,14 +1,15 @@
 'use client';
 
 // ─── 星星角色 (黄色) ───────────────────────────────────────────
-export function StarChar({ size = 120, className = '' }: { size?: number; className?: string }) {
+export function StarChar({ size = 120, className = '' }: { size?: number | string; className?: string }) {
   return (
     <svg
       width={size}
-      height={size * 1.25}
       viewBox="0 0 120 150"
+      preserveAspectRatio="xMidYMid meet"
       fill="none"
       className={className}
+      style={{ height: 'auto', display: 'block' }}
     >
       {/* Star body */}
       <polygon
@@ -45,14 +46,15 @@ export function StarChar({ size = 120, className = '' }: { size?: number; classN
 }
 
 // ─── 花朵角色 (粉色/品红) ─────────────────────────────────────
-export function FlowerChar({ size = 120, className = '' }: { size?: number; className?: string }) {
+export function FlowerChar({ size = 120, className = '' }: { size?: number | string; className?: string }) {
   return (
     <svg
       width={size}
-      height={size * 1.25}
       viewBox="0 0 120 150"
+      preserveAspectRatio="xMidYMid meet"
       fill="none"
       className={className}
+      style={{ height: 'auto', display: 'block' }}
     >
       {/* 5 petals (overlapping circles create flower) */}
       <circle cx="60" cy="27" r="24" fill="#F302C9" stroke="#1A1A1A" strokeWidth="2" />
@@ -85,14 +87,15 @@ export function FlowerChar({ size = 120, className = '' }: { size?: number; clas
 }
 
 // ─── 圆圆角色 (绿色) ──────────────────────────────────────────
-export function BlobChar({ size = 110, className = '' }: { size?: number; className?: string }) {
+export function BlobChar({ size = 110, className = '' }: { size?: number | string; className?: string }) {
   return (
     <svg
       width={size}
-      height={size * 1.3}
       viewBox="0 0 110 140"
+      preserveAspectRatio="xMidYMid meet"
       fill="none"
       className={className}
+      style={{ height: 'auto', display: 'block' }}
     >
       {/* Rounded rect body — slightly tilted */}
       <rect x="15" y="10" width="80" height="95" rx="40" ry="40" fill="#7DC353" stroke="#1A1A1A" strokeWidth="2.5" transform="rotate(-3 55 57)" />

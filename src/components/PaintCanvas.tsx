@@ -209,13 +209,26 @@ export default function PaintCanvas({
   }, [sourceImage, width, height]);
 
   return (
-    <div className="relative overflow-hidden" style={{ width, height, borderRadius: '1.75rem', border: '2px solid #1A1A1A' }}>
+    <div
+      className="relative overflow-hidden"
+      style={{
+        height: '100%',
+        aspectRatio: `${width} / ${height}`,
+        maxWidth: '100%',
+        maxHeight: '100%',
+        margin: 'auto',
+        borderRadius: '1.75rem',
+        border: '2px solid #1A1A1A',
+        boxShadow: '6px 6px 0 #1A1A1A',
+      }}
+    >
       {/* Layer 1: Base / completed strokes */}
       <canvas
         ref={baseCanvasRef}
         width={width}
         height={height}
-        className="absolute inset-0 bg-white rounded-2xl"
+        className="absolute inset-0 bg-white"
+        style={{ width: '100%', height: '100%' }}
       />
       {/* Layer 2: User drawing */}
       <canvas
@@ -223,7 +236,11 @@ export default function PaintCanvas({
         width={width}
         height={height}
         className="absolute inset-0 paint-canvas"
-        style={mode === 'auto' ? { cursor: 'default' } : undefined}
+        style={{
+          width: '100%',
+          height: '100%',
+          ...(mode === 'auto' ? { cursor: 'default' } : null),
+        }}
       />
       {/* Layer 3: Guide overlay */}
       <canvas
@@ -231,6 +248,7 @@ export default function PaintCanvas({
         width={width}
         height={height}
         className="absolute inset-0 pointer-events-none"
+        style={{ width: '100%', height: '100%' }}
       />
     </div>
   );

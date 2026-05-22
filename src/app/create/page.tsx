@@ -11,6 +11,7 @@ import { MASTER_DIALOGUES } from '@/lib/master-dialogues';
 import { MASTER_STYLES } from '@/lib/style-transfer';
 import MasterBubble from '@/components/MasterBubble';
 import MasterQuoteCard from '@/components/MasterQuoteCard';
+import TiltedCard from '@/components/TiltedCard';
 
 type SourceMode = 'masters' | 'upload' | 'free';
 
@@ -119,25 +120,26 @@ export default function CreatePage() {
 
   return (
     <div className="flex-1 flex flex-col min-h-screen relative">
-      {/* 大师画作背景 */}
-      <div className="absolute inset-0 z-0 transition-all duration-700">
+      {/* 大师画作背景（fixed：滚动时永远覆盖视口，避免长内容下方露白） */}
+      <div className="fixed inset-0 z-0 pointer-events-none transition-all duration-700">
         <img src={bgImage} alt="" className="w-full h-full object-cover transition-all duration-700" />
         <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.78)', backdropFilter: 'blur(2px)' }} />
       </div>
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between px-8 py-5" style={{ borderBottom: '2px solid #1A1A1A', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)' }}>
+      <header className="relative z-10 flex items-center justify-between px-3 sm:px-8 py-4 sm:py-5 gap-2" style={{ borderBottom: '2px solid #1A1A1A', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)' }}>
         <button onClick={() => router.push('/')} className="flex items-center gap-2"
-          style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1A1A1A' }}>
-          ← 返回首页
+          style={{ fontWeight: 800, fontSize: 'clamp(0.8rem, 2.4vw, 0.9rem)', color: '#1A1A1A' }}>
+          <span className="hidden sm:inline">← 返回首页</span>
+          <span className="sm:hidden">← 返回</span>
         </button>
-        <span style={{ fontWeight: 900, fontSize: '1.1rem', letterSpacing: '-0.03em', color: '#1A1A1A' }}>
+        <span style={{ fontWeight: 900, fontSize: 'clamp(0.95rem, 3vw, 1.1rem)', letterSpacing: '-0.03em', color: '#1A1A1A' }}>
           选择画作
         </span>
-        <div style={{ width: '80px' }} />
+        <div className="hidden sm:block" style={{ width: '80px' }} />
       </header>
 
-      <div className="relative z-10 flex-1 overflow-y-auto px-6 py-8 max-w-4xl mx-auto w-full">
+      <div className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-6 sm:py-8 max-w-4xl mx-auto w-full">
 
         {/* Source mode tabs */}
         <div className="flex gap-2 mb-8 justify-center flex-wrap">
@@ -192,9 +194,8 @@ export default function CreatePage() {
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {MASTER_ARTISTS.map((artist) => (
-                      <motion.button
+                      <motion.div
                         key={artist.id}
-                        whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => {
                           setSelectedArtist(artist);
@@ -202,41 +203,56 @@ export default function CreatePage() {
                           const d = MASTER_DIALOGUES[artist.id];
                           if (d) setDialogueMsg(d.greetings[Math.floor(Math.random() * d.greetings.length)]);
                         }}
-                        className="rounded-[1.5rem] overflow-hidden text-left transition-all relative"
-                        style={{ border: '2px solid #1A1A1A', minHeight: '180px' }}
+                        className="cursor-pointer"
                       >
-                        {/* 底图：第一张画作 */}
-                        <div className="absolute inset-0">
-                          <img
-                            src={artist.works[0].image}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)' }} />
-                        </div>
+                        <TiltedCard
+                          containerHeight="auto"
+                          containerWidth="100%"
+                          imageHeight="auto"
+                          imageWidth="100%"
+                          rotateAmplitude={10}
+                          scaleOnHover={1.04}
+                          showTooltip
+                          captionText={`${artist.name} · ${artist.nameEn}`}
+                        >
+                          <div
+                            className="rounded-[1.5rem] overflow-hidden text-left relative w-full"
+                            style={{ border: '2px solid #1A1A1A', minHeight: '180px', boxShadow: '4px 4px 0 #1A1A1A' }}
+                          >
+                            {/* 底图：第一张画作 */}
+                            <div className="absolute inset-0">
+                              <img
+                                src={artist.works[0].image}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)' }} />
+                            </div>
 
-                        {/* 内容 */}
-                        <div className="relative p-4 flex flex-col justify-end h-full" style={{ minHeight: '180px' }}>
-                          {/* 头像 */}
-                          <div className="absolute top-3 right-3 w-12 h-12 rounded-full overflow-hidden" style={{ border: '2px solid white', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                            <img
-                              src={`/master/${artist.id}/image.png`}
-                              alt={artist.name}
-                              className="w-full h-full object-cover"
-                            />
+                            {/* 内容 */}
+                            <div className="relative p-4 flex flex-col justify-end h-full" style={{ minHeight: '180px' }}>
+                              {/* 头像 */}
+                              <div className="absolute top-3 right-3 w-12 h-12 rounded-full overflow-hidden" style={{ border: '2px solid #FFFFFF', boxShadow: '2px 2px 0 #1A1A1A' }}>
+                                <img
+                                  src={`/master/${artist.id}/image.png`}
+                                  alt={artist.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+
+                              <h3 style={{ fontWeight: 900, fontSize: '1.2rem', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+                                {artist.name}
+                              </h3>
+                              <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginTop: '2px' }}>
+                                {artist.nameEn}
+                              </p>
+                              <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginTop: '4px' }}>
+                                {artist.style} · {artist.period}
+                              </p>
+                            </div>
                           </div>
-
-                          <h3 style={{ fontWeight: 900, fontSize: '1.2rem', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
-                            {artist.name}
-                          </h3>
-                          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginTop: '2px' }}>
-                            {artist.nameEn}
-                          </p>
-                          <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginTop: '4px' }}>
-                            {artist.style} · {artist.period}
-                          </p>
-                        </div>
-                      </motion.button>
+                        </TiltedCard>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
@@ -276,28 +292,41 @@ export default function CreatePage() {
 
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {selectedArtist.works.map((work) => (
-                      <motion.button
+                      <motion.div
                         key={work.id}
-                        whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => handleSelectWork(selectedArtist, work)}
                         onMouseEnter={() => {
-                          // hover 时切换为该画的创作故事
                           const story = MASTER_DIALOGUES[selectedArtist.id]?.workStories[work.id];
                           if (story) setDialogueMsg(story);
                         }}
-                        className="rounded-[1.25rem] overflow-hidden text-left"
-                        style={{ border: '2px solid #1A1A1A' }}
+                        className="cursor-pointer"
                       >
-                        <div className="aspect-[4/3] overflow-hidden bg-gray-100">
-                          <img src={work.image} alt={work.title}
-                            className="w-full h-full object-cover" loading="lazy" />
-                        </div>
-                        <div className="p-3">
-                          <h4 style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1A1A1A' }}>{work.title}</h4>
-                          <p style={{ fontSize: '0.7rem', color: '#AAA', fontWeight: 600 }}>{work.titleEn} · {work.year}</p>
-                        </div>
-                      </motion.button>
+                        <TiltedCard
+                          containerHeight="auto"
+                          containerWidth="100%"
+                          imageHeight="auto"
+                          imageWidth="100%"
+                          rotateAmplitude={9}
+                          scaleOnHover={1.04}
+                          showTooltip
+                          captionText={work.title}
+                        >
+                          <div
+                            className="rounded-[1.25rem] overflow-hidden text-left bg-white w-full"
+                            style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A' }}
+                          >
+                            <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+                              <img src={work.image} alt={work.title}
+                                className="w-full h-full object-cover" loading="lazy" />
+                            </div>
+                            <div className="p-3" style={{ borderTop: '2px solid #1A1A1A' }}>
+                              <h4 style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1A1A1A', letterSpacing: '-0.02em' }}>{work.title}</h4>
+                              <p style={{ fontSize: '0.7rem', color: '#AAA', fontWeight: 600 }}>{work.titleEn} · {work.year}</p>
+                            </div>
+                          </div>
+                        </TiltedCard>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
@@ -369,57 +398,71 @@ export default function CreatePage() {
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-xl">
                 {MASTER_STYLES.map(style => {
-                  // 找到对应画家的第一张作品作为背景
                   const artist = MASTER_ARTISTS.find(a => a.id === style.id);
                   const bgWork = artist?.works[0]?.image || '';
+                  const isSelected = selectedFreeStyle === style.id;
                   return (
-                    <motion.button
+                    <motion.div
                       key={style.id}
-                      whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                       onClick={() => setSelectedFreeStyle(style.id)}
-                      className="rounded-[1.5rem] overflow-hidden text-left relative"
-                      style={{
-                        border: selectedFreeStyle === style.id ? `3px solid ${style.color}` : '2px solid #1A1A1A',
-                        minHeight: '180px',
-                        boxShadow: selectedFreeStyle === style.id ? `0 4px 20px ${style.color}40` : 'none',
-                      }}
+                      className="cursor-pointer"
                     >
-                      {/* 画作背景 */}
-                      <div className="absolute inset-0">
-                        {bgWork && <img src={bgWork} alt="" className="w-full h-full object-cover" />}
-                        <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, ${style.color}30 50%, rgba(0,0,0,0.2) 100%)` }} />
-                      </div>
+                      <TiltedCard
+                        containerHeight="auto"
+                        containerWidth="100%"
+                        imageHeight="auto"
+                        imageWidth="100%"
+                        rotateAmplitude={10}
+                        scaleOnHover={1.04}
+                        showTooltip
+                        captionText={`${style.name}风格`}
+                      >
+                        <div
+                          className="rounded-[1.5rem] overflow-hidden text-left relative w-full"
+                          style={{
+                            border: isSelected ? `3px solid ${style.color}` : '2px solid #1A1A1A',
+                            minHeight: '180px',
+                            boxShadow: isSelected ? `4px 4px 0 ${style.color}` : '4px 4px 0 #1A1A1A',
+                          }}
+                        >
+                          {/* 画作背景 */}
+                          <div className="absolute inset-0">
+                            {bgWork && <img src={bgWork} alt="" className="w-full h-full object-cover" />}
+                            <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, ${style.color}30 50%, rgba(0,0,0,0.2) 100%)` }} />
+                          </div>
 
-                      {/* 选中标记 */}
-                      {selectedFreeStyle === style.id && (
-                        <div className="absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: style.color }}>
-                          <span style={{ color: 'white', fontSize: '0.7rem', fontWeight: 900 }}>✓</span>
+                          {/* 选中标记 */}
+                          {isSelected && (
+                            <div className="absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: style.color, border: '2px solid #1A1A1A' }}>
+                              <span style={{ color: 'white', fontSize: '0.7rem', fontWeight: 900 }}>✓</span>
+                            </div>
+                          )}
+
+                          {/* 头像 */}
+                          <div className="absolute top-3 right-3 w-10 h-10 rounded-full overflow-hidden" style={{ border: '2px solid #FFFFFF', boxShadow: '2px 2px 0 #1A1A1A' }}>
+                            <img
+                              src={`/master/${style.id}/image.png`}
+                              alt={style.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+
+                          {/* 文字内容 */}
+                          <div className="relative p-4 flex flex-col justify-end h-full" style={{ minHeight: '160px' }}>
+                            <h4 style={{ fontWeight: 900, fontSize: '1.1rem', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+                              {style.name}风格
+                            </h4>
+                            <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.7)', fontWeight: 700, textTransform: 'uppercase', marginTop: '2px', letterSpacing: '0.04em' }}>
+                              {style.nameEn} Style
+                            </p>
+                            <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginTop: '4px', lineHeight: 1.3 }}>
+                              {style.description}
+                            </p>
+                          </div>
                         </div>
-                      )}
-
-                      {/* 头像 */}
-                      <div className="absolute top-3 right-3 w-10 h-10 rounded-full overflow-hidden" style={{ border: '2px solid white', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                        <img
-                          src={`/master/${style.id}/image.png`}
-                          alt={style.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-
-                      {/* 文字内容 */}
-                      <div className="relative p-4 flex flex-col justify-end h-full" style={{ minHeight: '160px' }}>
-                        <h4 style={{ fontWeight: 900, fontSize: '1.1rem', color: '#FFFFFF' }}>
-                          {style.name}风格
-                        </h4>
-                        <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.7)', fontWeight: 700, textTransform: 'uppercase', marginTop: '2px' }}>
-                          {style.nameEn} Style
-                        </p>
-                        <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginTop: '4px', lineHeight: 1.3 }}>
-                          {style.description}
-                        </p>
-                      </div>
-                    </motion.button>
+                      </TiltedCard>
+                    </motion.div>
                   );
                 })}
               </div>

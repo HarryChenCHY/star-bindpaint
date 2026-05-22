@@ -1,5 +1,18 @@
 'use client';
 
+import {
+  Brush,
+  Music2,
+  FastForward,
+  Sparkles,
+  ChevronsRight,
+  RotateCcw,
+  ImagePlus,
+  Star,
+  Pencil,
+  Wand2,
+} from 'lucide-react';
+
 interface ToolBarProps {
   brushWidth: number;
   onBrushWidthChange: (w: number) => void;
@@ -27,10 +40,62 @@ const labelStyle = {
   color: '#888888',
   letterSpacing: '0.06em',
   textTransform: 'uppercase' as const,
-  fontWeight: 700,
+  fontWeight: 800,
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '0.35rem',
 };
 
-const divider = { height: 1, background: '#E5E5E5', margin: '2px 0' };
+const divider = { height: 2, background: '#1A1A1A', margin: '4px 0', opacity: 0.08 };
+
+// Shared neo-brutalist button base (white bg, 2px black border, hard shadow on hover)
+const nbButtonBase: React.CSSProperties = {
+  border: '2px solid #1A1A1A',
+  background: '#FFFFFF',
+  color: '#1A1A1A',
+  fontWeight: 800,
+  fontSize: '0.78rem',
+  letterSpacing: '-0.01em',
+  transition: 'all 0.15s ease',
+};
+
+const SegmentToggle = <T extends string>({
+  value,
+  options,
+  onChange,
+  activeColor = '#F9B801',
+}: {
+  value: T;
+  options: { id: T; label: string; icon?: React.ReactNode }[];
+  onChange: (v: T) => void;
+  activeColor?: string;
+}) => (
+  <div
+    className="flex gap-0 p-0.5 rounded-full"
+    style={{ background: '#FFFFFF', border: '2px solid #1A1A1A' }}
+  >
+    {options.map(opt => {
+      const active = value === opt.id;
+      return (
+        <button
+          key={opt.id}
+          onClick={() => onChange(opt.id)}
+          className="flex-1 px-3 py-1.5 rounded-full transition-all flex items-center justify-center gap-1.5"
+          style={{
+            background: active ? activeColor : 'transparent',
+            color: active ? '#1A1A1A' : '#888888',
+            fontWeight: 800,
+            fontSize: '0.78rem',
+            letterSpacing: '-0.01em',
+          }}
+        >
+          {opt.icon}
+          <span>{opt.label}</span>
+        </button>
+      );
+    })}
+  </div>
+);
 
 export default function ToolBar({
   brushWidth,
@@ -59,8 +124,10 @@ export default function ToolBar({
       {/* 笔刷大小 */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label style={labelStyle}>🖌️ 粗细</label>
-          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1A1A1A' }}>{brushWidth}</span>
+          <label style={labelStyle}>
+            <Brush size={13} strokeWidth={2.5} /> 粗细
+          </label>
+          <span style={{ fontSize: '0.85rem', fontWeight: 900, color: '#1A1A1A' }}>{brushWidth}</span>
         </div>
         <input
           type="range" min="1" max="20" step="1" value={brushWidth}
@@ -75,71 +142,50 @@ export default function ToolBar({
         <>
           <div style={divider} />
           <div>
-            <label style={{ ...labelStyle, display: 'block', marginBottom: '0.5rem' }}>跟画模式</label>
-            <div className="flex gap-1 p-1 rounded-full" style={{ background: '#F5F5F5', border: '1.5px solid #1A1A1A' }}>
-              {(['assist', 'real'] as const).map(m => (
-                <button
-                  key={m}
-                  onClick={() => onGuideSubModeChange(m)}
-                  className="flex-1 py-1.5 rounded-full text-xs font-bold transition-all"
-                  style={{
-                    background: guideSubMode === m ? '#F9B801' : 'transparent',
-                    color: guideSubMode === m ? '#1A1A1A' : '#888888',
-                  }}
-                >
-                  {m === 'assist' ? '辅助' : '真实'}
-                </button>
-              ))}
-            </div>
-            <p style={{ fontSize: '0.65rem', marginTop: '0.4rem', color: '#AAAAAA', fontWeight: 600 }}>
+            <label style={{ ...labelStyle, display: 'flex', marginBottom: '0.5rem' }}>跟画模式</label>
+            <SegmentToggle
+              value={guideSubMode}
+              activeColor="#F9B801"
+              options={[
+                { id: 'assist', label: '辅助' },
+                { id: 'real', label: '真实' },
+              ]}
+              onChange={onGuideSubModeChange}
+            />
+            <p style={{ fontSize: '0.7rem', marginTop: '0.45rem', color: '#888', fontWeight: 600 }}>
               {guideSubMode === 'assist' ? 'AI 笔触替换你的画迹' : '保留你的原始笔迹'}
             </p>
           </div>
         </>
       )}
 
-      {/* 绘画节奏（陪画/精确） */}
+      {/* 绘画节奏 */}
       {showFillMode && onFillModeChange && (
         <>
           <div style={divider} />
           <div>
-            <label style={labelStyle}>🎵 节奏</label>
-            <div className="flex gap-1 mt-2 p-0.5 rounded-xl" style={{ background: '#F5F5F5' }}>
-              <button
-                onClick={() => onFillModeChange('companion')}
-                className="flex-1 px-2 py-2 rounded-lg text-center transition-all"
-                style={{
-                  fontSize: '0.8rem',
-                  fontWeight: 800,
-                  background: fillMode === 'companion' ? '#1A1A1A' : 'transparent',
-                  color: fillMode === 'companion' ? '#FFF' : '#888',
-                }}
-              >
-                ⭐ 一起画
-              </button>
-              <button
-                onClick={() => onFillModeChange('precise')}
-                className="flex-1 px-2 py-2 rounded-lg text-center transition-all"
-                style={{
-                  fontSize: '0.8rem',
-                  fontWeight: 800,
-                  background: fillMode === 'precise' ? '#1A1A1A' : 'transparent',
-                  color: fillMode === 'precise' ? '#FFF' : '#888',
-                }}
-              >
-                ✏️ 自己画
-              </button>
-            </div>
-            <p style={{ fontSize: '0.7rem', color: '#AAA', fontWeight: 600, marginTop: 4 }}>
+            <label style={{ ...labelStyle, display: 'flex', marginBottom: '0.5rem' }}>
+              <Music2 size={13} strokeWidth={2.5} /> 节奏
+            </label>
+            <SegmentToggle
+              value={fillMode}
+              activeColor="#1A1A1A"
+              options={[
+                { id: 'companion', label: '一起画', icon: <Star size={12} strokeWidth={2.8} fill={fillMode === 'companion' ? '#FFD700' : 'none'} /> },
+                { id: 'precise', label: '自己画', icon: <Pencil size={12} strokeWidth={2.8} /> },
+              ]}
+              onChange={onFillModeChange}
+            />
+            <p style={{ fontSize: '0.7rem', color: '#888', fontWeight: 600, marginTop: 6 }}>
               {fillMode === 'companion'
-                ? `你画1笔 → Starry帮画${autoFillRatio}笔`
+                ? `你画 1 笔 → Starry 帮画 ${autoFillRatio} 笔`
                 : '每一笔都由你来画'}
             </p>
             {fillMode === 'companion' && onAutoFillRatioChange && (
-              <div className="mt-2">
-                <div className="flex items-center justify-between mb-1">
-                  <span style={{ fontSize: '0.7rem', color: '#888', fontWeight: 600 }}>Starry 帮多少</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1A1A1A' }}>1:{autoFillRatio}</span>
+              <div className="mt-3">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span style={{ fontSize: '0.7rem', color: '#1A1A1A', fontWeight: 700 }}>Starry 帮多少</span>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 900, color: '#7A51EC' }}>1 : {autoFillRatio}</span>
                 </div>
                 <input
                   type="range" min="20" max="200" step="10" value={autoFillRatio}
@@ -147,9 +193,9 @@ export default function ToolBar({
                   className="w-full h-1.5 rounded-full appearance-none"
                   style={{ background: '#E5E5E5', accentColor: '#7A51EC' }}
                 />
-                <div className="flex justify-between">
-                  <span style={{ fontSize: '0.6rem', color: '#BBB', fontWeight: 600 }}>🐢 少一点</span>
-                  <span style={{ fontSize: '0.6rem', color: '#BBB', fontWeight: 600 }}>🐇 多一点</span>
+                <div className="flex justify-between mt-1">
+                  <span style={{ fontSize: '0.62rem', color: '#888', fontWeight: 700, letterSpacing: '0.04em' }}>少一点</span>
+                  <span style={{ fontSize: '0.62rem', color: '#888', fontWeight: 700, letterSpacing: '0.04em' }}>多一点</span>
                 </div>
               </div>
             )}
@@ -163,8 +209,12 @@ export default function ToolBar({
           <div style={divider} />
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label style={labelStyle}>⏩ 快慢</label>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1A1A1A' }}>{autoSpeed === 0 ? '最快' : `${autoSpeed}ms`}</span>
+              <label style={labelStyle}>
+                <FastForward size={13} strokeWidth={2.5} /> 快慢
+              </label>
+              <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#1A1A1A' }}>
+                {autoSpeed === 0 ? '最快' : `${autoSpeed}ms`}
+              </span>
             </div>
             <input
               type="range" min="0" max="200" step="10" value={autoSpeed}
@@ -181,16 +231,32 @@ export default function ToolBar({
         <>
           <div style={divider} />
           <div>
-            <label style={{ ...labelStyle, display: 'block', marginBottom: '0.5rem' }}>⭐ Starry 帮画</label>
-            <div className="grid grid-cols-3 gap-1.5 mb-1.5">
+            <label style={{ ...labelStyle, display: 'flex', marginBottom: '0.5rem' }}>
+              <Sparkles size={13} strokeWidth={2.5} /> Starry 帮画
+            </label>
+            <div className="grid grid-cols-3 gap-2 mb-2">
               {[10, 30, 50].map(n => (
                 <button
                   key={n}
                   onClick={() => onBatchDraw(n)}
-                  className="py-2 text-sm font-bold rounded-full transition-colors"
-                  style={{ background: '#F5F5F5', color: '#1A1A1A', border: '1.5px solid #1A1A1A' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F9B801'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F5F5F5'; }}
+                  className="py-2 rounded-full"
+                  style={{
+                    ...nbButtonBase,
+                    fontWeight: 900,
+                    fontSize: '0.85rem',
+                  }}
+                  onMouseEnter={e => {
+                    const b = e.currentTarget;
+                    b.style.background = '#F9B801';
+                    b.style.transform = 'translate(-1px,-1px)';
+                    b.style.boxShadow = '3px 3px 0 #1A1A1A';
+                  }}
+                  onMouseLeave={e => {
+                    const b = e.currentTarget;
+                    b.style.background = '#FFFFFF';
+                    b.style.transform = 'none';
+                    b.style.boxShadow = 'none';
+                  }}
                 >
                   +{n}
                 </button>
@@ -198,64 +264,108 @@ export default function ToolBar({
             </div>
             <button
               onClick={() => onBatchDraw(totalStrokes - currentStrokeIdx)}
-              className="w-full py-2 text-sm font-bold rounded-full transition-colors flex items-center justify-center gap-1.5"
-              style={{ background: '#7DC353', color: '#1A1A1A', border: '1.5px solid #1A1A1A' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#6BB845'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#7DC353'; }}
+              className="w-full py-2.5 rounded-full flex items-center justify-center gap-1.5"
+              style={{
+                ...nbButtonBase,
+                background: '#7DC353',
+                fontSize: '0.85rem',
+                fontWeight: 900,
+              }}
+              onMouseEnter={e => {
+                const b = e.currentTarget;
+                b.style.transform = 'translate(-1px,-1px)';
+                b.style.boxShadow = '3px 3px 0 #1A1A1A';
+              }}
+              onMouseLeave={e => {
+                const b = e.currentTarget;
+                b.style.transform = 'none';
+                b.style.boxShadow = 'none';
+              }}
             >
-              <span>🎨</span> 全部画完
+              <Wand2 size={14} strokeWidth={2.5} />
+              <span>全部画完</span>
             </button>
           </div>
         </>
       )}
 
-      {/* 操作按钮 — 图标化 */}
+      {/* 操作按钮组 */}
       <div style={divider} />
-      <div className="flex flex-wrap gap-2">
+      <div className="flex gap-2 items-center">
         {onSkip && (
           <button
             onClick={onSkip}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-            style={{ background: '#FFF8E0', border: '2px solid #F9B801' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F9B801'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FFF8E0'; }}
+            className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{
+              ...nbButtonBase,
+              background: '#FFF8E0',
+            }}
+            onMouseEnter={e => {
+              const b = e.currentTarget;
+              b.style.background = '#F9B801';
+              b.style.transform = 'translate(-1px,-1px)';
+              b.style.boxShadow = '3px 3px 0 #1A1A1A';
+            }}
+            onMouseLeave={e => {
+              const b = e.currentTarget;
+              b.style.background = '#FFF8E0';
+              b.style.transform = 'none';
+              b.style.boxShadow = 'none';
+            }}
             title="换一笔"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M9 6l6 6-6 6" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <ChevronsRight size={18} strokeWidth={2.5} color="#1A1A1A" />
           </button>
         )}
         {onReset && (
           <button
             onClick={() => { if (confirm('重新开始？')) onReset(); }}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-            style={{ background: '#FFF0F0', border: '2px solid #F302C9' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#F302C9'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FFF0F0'; }}
+            className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{
+              ...nbButtonBase,
+              background: '#FFF0F8',
+            }}
+            onMouseEnter={e => {
+              const b = e.currentTarget;
+              b.style.background = '#F302C9';
+              b.style.transform = 'translate(-1px,-1px)';
+              b.style.boxShadow = '3px 3px 0 #1A1A1A';
+            }}
+            onMouseLeave={e => {
+              const b = e.currentTarget;
+              b.style.background = '#FFF0F8';
+              b.style.transform = 'none';
+              b.style.boxShadow = 'none';
+            }}
             title="重新开始"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M1 4v6h6M23 20v-6h-6" stroke="#F302C9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="#F302C9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <RotateCcw size={16} strokeWidth={2.5} color="#1A1A1A" />
           </button>
         )}
         {onExport && (
           <button
             onClick={onExport}
-            className="flex-1 h-10 rounded-full flex items-center justify-center gap-2 transition-colors"
-            style={{ background: '#1A1A1A', border: '2px solid #1A1A1A' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#333333'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#1A1A1A'; }}
+            className="flex-1 h-10 rounded-full flex items-center justify-center gap-1.5"
+            style={{
+              ...nbButtonBase,
+              background: '#1A1A1A',
+              color: '#FFFFFF',
+              fontSize: '0.82rem',
+            }}
+            onMouseEnter={e => {
+              const b = e.currentTarget;
+              b.style.transform = 'translate(-1px,-1px)';
+              b.style.boxShadow = '3px 3px 0 #7A51EC';
+            }}
+            onMouseLeave={e => {
+              const b = e.currentTarget;
+              b.style.transform = 'none';
+              b.style.boxShadow = 'none';
+            }}
             title="放进画廊"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" strokeWidth="2"/>
-              <circle cx="8.5" cy="8.5" r="1.5" fill="white"/>
-              <path d="M21 15l-5-5L5 21" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span style={{ color: 'white', fontWeight: 800, fontSize: '0.8rem' }}>放进画廊</span>
+            <ImagePlus size={15} strokeWidth={2.5} color="#FFFFFF" />
+            <span>放进画廊</span>
           </button>
         )}
       </div>

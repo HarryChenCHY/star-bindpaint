@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, Download, Trash2, X, Sparkles, Trash } from 'lucide-react';
 import { loadGallery, deleteFromGallery, clearGallery, GalleryItem } from '@/lib/gallery-store';
 import StarrySprite from '@/components/StarrySprite';
 import MasterQuoteCard from '@/components/MasterQuoteCard';
+import TiltedCard from '@/components/TiltedCard';
 import { MiniStar } from '@/components/Characters';
 
 const MODE_COLOR: Record<string, string> = {
@@ -41,62 +43,129 @@ export default function GalleryPage() {
   return (
     <div className="flex-1 flex flex-col bg-white min-h-screen">
       {/* Header */}
-      <header className="flex items-center justify-between px-8 py-5" style={{ borderBottom: '2px solid #1A1A1A' }}>
-        <button onClick={() => router.push('/')} style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1A1A1A' }}>
-          ← 返回
-        </button>
+      <header className="flex items-center justify-between px-3 sm:px-8 py-4 sm:py-5 gap-2" style={{ borderBottom: '2px solid #1A1A1A' }}>
+        <motion.button
+          onClick={() => router.push('/')}
+          whileHover={{ scale: 1.05, y: -1 }}
+          whileTap={{ scale: 0.96 }}
+          className="flex items-center gap-1.5 rounded-full"
+          style={{
+            background: '#FFFFFF',
+            color: '#1A1A1A',
+            border: '2px solid #1A1A1A',
+            boxShadow: '3px 3px 0 #1A1A1A',
+            padding: '0.5em 1.1em',
+            fontWeight: 800,
+            fontSize: '0.8rem',
+            letterSpacing: '-0.01em',
+          }}
+        >
+          <ChevronLeft size={16} strokeWidth={2.8} />
+          返回
+        </motion.button>
         <div className="flex items-center gap-2">
           <MiniStar color="#F9B801" size={18} />
-          <h1 style={{ fontWeight: 900, fontSize: '1.3rem', letterSpacing: '-0.03em', color: '#1A1A1A', textTransform: 'uppercase' }}>
+          <h1 style={{ fontWeight: 900, fontSize: 'clamp(1rem, 3.6vw, 1.3rem)', letterSpacing: '-0.03em', color: '#1A1A1A', textTransform: 'uppercase' }}>
             我的画廊
           </h1>
         </div>
         {items.length > 0
-          ? <button onClick={handleClear} style={{ fontWeight: 700, fontSize: '0.8rem', color: '#F302C9', border: '1.5px solid #F302C9', borderRadius: '6rem', padding: '0.4em 1.1em' }}>清空</button>
+          ? (
+            <motion.button
+              onClick={handleClear}
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.96 }}
+              className="flex items-center gap-1.5 rounded-full"
+              style={{
+                background: '#FFFFFF',
+                color: '#F302C9',
+                border: '2px solid #1A1A1A',
+                boxShadow: '3px 3px 0 #F302C9',
+                padding: '0.5em 1.1em',
+                fontWeight: 800,
+                fontSize: '0.8rem',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              <Trash size={14} strokeWidth={2.5} />
+              清空
+            </motion.button>
+          )
           : <div style={{ width: '60px' }} />
         }
       </header>
 
-      <div className="px-8 py-10 max-w-5xl mx-auto w-full flex-1">
+      <div className="px-4 sm:px-8 py-6 sm:py-10 max-w-5xl mx-auto w-full flex-1">
         {/* Empty */}
         {items.length === 0 && (
           <div className="flex flex-col items-center justify-center gap-6 py-20">
             <StarrySprite state="idle" message="空白的画布正等着你的色彩..." />
-            <button onClick={() => router.push('/create')} className="btn-black" style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>
+            <motion.button
+              onClick={() => router.push('/create')}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.96 }}
+              className="rounded-full flex items-center gap-2"
+              style={{
+                background: '#1A1A1A',
+                color: '#FFFFFF',
+                border: '2px solid #1A1A1A',
+                boxShadow: '4px 4px 0 #F9B801',
+                padding: '0.85em 2em',
+                fontWeight: 900,
+                fontSize: '0.92rem',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              <Sparkles size={15} strokeWidth={2.5} />
               开始创作 →
-            </button>
+            </motion.button>
           </div>
         )}
 
         {/* Grid */}
         {items.length > 0 && (
-          <motion.div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <motion.div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             {items.map((item, i) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04 }}
-                className="rounded-[1.5rem] overflow-hidden cursor-pointer group"
-                style={{ border: '2px solid #1A1A1A' }}
                 onClick={() => setSelected(item)}
+                className="cursor-pointer"
               >
-                <div className="aspect-square overflow-hidden" style={{ background: '#FFFFFF' }}>
-                  <img src={item.imageDataUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <div className="p-3 bg-white">
-                  <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1A1A1A', letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {item.title}
+                <TiltedCard
+                  containerHeight="auto"
+                  containerWidth="100%"
+                  imageHeight="auto"
+                  imageWidth="100%"
+                  rotateAmplitude={10}
+                  scaleOnHover={1.04}
+                  showTooltip
+                  captionText={item.title}
+                >
+                  <div
+                    className="rounded-[1.5rem] overflow-hidden bg-white w-full"
+                    style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A' }}
+                  >
+                    <div className="aspect-square overflow-hidden" style={{ background: '#FFFFFF' }}>
+                      <img src={item.imageDataUrl} alt={item.title} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="p-3 bg-white" style={{ borderTop: '2px solid #1A1A1A' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1A1A1A', letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.title}
+                      </div>
+                      <div className="flex items-center justify-between mt-1">
+                        <span style={{ fontSize: '0.7rem', color: '#888888', fontWeight: 600 }}>
+                          {new Date(item.date).toLocaleDateString('zh-CN')}
+                        </span>
+                        <span className="rounded-full px-2 py-0.5" style={{ background: MODE_COLOR[item.mode] || '#F9B801', fontSize: '0.65rem', fontWeight: 800, color: '#1A1A1A', border: '1.5px solid #1A1A1A' }}>
+                          {item.strokeCount}笔
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <span style={{ fontSize: '0.7rem', color: '#888888', fontWeight: 600 }}>
-                      {new Date(item.date).toLocaleDateString('zh-CN')}
-                    </span>
-                    <span className="rounded-full px-2 py-0.5" style={{ background: MODE_COLOR[item.mode] || '#F9B801', fontSize: '0.65rem', fontWeight: 800, color: '#1A1A1A' }}>
-                      {item.strokeCount}笔
-                    </span>
-                  </div>
-                </div>
+                </TiltedCard>
               </motion.div>
             ))}
           </motion.div>
@@ -135,18 +204,64 @@ export default function GalleryPage() {
                 <p style={{ fontSize: '0.8rem', color: '#888888', fontWeight: 600, marginBottom: '1.25rem' }}>
                   {new Date(selected.date).toLocaleDateString('zh-CN')} · {selected.strokeCount} 笔 · {selected.mode} 模式
                 </p>
-                <div className="flex gap-2">
-                  <button onClick={() => handleDownload(selected)} className="btn-black flex-1" style={{ fontSize: '0.9rem', padding: '0.7em' }}>
+                <div className="flex gap-3">
+                  <motion.button
+                    onClick={() => handleDownload(selected)}
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.96 }}
+                    className="flex-1 rounded-full flex items-center justify-center gap-1.5"
+                    style={{
+                      background: '#1A1A1A',
+                      color: '#FFFFFF',
+                      border: '2px solid #1A1A1A',
+                      boxShadow: '4px 4px 0 #7A51EC',
+                      padding: '0.75em',
+                      fontWeight: 900,
+                      fontSize: '0.88rem',
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    <Download size={15} strokeWidth={2.5} />
                     下载
-                  </button>
-                  <button onClick={() => handleDelete(selected.id)} className="flex-1 rounded-full font-bold text-sm py-3"
-                    style={{ background: '#FFF0F0', color: '#F302C9', border: '1.5px solid #F302C9', cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}>
+                  </motion.button>
+                  <motion.button
+                    onClick={() => { if (confirm('确定删除这幅作品？')) handleDelete(selected.id); }}
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.96 }}
+                    className="flex-1 rounded-full flex items-center justify-center gap-1.5"
+                    style={{
+                      background: '#FFFFFF',
+                      color: '#F302C9',
+                      border: '2px solid #1A1A1A',
+                      boxShadow: '4px 4px 0 #F302C9',
+                      padding: '0.75em',
+                      fontWeight: 900,
+                      fontSize: '0.88rem',
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    <Trash2 size={15} strokeWidth={2.5} />
                     删除
-                  </button>
-                  <button onClick={() => setSelected(null)} className="flex-1 rounded-full font-bold text-sm py-3"
-                    style={{ background: '#F5F5F5', color: '#1A1A1A', border: '1.5px solid #1A1A1A', cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}>
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setSelected(null)}
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.96 }}
+                    className="flex-1 rounded-full flex items-center justify-center gap-1.5"
+                    style={{
+                      background: '#FFFFFF',
+                      color: '#1A1A1A',
+                      border: '2px solid #1A1A1A',
+                      boxShadow: '4px 4px 0 #1A1A1A',
+                      padding: '0.75em',
+                      fontWeight: 900,
+                      fontSize: '0.88rem',
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    <X size={15} strokeWidth={2.8} />
                     关闭
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
