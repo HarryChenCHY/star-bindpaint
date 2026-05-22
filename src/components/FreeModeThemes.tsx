@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 export interface ThemeStep {
   icon: string;
@@ -125,7 +125,8 @@ export default function FreeModeThemes({ onSelect, onSkip }: FreeModeThemesProps
 }
 
 /**
- * 主题步骤引导条 — 显示在画布上方
+ * 主题步骤引导卡片 — 固定在右侧、位于精灵卡片下方
+ * 鼠标悬停时根据指针位置 3D 倾斜
  */
 export function ThemeStepGuide({ theme, currentStep, onNextStep }: {
   theme: FreeTheme;
@@ -135,43 +136,103 @@ export function ThemeStepGuide({ theme, currentStep, onNextStep }: {
   const step = theme.steps[currentStep];
   const isLast = currentStep >= theme.steps.length - 1;
 
+  const ref = useRef<HTMLDivElement>(null);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 220, damping: 18, mass: 0.5 });
+  const sy = useSpring(my, { stiffness: 220, damping: 18, mass: 0.5 });
+  // 鼠标 → 倾斜角度（最大 ±10°）
+  const rotateX = useTransform(sy, [-1, 1], [10, -10]);
+  const rotateY = useTransform(sx, [-1, 1], [-10, 10]);
+
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    const cx = e.clientX - rect.left - rect.width / 2;
+    const cy = e.clientY - rect.top - rect.height / 2;
+    mx.set(cx / (rect.width / 2));
+    my.set(cy / (rect.height / 2));
+  };
+
+  const handleLeave = () => {
+    mx.set(0);
+    my.set(0);
+  };
+
   return (
     <motion.div
+      ref={ref}
       key={currentStep}
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="absolute top-3 left-3 right-3 z-10 flex items-center gap-3 px-4 py-3 rounded-2xl"
-      style={{ background: 'rgba(255,255,255,0.95)', border: '2px solid #E5E5E5', boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      className="flex flex-col gap-2.5 px-3 py-3 rounded-[1.25rem] bg-white w-full"
+      style={{
+        border: '2px solid #1A1A1A',
+        boxShadow: '4px 4px 0 #1A1A1A',
+        rotateX,
+        rotateY,
+        transformPerspective: 800,
+        transformStyle: 'preserve-3d',
+      }}
     >
-      {/* 步骤进度 */}
-      <div className="flex gap-1 flex-shrink-0">
+      {/* 步骤进度 dots */}
+      <div className="flex gap-1 justify-center">
         {theme.steps.map((_, i) => (
           <div
             key={i}
-            className="w-2 h-2 rounded-full"
-            style={{ background: i <= currentStep ? '#7A51EC' : '#E5E5E5' }}
+            className="rounded-full"
+            style={{
+              width: i === currentStep ? 14 : 6,
+              height: 6,
+              background: i <= currentStep ? '#7A51EC' : '#E5E5E5',
+              transition: 'width 0.25s ease, background 0.25s ease',
+            }}
           />
         ))}
       </div>
 
       {/* 当前步骤提示 */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5">
-          <span className="text-lg">{step?.icon}</span>
-          <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1A1A1A' }}>
-            {step?.hint}
-          </span>
-        </div>
+      <div
+        className="flex flex-col items-center gap-1 text-center"
+        style={{ transform: 'translateZ(20px)' }}
+      >
+        <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>{step?.icon}</span>
+        <span
+          style={{
+            fontWeight: 800,
+            fontSize: '0.78rem',
+            color: '#1A1A1A',
+            lineHeight: 1.35,
+            letterSpacing: '-0.01em',
+          }}
+        >
+          {step?.hint}
+        </span>
       </div>
 
       {/* 下一步按钮 */}
-      <button
+      <motion.button
         onClick={onNextStep}
-        className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-all"
-        style={{ background: isLast ? '#7DC353' : '#7A51EC', color: 'white' }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="rounded-full"
+        style={{
+          background: isLast ? '#7DC353' : '#7A51EC',
+          color: 'white',
+          fontWeight: 900,
+          fontSize: '0.75rem',
+          padding: '0.5em 0.9em',
+          border: '2px solid #1A1A1A',
+          boxShadow: '2px 2px 0 #1A1A1A',
+          letterSpacing: '-0.01em',
+          transform: 'translateZ(15px)',
+        }}
       >
         {isLast ? '画好了 ✓' : '下一步 →'}
-      </button>
+      </motion.button>
     </motion.div>
   );
 }

@@ -676,24 +676,6 @@ export default function PaintPage() {
             </div>
           )}
 
-          {/* 自由模式分步引导 */}
-          {mode === 'free' && freeTheme && !showFreeThemes && (
-            <ThemeStepGuide
-              theme={freeTheme}
-              currentStep={freeThemeStep}
-              onNextStep={() => {
-                if (freeThemeStep < freeTheme.steps.length - 1) {
-                  const next = freeThemeStep + 1;
-                  setFreeThemeStep(next);
-                  setSpriteMessage(freeTheme.steps[next].hint);
-                } else {
-                  setSpriteMessage('全部画完了！试试点 ✨变成油画 看看效果~');
-                  setSpriteState('cheering');
-                }
-              }}
-            />
-          )}
-
           <PaintCanvas
             width={canvasSize.w}
             height={canvasSize.h}
@@ -729,30 +711,54 @@ export default function PaintPage() {
 
       </div>
 
-      {/* Floating Sprite + Progress card — 自由模式右侧居中（避免遮挡顶部教程），其他模式右上角 */}
-      <motion.div
-        initial={{ opacity: 0, x: 20, y: -10 }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-        className="fixed z-30 flex flex-col items-center gap-2 px-3 py-3 rounded-[1.25rem] bg-white"
+      {/* 右上角浮动卡片栈：精灵卡 + 自由模式步骤引导卡（flex column 自然堆叠，不重叠） */}
+      <div
+        className="fixed z-30 flex flex-col gap-3 pointer-events-none"
         style={{
-          ...(mode === 'free'
-            ? { top: '50%', transform: 'translateY(-50%)' }
-            : { top: 'clamp(64px, 10vw, 80px)' }),
+          top: 'clamp(64px, 10vw, 80px)',
           right: 'clamp(8px, 2vw, 16px)',
           width: 'clamp(132px, 32vw, 196px)',
-          border: '2px solid #1A1A1A',
-          boxShadow: '4px 4px 0 #1A1A1A',
         }}
       >
-        <StarrySprite state={spriteState} message={spriteMessage} />
-        <div className="flex justify-center pt-1">
-          <ProgressRing
-            progress={progress}
-            label={mode === 'free' ? '自由创作' : `${Math.round(progress * strokes.length)} / ${strokes.length} 笔`}
-          />
-        </div>
-      </motion.div>
+        <motion.div
+          initial={{ opacity: 0, x: 20, y: -10 }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+          className="flex flex-col items-center gap-2 px-3 py-3 rounded-[1.25rem] bg-white pointer-events-auto"
+          style={{
+            border: '2px solid #1A1A1A',
+            boxShadow: '4px 4px 0 #1A1A1A',
+          }}
+        >
+          <StarrySprite state={spriteState} message={spriteMessage} />
+          <div className="flex justify-center pt-1">
+            <ProgressRing
+              progress={progress}
+              label={mode === 'free' ? '自由创作' : `${Math.round(progress * strokes.length)} / ${strokes.length} 笔`}
+            />
+          </div>
+        </motion.div>
+
+        {/* 自由模式分步引导 — 紧贴精灵卡下方 */}
+        {mode === 'free' && freeTheme && !showFreeThemes && (
+          <div className="pointer-events-auto">
+            <ThemeStepGuide
+              theme={freeTheme}
+              currentStep={freeThemeStep}
+              onNextStep={() => {
+                if (freeThemeStep < freeTheme.steps.length - 1) {
+                  const next = freeThemeStep + 1;
+                  setFreeThemeStep(next);
+                  setSpriteMessage(freeTheme.steps[next].hint);
+                } else {
+                  // 最后一步「画好了 ✓」→ 触发完成弹窗（与顶部「完成」按钮一致）
+                  handleExport();
+                }
+              }}
+            />
+          </div>
+        )}
+      </div>
 
       {/* ═══ 照护者陪伴提示 ═══ */}
       <CaregiverTips currentState={caregiverState} mode={mode} />
