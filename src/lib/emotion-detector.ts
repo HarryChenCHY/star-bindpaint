@@ -18,8 +18,8 @@ export class EmotionDetector {
   private state: DetectorState;
   private onLevelChange?: (level: EmotionLevel) => void;
   private currentLevel: EmotionLevel = 'normal';
-  private lastCalmTriggeredTime = 0; // 冷却：上次触发呼吸的时间
-  private cooldownMs = 120000; // 2 分钟冷却期
+  private lastCalmTriggeredTime = Date.now(); // 冷却：上次触发呼吸的时间（首次也需等冷却结束才能触发）
+  private cooldownMs = 300000; // 5 分钟冷却期
 
   constructor(onLevelChange?: (level: EmotionLevel) => void) {
     this.onLevelChange = onLevelChange;
@@ -87,10 +87,11 @@ export class EmotionDetector {
     if (Date.now() - this.lastCalmTriggeredTime < this.cooldownMs) return this.currentLevel;
 
     const idle = Date.now() - this.state.lastStrokeEndTime;
-    if (idle > 60000 && this.state.consecutiveFailures > 0) {
+    // 空闲阈值放宽：单纯不动 5 分钟才算 moderate，且需配合连续失败才升级到 severe
+    if (idle > 360000 && this.state.consecutiveFailures > 0) {
       return 'severe';
     }
-    if (idle > 45000) {
+    if (idle > 300000) {
       return 'moderate';
     }
     return this.currentLevel;

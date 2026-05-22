@@ -103,15 +103,19 @@ export default function PaintBottomBar(p: Props) {
         className="pointer-events-auto flex items-center gap-1.5 px-2 py-2 rounded-[1.5rem] bg-white"
         style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A' }}
       >
-        {/* MODE SECTION */}
-        {MODES.map(m => (
+        {/* MODE SECTION — 自由模式一旦进入即锁定，其余两个模式按钮隐藏 */}
+        {(p.mode === 'free' ? MODES.filter(m => m.id === 'free') : MODES).map(m => (
           <ModeBtn
             key={m.id}
             icon={m.icon}
             label={m.label}
             color={m.color}
             active={p.mode === m.id}
-            onClick={() => p.onModeChange(m.id)}
+            onClick={() => {
+              // 自由模式锁定：不允许从 free 切回其他模式
+              if (p.mode === 'free' && m.id !== 'free') return;
+              p.onModeChange(m.id);
+            }}
           />
         ))}
 

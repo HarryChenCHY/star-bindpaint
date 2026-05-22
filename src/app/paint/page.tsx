@@ -31,7 +31,7 @@ export default function PaintPage() {
   const [mode, setMode] = useState<PaintMode>('follow');
   const [guideSubMode, setGuideSubMode] = useState<'assist' | 'real'>('assist');
   const [brushWidth, setBrushWidth] = useState(4);
-  const [autoSpeed, setAutoSpeed] = useState(30);
+  const [autoSpeed, setAutoSpeed] = useState(200);
   const [roughness, setRoughness] = useState(2);
   const [autoFillRatio, setAutoFillRatio] = useState(100);
   const [fillMode, setFillMode] = useState<'companion' | 'precise'>('companion');
@@ -101,7 +101,7 @@ export default function PaintPage() {
           getTracker().recordCalmTriggered();
         }
       }
-    }, 15000); // 每 15 秒检查一次（而非 5 秒）
+    }, 30000); // 每 30 秒检查一次（呼吸引导冷却 5 分钟，无需高频轮询）
     return () => clearInterval(interval);
   }, [loading, showCalm, showPostEmotion, mode]);
 
@@ -729,14 +729,16 @@ export default function PaintPage() {
 
       </div>
 
-      {/* Floating Sprite + Progress card (top-right) */}
+      {/* Floating Sprite + Progress card — 自由模式右侧居中（避免遮挡顶部教程），其他模式右上角 */}
       <motion.div
         initial={{ opacity: 0, x: 20, y: -10 }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         transition={{ type: 'spring', stiffness: 280, damping: 24 }}
         className="fixed z-30 flex flex-col items-center gap-2 px-3 py-3 rounded-[1.25rem] bg-white"
         style={{
-          top: 'clamp(64px, 10vw, 80px)',
+          ...(mode === 'free'
+            ? { top: '50%', transform: 'translateY(-50%)' }
+            : { top: 'clamp(64px, 10vw, 80px)' }),
           right: 'clamp(8px, 2vw, 16px)',
           width: 'clamp(132px, 32vw, 196px)',
           border: '2px solid #1A1A1A',
@@ -781,6 +783,8 @@ export default function PaintPage() {
       <PaintBottomBar
         mode={mode}
         onModeChange={(m) => {
+          // 自由模式一旦进入就锁定，禁止切回 follow/auto
+          if (mode === 'free' && m !== 'free') return;
           setMode(m);
           if (m === 'free' && !selectedStyle) {
             setSelectedStyle(MASTER_STYLES[1]);
