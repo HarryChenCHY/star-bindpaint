@@ -128,10 +128,11 @@ export default function FreeModeThemes({ onSelect, onSkip }: FreeModeThemesProps
  * 主题步骤引导卡片 — 固定在右侧、位于精灵卡片下方
  * 鼠标悬停时根据指针位置 3D 倾斜
  */
-export function ThemeStepGuide({ theme, currentStep, onNextStep }: {
+export function ThemeStepGuide({ theme, currentStep, onNextStep, compact = false }: {
   theme: FreeTheme;
   currentStep: number;
   onNextStep: () => void;
+  compact?: boolean;
 }) {
   const step = theme.steps[currentStep];
   const isLast = currentStep >= theme.steps.length - 1;
@@ -168,10 +169,11 @@ export function ThemeStepGuide({ theme, currentStep, onNextStep }: {
       transition={{ type: 'spring', stiffness: 280, damping: 24 }}
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
-      className="flex flex-col gap-2.5 px-3 py-3 rounded-[1.25rem] bg-white w-full"
+      className="flex flex-col gap-2 rounded-[1.1rem] bg-white w-full min-w-0"
       style={{
         border: '2px solid #1A1A1A',
-        boxShadow: '4px 4px 0 #1A1A1A',
+        boxShadow: compact ? '3px 3px 0 #1A1A1A' : '4px 4px 0 #1A1A1A',
+        padding: compact ? '0.55rem' : '0.75rem',
         rotateX,
         rotateY,
         transformPerspective: 800,
@@ -199,13 +201,13 @@ export function ThemeStepGuide({ theme, currentStep, onNextStep }: {
         className="flex flex-col items-center gap-1 text-center"
         style={{ transform: 'translateZ(20px)' }}
       >
-        <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>{step?.icon}</span>
+        <span style={{ fontSize: compact ? '1.2rem' : '1.5rem', lineHeight: 1 }}>{step?.icon}</span>
         <span
           style={{
             fontWeight: 800,
-            fontSize: '0.78rem',
+            fontSize: compact ? 'clamp(0.62rem, 3.2vw, 0.75rem)' : '0.78rem',
             color: '#1A1A1A',
-            lineHeight: 1.35,
+            lineHeight: 1.3,
             letterSpacing: '-0.01em',
           }}
         >
@@ -223,8 +225,8 @@ export function ThemeStepGuide({ theme, currentStep, onNextStep }: {
           background: isLast ? '#7DC353' : '#7A51EC',
           color: 'white',
           fontWeight: 900,
-          fontSize: '0.75rem',
-          padding: '0.5em 0.9em',
+          fontSize: compact ? 'clamp(0.66rem, 3vw, 0.75rem)' : '0.75rem',
+          padding: compact ? '0.45em 0.65em' : '0.5em 0.9em',
           border: '2px solid #1A1A1A',
           boxShadow: '2px 2px 0 #1A1A1A',
           letterSpacing: '-0.01em',

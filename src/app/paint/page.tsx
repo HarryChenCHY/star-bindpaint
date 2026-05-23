@@ -15,6 +15,7 @@ import SharedAttention from '@/components/SharedAttention';
 import FreeModeThemes, { FreeTheme, ThemeStepGuide } from '@/components/FreeModeThemes';
 import CaregiverTips from '@/components/CaregiverTips';
 import SDRenderResult from '@/components/SDRenderResult';
+import SDRenderLoading from '@/components/SDRenderLoading';
 import { decomposeImage, imageSourceFromImage, StrokeDrawData, drawStroke, Vec2 } from '@/lib/stroke-engine';
 import { matchScore } from '@/lib/drawing-engine';
 import { GuideSystem } from '@/lib/guide-system';
@@ -551,37 +552,6 @@ export default function PaintPage() {
     setSdResult(null);
   };
 
-  // SD 渲染后 → 保存油画版 + 进入心理分析流程（用原始简笔画做分析）
-  const handleSDFinish = async (oilImageBase64: string) => {
-    // 保存油画版到画廊（压缩后）
-    try {
-      const compressed = await compressImage(oilImageBase64);
-      await uploadAndSaveToGallery(
-        compressed,
-        `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
-        0,
-        'free'
-      );
-    } catch {}
-
-    setSdResult(null);
-
-    // 用原始简笔画（不是油画版）做心理分析 — 简笔画才反映内心
-    const paintCanvas = (window as unknown as Record<string, { getBaseCanvas: () => HTMLCanvasElement | null }>).__paintCanvas;
-    if (paintCanvas) {
-      const canvas = paintCanvas.getBaseCanvas();
-      if (canvas) {
-        const sketchDataUrl = canvas.toDataURL('image/png');
-        setSavedDataUrl(sketchDataUrl);
-      }
-    }
-
-    // 触发情绪后测
-    setShowPostEmotion(true);
-    setSpriteMessage('画完啦！告诉我现在感觉怎么样？');
-    setSpriteState('cheering');
-  };
-
   // ── Loading ──
   if (loading) {
     return (
@@ -628,21 +598,25 @@ export default function PaintPage() {
           {mode === 'free' && '自由创作'}
         </span>
 
-        <button
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={handleExport}
-          className="flex items-center gap-1.5 rounded-full transition-all"
-          style={{
-            background: '#7A51EC',
-            border: '2px solid #1A1A1A',
-            boxShadow: '3px 3px 0 #1A1A1A',
-            padding: '0.5em 1.2em',
-          }}
-          title="放进画廊"
-        >
-          <ImagePlus size={15} strokeWidth={2.5} color="#FFFFFF" />
-          <span style={{ color: 'white', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '-0.01em' }}>完成</span>
-        </button>
+        {mode === 'free' ? (
+          <div aria-hidden="true" style={{ width: 78 }} />
+        ) : (
+          <button
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={handleExport}
+            className="flex items-center gap-1.5 rounded-full transition-all"
+            style={{
+              background: '#7A51EC',
+              border: '2px solid #1A1A1A',
+              boxShadow: '3px 3px 0 #1A1A1A',
+              padding: '0.5em 1.2em',
+            }}
+            title="放进画廊"
+          >
+            <ImagePlus size={15} strokeWidth={2.5} color="#FFFFFF" />
+            <span style={{ color: 'white', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '-0.01em' }}>完成</span>
+          </button>
+        )}
       </header>
 
       {/* Main content */}
@@ -660,7 +634,7 @@ export default function PaintPage() {
 
         {/* Canvas area */}
         <div className="flex-1 flex items-center justify-center p-2 sm:p-3 pb-28 relative min-w-0 min-h-0"
-          style={{ background: '#FAFAFA', pointerEvents: (sdResult || showPostEmotion || showCalm) ? 'none' : 'auto' }}>
+          style={{ background: '#FAFAFA', pointerEvents: (sdRendering || sdResult || showPostEmotion || showCalm) ? 'none' : 'auto' }}>
 
           {/* 自由模式主题选择 */}
           {mode === 'free' && showFreeThemes && (
@@ -712,70 +686,103 @@ export default function PaintPage() {
 
       </div>
 
-      {/* 右上角浮动卡片栈：手机端可折叠，避免遮挡画布 */}
-      <div
-        className="fixed z-30 flex flex-col gap-3 pointer-events-none"
-        style={{
-          top: 'clamp(64px, 10vw, 80px)',
-          right: 'clamp(8px, 2vw, 16px)',
-          width: promptCardCollapsed ? 52 : 'clamp(132px, 32vw, 196px)',
-        }}
-      >
-        <motion.button
-          type="button"
-          initial={{ opacity: 0, x: 20, y: -10 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-          className="flex flex-col items-center justify-center gap-2 rounded-[1.25rem] bg-white pointer-events-auto"
-          style={{
-            border: '2px solid #1A1A1A',
-            boxShadow: '4px 4px 0 #1A1A1A',
-            minHeight: promptCardCollapsed ? 52 : undefined,
-            padding: promptCardCollapsed ? 0 : '0.75rem',
-          }}
-          onClick={() => setPromptCardCollapsed(prev => !prev)}
-          aria-label={promptCardCollapsed ? '展开提示卡片' : '折叠提示卡片'}
-          title={promptCardCollapsed ? '展开提示' : '折叠提示'}
+      {/* 手机自由创作：左进度、右步骤，避免两张卡挤出屏幕 */}
+      {mode === 'free' ? (
+        <div
+          className="fixed left-0 right-0 z-30 grid grid-cols-2 gap-2 px-2 pointer-events-none"
+          style={{ top: 'clamp(64px, 10vw, 80px)' }}
         >
-          {promptCardCollapsed ? (
-            <span style={{ fontSize: 24, lineHeight: 1 }}>★</span>
-          ) : (
-            <>
-              <StarrySprite state={spriteState} message={spriteMessage} />
-              <div className="flex justify-center pt-1">
-                <ProgressRing
-                  progress={progress}
-                  label={mode === 'free' ? '自由创作' : `${Math.round(progress * strokes.length)} / ${strokes.length} 笔`}
-                />
-              </div>
-              <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#999', marginTop: -2 }}>
-                点击收起
-              </span>
-            </>
-          )}
-        </motion.button>
+          <motion.button
+            type="button"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+            className="flex min-w-0 flex-col items-center justify-center gap-1.5 rounded-[1.1rem] bg-white pointer-events-auto"
+            style={{
+              border: '2px solid #1A1A1A',
+              boxShadow: '3px 3px 0 #1A1A1A',
+              minHeight: promptCardCollapsed ? 52 : undefined,
+              padding: promptCardCollapsed ? 0 : '0.55rem',
+            }}
+            onClick={() => setPromptCardCollapsed(prev => !prev)}
+            aria-label={promptCardCollapsed ? '展开进度卡片' : '折叠进度卡片'}
+            title={promptCardCollapsed ? '展开进度' : '折叠进度'}
+          >
+            {promptCardCollapsed ? (
+              <span style={{ fontSize: 24, lineHeight: 1 }}>★</span>
+            ) : (
+              <>
+                <StarrySprite state={spriteState} message={spriteMessage} />
+                <ProgressRing progress={progress} label="自由创作" />
+              </>
+            )}
+          </motion.button>
 
-        {/* 自由模式分步引导 — 紧贴精灵卡下方 */}
-        {mode === 'free' && freeTheme && !showFreeThemes && !promptCardCollapsed && (
-          <div className="pointer-events-auto">
-            <ThemeStepGuide
-              theme={freeTheme}
-              currentStep={freeThemeStep}
-              onNextStep={() => {
-                if (freeThemeStep < freeTheme.steps.length - 1) {
-                  const next = freeThemeStep + 1;
-                  setFreeThemeStep(next);
-                  setSpriteMessage(freeTheme.steps[next].hint);
-                } else {
-                  // 最后一步「画好了 ✓」→ 触发完成弹窗（与顶部「完成」按钮一致）
-                  handleExport();
-                }
-              }}
-            />
-          </div>
-        )}
-      </div>
+          {freeTheme && !showFreeThemes && (
+            <div className="pointer-events-auto min-w-0">
+              <ThemeStepGuide
+                theme={freeTheme}
+                currentStep={freeThemeStep}
+                compact
+                onNextStep={() => {
+                  if (freeThemeStep < freeTheme.steps.length - 1) {
+                    const next = freeThemeStep + 1;
+                    setFreeThemeStep(next);
+                    setSpriteMessage(freeTheme.steps[next].hint);
+                  } else {
+                    handleExport();
+                  }
+                }}
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div
+          className="fixed z-30 flex flex-col gap-3 pointer-events-none"
+          style={{
+            top: 'clamp(64px, 10vw, 80px)',
+            right: 'clamp(8px, 2vw, 16px)',
+            width: promptCardCollapsed ? 52 : 'clamp(132px, 32vw, 196px)',
+          }}
+        >
+          <motion.button
+            type="button"
+            initial={{ opacity: 0, x: 20, y: -10 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+            className="flex flex-col items-center justify-center gap-2 rounded-[1.25rem] bg-white pointer-events-auto"
+            style={{
+              border: '2px solid #1A1A1A',
+              boxShadow: '4px 4px 0 #1A1A1A',
+              minHeight: promptCardCollapsed ? 52 : undefined,
+              padding: promptCardCollapsed ? 0 : '0.75rem',
+            }}
+            onClick={() => setPromptCardCollapsed(prev => !prev)}
+            aria-label={promptCardCollapsed ? '展开提示卡片' : '折叠提示卡片'}
+            title={promptCardCollapsed ? '展开提示' : '折叠提示'}
+          >
+            {promptCardCollapsed ? (
+              <span style={{ fontSize: 24, lineHeight: 1 }}>★</span>
+            ) : (
+              <>
+                <StarrySprite state={spriteState} message={spriteMessage} />
+                <div className="flex justify-center pt-1">
+                  <ProgressRing
+                    progress={progress}
+                    label={`${Math.round(progress * strokes.length)} / ${strokes.length} 笔`}
+                  />
+                </div>
+                <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#999', marginTop: -2 }}>
+                  点击收起
+                </span>
+              </>
+            )}
+          </motion.button>
+        </div>
+      )}
 
       {/* ═══ 照护者陪伴提示 ═══ */}
       <CaregiverTips currentState={caregiverState} mode={mode} />
@@ -789,6 +796,9 @@ export default function PaintPage() {
 
       {/* ═══ SD 渲染结果 ═══ */}
       <AnimatePresence>
+        {sdRendering && (
+          <SDRenderLoading styleName={selectedStyle?.name || '梵高'} />
+        )}
         {sdResult && (
           <SDRenderResult
             originalImage={sdResult.original}
@@ -797,7 +807,6 @@ export default function PaintPage() {
             duration={sdResult.duration}
             onClose={() => setSdResult(null)}
             onSave={handleSDSave}
-            onFinish={handleSDFinish}
           />
         )}
       </AnimatePresence>
