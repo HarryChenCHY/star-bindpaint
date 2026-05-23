@@ -686,56 +686,79 @@ export default function PaintPage() {
 
       </div>
 
-      {/* 手机自由创作：左进度、右步骤，避免两张卡挤出屏幕 */}
+      {/* 自由创作：右侧竖向紧凑卡片栈，可整体折叠成小球 */}
       {mode === 'free' ? (
         <div
-          className="fixed left-0 right-0 z-30 grid grid-cols-2 gap-2 px-2 pointer-events-none"
-          style={{ top: 'clamp(64px, 10vw, 80px)' }}
+          className="fixed z-30 flex flex-col gap-2 pointer-events-none"
+          style={{
+            top: 'clamp(64px, 10vw, 80px)',
+            right: 'clamp(8px, 2vw, 14px)',
+            width: promptCardCollapsed ? 52 : 'clamp(104px, 28vw, 156px)',
+          }}
         >
-          <motion.button
-            type="button"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-            className="flex min-w-0 flex-col items-center justify-center gap-1.5 rounded-[1.1rem] bg-white pointer-events-auto"
-            style={{
-              border: '2px solid #1A1A1A',
-              boxShadow: '3px 3px 0 #1A1A1A',
-              minHeight: promptCardCollapsed ? 52 : undefined,
-              padding: promptCardCollapsed ? 0 : '0.55rem',
-            }}
-            onClick={() => setPromptCardCollapsed(prev => !prev)}
-            aria-label={promptCardCollapsed ? '展开进度卡片' : '折叠进度卡片'}
-            title={promptCardCollapsed ? '展开进度' : '折叠进度'}
-          >
-            {promptCardCollapsed ? (
+          {promptCardCollapsed ? (
+            <motion.button
+              type="button"
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileTap={{ scale: 0.92 }}
+              transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+              className="pointer-events-auto flex items-center justify-center rounded-full bg-white"
+              style={{
+                width: 52,
+                height: 52,
+                border: '2px solid #1A1A1A',
+                boxShadow: '4px 4px 0 #1A1A1A',
+              }}
+              onClick={() => setPromptCardCollapsed(false)}
+              aria-label="展开自由创作提示"
+              title="展开提示"
+            >
               <span style={{ fontSize: 24, lineHeight: 1 }}>★</span>
-            ) : (
-              <>
-                <StarrySprite state={spriteState} message={spriteMessage} />
-                <ProgressRing progress={progress} label="自由创作" />
-              </>
-            )}
-          </motion.button>
-
-          {freeTheme && !showFreeThemes && (
-            <div className="pointer-events-auto min-w-0">
-              <ThemeStepGuide
-                theme={freeTheme}
-                currentStep={freeThemeStep}
-                compact
-                onNextStep={() => {
-                  if (freeThemeStep < freeTheme.steps.length - 1) {
-                    const next = freeThemeStep + 1;
-                    setFreeThemeStep(next);
-                    setSpriteMessage(freeTheme.steps[next].hint);
-                  } else {
-                    handleExport();
-                  }
+            </motion.button>
+          ) : (
+            <>
+              <motion.button
+                type="button"
+                initial={{ opacity: 0, x: 16, y: -8 }}
+                animate={{ opacity: 1, x: 0, y: 0 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+                className="flex flex-col items-center justify-center gap-1.5 rounded-[1.05rem] bg-white pointer-events-auto"
+                style={{
+                  border: '2px solid #1A1A1A',
+                  boxShadow: '3px 3px 0 #1A1A1A',
+                  padding: '0.55rem 0.45rem',
                 }}
-              />
-            </div>
+                onClick={() => setPromptCardCollapsed(true)}
+                aria-label="折叠自由创作提示"
+                title="折叠提示"
+              >
+                <ProgressRing progress={progress} size={54} strokeWidth={5} label="自由创作" />
+                <span style={{ fontSize: '0.58rem', fontWeight: 800, color: '#999', lineHeight: 1 }}>
+                  点击收起
+                </span>
+              </motion.button>
+
+              {freeTheme && !showFreeThemes && (
+                <div className="pointer-events-auto min-w-0">
+                  <ThemeStepGuide
+                    theme={freeTheme}
+                    currentStep={freeThemeStep}
+                    compact
+                    onNextStep={() => {
+                      if (freeThemeStep < freeTheme.steps.length - 1) {
+                        const next = freeThemeStep + 1;
+                        setFreeThemeStep(next);
+                        setSpriteMessage(freeTheme.steps[next].hint);
+                      } else {
+                        handleExport();
+                      }
+                    }}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       ) : (
