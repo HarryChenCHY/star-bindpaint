@@ -15,6 +15,7 @@ import {
   Palette as PaletteIcon,
   Play,
   Layers,
+  ChevronDown,
 } from 'lucide-react';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
 
@@ -69,6 +70,7 @@ const POPOVER_EXIT = {
 // ─── Main component ───────────────────────────────────────────────
 export default function PaintBottomBar(p: Props) {
   const [open, setOpen] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -94,13 +96,41 @@ export default function PaintBottomBar(p: Props) {
     { id: 'free', icon: <PaletteIcon size={20} strokeWidth={2.5} />, label: '自由', color: '#7DC353' },
   ];
 
+  if (collapsed) {
+    return (
+      <div className="fixed left-0 right-0 z-40 flex justify-center pointer-events-none px-2"
+        style={{ bottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
+        <motion.button
+          type="button"
+          initial={{ scale: 0.85, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          whileTap={{ scale: 0.92 }}
+          className="pointer-events-auto rounded-full flex items-center justify-center bg-white"
+          style={{
+            width: 52,
+            height: 52,
+            border: '2px solid #1A1A1A',
+            boxShadow: '4px 4px 0 #1A1A1A',
+            color: '#1A1A1A',
+          }}
+          onClick={() => setCollapsed(false)}
+          aria-label="展开工具栏"
+          title="展开工具栏"
+        >
+          <PaletteIcon size={22} strokeWidth={2.6} />
+        </motion.button>
+      </div>
+    );
+  }
+
   return (
-    <div className="fixed bottom-3 left-0 right-0 z-40 flex justify-center pointer-events-none">
+    <div className="fixed left-0 right-0 z-40 flex justify-center pointer-events-none px-1.5"
+      style={{ bottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
       <motion.div
         ref={containerRef}
         layout
         transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-        className="pointer-events-auto flex items-center gap-1.5 px-2 py-2 rounded-[1.5rem] bg-white"
+        className="pointer-events-auto flex flex-wrap items-center justify-center gap-1 px-1.5 py-1.5 rounded-[1.35rem] bg-white max-w-[calc(100vw-0.75rem)] sm:flex-nowrap sm:gap-1.5 sm:px-2 sm:py-2 sm:rounded-[1.5rem]"
         style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A' }}
       >
         {/* MODE SECTION — 自由模式一旦进入即锁定，其余两个模式按钮隐藏 */}
@@ -263,6 +293,15 @@ export default function PaintBottomBar(p: Props) {
           }}
           hoverBg="#F302C9"
         />
+        <DirectBtn
+          icon={<ChevronDown size={18} strokeWidth={2.6} />}
+          label="收起工具栏"
+          onClick={() => {
+            setOpen(null);
+            setCollapsed(true);
+          }}
+          hoverBg="#7DC353"
+        />
       </motion.div>
     </div>
   );
@@ -322,7 +361,7 @@ function ModeBtn({
         onHoverEnd={() => setHover(false)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="relative w-12 h-12 rounded-full flex items-center justify-center"
+        className="relative w-9 h-9 sm:w-12 sm:h-12 rounded-full flex items-center justify-center"
         style={{
           background: active ? color : '#FFFFFF',
           border: '2px solid #1A1A1A',
@@ -378,7 +417,7 @@ function ToolBtn({
         whileTap={{ scale: 0.9 }}
         animate={isOpen ? { y: -2 } : { y: 0 }}
         transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-        className="w-12 h-12 rounded-full flex flex-col items-center justify-center"
+        className="w-9 h-9 sm:w-12 sm:h-12 rounded-full flex flex-col items-center justify-center"
         style={{
           background: isOpen ? '#1A1A1A' : '#FFFFFF',
           color: isOpen ? '#FFFFFF' : '#1A1A1A',
@@ -390,7 +429,7 @@ function ToolBtn({
         {value !== undefined && (
           <span
             style={{
-              fontSize: '0.55rem',
+              fontSize: 'clamp(0.48rem, 1.7vw, 0.55rem)',
               fontWeight: 900,
               lineHeight: 1,
               marginTop: 2,
@@ -413,7 +452,7 @@ function ToolBtn({
             transition={POPOVER_SPRING}
             className="absolute left-1/2 -translate-x-1/2 z-10"
             style={{
-              bottom: 'calc(100% + 14px)',
+              bottom: 'calc(100% + 10px)',
               transformOrigin: 'bottom center',
             }}
           >
@@ -422,7 +461,8 @@ function ToolBtn({
               style={{
                 border: '2px solid #1A1A1A',
                 boxShadow: '4px 4px 0 #1A1A1A',
-                padding: '0.95rem 1rem 1rem',
+                padding: '0.8rem 0.85rem 0.9rem',
+                maxWidth: 'calc(100vw - 1.25rem)',
               }}
             >
               <div
@@ -496,9 +536,9 @@ function DirectBtn({
         onHoverEnd={() => setHover(false)}
         className="rounded-full flex items-center justify-center gap-1.5"
         style={{
-          height: 48,
-          minWidth: 48,
-          padding: showLabel ? '0 0.95rem' : 0,
+          height: 'clamp(36px, 10vw, 48px)',
+          minWidth: 'clamp(36px, 10vw, 48px)',
+          padding: showLabel ? '0 clamp(0.55rem, 2.4vw, 0.95rem)' : 0,
           background: currentBg,
           color: currentColor,
           border: '2px solid #1A1A1A',
@@ -510,7 +550,7 @@ function DirectBtn({
       >
         {icon}
         {showLabel && (
-          <span style={{ fontSize: '0.78rem', fontWeight: 900, letterSpacing: '-0.01em' }}>
+          <span className="hidden sm:inline" style={{ fontSize: '0.78rem', fontWeight: 900, letterSpacing: '-0.01em' }}>
             {label}
           </span>
         )}

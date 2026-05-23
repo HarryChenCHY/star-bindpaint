@@ -59,6 +59,7 @@ export default function PaintPage() {
   const [showFreeThemes, setShowFreeThemes] = useState(true); // 自由模式初始显示主题选择
   const [caregiverState, setCaregiverState] = useState<'painting' | 'stuck' | 'completed' | 'resting'>('painting');
   const [userStrokeCount, setUserStrokeCount] = useState(0);
+  const [promptCardCollapsed, setPromptCardCollapsed] = useState(false);
 
   // 自由创作风格化
   const [selectedStyle, setSelectedStyle] = useState<MasterStyleProfile | null>(null);
@@ -711,36 +712,52 @@ export default function PaintPage() {
 
       </div>
 
-      {/* 右上角浮动卡片栈：精灵卡 + 自由模式步骤引导卡（flex column 自然堆叠，不重叠） */}
+      {/* 右上角浮动卡片栈：手机端可折叠，避免遮挡画布 */}
       <div
         className="fixed z-30 flex flex-col gap-3 pointer-events-none"
         style={{
           top: 'clamp(64px, 10vw, 80px)',
           right: 'clamp(8px, 2vw, 16px)',
-          width: 'clamp(132px, 32vw, 196px)',
+          width: promptCardCollapsed ? 52 : 'clamp(132px, 32vw, 196px)',
         }}
       >
-        <motion.div
+        <motion.button
+          type="button"
           initial={{ opacity: 0, x: 20, y: -10 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
+          whileTap={{ scale: 0.96 }}
           transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-          className="flex flex-col items-center gap-2 px-3 py-3 rounded-[1.25rem] bg-white pointer-events-auto"
+          className="flex flex-col items-center justify-center gap-2 rounded-[1.25rem] bg-white pointer-events-auto"
           style={{
             border: '2px solid #1A1A1A',
             boxShadow: '4px 4px 0 #1A1A1A',
+            minHeight: promptCardCollapsed ? 52 : undefined,
+            padding: promptCardCollapsed ? 0 : '0.75rem',
           }}
+          onClick={() => setPromptCardCollapsed(prev => !prev)}
+          aria-label={promptCardCollapsed ? '展开提示卡片' : '折叠提示卡片'}
+          title={promptCardCollapsed ? '展开提示' : '折叠提示'}
         >
-          <StarrySprite state={spriteState} message={spriteMessage} />
-          <div className="flex justify-center pt-1">
-            <ProgressRing
-              progress={progress}
-              label={mode === 'free' ? '自由创作' : `${Math.round(progress * strokes.length)} / ${strokes.length} 笔`}
-            />
-          </div>
-        </motion.div>
+          {promptCardCollapsed ? (
+            <span style={{ fontSize: 24, lineHeight: 1 }}>★</span>
+          ) : (
+            <>
+              <StarrySprite state={spriteState} message={spriteMessage} />
+              <div className="flex justify-center pt-1">
+                <ProgressRing
+                  progress={progress}
+                  label={mode === 'free' ? '自由创作' : `${Math.round(progress * strokes.length)} / ${strokes.length} 笔`}
+                />
+              </div>
+              <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#999', marginTop: -2 }}>
+                点击收起
+              </span>
+            </>
+          )}
+        </motion.button>
 
         {/* 自由模式分步引导 — 紧贴精灵卡下方 */}
-        {mode === 'free' && freeTheme && !showFreeThemes && (
+        {mode === 'free' && freeTheme && !showFreeThemes && !promptCardCollapsed && (
           <div className="pointer-events-auto">
             <ThemeStepGuide
               theme={freeTheme}
