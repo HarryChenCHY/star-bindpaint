@@ -1,9 +1,12 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SDRenderLoadingProps {
   styleName: string;
+  progress: number;           // 0–1
+  commentaryMessages: string[];
 }
 
 const sparkles = [
@@ -15,7 +18,22 @@ const sparkles = [
   { left: '42%', top: '82%', delay: 1.25 },
 ];
 
-export default function SDRenderLoading({ styleName }: SDRenderLoadingProps) {
+export default function SDRenderLoading({ styleName, progress, commentaryMessages }: SDRenderLoadingProps) {
+  const [msgIdx, setMsgIdx] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (commentaryMessages.length === 0) return;
+    timerRef.current = setInterval(() => {
+      setMsgIdx(prev => (prev + 1) % commentaryMessages.length);
+    }, 3500);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [commentaryMessages]);
+
+  const pct = Math.round(progress * 100);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -64,20 +82,49 @@ export default function SDRenderLoading({ styleName }: SDRenderLoadingProps) {
         <h3 style={{ fontSize: 'clamp(1.35rem, 6vw, 2rem)', fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.04em' }}>
           魔法施工中
         </h3>
-        <p className="mx-auto mt-3 max-w-xs" style={{ fontSize: '0.95rem', fontWeight: 800, color: '#1A1A1A', lineHeight: 1.55 }}>
-          Starry 正在帮你邀请一位著名的油画家先生，用 {styleName} 的灵感一起完成这幅画。
-        </p>
 
-        <div className="mt-6 overflow-hidden rounded-full bg-white" style={{ border: '2px solid #1A1A1A', height: 18 }}>
-          <motion.div
-            className="h-full rounded-full"
-            style={{ background: 'linear-gradient(90deg, #7DC353, #F9B801, #F302C9, #7A51EC)' }}
-            animate={{ x: ['-65%', '110%'] }}
-            transition={{ duration: 1.35, repeat: Infinity, ease: 'easeInOut' }}
-          />
+        {/* ── 动态轮播文字 ── */}
+        <div className="mx-auto mt-3 flex items-center justify-center"
+          style={{ maxWidth: 280, minHeight: '3.2rem' }}>
+          <AnimatePresence mode="wait">
+            {commentaryMessages.length > 0 && (
+              <motion.p
+                key={msgIdx}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.35 }}
+                style={{ fontSize: '0.9rem', fontWeight: 700, color: '#555', lineHeight: 1.6 }}
+              >
+                {commentaryMessages[msgIdx]}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
 
-        <div className="mt-5 flex justify-center gap-3 text-2xl">
+        {/* ── 真实进度条 ── */}
+        <div className="mt-4">
+          <div className="flex justify-between items-center mb-1.5">
+            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#999' }}>
+              Starry 正在邀请 {styleName} 先生...
+            </span>
+            <span style={{ fontSize: '0.95rem', fontWeight: 900, color: '#1A1A1A' }}>
+              {pct}%
+            </span>
+          </div>
+          <div className="overflow-hidden rounded-full bg-white" style={{ border: '2px solid #1A1A1A', height: 18 }}>
+            <motion.div
+              className="h-full rounded-full"
+              style={{
+                width: `${pct}%`,
+                background: 'linear-gradient(90deg, #7DC353, #F9B801, #F302C9, #7A51EC)',
+                transition: 'width 0.4s ease-out',
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 flex justify-center gap-3 text-2xl">
           {['🎨', '⭐', '🖌️'].map((item, i) => (
             <motion.span
               key={item}

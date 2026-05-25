@@ -148,6 +148,84 @@ function classifyColorFromRGB(rgb: [number, number, number] | number[]): string 
   return '粉色';
 }
 
+// ── SD 渲染等待文案生成 ────────────────────────────────────────────────
+
+import { MASTER_DIALOGUES } from './master-dialogues';
+
+interface CommentaryOpts {
+  masterId?: string;
+  colorDistribution: { color: string; percentage: number }[];
+  strokeRhythm: string;
+  durationMinutes: number;
+  emotionBefore: string;
+  totalStrokes: number;
+  freeThemeSteps?: string[];
+}
+
+/**
+ * 生成 SD 渲染等待期间的动态轮播文案
+ * 混合绘画数据 + 大师故事/名言 + 鼓励语
+ */
+export function generateSDRenderCommentary(opts: CommentaryOpts): string[] {
+  const messages: string[] = [];
+  const dialogues = opts.masterId ? MASTER_DIALOGUES[opts.masterId] : null;
+
+  // 1. 颜色偏好
+  if (opts.colorDistribution.length > 0) {
+    const top = opts.colorDistribution[0];
+    messages.push(`你最喜欢用${top.color}画画，有${top.percentage}%的笔触都是${top.color}～`);
+  }
+
+  // 2. 大师名言
+  if (dialogues?.quote) {
+    messages.push(`${dialogues.quote}`);
+  }
+
+  // 3. 大师鼓励
+  if (dialogues?.encouragements?.length) {
+    const pick = dialogues.encouragements[Math.floor(Math.random() * dialogues.encouragements.length)];
+    messages.push(pick);
+  }
+
+  // 4. 绘画时长
+  if (opts.durationMinutes > 0) {
+    messages.push(`你已经专注地画了${opts.durationMinutes}分钟，每一分钟都在和色彩做朋友～`);
+  } else {
+    messages.push('每一笔都在和色彩做朋友，慢慢来～');
+  }
+
+  // 5. 笔画节奏
+  if (opts.strokeRhythm !== '数据不足') {
+    messages.push(`你的笔触${opts.strokeRhythm}，大师也是这样找到自己的节奏的。`);
+  }
+
+  // 6. 主题引导（如果有）
+  if (opts.freeThemeSteps && opts.freeThemeSteps.length > 0) {
+    const step = opts.freeThemeSteps[Math.min(opts.freeThemeSteps.length - 1, Math.floor(Math.random() * opts.freeThemeSteps.length))];
+    if (step) messages.push(step);
+  }
+
+  // 7. 情绪关怀
+  const emotionMap: Record<string, string> = {
+    happy: '带着开心的心情来画画，画里一定也有阳光的味道。',
+    calm: '平静的心情是最好的画布，每一笔都安安静静的。',
+    anxious: 'Starry 会用心对待你的每一笔，把焦虑变成温柔的颜色。',
+    sad: '画画是一个温暖的朋友，陪着你慢慢变好。',
+  };
+  if (opts.emotionBefore && emotionMap[opts.emotionBefore]) {
+    messages.push(emotionMap[opts.emotionBefore]);
+  }
+
+  // 8. 大师故事（如果有）
+  if (dialogues?.workStories) {
+    const stories = Object.values(dialogues.workStories);
+    const pick = stories[Math.floor(Math.random() * stories.length)];
+    messages.push(pick);
+  }
+
+  return messages;
+}
+
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {

@@ -22,7 +22,7 @@ import { GuideSystem } from '@/lib/guide-system';
 import { saveToGallery, uploadAndSaveToGallery } from '@/lib/gallery-store';
 import { getTracker } from '@/lib/painting-tracker';
 import { EmotionDetector, EmotionLevel } from '@/lib/emotion-detector';
-import { generateAttentionQuestion, generateCalmPrompt } from '@/lib/feedback-engine';
+import { generateAttentionQuestion, generateCalmPrompt, generateSDRenderCommentary } from '@/lib/feedback-engine';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
 import { useAppSettings } from '@/contexts/AppContext';
 
@@ -81,6 +81,17 @@ export default function PaintPage() {
   // SD 渲染
   const [sdRendering, setSdRendering] = useState(false);
   const [sdResult, setSdResult] = useState<{ original: string; rendered: string; duration: number } | null>(null);
+  const [sdElapsed, setSdElapsed] = useState(0);
+  const [sdCommentary, setSdCommentary] = useState<string[]>([]);
+  const sdStartTimeRef = useRef(0);
+  const sdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // 组件卸载时清理 SD 计时器
+  useEffect(() => {
+    return () => {
+      if (sdTimerRef.current) clearInterval(sdTimerRef.current);
+    };
+  }, []);
 
   const guideRef = useRef<GuideSystem>(new GuideSystem());
   const emotionDetectorRef = useRef<EmotionDetector | null>(null);
@@ -490,6 +501,26 @@ export default function PaintPage() {
     const styleId = selectedStyle?.id || 'vangogh';
     const themePrompt = freeTheme?.sdPrompt || '';
 
+    // 生成轮播文案
+    const tracker = getTracker();
+    const commentary = generateSDRenderCommentary({
+      masterId: styleId,
+      colorDistribution: tracker.getColorDistribution(),
+      strokeRhythm: tracker.getStrokeRhythm(),
+      durationMinutes: tracker.getDurationMinutes(),
+      emotionBefore: tracker.getSession().emotionBefore || sessionStorage.getItem('star-bindpaint-emotion-before') || '',
+      totalStrokes: tracker.getSession().completedStrokes,
+      freeThemeSteps: freeTheme?.steps?.map(s => s.hint),
+    });
+    setSdCommentary(commentary);
+
+    // 启动假进度计时（200ms 刷新）
+    sdStartTimeRef.current = Date.now();
+    setSdElapsed(0);
+    sdTimerRef.current = setInterval(() => {
+      setSdElapsed(Date.now() - sdStartTimeRef.current);
+    }, 200);
+
     setSdRendering(true);
     setSpriteMessage('Starry 正在把你的画变成一首诗...');
     setSpriteState('thinking');
@@ -514,6 +545,8 @@ export default function PaintPage() {
       setSpriteMessage(`渲染失败：${err instanceof Error ? err.message : '未知错误'}`);
       setSpriteState('idle');
     } finally {
+      if (sdTimerRef.current) clearInterval(sdTimerRef.current);
+      sdTimerRef.current = null;
       setSdRendering(false);
     }
   };
@@ -834,7 +867,11 @@ export default function PaintPage() {
       {/* ═══ SD 渲染结果 ═══ */}
       <AnimatePresence>
         {sdRendering && (
-          <SDRenderLoading styleName={selectedStyle?.name || '梵高'} />
+          <SDRenderLoading
+              styleName={selectedStyle?.name || '梵高'}
+              progress={sdElapsed > 0 ? Math.min(sdElapsed / 20000 * 0.98, 0.98) : 0}
+              commentaryMessages={sdCommentary}
+            />
         )}
         {sdResult && (
           <SDRenderResult
