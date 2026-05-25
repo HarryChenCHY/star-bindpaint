@@ -13,8 +13,8 @@
 </p>
 
 <p align="center">
-  <a href="https://star-bindpaint.vercel.app">🌐 在线体验</a> ·
-  <a href="https://star-bindpaint.vercel.app/onboard">🎨 开始创作</a> ·
+  <a href="https://www.star-bindpaint.online">🌐 在线体验</a> ·
+  <a href="https://www.star-bindpaint.online/onboard">🎨 开始创作</a> ·
   <a href="#-两步递进体验">✨ 两步体验</a> ·
   <a href="#-五步疗愈流程">💫 疗愈流程</a> ·
   <a href="./PROJECT_OVERVIEW.md">📄 项目总览</a> ·
@@ -164,7 +164,7 @@ npm install
 npm run dev    # → http://localhost:3001（3000 常被占用，dev server 自动回退）
 ```
 
-**线上访问**：https://star-bindpaint.vercel.app
+**线上访问**：https://www.star-bindpaint.online（国内直连，无需 VPN）
 
 > 💡 完整 LLM 体验需在 `.env.local` 配置 `HUNYUAN_API_KEY` 与 `DASHSCOPE_API_KEY`。
 > 未配置时画板与画廊功能正常，仅"变成油画"和"观察报告"会降级提示。
