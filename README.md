@@ -164,7 +164,7 @@ npm install
 npm run dev    # → http://localhost:3001（3000 常被占用，dev server 自动回退）
 ```
 
-**线上访问**：https://www.star-bindpaint.online（国内直连，无需 VPN）
+**线上访问**：https://www.star-bindpaint.online
 
 > 💡 完整 LLM 体验需在 `.env.local` 配置 `HUNYUAN_API_KEY` 与 `DASHSCOPE_API_KEY`。
 > 未配置时画板与画廊功能正常，仅"变成油画"和"观察报告"会降级提示。
