@@ -19,8 +19,10 @@ interface PaintCanvasProps {
   autoSpeed?: number;
   masterStyle?: MasterStyleProfile | null;
   freeColor?: [number, number, number];
+  eraserMode?: boolean;
   onUserStrokeDone?: (userPoints: Vec2[], score: number) => void;
   onUserStrokeStart?: () => void;
+  onUndoAvailable?: (available: boolean) => void;
   onAutoProgress?: (current: number, total: number) => void;
   onAutoComplete?: () => void;
   sourceImage?: HTMLImageElement | null;
@@ -38,8 +40,10 @@ export default function PaintCanvas({
   autoSpeed = 30,
   masterStyle,
   freeColor,
+  eraserMode = false,
   onUserStrokeDone,
   onUserStrokeStart,
+  onUndoAvailable,
   onAutoProgress,
   onAutoComplete,
   sourceImage,
@@ -47,9 +51,21 @@ export default function PaintCanvas({
   const baseCanvasRef = useRef<HTMLCanvasElement>(null);      // Layer 1: 已完成笔触
   const userCanvasRef = useRef<HTMLCanvasElement>(null);      // Layer 2: 用户绘制
   const guideCanvasRef = useRef<HTMLCanvasElement>(null);     // Layer 3: 引导线
+  const undoStackRef = useRef<ImageData[]>([]);               // 撤销栈（自由模式）
   const drawingEngineRef = useRef<DrawingEngine | null>(null);
   const autoPlayRef = useRef<{ running: boolean; timeoutId: number }>({ running: false, timeoutId: 0 });
+  const eraserModeRef = useRef(eraserMode);                   // 用 ref 避免引擎重建
+  eraserModeRef.current = eraserMode;
   const [autoIdx, setAutoIdx] = useState(0);
+
+  // 橡皮擦模式：设置光标
+  useEffect(() => {
+    const userCanvas = userCanvasRef.current;
+    if (!userCanvas) return;
+    userCanvas.style.cursor = eraserMode
+      ? 'url(/cursors/eraser.svg) 8 8, crosshair'
+      : 'url(/cursors/paintbrush.svg) 0 16, crosshair';
+  }, [eraserMode]);
 
   // 初始化手绘引擎（跟画/自由模式）
   useEffect(() => {
@@ -68,21 +84,43 @@ export default function PaintCanvas({
       } else if (mode === 'free' && onUserStrokeDone) {
         const userPts: Vec2[] = stroke.points.map(p => ({ x: p.x, y: p.y }));
 
-        // 风格化：如果有 masterStyle，将笔迹转换为油画风格
-        if (masterStyle) {
-          const pressures = stroke.points.map(p => p.pressure);
-          const color: [number, number, number] = freeColor || [0.2, 0.2, 0.2];
-          const segments = stylizeStroke(userPts, pressures, color, masterStyle);
-
-          // 清除用户层的原始笔迹
-          const userCtx = userCanvas.getContext('2d');
-          if (userCtx) userCtx.clearRect(0, 0, width, height);
-
-          // 渲染风格化笔触到基础层
+        if (eraserModeRef.current) {
+          // 橡皮擦：userCanvas 上正常画白线(source-over)，抬笔后用 destination-out 合入 baseCanvas
           const baseCanvas = baseCanvasRef.current;
-          if (baseCanvas) {
+          const userCtx = userCanvas.getContext('2d');
+          if (baseCanvas && userCtx) {
             const baseCtx = baseCanvas.getContext('2d');
-            if (baseCtx) drawStylizedStroke(baseCtx, segments);
+            if (baseCtx) {
+              baseCtx.globalCompositeOperation = 'destination-out';
+              baseCtx.drawImage(userCanvas, 0, 0);
+              baseCtx.globalCompositeOperation = 'source-over';
+            }
+            userCtx.clearRect(0, 0, width, height);
+          }
+        } else {
+          // 风格化：如果有 masterStyle，将笔迹转换为油画风格
+          if (masterStyle) {
+            const pressures = stroke.points.map(p => p.pressure);
+            const color: [number, number, number] = freeColor || [0.2, 0.2, 0.2];
+            const segments = stylizeStroke(userPts, pressures, color, masterStyle);
+
+            // 清除用户层的原始笔迹
+            const userCtx = userCanvas.getContext('2d');
+            if (userCtx) userCtx.clearRect(0, 0, width, height);
+
+            // 渲染风格化笔触到基础层（之前先存快照）
+            const baseCanvas = baseCanvasRef.current;
+            if (baseCanvas) {
+              const baseCtx = baseCanvas.getContext('2d');
+              if (baseCtx) {
+                const snapshot = baseCtx.getImageData(0, 0, width, height);
+                undoStackRef.current.push(snapshot);
+                if (undoStackRef.current.length > 30) undoStackRef.current.shift();
+                onUndoAvailable?.(true);
+
+                drawStylizedStroke(baseCtx, segments);
+              }
+            }
           }
         }
 
@@ -96,15 +134,24 @@ export default function PaintCanvas({
       engine.destroy();
       drawingEngineRef.current = null;
     };
-  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, width, height]);
+  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, width, height, onUndoAvailable]);
 
-  // 更新画笔颜色/宽度
+  // 更新画笔颜色/宽度（含橡皮擦模式切换）
   useEffect(() => {
-    if (drawingEngineRef.current) {
-      if (brushColor) drawingEngineRef.current.setColor(brushColor);
-      drawingEngineRef.current.setWidth(brushWidth);
+    const engine = drawingEngineRef.current;
+    if (!engine) return;
+    if (eraserMode) {
+      engine.setColor('rgba(255,255,255,1)');
+      engine.setWidth(Math.max(12, (brushWidth || 4) * 3));
+    } else if (mode === 'free') {
+      const [r, g, b] = freeColor || [0.2, 0.2, 0.2];
+      engine.setColor(`rgba(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)},0.85)`);
+      engine.setWidth(brushWidth || 4);
+    } else if (brushColor) {
+      engine.setColor(brushColor);
+      engine.setWidth(brushWidth || 4);
     }
-  }, [brushColor, brushWidth]);
+  }, [eraserMode, brushColor, brushWidth, freeColor, mode]);
 
   // 在跟画模式下，自动设置画笔颜色为当前引导笔触颜色
   useEffect(() => {
@@ -174,6 +221,21 @@ export default function PaintCanvas({
   }, []);
 
   // 公开方法给父组件调用
+  const undo = useCallback(() => {
+    const stack = undoStackRef.current;
+    if (stack.length === 0) return false;
+    const snapshot = stack.pop()!;
+    const baseCanvas = baseCanvasRef.current;
+    if (baseCanvas) {
+      const ctx = baseCanvas.getContext('2d');
+      if (ctx) ctx.putImageData(snapshot, 0, 0);
+    }
+    onUndoAvailable?.(stack.length > 0);
+    return true;
+  }, [onUndoAvailable]);
+
+  const canUndo = useCallback(() => undoStackRef.current.length > 0, []);
+
   useEffect(() => {
     // 暴露到 window 给其他逻辑使用
     (window as unknown as Record<string, unknown>).__paintCanvas = {
@@ -192,11 +254,15 @@ export default function PaintCanvas({
             ctx.clearRect(0, 0, width, height);
           }
         });
+        undoStackRef.current = [];
         setAutoIdx(0);
+        onUndoAvailable?.(false);
       },
       getBaseCanvas: () => baseCanvasRef.current,
+      undo,
+      canUndo,
     };
-  }, [drawAIStrokeOnBase, width, height]);
+  }, [drawAIStrokeOnBase, undo, canUndo, width, height, onUndoAvailable]);
 
   // 绘制半透明源图（参考层）
   useEffect(() => {

@@ -66,6 +66,18 @@ export default function PaintPage() {
   const [selectedStyle, setSelectedStyle] = useState<MasterStyleProfile | null>(null);
   const [freeColor, setFreeColor] = useState<[number, number, number]>([0.1, 0.3, 0.7]);
 
+  // 撤销 & 橡皮擦
+  const [eraserMode, setEraserMode] = useState(false);
+  const [canUndo, setCanUndo] = useState(false);
+
+  const handleUndo = useCallback(() => {
+    const pc = (window as unknown as Record<string, { undo: () => boolean }>).__paintCanvas;
+    if (pc) {
+      const ok = pc.undo();
+      if (!ok) setCanUndo(false);
+    }
+  }, []);
+
   // SD 渲染
   const [sdRendering, setSdRendering] = useState(false);
   const [sdResult, setSdResult] = useState<{ original: string; rendered: string; duration: number } | null>(null);
@@ -662,11 +674,13 @@ export default function PaintPage() {
             autoSpeed={autoSpeed}
             masterStyle={selectedStyle}
             freeColor={freeColor}
+            eraserMode={eraserMode}
             onUserStrokeDone={handleUserStrokeDone}
             onUserStrokeStart={() => {
               getTracker().strokeStart();
               emotionDetectorRef.current?.reportPointerDown();
             }}
+            onUndoAvailable={setCanUndo}
             onAutoProgress={handleAutoProgress}
             onAutoComplete={handleAutoComplete}
             sourceImage={sourceImage}
@@ -866,6 +880,10 @@ export default function PaintPage() {
         onFreeColorChange={setFreeColor}
         onSDRender={handleSDRender}
         sdRendering={sdRendering}
+        eraserMode={eraserMode}
+        onToggleEraser={() => setEraserMode(prev => !prev)}
+        canUndo={canUndo}
+        onUndo={handleUndo}
       />
 
       {/* ═══ 情绪后测弹窗 ═══ */}

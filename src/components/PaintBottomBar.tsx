@@ -16,6 +16,8 @@ import {
   Play,
   Layers,
   ChevronDown,
+  Undo2,
+  Eraser,
 } from 'lucide-react';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
 
@@ -53,6 +55,11 @@ interface Props {
   onFreeColorChange?: (c: [number, number, number]) => void;
   onSDRender?: () => void;
   sdRendering?: boolean;
+  // free mode edit tools
+  eraserMode?: boolean;
+  onToggleEraser?: () => void;
+  canUndo?: boolean;
+  onUndo?: () => void;
 }
 
 // ─── Animation presets ────────────────────────────────────────────
@@ -68,7 +75,7 @@ const POPOVER_EXIT = {
 };
 
 // ─── Main component ───────────────────────────────────────────────
-export default function PaintBottomBar(p: Props) {
+export default function PaintBottomBar({ eraserMode, onToggleEraser, canUndo, onUndo, ...p }: Props) {
   const [open, setOpen] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -268,6 +275,23 @@ export default function PaintBottomBar(p: Props) {
                 />
               );
             })()}
+            {onUndo && (
+              <DirectBtn
+                icon={<Undo2 size={18} strokeWidth={2.5} />}
+                label="撤销"
+                onClick={onUndo}
+                disabled={!canUndo}
+              />
+            )}
+            {onToggleEraser && (
+              <DirectBtn
+                icon={<Eraser size={18} strokeWidth={2.5} />}
+                label="橡皮擦"
+                onClick={onToggleEraser}
+                fillBg={eraserMode ? '#1A1A1A' : undefined}
+                iconColor={eraserMode ? '#FFFFFF' : undefined}
+              />
+            )}
             {p.onSDRender && (
               <DirectBtn
                 icon={<Wand2 size={17} strokeWidth={2.5} />}
