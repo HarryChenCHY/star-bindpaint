@@ -73,23 +73,10 @@ export function generateAttentionQuestion(strokeColor: [number, number, number],
   const isLeft = strokeRegion.x < canvasSize.w / 2;
   const posName = `${isTop ? '上' : '下'}面${isLeft ? '左' : '右'}边`;
 
-  // 随机选一种问题类型
+  // 随机选一种问题类型（不问颜色——跟画模式下笔触被紫色高亮覆盖，用户看不到原色）
   const type = Math.random();
 
-  if (type < 0.4) {
-    // 颜色识别
-    const wrongColors = ['红色', '蓝色', '绿色', '黄色', '紫色', '橙色'].filter(c => c !== colorName);
-    const wrong1 = wrongColors[Math.floor(Math.random() * wrongColors.length)];
-    const wrong2 = wrongColors.filter(c => c !== wrong1)[Math.floor(Math.random() * (wrongColors.length - 1))];
-    return {
-      question: '刚才那条线是什么颜色？',
-      options: shuffle([
-        { label: colorName, correct: true },
-        { label: wrong1, correct: false },
-        { label: wrong2, correct: false },
-      ]),
-    };
-  } else if (type < 0.7) {
+  if (type < 0.5) {
     // 位置判断
     return {
       question: '刚才画在哪里？',

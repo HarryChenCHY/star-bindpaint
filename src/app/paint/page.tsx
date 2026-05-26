@@ -96,6 +96,7 @@ export default function PaintPage() {
   const guideRef = useRef<GuideSystem>(new GuideSystem());
   const emotionDetectorRef = useRef<EmotionDetector | null>(null);
   const attentionIntervalRef = useRef(3); // 每 N 笔问一次（用户画3笔问1次）
+  const batchingRef = useRef(false); // 批量绘制中，抑制引导线更新
 
   // 初始化情绪检测器
   useEffect(() => {
@@ -224,7 +225,10 @@ export default function PaintPage() {
     guide.setMode(guideSubMode);
 
     const unsubscribe = guide.subscribe((state) => {
-      setCurrentGuideStroke(state.currentStroke);
+      // 批量绘制期间不更新引导线（防止闪烁）
+      if (!batchingRef.current) {
+        setCurrentGuideStroke(state.currentStroke);
+      }
       const prog = state.totalStrokes > 0 ? state.currentIndex / state.totalStrokes : 0;
       setProgress(prog);
       setSpriteState(state.spriteState as SpriteState);
@@ -308,6 +312,9 @@ export default function PaintPage() {
 
         // 陪画模式：用户画完1笔后，AI 一次性画 N 笔（不逐笔动画）
         if (fillMode === 'companion' && autoFillRatio > 0 && paintCanvas) {
+          // 批量绘制期间隐藏引导线（防止闪烁）
+          batchingRef.current = true;
+          setCurrentGuideStroke(null);
           setTimeout(() => {
             let drawn = 0;
             for (let i = 0; i < autoFillRatio; i++) {
@@ -320,6 +327,10 @@ export default function PaintPage() {
             if (drawn > 0) {
               tracker.strokesBatched(guideState.currentIndex + 1, drawn);
             }
+            // 批量结束后显示最终的下一笔引导
+            batchingRef.current = false;
+            const finalNext = guide.getCurrentStroke();
+            setCurrentGuideStroke(finalNext);
           }, 300);
         }
       }
