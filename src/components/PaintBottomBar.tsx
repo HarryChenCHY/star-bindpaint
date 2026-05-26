@@ -760,9 +760,9 @@ function RhythmPopover({
           </div>
           <input
             type="range"
-            min="20"
-            max="200"
-            step="10"
+            min="100"
+            max="500"
+            step="50"
             value={autoFillRatio}
             onChange={e => onAutoFillRatioChange(Number(e.target.value))}
             className="w-full h-1.5 rounded-full appearance-none cursor-pointer"

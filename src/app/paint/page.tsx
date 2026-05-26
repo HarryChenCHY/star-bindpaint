@@ -34,7 +34,7 @@ export default function PaintPage() {
   const [brushWidth, setBrushWidth] = useState(4);
   const [autoSpeed, setAutoSpeed] = useState(200);
   const [roughness, setRoughness] = useState(2);
-  const [autoFillRatio, setAutoFillRatio] = useState(100);
+  const [autoFillRatio, setAutoFillRatio] = useState(200);
   const [fillMode, setFillMode] = useState<'companion' | 'precise'>('companion');
   const [strokes, setStrokes] = useState<StrokeDrawData[]>([]);
   const [currentGuideStroke, setCurrentGuideStroke] = useState<StrokeDrawData | null>(null);

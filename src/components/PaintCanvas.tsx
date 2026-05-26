@@ -64,7 +64,7 @@ export default function PaintCanvas({
     if (!userCanvas) return;
     userCanvas.style.cursor = eraserMode
       ? 'url(/cursors/eraser.svg) 8 8, crosshair'
-      : 'url(/cursors/paintbrush.svg) 0 16, crosshair';
+      : 'url(/cursors/paintbrush.svg) 29 29, crosshair';
   }, [eraserMode]);
 
   // 初始化手绘引擎（跟画/自由模式）
