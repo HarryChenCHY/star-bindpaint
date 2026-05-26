@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     // 优先使用腾讯混元生图
     if (hunyuanKey) {
       console.log('[sd-render] 尝试腾讯混元...');
-      const result = await renderWithHunyuan(hunyuanKey, finalPrompt);
+      const result = await renderWithHunyuan(hunyuanKey, imageBase64, finalPrompt);
       if (result) return NextResponse.json(result);
       console.log('[sd-render] 腾讯混元失败，降级到百炼');
     }
@@ -64,11 +64,14 @@ export async function POST(req: NextRequest) {
 
 // ── 腾讯混元生图 ──────────────────────────────────────────────────
 
-async function renderWithHunyuan(apiKey: string, prompt: string): Promise<{ imageBase64: string; style: string; duration: number } | null> {
+async function renderWithHunyuan(apiKey: string, imageBase64: string, prompt: string): Promise<{ imageBase64: string; style: string; duration: number } | null> {
   const startTime = Date.now();
 
+  // 将 base64 图片转为可访问的 data URL（混元支持 base64 data URI）
+  const imageUrl = imageBase64.startsWith('data:') ? imageBase64 : `data:image/png;base64,${imageBase64}`;
+
   try {
-    // Step 1: 提交生图任务
+    // Step 1: 提交生图任务（图生图模式：传入用户画作作为参考）
     const submitRes = await fetch('https://tokenhub.tencentmaas.com/v1/api/image/submit', {
       method: 'POST',
       headers: {
@@ -77,7 +80,8 @@ async function renderWithHunyuan(apiKey: string, prompt: string): Promise<{ imag
       },
       body: JSON.stringify({
         model: 'hy-image-v3.0',
-        prompt,
+        prompt: `Based on this sketch/drawing, render it as: ${prompt}. Keep the composition, shapes and layout of the original drawing intact, only apply artistic style.`,
+        images: [imageUrl],
       }),
     });
 
