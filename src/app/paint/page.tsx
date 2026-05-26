@@ -811,7 +811,8 @@ export default function PaintPage() {
                         setFreeThemeStep(next);
                         setSpriteMessage(freeTheme.steps[next].hint);
                       } else {
-                        handleExport();
+                        // 最后一步「画好了」→ 先变成油画，再由 SD 结果页面引导完成
+                        handleSDRender();
                       }
                     }}
                   />
