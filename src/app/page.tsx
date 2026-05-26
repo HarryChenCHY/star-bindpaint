@@ -54,7 +54,7 @@ export default function HomePage() {
               clearcoat: 1,
               clearcoatRoughness: 0.1,
             }}
-            followCursor={true}
+            followCursor={false}
           />
         </div>
         <div className="relative z-10 flex flex-col lg:flex-row items-center gap-8 sm:gap-12 lg:gap-20">
@@ -86,7 +86,7 @@ export default function HomePage() {
               临摹大师经典画作，或自由画出你想画的——AI 实时将每一笔变成油画风格，在创作中感受疗愈
             </p>
 
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex gap-3 flex-wrap relative" style={{ zIndex: 20, pointerEvents: 'auto' }}>
               <button onClick={() => router.push('/onboard')} className="btn-black" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.05rem)', paddingLeft: 'clamp(1.4rem, 5vw, 2.2rem)', paddingRight: 'clamp(1.4rem, 5vw, 2.2rem)' }}>
                 开始创作
               </button>
