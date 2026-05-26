@@ -48,7 +48,7 @@ export default function SDRenderResult({ originalImage, renderedImage, style, du
               你的画
             </p>
             <div className="rounded-xl overflow-hidden" style={{ border: '2px solid #E5E5E5' }}>
-              <img src={originalImage} alt="原始画作" className="w-full aspect-square object-contain bg-white" />
+              <img src={originalImage} alt="原始画作" className="w-full object-contain bg-white" style={{ maxHeight: '30vh' }} />
             </div>
           </div>
 
@@ -63,7 +63,7 @@ export default function SDRenderResult({ originalImage, renderedImage, style, du
               ✨ 油画版
             </p>
             <div className="rounded-xl overflow-hidden" style={{ border: '2px solid #7A51EC', boxShadow: '0 4px 20px rgba(122,81,236,0.2)' }}>
-              <img src={renderedImage} alt="AI渲染结果" className="w-full aspect-square object-contain bg-white" />
+              <img src={renderedImage} alt="AI渲染结果" className="w-full object-contain bg-white" style={{ maxHeight: '30vh' }} />
             </div>
           </div>
         </div>
@@ -100,23 +100,21 @@ export default function SDRenderResult({ originalImage, renderedImage, style, du
           >
             <span>🖼️</span> 放进画廊
           </button>
-          {onFinish && (
-            <button
-              onPointerDown={(e) => { e.stopPropagation(); }}
-              onClick={(e) => { e.stopPropagation(); onFinish(); }}
-              className="flex-1 rounded-full font-bold text-sm flex items-center justify-center gap-2"
-              style={{
-                background: '#7A51EC',
-                color: 'white',
-                border: '2px solid #1A1A1A',
-                boxShadow: '3px 3px 0 #1A1A1A',
-                cursor: 'pointer',
-                padding: '0.85em 1.2em',
-              }}
-            >
-              <span>✨</span> 完成创作
-            </button>
-          )}
+          <button
+            onPointerDown={(e) => { e.stopPropagation(); }}
+            onClick={(e) => { e.stopPropagation(); onFinish ? onFinish() : onClose(); }}
+            className="flex-1 rounded-full font-bold text-sm flex items-center justify-center gap-2"
+            style={{
+              background: '#7A51EC',
+              color: 'white',
+              border: '2px solid #1A1A1A',
+              boxShadow: '3px 3px 0 #1A1A1A',
+              cursor: 'pointer',
+              padding: '0.85em 1.2em',
+            }}
+          >
+            <span>✨</span> 完成创作
+          </button>
         </div>
       </motion.div>
     </motion.div>
