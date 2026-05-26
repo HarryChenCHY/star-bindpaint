@@ -225,6 +225,7 @@ export default function CreatePage() {
                                 src={artist.works[0].image}
                                 alt=""
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                               />
                               <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)' }} />
                             </div>
@@ -237,6 +238,7 @@ export default function CreatePage() {
                                   src={`/master/${artist.id}/image.png`}
                                   alt={artist.name}
                                   className="w-full h-full object-cover"
+                                  loading="lazy"
                                 />
                               </div>
 
@@ -428,7 +430,7 @@ export default function CreatePage() {
                         >
                           {/* 画作背景 */}
                           <div className="absolute inset-0">
-                            {bgWork && <img src={bgWork} alt="" className="w-full h-full object-cover" />}
+                            {bgWork && <img src={bgWork} alt="" className="w-full h-full object-cover" loading="lazy" />}
                             <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, ${style.color}30 50%, rgba(0,0,0,0.2) 100%)` }} />
                           </div>
 
@@ -445,6 +447,7 @@ export default function CreatePage() {
                               src={`/master/${style.id}/image.png`}
                               alt={style.name}
                               className="w-full h-full object-cover"
+                              loading="lazy"
                             />
                           </div>
 

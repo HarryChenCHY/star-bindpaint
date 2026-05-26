@@ -2,10 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { StarChar, FlowerChar, BlobChar, MiniStar, MiniCircle } from '@/components/Characters';
 import MasterQuoteCard from '@/components/MasterQuoteCard';
-import Ballpit from '@/components/Ballpit';
 import TiltedCard from '@/components/TiltedCard';
+
+const Ballpit = dynamic(() => import('@/components/Ballpit'), { ssr: false });
 
 export default function HomePage() {
   const router = useRouter();

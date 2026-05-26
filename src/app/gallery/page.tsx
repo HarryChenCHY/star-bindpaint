@@ -149,7 +149,7 @@ export default function GalleryPage() {
                     style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A' }}
                   >
                     <div className="aspect-square overflow-hidden" style={{ background: '#FFFFFF' }}>
-                      <img src={item.imageDataUrl} alt={item.title} className="w-full h-full object-cover" />
+                      <img src={item.imageDataUrl} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <div className="p-3 bg-white" style={{ borderTop: '2px solid #1A1A1A' }}>
                       <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#1A1A1A', letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
