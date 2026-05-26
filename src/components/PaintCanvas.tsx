@@ -4,6 +4,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import { DrawingEngine, matchScore } from '@/lib/drawing-engine';
 import { drawStroke, drawGuideStroke, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
 import { MasterStyleProfile, stylizeStroke, drawStylizedStroke } from '@/lib/style-transfer';
+import { renderSprayDot } from '@/lib/spray-engine';
 
 export type PaintMode = 'follow' | 'auto' | 'free';
 
@@ -20,6 +21,7 @@ interface PaintCanvasProps {
   masterStyle?: MasterStyleProfile | null;
   freeColor?: [number, number, number];
   eraserMode?: boolean;
+  sprayMode?: boolean;
   onUserStrokeDone?: (userPoints: Vec2[], score: number) => void;
   onUserStrokeStart?: () => void;
   onUndoAvailable?: (available: boolean) => void;
@@ -41,6 +43,7 @@ export default function PaintCanvas({
   masterStyle,
   freeColor,
   eraserMode = false,
+  sprayMode = false,
   onUserStrokeDone,
   onUserStrokeStart,
   onUndoAvailable,
@@ -56,21 +59,15 @@ export default function PaintCanvas({
   const autoPlayRef = useRef<{ running: boolean; timeoutId: number }>({ running: false, timeoutId: 0 });
   const eraserModeRef = useRef(eraserMode);                   // 用 ref 避免引擎重建
   eraserModeRef.current = eraserMode;
+  const sprayModeRef = useRef(sprayMode);
+  sprayModeRef.current = sprayMode;
+  const sprayIsDownRef = useRef(false);                        // 喷雾是否按下中
   const [autoIdx, setAutoIdx] = useState(0);
-
-  // 橡皮擦模式：设置光标
-  useEffect(() => {
-    const userCanvas = userCanvasRef.current;
-    if (!userCanvas) return;
-    userCanvas.style.cursor = eraserMode
-      ? 'url(/cursors/eraser.svg) 8 8, crosshair'
-      : 'url(/cursors/paintbrush.svg) 29 29, crosshair';
-  }, [eraserMode]);
 
   // 初始化手绘引擎（跟画/自由模式）
   useEffect(() => {
     const userCanvas = userCanvasRef.current;
-    if (!userCanvas || mode === 'auto') return;
+    if (!userCanvas || mode === 'auto' || sprayMode || eraserMode) return;
 
     // 监听 pointerdown 通知 tracker
     const handlePointerDown = () => { onUserStrokeStart?.(); };
@@ -84,42 +81,27 @@ export default function PaintCanvas({
       } else if (mode === 'free' && onUserStrokeDone) {
         const userPts: Vec2[] = stroke.points.map(p => ({ x: p.x, y: p.y }));
 
-        if (eraserModeRef.current) {
-          // 橡皮擦：userCanvas 上正常画白线(source-over)，抬笔后用 destination-out 合入 baseCanvas
-          const baseCanvas = baseCanvasRef.current;
+        // 风格化：如果有 masterStyle，将笔迹转换为油画风格
+        if (masterStyle) {
+          const pressures = stroke.points.map(p => p.pressure);
+          const color: [number, number, number] = freeColor || [0.2, 0.2, 0.2];
+          const segments = stylizeStroke(userPts, pressures, color, masterStyle, brushWidth);
+
+          // 清除用户层的原始笔迹
           const userCtx = userCanvas.getContext('2d');
-          if (baseCanvas && userCtx) {
+          if (userCtx) userCtx.clearRect(0, 0, width, height);
+
+          // 渲染风格化笔触到基础层（之前先存快照）
+          const baseCanvas = baseCanvasRef.current;
+          if (baseCanvas) {
             const baseCtx = baseCanvas.getContext('2d');
             if (baseCtx) {
-              baseCtx.globalCompositeOperation = 'destination-out';
-              baseCtx.drawImage(userCanvas, 0, 0);
-              baseCtx.globalCompositeOperation = 'source-over';
-            }
-            userCtx.clearRect(0, 0, width, height);
-          }
-        } else {
-          // 风格化：如果有 masterStyle，将笔迹转换为油画风格
-          if (masterStyle) {
-            const pressures = stroke.points.map(p => p.pressure);
-            const color: [number, number, number] = freeColor || [0.2, 0.2, 0.2];
-            const segments = stylizeStroke(userPts, pressures, color, masterStyle);
+              const snapshot = baseCtx.getImageData(0, 0, width, height);
+              undoStackRef.current.push(snapshot);
+              if (undoStackRef.current.length > 30) undoStackRef.current.shift();
+              onUndoAvailable?.(true);
 
-            // 清除用户层的原始笔迹
-            const userCtx = userCanvas.getContext('2d');
-            if (userCtx) userCtx.clearRect(0, 0, width, height);
-
-            // 渲染风格化笔触到基础层（之前先存快照）
-            const baseCanvas = baseCanvasRef.current;
-            if (baseCanvas) {
-              const baseCtx = baseCanvas.getContext('2d');
-              if (baseCtx) {
-                const snapshot = baseCtx.getImageData(0, 0, width, height);
-                undoStackRef.current.push(snapshot);
-                if (undoStackRef.current.length > 30) undoStackRef.current.shift();
-                onUndoAvailable?.(true);
-
-                drawStylizedStroke(baseCtx, segments);
-              }
+              drawStylizedStroke(baseCtx, segments);
             }
           }
         }
@@ -134,7 +116,136 @@ export default function PaintCanvas({
       engine.destroy();
       drawingEngineRef.current = null;
     };
-  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, width, height, onUndoAvailable]);
+  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, sprayMode, eraserMode, width, height, onUndoAvailable]);
+
+  // 橡皮擦模式：独立 pointer 事件，直接在 baseCanvas 上擦除
+  useEffect(() => {
+    if (!eraserMode || mode !== 'free') return;
+    const userCanvas = userCanvasRef.current;
+    const baseCanvas = baseCanvasRef.current;
+    if (!userCanvas || !baseCanvas) return;
+
+    userCanvas.style.cursor = 'url(/cursors/eraser.svg) 8 8, crosshair';
+    const eraserSize = Math.max(12, (brushWidth || 4) * 3);
+    const eraserIsDownRef = { current: false };
+
+    const handleDown = (e: PointerEvent) => {
+      if (!e.isPrimary) return;
+      e.preventDefault();
+      eraserIsDownRef.current = true;
+
+      const baseCtx = baseCanvas.getContext('2d');
+      if (baseCtx) {
+        const snapshot = baseCtx.getImageData(0, 0, width, height);
+        undoStackRef.current.push(snapshot);
+        if (undoStackRef.current.length > 30) undoStackRef.current.shift();
+        onUndoAvailable?.(true);
+      }
+    };
+
+    const handleMove = (e: PointerEvent) => {
+      if (!eraserIsDownRef.current) return;
+      e.preventDefault();
+      const rect = userCanvas.getBoundingClientRect();
+      const scaleX = baseCanvas.width / rect.width;
+      const scaleY = baseCanvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+
+      const baseCtx = baseCanvas.getContext('2d');
+      if (baseCtx) {
+        baseCtx.globalCompositeOperation = 'destination-out';
+        baseCtx.beginPath();
+        baseCtx.arc(x, y, eraserSize, 0, Math.PI * 2);
+        baseCtx.fill();
+        baseCtx.globalCompositeOperation = 'source-over';
+      }
+    };
+
+    const handleUp = () => {
+      eraserIsDownRef.current = false;
+    };
+
+    userCanvas.addEventListener('pointerdown', handleDown);
+    userCanvas.addEventListener('pointermove', handleMove);
+    userCanvas.addEventListener('pointerup', handleUp);
+    userCanvas.addEventListener('pointerleave', handleUp);
+
+    return () => {
+      userCanvas.removeEventListener('pointerdown', handleDown);
+      userCanvas.removeEventListener('pointermove', handleMove);
+      userCanvas.removeEventListener('pointerup', handleUp);
+      userCanvas.removeEventListener('pointerleave', handleUp);
+      eraserIsDownRef.current = false;
+      userCanvas.style.cursor = '';
+    };
+  }, [eraserMode, mode, width, height, brushWidth, onUndoAvailable]);
+
+  // 喷雾模式：监听 pointer 事件，直接在 baseCanvas 上喷洒色点
+  useEffect(() => {
+    if (!sprayMode || mode !== 'free') return;
+    const userCanvas = userCanvasRef.current;
+    const baseCanvas = baseCanvasRef.current;
+    if (!userCanvas || !baseCanvas) return;
+
+    userCanvas.style.cursor = 'crosshair';
+
+    const handleSprayDown = (e: PointerEvent) => {
+      if (!e.isPrimary) return;
+      e.preventDefault();
+      sprayIsDownRef.current = true;
+
+      // 存快照（支持撤销）
+      const baseCtx = baseCanvas.getContext('2d');
+      if (baseCtx) {
+        const snapshot = baseCtx.getImageData(0, 0, width, height);
+        undoStackRef.current.push(snapshot);
+        if (undoStackRef.current.length > 30) undoStackRef.current.shift();
+        onUndoAvailable?.(true);
+      }
+    };
+
+    const handleSprayMove = (e: PointerEvent) => {
+      if (!sprayIsDownRef.current) return;
+      e.preventDefault();
+      const rect = userCanvas.getBoundingClientRect();
+      const scaleX = baseCanvas.width / rect.width;
+      const scaleY = baseCanvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      const pressure = e.pressure || 0.5;
+
+      const baseCtx = baseCanvas.getContext('2d');
+      if (baseCtx) {
+        renderSprayDot(
+          baseCtx, x, y, pressure,
+          freeColor || [0.2, 0.2, 0.2],
+          brushWidth || 6,
+          masterStyle
+        );
+      }
+
+      onUserStrokeDone?.([{ x, y }], 1);
+    };
+
+    const handleSprayUp = () => {
+      sprayIsDownRef.current = false;
+    };
+
+    userCanvas.addEventListener('pointerdown', handleSprayDown);
+    userCanvas.addEventListener('pointermove', handleSprayMove);
+    userCanvas.addEventListener('pointerup', handleSprayUp);
+    userCanvas.addEventListener('pointerleave', handleSprayUp);
+
+    return () => {
+      userCanvas.removeEventListener('pointerdown', handleSprayDown);
+      userCanvas.removeEventListener('pointermove', handleSprayMove);
+      userCanvas.removeEventListener('pointerup', handleSprayUp);
+      userCanvas.removeEventListener('pointerleave', handleSprayUp);
+      sprayIsDownRef.current = false;
+      userCanvas.style.cursor = '';
+    };
+  }, [sprayMode, mode, width, height, freeColor, brushWidth, masterStyle, onUndoAvailable, onUserStrokeDone]);
 
   // 更新画笔颜色/宽度（含橡皮擦模式切换）
   useEffect(() => {
@@ -147,8 +258,8 @@ export default function PaintCanvas({
       const [r, g, b] = freeColor || [0.2, 0.2, 0.2];
       engine.setColor(`rgba(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)},0.85)`);
       engine.setWidth(brushWidth || 4);
-    } else if (brushColor) {
-      engine.setColor(brushColor);
+    } else {
+      if (brushColor) engine.setColor(brushColor);
       engine.setWidth(brushWidth || 4);
     }
   }, [eraserMode, brushColor, brushWidth, freeColor, mode]);
@@ -159,9 +270,9 @@ export default function PaintCanvas({
       const [r, g, b] = currentGuideStroke.color;
       const color = `rgba(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)},0.85)`;
       drawingEngineRef.current.setColor(color);
-      drawingEngineRef.current.setWidth(Math.max(2, currentGuideStroke.width));
+      drawingEngineRef.current.setWidth(brushWidth || Math.max(2, currentGuideStroke.width));
     }
-  }, [mode, currentGuideStroke]);
+  }, [mode, currentGuideStroke, brushWidth]);
 
   // 绘制引导线
   useEffect(() => {

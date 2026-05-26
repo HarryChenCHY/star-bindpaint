@@ -145,7 +145,8 @@ export function stylizeStroke(
   userPoints: Vec2[],
   pressures: number[],
   userColor: [number, number, number],
-  style: MasterStyleProfile
+  style: MasterStyleProfile,
+  userWidthBase?: number
 ): StylizedSegment[] {
   if (userPoints.length < 2) return [];
 
@@ -167,7 +168,7 @@ export function stylizeStroke(
       const pressure = seg.pressures[i] || 0.5;
 
       // 宽度
-      widths.push(computeWidth(t, pressure, style));
+      widths.push(computeWidth(t, pressure, style, userWidthBase));
 
       // 颜色抖动
       colors.push(jitterColor(userColor, style, i));
@@ -328,8 +329,8 @@ function splitStroke(
 }
 
 /** 计算宽度 */
-function computeWidth(t: number, pressure: number, style: MasterStyleProfile): number {
-  const base = style.widthBase;
+function computeWidth(t: number, pressure: number, style: MasterStyleProfile, userBase?: number): number {
+  const base = userBase ?? style.widthBase;
   const v = style.widthVariation;
 
   switch (style.widthCurve) {

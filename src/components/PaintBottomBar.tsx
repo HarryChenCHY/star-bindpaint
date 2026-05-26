@@ -18,6 +18,7 @@ import {
   ChevronDown,
   Undo2,
   Eraser,
+  SprayCan,
 } from 'lucide-react';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
 
@@ -58,6 +59,8 @@ interface Props {
   // free mode edit tools
   eraserMode?: boolean;
   onToggleEraser?: () => void;
+  sprayMode?: boolean;
+  onToggleSpray?: () => void;
   canUndo?: boolean;
   onUndo?: () => void;
 }
@@ -75,7 +78,7 @@ const POPOVER_EXIT = {
 };
 
 // ─── Main component ───────────────────────────────────────────────
-export default function PaintBottomBar({ eraserMode, onToggleEraser, canUndo, onUndo, ...p }: Props) {
+export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, onToggleSpray, canUndo, onUndo, ...p }: Props) {
   const [open, setOpen] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -293,6 +296,15 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, canUndo, on
                 onClick={onToggleEraser}
                 fillBg={eraserMode ? '#1A1A1A' : undefined}
                 iconColor={eraserMode ? '#FFFFFF' : undefined}
+              />
+            )}
+            {onToggleSpray && (
+              <DirectBtn
+                icon={<SprayCan size={18} strokeWidth={2.5} />}
+                label="喷枪"
+                onClick={onToggleSpray}
+                fillBg={sprayMode ? '#7A51EC' : undefined}
+                iconColor={sprayMode ? '#FFFFFF' : undefined}
               />
             )}
             {p.onSDRender && (

@@ -66,9 +66,15 @@ export default function PaintPage() {
   const [selectedStyle, setSelectedStyle] = useState<MasterStyleProfile | null>(null);
   const [freeColor, setFreeColor] = useState<[number, number, number]>([0.1, 0.3, 0.7]);
 
-  // 撤销 & 橡皮擦
+  // 撤销 & 橡皮擦 & 喷雾
   const [eraserMode, setEraserMode] = useState(false);
+  const [sprayMode, setSprayMode] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
+
+  const handleToggleSpray = useCallback(() => {
+    setSprayMode(prev => !prev);
+    if (!sprayMode) setEraserMode(false); // 喷雾和橡皮擦互斥
+  }, [sprayMode]);
 
   const handleUndo = useCallback(() => {
     const pc = (window as unknown as Record<string, { undo: () => boolean }>).__paintCanvas;
@@ -720,6 +726,7 @@ export default function PaintPage() {
             masterStyle={selectedStyle}
             freeColor={freeColor}
             eraserMode={eraserMode}
+            sprayMode={sprayMode}
             onUserStrokeDone={handleUserStrokeDone}
             onUserStrokeStart={() => {
               getTracker().strokeStart();
@@ -938,7 +945,10 @@ export default function PaintPage() {
         eraserMode={eraserMode}
         onToggleEraser={() => {
           setEraserMode(prev => !prev);
+          if (!eraserMode) setSprayMode(false);
         }}
+        sprayMode={sprayMode}
+        onToggleSpray={handleToggleSpray}
         canUndo={canUndo}
         onUndo={handleUndo}
       />
