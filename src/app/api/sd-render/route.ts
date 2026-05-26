@@ -29,23 +29,33 @@ export async function POST(req: NextRequest) {
 
     const hunyuanKey = process.env.HUNYUAN_API_KEY;
     const dashscopeKey = process.env.DASHSCOPE_API_KEY;
+    console.log('[sd-render] HUNYUAN_API_KEY:', hunyuanKey ? `${hunyuanKey.slice(0, 10)}...` : '未设置');
+    console.log('[sd-render] DASHSCOPE_API_KEY:', dashscopeKey ? `${dashscopeKey.slice(0, 10)}...` : '未设置');
 
     const stylePrompt = STYLE_PROMPTS[style] || STYLE_PROMPTS.vangogh;
     const finalPrompt = themePrompt ? `${themePrompt}, ${stylePrompt}` : stylePrompt;
 
+    if (!hunyuanKey && !dashscopeKey) {
+      return NextResponse.json({ error: 'API Key 未配置，请在 .env.local 中设置 HUNYUAN_API_KEY 或 DASHSCOPE_API_KEY' }, { status: 500 });
+    }
+
     // 优先使用腾讯混元生图
     if (hunyuanKey) {
+      console.log('[sd-render] 尝试腾讯混元...');
       const result = await renderWithHunyuan(hunyuanKey, finalPrompt);
       if (result) return NextResponse.json(result);
+      console.log('[sd-render] 腾讯混元失败，降级到百炼');
     }
 
     // 降级：阿里云百炼
     if (dashscopeKey) {
+      console.log('[sd-render] 尝试阿里百炼...');
       const result = await renderWithDashScope(dashscopeKey, imageBase64, finalPrompt, themePrompt, mode);
       if (result) return NextResponse.json(result);
+      console.log('[sd-render] 阿里百炼也失败了');
     }
 
-    return NextResponse.json({ error: 'API Key 未配置' }, { status: 500 });
+    return NextResponse.json({ error: '所有 AI 服务调用失败，请检查 API Key 是否正确或网络是否可达' }, { status: 500 });
   } catch (err) {
     console.error('[/api/sd-render] 错误:', err);
     return NextResponse.json({ error: '服务端错误', detail: String(err) }, { status: 500 });
