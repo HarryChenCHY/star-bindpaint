@@ -146,7 +146,9 @@ export function stylizeStroke(
   pressures: number[],
   userColor: [number, number, number],
   style: MasterStyleProfile,
-  userWidthBase?: number
+  userWidthBase?: number,
+  userSat?: number,
+  userVal?: number
 ): StylizedSegment[] {
   if (userPoints.length < 2) return [];
 
@@ -171,7 +173,7 @@ export function stylizeStroke(
       widths.push(computeWidth(t, pressure, style, userWidthBase));
 
       // 颜色抖动
-      colors.push(jitterColor(userColor, style, i));
+      colors.push(jitterColor(userColor, style, i, userSat, userVal));
     }
 
     // 边缘粗糙
@@ -359,7 +361,9 @@ function computeWidth(t: number, pressure: number, style: MasterStyleProfile, us
 function jitterColor(
   baseColor: [number, number, number],
   style: MasterStyleProfile,
-  pointIndex: number
+  pointIndex: number,
+  userSat?: number,
+  userVal?: number
 ): [number, number, number] {
   // 每 3-5 个点才抖动一次（避免太碎）
   const jitterFreq = 4;
@@ -377,8 +381,12 @@ function jitterColor(
   if (h < 0) h += 1;
   if (h > 1) h -= 1;
 
-  // 饱和度增强
+  // 饱和度增强 + 用户饱和度调节
   s = Math.max(0, Math.min(1, s + style.saturationBoost + (rand2 - 0.5) * 0.05));
+  if (userSat !== undefined) s = s * userSat;
+
+  // 用户亮度调节
+  if (userVal !== undefined) v = v * userVal;
 
   // HSV → RGB
   return hsvToRgb(h, s, v);

@@ -65,6 +65,8 @@ export default function PaintPage() {
   // 自由创作风格化
   const [selectedStyle, setSelectedStyle] = useState<MasterStyleProfile | null>(null);
   const [freeColor, setFreeColor] = useState<[number, number, number]>([0.1, 0.3, 0.7]);
+  const [freeSat, setFreeSat] = useState(1.0);
+  const [freeVal, setFreeVal] = useState(1.0);
 
   // 撤销 & 橡皮擦 & 喷雾
   const [eraserMode, setEraserMode] = useState(false);
@@ -725,6 +727,8 @@ export default function PaintPage() {
             autoSpeed={autoSpeed}
             masterStyle={selectedStyle}
             freeColor={freeColor}
+            freeSat={freeSat}
+            freeVal={freeVal}
             eraserMode={eraserMode}
             sprayMode={sprayMode}
             onUserStrokeDone={handleUserStrokeDone}
@@ -940,6 +944,10 @@ export default function PaintPage() {
         onSelectStyle={setSelectedStyle}
         freeColor={freeColor}
         onFreeColorChange={setFreeColor}
+        freeSat={freeSat}
+        onFreeSatChange={setFreeSat}
+        freeVal={freeVal}
+        onFreeValChange={setFreeVal}
         onSDRender={handleSDRender}
         sdRendering={sdRendering}
         eraserMode={eraserMode}

@@ -54,6 +54,10 @@ interface Props {
   onSelectStyle?: (s: MasterStyleProfile) => void;
   freeColor?: [number, number, number];
   onFreeColorChange?: (c: [number, number, number]) => void;
+  freeSat?: number;
+  onFreeSatChange?: (s: number) => void;
+  freeVal?: number;
+  onFreeValChange?: (v: number) => void;
   onSDRender?: () => void;
   sdRendering?: boolean;
   // free mode edit tools
@@ -78,7 +82,7 @@ const POPOVER_EXIT = {
 };
 
 // ─── Main component ───────────────────────────────────────────────
-export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, onToggleSpray, canUndo, onUndo, ...p }: Props) {
+export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, onToggleSpray, freeSat, onFreeSatChange, freeVal, onFreeValChange, canUndo, onUndo, ...p }: Props) {
   const [open, setOpen] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -260,7 +264,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
                 label="颜色"
                 isOpen={open === 'color'}
                 onClick={() => toggle('color')}
-                popover={<ColorPopover value={p.freeColor} onChange={p.onFreeColorChange} />}
+                popover={<ColorPopover value={p.freeColor} onChange={p.onFreeColorChange!} sat={freeSat ?? 1} onSatChange={onFreeSatChange!} val={freeVal ?? 1} onValChange={onFreeValChange!} />}
               />
             )}
             {p.onSelectStyle && (() => {
@@ -908,12 +912,24 @@ const FREE_COLORS: { color: [number, number, number]; label: string }[] = [
 function ColorPopover({
   value,
   onChange,
+  sat = 1,
+  onSatChange,
+  val = 1,
+  onValChange,
 }: {
   value: [number, number, number];
   onChange: (c: [number, number, number]) => void;
+  sat?: number;
+  onSatChange?: (s: number) => void;
+  val?: number;
+  onValChange?: (v: number) => void;
 }) {
+  const shadeR = Math.round(value[0] * sat * val * 255);
+  const shadeG = Math.round(value[1] * sat * val * 255);
+  const shadeB = Math.round(value[2] * sat * val * 255);
+
   return (
-    <div style={{ width: 224 }}>
+    <div style={{ width: 260 }}>
       <div className="grid grid-cols-5 gap-2">
         {FREE_COLORS.map(c => {
           const active = value[0] === c.color[0] && value[1] === c.color[1] && value[2] === c.color[2];
@@ -937,6 +953,120 @@ function ColorPopover({
           );
         })}
       </div>
+
+      {(onSatChange || onValChange) && (
+        <div className="mt-3 pt-3" style={{ borderTop: '2px solid #E5E5E5' }}>
+          {/* 实时预览色块 */}
+          <div className="flex items-center gap-3 mb-4">
+            <div
+              className="rounded-xl flex-shrink-0"
+              style={{
+                width: 44,
+                height: 44,
+                background: `rgb(${shadeR},${shadeG},${shadeB})`,
+                border: '2px solid #1A1A1A',
+                boxShadow: '2px 2px 0 #1A1A1A',
+              }}
+            />
+            <div className="min-w-0">
+              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#1A1A1A' }}>预览</span>
+              <span style={{ fontSize: '0.62rem', fontWeight: 600, color: '#999', marginLeft: 4, wordBreak: 'break-all' }}>
+                {shadeR},{shadeG},{shadeB}
+              </span>
+            </div>
+          </div>
+
+          {/* 饱和度滑块 */}
+          {onSatChange && (
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-1.5">
+                <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#888' }}>饱和度</span>
+                <span style={{ fontSize: '0.85rem', fontWeight: 900, color: '#1A1A1A' }}>{Math.round(sat * 100)}%</span>
+              </div>
+              <div
+                className="relative w-full cursor-pointer"
+                style={{ height: 24, touchAction: 'none' }}
+                onPointerDown={e => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                  onSatChange(Math.round((0.2 + pct * 1.3) / 0.05) * 0.05);
+                }}
+                onPointerMove={e => {
+                  if (e.buttons === 1) {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                    onSatChange(Math.round((0.2 + pct * 1.3) / 0.05) * 0.05);
+                  }
+                }}
+              >
+                <div className="absolute top-1/2 -translate-y-1/2 w-full rounded-full" style={{ height: 6, background: '#E5E5E5' }} />
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 rounded-full"
+                  style={{ height: 6, background: '#1A1A1A', width: `${((sat - 0.2) / 1.3) * 100}%` }}
+                />
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 rounded-full border-2 bg-white"
+                  style={{
+                    width: 18, height: 18,
+                    left: `calc(${((sat - 0.2) / 1.3) * 100}% - 9px)`,
+                    borderColor: '#1A1A1A',
+                    boxShadow: '2px 2px 0 #1A1A1A',
+                  }}
+                />
+              </div>
+              <div className="flex justify-between mt-0.5">
+                <span style={{ fontSize: '0.6rem', color: '#888', fontWeight: 700 }}>灰</span>
+                <span style={{ fontSize: '0.6rem', color: '#888', fontWeight: 700 }}>艳</span>
+              </div>
+            </div>
+          )}
+
+          {/* 亮度滑块 */}
+          {onValChange && (
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#888' }}>亮度</span>
+                <span style={{ fontSize: '0.85rem', fontWeight: 900, color: '#1A1A1A' }}>{Math.round(val * 100)}%</span>
+              </div>
+              <div
+                className="relative w-full cursor-pointer"
+                style={{ height: 24, touchAction: 'none' }}
+                onPointerDown={e => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                  onValChange(Math.round((0.2 + pct * 1.3) / 0.05) * 0.05);
+                }}
+                onPointerMove={e => {
+                  if (e.buttons === 1) {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                    onValChange(Math.round((0.2 + pct * 1.3) / 0.05) * 0.05);
+                  }
+                }}
+              >
+                <div className="absolute top-1/2 -translate-y-1/2 w-full rounded-full" style={{ height: 6, background: '#E5E5E5' }} />
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 rounded-full"
+                  style={{ height: 6, background: '#1A1A1A', width: `${((val - 0.2) / 1.3) * 100}%` }}
+                />
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 rounded-full border-2 bg-white"
+                  style={{
+                    width: 18, height: 18,
+                    left: `calc(${((val - 0.2) / 1.3) * 100}% - 9px)`,
+                    borderColor: '#1A1A1A',
+                    boxShadow: '2px 2px 0 #1A1A1A',
+                  }}
+                />
+              </div>
+              <div className="flex justify-between mt-0.5">
+                <span style={{ fontSize: '0.6rem', color: '#888', fontWeight: 700 }}>暗</span>
+                <span style={{ fontSize: '0.6rem', color: '#888', fontWeight: 700 }}>亮</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

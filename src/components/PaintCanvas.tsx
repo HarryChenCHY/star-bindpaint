@@ -22,6 +22,8 @@ interface PaintCanvasProps {
   freeColor?: [number, number, number];
   eraserMode?: boolean;
   sprayMode?: boolean;
+  freeSat?: number;
+  freeVal?: number;
   onUserStrokeDone?: (userPoints: Vec2[], score: number) => void;
   onUserStrokeStart?: () => void;
   onUndoAvailable?: (available: boolean) => void;
@@ -44,6 +46,8 @@ export default function PaintCanvas({
   freeColor,
   eraserMode = false,
   sprayMode = false,
+  freeSat = 1,
+  freeVal = 1,
   onUserStrokeDone,
   onUserStrokeStart,
   onUndoAvailable,
@@ -85,7 +89,7 @@ export default function PaintCanvas({
         if (masterStyle) {
           const pressures = stroke.points.map(p => p.pressure);
           const color: [number, number, number] = freeColor || [0.2, 0.2, 0.2];
-          const segments = stylizeStroke(userPts, pressures, color, masterStyle, brushWidth);
+          const segments = stylizeStroke(userPts, pressures, color, masterStyle, brushWidth, freeSat, freeVal);
 
           // 清除用户层的原始笔迹
           const userCtx = userCanvas.getContext('2d');
@@ -116,7 +120,7 @@ export default function PaintCanvas({
       engine.destroy();
       drawingEngineRef.current = null;
     };
-  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, sprayMode, eraserMode, width, height, onUndoAvailable]);
+  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, freeSat, freeVal, sprayMode, eraserMode, width, height, onUndoAvailable]);
 
   // 橡皮擦模式：独立 pointer 事件，直接在 baseCanvas 上擦除
   useEffect(() => {
@@ -221,7 +225,9 @@ export default function PaintCanvas({
           baseCtx, x, y, pressure,
           freeColor || [0.2, 0.2, 0.2],
           brushWidth || 6,
-          masterStyle
+          masterStyle,
+          freeSat,
+          freeVal
         );
       }
 
@@ -245,7 +251,7 @@ export default function PaintCanvas({
       sprayIsDownRef.current = false;
       userCanvas.style.cursor = '';
     };
-  }, [sprayMode, mode, width, height, freeColor, brushWidth, masterStyle, onUndoAvailable, onUserStrokeDone]);
+  }, [sprayMode, mode, width, height, freeColor, freeSat, freeVal, brushWidth, masterStyle, onUndoAvailable, onUserStrokeDone]);
 
   // 更新画笔颜色/宽度（含橡皮擦模式切换）
   useEffect(() => {
@@ -256,13 +262,14 @@ export default function PaintCanvas({
       engine.setWidth(Math.max(12, (brushWidth || 4) * 3));
     } else if (mode === 'free') {
       const [r, g, b] = freeColor || [0.2, 0.2, 0.2];
-      engine.setColor(`rgba(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)},0.85)`);
+      const s = (freeSat ?? 1) * (freeVal ?? 1);
+      engine.setColor(`rgba(${Math.round(r * s * 255)},${Math.round(g * s * 255)},${Math.round(b * s * 255)},0.85)`);
       engine.setWidth(brushWidth || 4);
     } else {
       if (brushColor) engine.setColor(brushColor);
       engine.setWidth(brushWidth || 4);
     }
-  }, [eraserMode, brushColor, brushWidth, freeColor, mode]);
+  }, [eraserMode, brushColor, brushWidth, freeColor, freeSat, freeVal, mode]);
 
   // 在跟画模式下，自动设置画笔颜色为当前引导笔触颜色
   useEffect(() => {

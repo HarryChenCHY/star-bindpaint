@@ -17,7 +17,9 @@ export function renderSprayDot(
   pressure: number,
   baseColor: [number, number, number],
   size: number,
-  style?: MasterStyleProfile | null
+  style?: MasterStyleProfile | null,
+  userSat?: number,
+  userVal?: number
 ): void {
   const dotCount = Math.round(12 + pressure * 20);     // 12–32 个点
   const radius = size * 2 * (0.4 + pressure * 0.6);    // 喷雾半径（放大 2 倍）
@@ -32,7 +34,7 @@ export function renderSprayDot(
     const dy = Math.sin(angle) * dist;
 
     // 颜色抖动
-    const [r, g, b] = jitterHue(baseColor, colorJitter);
+    const [r, g, b] = jitterHue(baseColor, colorJitter, userSat, userVal);
 
     // 随机透明度
     const alpha = baseOpacity * (0.3 + Math.random() * 0.7);
@@ -50,10 +52,12 @@ export function renderSprayDot(
 /**
  * 对颜色做 hue 抖动（只改 hue，不改饱和度和亮度）
  */
-function jitterHue(color: [number, number, number], jitterDeg: number): [number, number, number] {
+function jitterHue(color: [number, number, number], jitterDeg: number, userSat?: number, userVal?: number): [number, number, number] {
   const [h, s, v] = rgbToHsv(color[0], color[1], color[2]);
+  const newS = userSat !== undefined ? s * userSat : s;
+  const newV = userVal !== undefined ? v * userVal : v;
   const newH = (h + ((Math.random() - 0.5) * 2 * jitterDeg) / 360 + 1) % 1;
-  return hsvToRgb(newH, s, v);
+  return hsvToRgb(newH, newS, newV);
 }
 
 /**
