@@ -894,6 +894,10 @@ export default function PaintPage() {
             duration={sdResult.duration}
             onClose={() => setSdResult(null)}
             onSave={handleSDSave}
+            onFinish={() => {
+              setSdResult(null);
+              handleExport();
+            }}
           />
         )}
       </AnimatePresence>

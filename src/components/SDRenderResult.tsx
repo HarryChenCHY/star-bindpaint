@@ -9,9 +9,10 @@ interface SDRenderResultProps {
   duration: number;
   onClose: () => void;
   onSave: (imageBase64: string) => void;
+  onFinish?: () => void;
 }
 
-export default function SDRenderResult({ originalImage, renderedImage, style, duration, onClose, onSave }: SDRenderResultProps) {
+export default function SDRenderResult({ originalImage, renderedImage, style, duration, onClose, onSave, onFinish }: SDRenderResultProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -82,7 +83,7 @@ export default function SDRenderResult({ originalImage, renderedImage, style, du
               padding: '0.85em 1.2em',
             }}
           >
-            返回原画作继续
+            继续画
           </button>
           <button
             onPointerDown={(e) => { e.stopPropagation(); }}
@@ -97,8 +98,25 @@ export default function SDRenderResult({ originalImage, renderedImage, style, du
               padding: '0.85em 1.2em',
             }}
           >
-            <span>🖼️</span> 保存画廊
+            <span>🖼️</span> 放进画廊
           </button>
+          {onFinish && (
+            <button
+              onPointerDown={(e) => { e.stopPropagation(); }}
+              onClick={(e) => { e.stopPropagation(); onFinish(); }}
+              className="flex-1 rounded-full font-bold text-sm flex items-center justify-center gap-2"
+              style={{
+                background: '#7A51EC',
+                color: 'white',
+                border: '2px solid #1A1A1A',
+                boxShadow: '3px 3px 0 #1A1A1A',
+                cursor: 'pointer',
+                padding: '0.85em 1.2em',
+              }}
+            >
+              <span>✨</span> 完成创作
+            </button>
+          )}
         </div>
       </motion.div>
     </motion.div>
