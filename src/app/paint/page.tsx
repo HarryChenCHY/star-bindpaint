@@ -889,8 +889,9 @@ export default function PaintPage() {
       <PaintBottomBar
         mode={mode}
         onModeChange={(m) => {
-          // 自由模式一旦进入就锁定，禁止切回 follow/auto
-          if (mode === 'free' && m !== 'free') return;
+          // 一旦进入任何模式并开始工作，就锁定不允许切换
+          if (mode === 'free') return; // 自由模式永远锁定
+          if ((mode === 'follow' || mode === 'auto') && sourceImage) return; // 跟画/自动模式有画作时锁定
           setMode(m);
           if (m === 'free' && !selectedStyle) {
             setSelectedStyle(MASTER_STYLES[1]);
@@ -918,7 +919,9 @@ export default function PaintPage() {
         onSDRender={handleSDRender}
         sdRendering={sdRendering}
         eraserMode={eraserMode}
-        onToggleEraser={() => setEraserMode(prev => !prev)}
+        onToggleEraser={() => {
+          setEraserMode(prev => !prev);
+        }}
         canUndo={canUndo}
         onUndo={handleUndo}
       />

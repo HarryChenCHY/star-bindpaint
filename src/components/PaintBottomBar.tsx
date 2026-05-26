@@ -232,10 +232,13 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, canUndo, on
           <>
             <ToolBtn
               icon={<Brush size={18} strokeWidth={2.5} />}
-              label="粗细"
+              label="画笔"
               value={String(p.brushWidth)}
               isOpen={open === 'brush'}
-              onClick={() => toggle('brush')}
+              onClick={() => {
+                if (eraserMode && onToggleEraser) onToggleEraser();
+                toggle('brush');
+              }}
               popover={<BrushPopover width={p.brushWidth} onChange={p.onBrushWidthChange} />}
             />
             {p.freeColor && p.onFreeColorChange && (

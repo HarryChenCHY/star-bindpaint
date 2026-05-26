@@ -80,6 +80,10 @@ export class DrawingEngine {
     e.stopPropagation();
     // 只处理主指针（防止多点触控干扰）
     if (!e.isPrimary) return;
+    // 安全清理：如果上一笔未正确结束，先完成它
+    if (this.isDrawing) {
+      this.finishStroke();
+    }
     this.canvas.setPointerCapture(e.pointerId);
     this.isDrawing = true;
     this.activePointerId = e.pointerId;
@@ -98,13 +102,16 @@ export class DrawingEngine {
     // 边界检查：坐标必须在画布内
     if (point.x < -5 || point.y < -5 || point.x > this.canvas.width + 5 || point.y > this.canvas.height + 5) return;
 
-    // 防飞线：距离阈值 + 速度检测
+    // 防飞线：距离阈值 + 时间检测
     if (this.currentStroke.length > 0) {
       const last = this.currentStroke[this.currentStroke.length - 1];
       const dx = point.x - last.x;
       const dy = point.y - last.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist > 80) return;  // 单帧跳跃超过 80px = 飞线
+      const dt = point.timestamp - last.timestamp;
+      // 单帧跳跃超过 60px 或速度异常高（>5px/ms）= 飞线
+      if (dist > 60) return;
+      if (dt > 0 && dist / dt > 5) return;
       if (dist < 0.5) return; // 太近无意义
     }
 
