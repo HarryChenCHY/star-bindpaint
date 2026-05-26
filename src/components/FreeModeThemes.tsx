@@ -78,6 +78,45 @@ export const FREE_THEMES: FreeTheme[] = [
     ],
     sdPrompt: 'a small magical planet floating in space with a tiny house and trees on it, surrounded by stars and gentle light, the little prince style',
   },
+  {
+    id: 'kitty',
+    icon: '🐱',
+    label: '画一只小猫咪',
+    steps: [
+      { icon: '⭕', label: '圆脑袋', hint: '在画面中间偏上，画一个圆圆的大圈——这是猫咪的脸' },
+      { icon: '△', label: '尖耳朵', hint: '在圆圈上面左右两边，各画一个小三角形当耳朵' },
+      { icon: '👀', label: '大眼睛', hint: '圆圈里画两个圆点当眼睛，中间画一个小倒三角当鼻子' },
+      { icon: '〰️', label: '身体尾巴', hint: '脑袋下面画一个大椭圆当身体，右边画一条弯弯的曲线当尾巴' },
+      { icon: '🐾', label: '小脚掌', hint: '身体下面画四个小圆点当脚掌，嘴边加三条短线当胡须' },
+    ],
+    sdPrompt: 'a cute cartoon cat sitting happily, simple round face with triangle ears, warm and friendly, children illustration style',
+  },
+  {
+    id: 'bunny',
+    icon: '🐰',
+    label: '画一只小兔子',
+    steps: [
+      { icon: '⭕', label: '圆身体', hint: '在画面中间画一个大大的椭圆——这是兔子胖胖的身体' },
+      { icon: '🟡', label: '圆脑袋', hint: '椭圆上面画一个小一点的圆当脑袋' },
+      { icon: '📏', label: '长耳朵', hint: '脑袋顶上画两条长长的竖线，顶端稍微弯一下——长耳朵！' },
+      { icon: '👀', label: '表情', hint: '脑袋里画两个点当眼睛，一个X形小嘴，再画两个粉色圆圈当腮红' },
+      { icon: '🥕', label: '加场景', hint: '旁边画一根胡萝卜（三角形+几条线当叶子），地上画几撮小草' },
+    ],
+    sdPrompt: 'a cute fluffy bunny rabbit with long ears sitting next to a carrot, green grass, cheerful children book illustration style',
+  },
+  {
+    id: 'fish',
+    icon: '🐟',
+    label: '画一条快乐的小鱼',
+    steps: [
+      { icon: '🏈', label: '鱼身体', hint: '在画面中间画一个横着的椭圆，像橄榄球一样——这是鱼的身体' },
+      { icon: '△', label: '鱼尾巴', hint: '椭圆右边画一个三角形当尾巴，可以画大一点' },
+      { icon: '👁️', label: '眼睛嘴巴', hint: '椭圆左边画一个大圆点当眼睛，下面画一条弯弯的微笑线' },
+      { icon: '🌊', label: '鱼鳍花纹', hint: '身体上面画一排小三角当背鳍，肚子画几条弧线当花纹' },
+      { icon: '💧', label: '水泡泡', hint: '嘴巴前画几个小圆圈当泡泡，旁边画几条波浪线当水草' },
+    ],
+    sdPrompt: 'a happy colorful fish swimming in clear water with bubbles and seaweed, underwater scene, playful children illustration',
+  },
 ];
 
 interface FreeModeThemesProps {

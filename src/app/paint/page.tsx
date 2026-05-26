@@ -701,6 +701,7 @@ export default function PaintPage() {
                   setFreeThemeStep(0);
                   setShowFreeThemes(false);
                   setSpriteMessage(theme.steps[0]?.hint || '开始画吧~');
+                  getTracker().setThemeId(theme.id);
                 }}
                 onSkip={() => setShowFreeThemes(false)}
               />
