@@ -98,8 +98,11 @@ export default function CreatePage() {
     router.push('/paint');
   };
 
+  const [freeDifficulty, setFreeDifficulty] = useState<'sticker' | 'tracing' | 'free'>('free');
+
   const handleStartFree = () => {
     sessionStorage.setItem('star-bindpaint-free-style', selectedFreeStyle);
+    sessionStorage.setItem('star-bindpaint-difficulty', freeDifficulty);
     sessionStorage.removeItem('star-bindpaint-source');
     router.push('/paint');
   };
@@ -468,6 +471,45 @@ export default function CreatePage() {
                     </motion.div>
                   );
                 })}
+              </div>
+
+              {/* 难度选择 — 三步递进 */}
+              <div className="mt-6 w-full">
+                <p style={{ fontSize: '0.85rem', fontWeight: 800, color: '#888', marginBottom: 10, letterSpacing: '0.04em' }}>
+                  选择难度
+                </p>
+                <div className="flex gap-2">
+                  {([
+                    { id: 'sticker' as const, icon: '🖼️', label: '贴纸拼贴', desc: '拖放贴纸完成画面', color: '#7DC353' },
+                    { id: 'tracing' as const, icon: '✏️', label: '描画临摹', desc: '跟着参考图描画', color: '#F9B801' },
+                    { id: 'free' as const, icon: '🎨', label: '自由创作', desc: '主题引导自由画', color: '#7A51EC' },
+                  ]).map(d => {
+                    const active = freeDifficulty === d.id;
+                    return (
+                      <motion.button
+                        key={d.id}
+                        whileHover={{ scale: 1.04, y: -2 }}
+                        whileTap={{ scale: 0.96 }}
+                        onClick={() => setFreeDifficulty(d.id)}
+                        className="flex-1 rounded-xl py-3 px-2 flex flex-col items-center gap-1"
+                        style={{
+                          background: active ? d.color : '#FFFFFF',
+                          border: '2px solid #1A1A1A',
+                          boxShadow: active ? '3px 3px 0 #1A1A1A' : 'none',
+                          color: active ? '#FFFFFF' : '#1A1A1A',
+                        }}
+                      >
+                        <span style={{ fontSize: '1.3rem' }}>{d.icon}</span>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 900, color: active ? '#FFFFFF' : '#1A1A1A' }}>
+                          {d.label}
+                        </span>
+                        <span style={{ fontSize: '0.58rem', fontWeight: 600, color: active ? 'rgba(255,255,255,0.7)' : '#888' }}>
+                          {d.desc}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
               </div>
 
               <button onClick={handleStartFree} className="btn-black mt-4"
