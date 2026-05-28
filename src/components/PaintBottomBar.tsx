@@ -1019,26 +1019,26 @@ function ColorPopover({
                 onPointerDown={e => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                  onSatChange(Math.round((0.2 + pct * 1.3) / 0.05) * 0.05);
+                  onSatChange(Math.round((0.2 + pct * 1.8) / 0.05) * 0.05);
                 }}
                 onPointerMove={e => {
                   if (e.buttons === 1) {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                    onSatChange(Math.round((0.2 + pct * 1.3) / 0.05) * 0.05);
+                    onSatChange(Math.round((0.2 + pct * 1.8) / 0.05) * 0.05);
                   }
                 }}
               >
                 <div className="absolute top-1/2 -translate-y-1/2 w-full rounded-full" style={{ height: 6, background: '#E5E5E5' }} />
                 <div
                   className="absolute top-1/2 -translate-y-1/2 rounded-full"
-                  style={{ height: 6, background: '#1A1A1A', width: `${((sat - 0.2) / 1.3) * 100}%` }}
+                  style={{ height: 6, background: '#1A1A1A', width: `${((sat - 0.2) / 1.8) * 100}%` }}
                 />
                 <div
                   className="absolute top-1/2 -translate-y-1/2 rounded-full border-2 bg-white"
                   style={{
                     width: 18, height: 18,
-                    left: `calc(${((sat - 0.2) / 1.3) * 100}% - 9px)`,
+                    left: `calc(${((sat - 0.2) / 1.8) * 100}% - 9px)`,
                     borderColor: '#1A1A1A',
                     boxShadow: '2px 2px 0 #1A1A1A',
                   }}
@@ -1064,26 +1064,26 @@ function ColorPopover({
                 onPointerDown={e => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                  onValChange(Math.round((0.2 + pct * 1.3) / 0.05) * 0.05);
+                  onValChange(Math.round((0.2 + pct * 1.8) / 0.05) * 0.05);
                 }}
                 onPointerMove={e => {
                   if (e.buttons === 1) {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                    onValChange(Math.round((0.2 + pct * 1.3) / 0.05) * 0.05);
+                    onValChange(Math.round((0.2 + pct * 1.8) / 0.05) * 0.05);
                   }
                 }}
               >
                 <div className="absolute top-1/2 -translate-y-1/2 w-full rounded-full" style={{ height: 6, background: '#E5E5E5' }} />
                 <div
                   className="absolute top-1/2 -translate-y-1/2 rounded-full"
-                  style={{ height: 6, background: '#1A1A1A', width: `${((val - 0.2) / 1.3) * 100}%` }}
+                  style={{ height: 6, background: '#1A1A1A', width: `${((val - 0.2) / 1.8) * 100}%` }}
                 />
                 <div
                   className="absolute top-1/2 -translate-y-1/2 rounded-full border-2 bg-white"
                   style={{
                     width: 18, height: 18,
-                    left: `calc(${((val - 0.2) / 1.3) * 100}% - 9px)`,
+                    left: `calc(${((val - 0.2) / 1.8) * 100}% - 9px)`,
                     borderColor: '#1A1A1A',
                     boxShadow: '2px 2px 0 #1A1A1A',
                   }}
