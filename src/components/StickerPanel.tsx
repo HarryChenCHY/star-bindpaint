@@ -101,6 +101,12 @@ interface StickerPanelProps {
   onClearAllTracing?: () => void;
   onSwitchToBrush: () => void;
   onClose: () => void;
+  /** 拼贴模式：贴纸栏常开，隐藏关闭按钮，选贴纸不自动收起 */
+  persistent?: boolean;
+  /** 嵌入页面布局（不 fixed 悬浮） */
+  docked?: boolean;
+  /** fixed 模式：距视口底部的偏移，默认贴底栏上方 */
+  bottomOffset?: string;
 }
 
 export default function StickerPanel({
@@ -109,6 +115,9 @@ export default function StickerPanel({
   onSelectSticker, onSelectTracing,
   onToggleLock, onToggleVisible, onDeleteTracing, onClearAllTracing,
   onSwitchToBrush, onClose,
+  persistent = false,
+  docked = false,
+  bottomOffset = 'calc(4.75rem + env(safe-area-inset-bottom, 0px))',
 }: StickerPanelProps) {
   const themeStickers = THEME_STICKERS[themeId || ''] || [];
   const themeIds = new Set(themeStickers.map(s => s.id));
@@ -216,11 +225,20 @@ export default function StickerPanel({
 
   return (
     <motion.div
-      initial={{ y: 120, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 120, opacity: 0 }}
-      className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-2.5 rounded-[1.25rem] bg-white"
-      style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A', maxWidth: 'calc(100vw - 2rem)' }}
+      initial={docked ? { opacity: 0 } : { y: 120, opacity: 0 }}
+      animate={docked ? { opacity: 1 } : { y: 0, opacity: 1 }}
+      exit={docked ? { opacity: 0 } : { y: 120, opacity: 0 }}
+      className={
+        docked
+          ? 'relative z-10 w-full flex items-center gap-1.5 px-2 py-2 sm:px-3 sm:py-2.5 rounded-[1.25rem] bg-white mx-auto'
+          : 'fixed left-1/2 -translate-x-1/2 z-[45] flex items-center gap-1.5 px-3 py-2.5 rounded-[1.25rem] bg-white'
+      }
+      style={{
+        border: '2px solid #1A1A1A',
+        boxShadow: '4px 4px 0 #1A1A1A',
+        maxWidth: docked ? '100%' : 'calc(100vw - 2rem)',
+        ...(docked ? {} : { bottom: bottomOffset }),
+      }}
     >
       <div
         className="flex items-center gap-1.5 overflow-x-auto flex-nowrap min-w-0"
@@ -268,33 +286,37 @@ export default function StickerPanel({
         </>
       )}
 
-      {/* Divider */}
-      <div style={{ width: 2, height: 32, background: '#E5E5E5', borderRadius: 1, margin: '0 4px' }} />
+      {/* Switch to brush — 拼贴常开模式下隐藏 */}
+      {!persistent && (
+        <>
+          <div style={{ width: 2, height: 32, background: '#E5E5E5', borderRadius: 1, margin: '0 4px' }} />
+          <motion.button
+            whileHover={{ scale: 1.12 }}
+            whileTap={{ scale: 0.85 }}
+            onClick={onSwitchToBrush}
+            className="rounded-full flex items-center justify-center flex-shrink-0 gap-1 px-2"
+            style={{ height: 36, background: '#1A1A1A', border: '2px solid #1A1A1A' }}
+            title="切画笔"
+          >
+            <Brush size={15} strokeWidth={2.5} color="#FFFFFF" />
+            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#FFFFFF' }}>画笔</span>
+          </motion.button>
+        </>
+      )}
 
-      {/* Switch to brush */}
-      <motion.button
-        whileHover={{ scale: 1.12 }}
-        whileTap={{ scale: 0.85 }}
-        onClick={onSwitchToBrush}
-        className="rounded-full flex items-center justify-center flex-shrink-0 gap-1 px-2"
-        style={{ height: 36, background: '#1A1A1A', border: '2px solid #1A1A1A' }}
-        title="切画笔"
-      >
-        <Brush size={15} strokeWidth={2.5} color="#FFFFFF" />
-        <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#FFFFFF' }}>画笔</span>
-      </motion.button>
-
-      {/* Close */}
-      <motion.button
-        whileHover={{ scale: 1.12 }}
-        whileTap={{ scale: 0.85 }}
-        onClick={onClose}
-        className="rounded-full flex items-center justify-center flex-shrink-0"
-        style={{ width: 30, height: 30, background: '#F302C9', border: '2px solid #1A1A1A' }}
-        title="关闭"
-      >
-        <X size={14} strokeWidth={3} color="#FFFFFF" />
-      </motion.button>
+      {/* Close — 拼贴常开模式下隐藏 */}
+      {!persistent && (
+        <motion.button
+          whileHover={{ scale: 1.12 }}
+          whileTap={{ scale: 0.85 }}
+          onClick={onClose}
+          className="rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ width: 30, height: 30, background: '#F302C9', border: '2px solid #1A1A1A' }}
+          title="关闭"
+        >
+          <X size={14} strokeWidth={3} color="#FFFFFF" />
+        </motion.button>
+      )}
     </motion.div>
   );
 }

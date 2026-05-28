@@ -29,6 +29,7 @@ import { EmotionDetector, EmotionLevel } from '@/lib/emotion-detector';
 import { generateAttentionQuestion, generateCalmPrompt, generateSDRenderCommentary } from '@/lib/feedback-engine';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
 import { createThemeTracingRef, THEME_TRACING_SCENES } from '@/lib/tracing-scenes';
+import { drawStickerOnCanvas, loadStickerDimensions } from '@/lib/sticker-utils';
 import { useAppSettings } from '@/contexts/AppContext';
 
 export default function PaintPage() {
@@ -95,6 +96,7 @@ export default function PaintPage() {
   // 难度模式（贴纸/描画/自由）
   const [difficultyLevel, setDifficultyLevel] = useState<'sticker' | 'tracing' | 'free'>('free');
   const [showPanel, setShowPanel] = useState(true);
+  const [stickerGuideVisible, setStickerGuideVisible] = useState(false);
   const [placedStickers, setPlacedStickers] = useState<PlacedSticker[]>([]);
   const [tracingRefs, setTracingRefs] = useState<TracingRef[]>([]);
   const stickerIdRef = useRef(0);
@@ -643,6 +645,7 @@ export default function PaintPage() {
     setUserStrokeCount(0);
     setCanUndo(false);
     setShowPanel(difficultyLevel === 'sticker');
+    setStickerGuideVisible(false);
     setEraserMode(false);
     setSprayMode(false);
   }, [difficultyLevel]);
@@ -652,6 +655,7 @@ export default function PaintPage() {
     setFreeTheme(null);
     setFreeThemeStep(0);
     setShowFreeThemes(true);
+    setStickerGuideVisible(false);
     setSpriteState('guiding');
     setSpriteMessage('选一个梦想，让 Starry 陪你把它画出来');
   }, [clearFreeCanvas]);
@@ -709,11 +713,24 @@ export default function PaintPage() {
     return '返回';
   }, [mode, showFreeThemes]);
 
+  const showThemeTracingScene =
+    mode === 'free' &&
+    !!freeTheme &&
+    !showFreeThemes &&
+    (
+      difficultyLevel === 'tracing' ||
+      (difficultyLevel === 'sticker' && stickerGuideVisible)
+    );
+
+  /** 底栏高度：贴纸栏 fixed 贴在此之上，画板保持全高 */
+  const paintBarBottom = 'calc(5rem + env(safe-area-inset-bottom, 0px))';
+
   const applyFreeTheme = (theme: FreeTheme | null) => {
     setFreeTheme(theme);
     setFreeThemeStep(0);
     setShowFreeThemes(false);
     setPlacedStickers([]);
+    setStickerGuideVisible(false);
     if (theme && difficultyLevel === 'tracing') {
       const scene = createThemeTracingRef(theme.id, canvasSize.w, canvasSize.h);
       setTracingRefs(scene ? [scene] : []);
@@ -744,6 +761,7 @@ export default function PaintPage() {
       return [scene];
     });
   }, [mode, difficultyLevel, freeTheme, showFreeThemes, canvasSize.w, canvasSize.h]);
+
   const compressImage = (dataUrl: string, maxSize = 400, quality = 0.6): Promise<string> => {
     return new Promise((resolve, reject) => {
       const img = new window.Image();
@@ -769,6 +787,23 @@ export default function PaintPage() {
       img.src = dataUrl;
     });
   };
+
+  const tracingReferenceVisible =
+    tracingRefs.find(r => r.id === 'theme-scene')?.visible ?? true;
+
+  const handleToggleTracingReference = useCallback(() => {
+    if (!freeTheme) return;
+    const sceneRef = tracingRefs.find(r => r.id === 'theme-scene');
+    const currentlyVisible = sceneRef?.visible ?? true;
+    if (sceneRef) {
+      setTracingRefs(prev => prev.map(r =>
+        r.id === 'theme-scene' ? { ...r, visible: !currentlyVisible } : r
+      ));
+    } else {
+      const scene = createThemeTracingRef(freeTheme.id, canvasSize.w, canvasSize.h);
+      if (scene) setTracingRefs([{ ...scene, visible: !currentlyVisible }]);
+    }
+  }, [freeTheme, tracingRefs, canvasSize.w, canvasSize.h]);
 
   const handleSDSave = async (imageBase64: string) => {
     try {
@@ -869,9 +904,13 @@ export default function PaintPage() {
           </div>
         )}
 
-        {/* Canvas area */}
-        <div className="flex-1 flex items-center justify-center p-2 sm:p-3 pb-28 relative min-w-0 min-h-0"
-          style={{ background: '#FAFAFA', pointerEvents: (sdRendering || sdResult || showPostEmotion || showCalm) ? 'none' : 'auto' }}>
+        {/* Canvas area — 全高，贴纸栏 fixed 贴底栏上方不挤占画板 */}
+        <div className="flex-1 flex items-center justify-center p-2 sm:p-3 relative min-w-0 min-h-0"
+          style={{
+            background: '#FAFAFA',
+            pointerEvents: (sdRendering || sdResult || showPostEmotion || showCalm) ? 'none' : 'auto',
+            paddingBottom: paintBarBottom,
+          }}>
 
           {/* 自由模式主题选择 */}
           {mode === 'free' && showFreeThemes && (
@@ -883,6 +922,7 @@ export default function PaintPage() {
             </div>
           )}
 
+          <div className="w-full h-full flex items-center justify-center min-h-0 min-w-0">
           <PaintCanvas
             width={canvasSize.w}
             height={canvasSize.h}
@@ -909,13 +949,15 @@ export default function PaintPage() {
             onAutoComplete={handleAutoComplete}
             sourceImage={sourceImage}
             tracingSceneSrc={
-              difficultyLevel === 'tracing' && freeTheme && !showFreeThemes
-                ? THEME_TRACING_SCENES[freeTheme.id] ?? null
+              showThemeTracingScene
+                ? THEME_TRACING_SCENES[freeTheme!.id] ?? null
                 : null
             }
             tracingSceneVisible={
-              difficultyLevel === 'tracing' && freeTheme && !showFreeThemes
-                ? (tracingRefs.find(r => r.id === 'theme-scene')?.visible ?? true)
+              showThemeTracingScene
+                ? difficultyLevel === 'tracing'
+                  ? (tracingRefs.find(r => r.id === 'theme-scene')?.visible ?? true)
+                  : true
                 : false
             }
           >
@@ -941,19 +983,12 @@ export default function PaintPage() {
                           const baseCanvas = pc?.getBaseCanvas();
                           if (baseCanvas) {
                             const ctx = baseCanvas.getContext('2d');
-                            if (ctx) {
-                              ctx.drawImage(img,
-                                sticker.x - sticker.width / 2,
-                                sticker.y - sticker.height / 2,
-                                sticker.width, sticker.height
-                              );
-                            }
+                            if (ctx) drawStickerOnCanvas(ctx, sticker, img);
                           }
                         };
                         img.src = sticker.src;
                       }
                       setPlacedStickers(prev => prev.filter(p => p.id !== id));
-                      setShowPanel(true);
                     }}
                     onDelete={(id) => {
                       setPlacedStickers(prev => prev.filter(p => p.id !== id));
@@ -979,61 +1014,7 @@ export default function PaintPage() {
               </>
             )}
           </PaintCanvas>
-
-          {/* 贴纸面板开关 / 描线参考图显隐 */}
-          {mode === 'free' && (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') && !showPanel && !showFreeThemes && (
-            <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30">
-              <motion.button
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => {
-                  if (difficultyLevel === 'tracing' && freeTheme) {
-                    const sceneRef = tracingRefs.find(r => r.id === 'theme-scene');
-                    const currentlyVisible = sceneRef?.visible ?? true;
-                    if (sceneRef) {
-                      setTracingRefs(prev => prev.map(r =>
-                        r.id === 'theme-scene' ? { ...r, visible: !currentlyVisible } : r
-                      ));
-                    } else {
-                      const scene = createThemeTracingRef(freeTheme.id, canvasSize.w, canvasSize.h);
-                      if (scene) setTracingRefs([{ ...scene, visible: !currentlyVisible }]);
-                    }
-                  } else {
-                    setShowPanel(true);
-                  }
-                }}
-                className="rounded-full px-4 py-2 flex items-center gap-2"
-                style={{ background: difficultyLevel === 'tracing' ? '#F9B801' : '#7DC353', border: '2px solid #1A1A1A', boxShadow: '3px 3px 0 #1A1A1A' }}
-              >
-                <span style={{ fontSize: '1rem' }}>{difficultyLevel === 'tracing' ? '📐' : '🖼️'}</span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#1A1A1A' }}>
-                  {difficultyLevel === 'tracing'
-                    ? ((tracingRefs.find(r => r.id === 'theme-scene')?.visible ?? true) ? '隐藏参考' : '显示参考')
-                    : '贴纸'}
-                </span>
-              </motion.button>
-            </div>
-          )}
-
-          {/* 底部贴纸面板（仅贴纸拼贴模式） */}
-          <AnimatePresence>
-            {mode === 'free' && showPanel && !showFreeThemes && difficultyLevel === 'sticker' && (
-              <StickerPanel
-                mode="sticker"
-                themeId={freeTheme?.id}
-                hasTracing={false}
-                onSelectSticker={(s: StickerDef) => {
-                  const id = `s${++stickerIdRef.current}`;
-                  setPlacedStickers(prev => [...prev, { id, src: s.src, x: canvasSize.w / 2, y: canvasSize.h / 2, width: 100, height: 100 }]);
-                  setShowPanel(false);
-                }}
-                onSwitchToBrush={() => setShowPanel(false)}
-                onClose={() => setShowPanel(false)}
-              />
-            )}
-          </AnimatePresence>
+          </div>
 
           {/* 共同注意弹窗 */}
           <AnimatePresence>
@@ -1042,6 +1023,34 @@ export default function PaintPage() {
                 question={attentionQ.question}
                 options={attentionQ.options}
                 onAnswer={handleAttentionAnswer}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* 贴纸栏：fixed 紧贴底栏上方，画板尺寸不变 */}
+          <AnimatePresence>
+            {mode === 'free' && !showFreeThemes && difficultyLevel === 'sticker' && (
+              <StickerPanel
+                mode="sticker"
+                themeId={freeTheme?.id}
+                hasTracing={false}
+                persistent
+                bottomOffset={paintBarBottom}
+                onSelectSticker={(s: StickerDef) => {
+                  const id = `s${++stickerIdRef.current}`;
+                  void loadStickerDimensions(s.src).then(({ width, height }) => {
+                    setPlacedStickers(prev => [...prev, {
+                      id,
+                      src: s.src,
+                      x: canvasSize.w / 2,
+                      y: canvasSize.h / 2,
+                      width,
+                      height,
+                    }]);
+                  });
+                }}
+                onSwitchToBrush={() => {}}
+                onClose={() => {}}
               />
             )}
           </AnimatePresence>
@@ -1354,6 +1363,23 @@ export default function PaintPage() {
         onToggleSpray={handleToggleSpray}
         canUndo={canUndo}
         onUndo={handleUndo}
+        showStickerGuide={
+          mode === 'free' &&
+          difficultyLevel === 'sticker' &&
+          !showFreeThemes &&
+          !!freeTheme &&
+          !!THEME_TRACING_SCENES[freeTheme.id]
+        }
+        stickerGuideVisible={stickerGuideVisible}
+        onToggleStickerGuide={() => setStickerGuideVisible(v => !v)}
+        showTracingReference={
+          mode === 'free' &&
+          difficultyLevel === 'tracing' &&
+          !showFreeThemes &&
+          !!freeTheme
+        }
+        tracingReferenceVisible={tracingReferenceVisible}
+        onToggleTracingReference={handleToggleTracingReference}
       />
 
       {/* ═══ 情绪后测弹窗 ═══ */}

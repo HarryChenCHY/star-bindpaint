@@ -2,7 +2,7 @@
 
 import { useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Pin, X, Maximize2 } from 'lucide-react';
+import { Check, Maximize2, X } from 'lucide-react';
 
 export interface PlacedSticker {
   id: string;
@@ -94,7 +94,7 @@ export default function StickerItem({
         left: `${(sticker.x / containerWidth) * 100}%`,
         top: `${(sticker.y / containerHeight) * 100}%`,
         width: `${(sticker.width / containerWidth) * 100}%`,
-        height: `${(sticker.height / containerWidth) * 100}%`,
+        height: `${(sticker.height / containerHeight) * 100}%`,
         transform: 'translate(-50%, -50%)',
         touchAction: 'none',
         pointerEvents: 'auto',
@@ -131,11 +131,12 @@ export default function StickerItem({
           type="button"
           onPointerDown={(e) => e.stopPropagation()}
           onClick={() => onFix(sticker.id)}
-          className="rounded-full px-2 py-1 flex items-center gap-1"
+          className="rounded-full w-7 h-7 flex items-center justify-center"
           style={{ background: '#7DC353', border: '2px solid #1A1A1A', boxShadow: '2px 2px 0 #1A1A1A' }}
+          title="贴好"
+          aria-label="贴好"
         >
-          <Pin size={12} strokeWidth={2.5} color="#FFFFFF" />
-          <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#FFFFFF' }}>固定</span>
+          <Check size={16} strokeWidth={3.2} color="#FFFFFF" />
         </motion.button>
         <motion.button
           whileHover={{ scale: 1.1 }}
@@ -143,10 +144,12 @@ export default function StickerItem({
           type="button"
           onPointerDown={(e) => e.stopPropagation()}
           onClick={() => onDelete(sticker.id)}
-          className="rounded-full w-6 h-6 flex items-center justify-center"
+          className="rounded-full w-7 h-7 flex items-center justify-center"
           style={{ background: '#F302C9', border: '2px solid #1A1A1A', boxShadow: '2px 2px 0 #1A1A1A' }}
+          title="不要"
+          aria-label="不要"
         >
-          <X size={12} strokeWidth={2.5} color="#FFFFFF" />
+          <X size={16} strokeWidth={3.2} color="#FFFFFF" />
         </motion.button>
       </div>
     </div>

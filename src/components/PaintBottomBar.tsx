@@ -68,6 +68,14 @@ interface Props {
   onToggleSpray?: () => void;
   canUndo?: boolean;
   onUndo?: () => void;
+  // 贴纸拼贴模式：描红底图辅助
+  showStickerGuide?: boolean;
+  stickerGuideVisible?: boolean;
+  onToggleStickerGuide?: () => void;
+  // 描画临摹模式：场景参考图显隐
+  showTracingReference?: boolean;
+  tracingReferenceVisible?: boolean;
+  onToggleTracingReference?: () => void;
 }
 
 // ─── Animation presets ────────────────────────────────────────────
@@ -83,7 +91,7 @@ const POPOVER_EXIT = {
 };
 
 // ─── Main component ───────────────────────────────────────────────
-export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, onToggleSpray, freeSat, onFreeSatChange, freeVal, onFreeValChange, canUndo, onUndo, ...p }: Props) {
+export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, onToggleSpray, freeSat, onFreeSatChange, freeVal, onFreeValChange, canUndo, onUndo, showStickerGuide, stickerGuideVisible, onToggleStickerGuide, showTracingReference, tracingReferenceVisible, onToggleTracingReference, ...p }: Props) {
   const [open, setOpen] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -240,6 +248,24 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
         {/* FREE MODE TOOLS */}
         {p.mode === 'free' && (
           <>
+            {showStickerGuide && onToggleStickerGuide && (
+              <DirectBtn
+                icon={<span style={{ fontSize: '1.05rem', lineHeight: 1 }}>📐</span>}
+                label={stickerGuideVisible ? '隐藏描红' : '描红图'}
+                onClick={onToggleStickerGuide}
+                fillBg={stickerGuideVisible ? '#F9B801' : undefined}
+                showLabel
+              />
+            )}
+            {showTracingReference && onToggleTracingReference && (
+              <DirectBtn
+                icon={<span style={{ fontSize: '1.05rem', lineHeight: 1 }}>📐</span>}
+                label={tracingReferenceVisible ? '隐藏参考' : '参考图'}
+                onClick={onToggleTracingReference}
+                fillBg={tracingReferenceVisible ? '#F9B801' : undefined}
+                showLabel
+              />
+            )}
             <ToolBtn
               icon={<Brush size={18} strokeWidth={2.5} />}
               label="画笔"
