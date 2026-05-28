@@ -879,15 +879,25 @@ export default function PaintPage() {
 
   const handleSDSave = async (imageBase64: string) => {
     try {
-      // 始终先压缩（SD返回的图太大，无论存 OSS 还是 localStorage 都先压缩）
       const compressed = await compressImage(imageBase64);
+      // 保存 AI 生成图
       await uploadAndSaveToGallery(
         compressed,
         `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
         0,
         'free'
       );
-      setSpriteMessage('油画版已放进画廊！');
+      // 同时保存原画
+      if (sdResult?.original) {
+        const originalCompressed = await compressImage(sdResult.original);
+        await uploadAndSaveToGallery(
+          originalCompressed,
+          `原画 ${new Date().toLocaleDateString('zh-CN')}`,
+          0,
+          'free'
+        );
+      }
+      setSpriteMessage('原画和油画版都已放进画廊！');
       setSpriteState('cheering');
     } catch (err) {
       console.error('[SD Save] 失败:', err);
