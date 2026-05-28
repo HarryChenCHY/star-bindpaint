@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -108,6 +108,9 @@ export default function PaintPage() {
   const [sdCommentary, setSdCommentary] = useState<string[]>([]);
   const sdStartTimeRef = useRef(0);
   const sdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  type BackTarget = 'themes' | 'create';
+  const [leaveConfirm, setLeaveConfirm] = useState<{ target: BackTarget } | null>(null);
 
   // 组件卸载时清理 SD 计时器
   useEffect(() => {
@@ -619,9 +622,92 @@ export default function PaintPage() {
     }
   };
 
-  const handleBack = () => {
-    router.push('/create');
-  };
+  const hasPaintingProgress = useCallback(() => {
+    if (mode === 'free') {
+      return placedStickers.length > 0 || canUndo;
+    }
+    if (mode === 'follow') {
+      return progress > 0.01 || userStrokeCount > 0;
+    }
+    if (mode === 'auto') {
+      return progress > 0.01;
+    }
+    return false;
+  }, [mode, placedStickers.length, canUndo, progress, userStrokeCount]);
+
+  const clearFreeCanvas = useCallback(() => {
+    const paintCanvas = (window as unknown as Record<string, { clearAll?: () => void }>).__paintCanvas;
+    paintCanvas?.clearAll?.();
+    setPlacedStickers([]);
+    setTracingRefs([]);
+    setUserStrokeCount(0);
+    setCanUndo(false);
+    setShowPanel(difficultyLevel === 'sticker');
+    setEraserMode(false);
+    setSprayMode(false);
+  }, [difficultyLevel]);
+
+  const goBackToThemePicker = useCallback(() => {
+    clearFreeCanvas();
+    setFreeTheme(null);
+    setFreeThemeStep(0);
+    setShowFreeThemes(true);
+    setSpriteState('guiding');
+    setSpriteMessage('选一个梦想，让 Starry 陪你把它画出来');
+  }, [clearFreeCanvas]);
+
+  const executeBack = useCallback((target: BackTarget) => {
+    if (target === 'themes') {
+      goBackToThemePicker();
+    } else {
+      router.push('/create');
+    }
+    setLeaveConfirm(null);
+  }, [goBackToThemePicker, router]);
+
+  const requestBack = useCallback((target: BackTarget) => {
+    if (hasPaintingProgress()) {
+      setLeaveConfirm({ target });
+    } else {
+      executeBack(target);
+    }
+  }, [hasPaintingProgress, executeBack]);
+
+  const handleBack = useCallback(() => {
+    if (sdRendering) return;
+    if (sdResult) {
+      setSdResult(null);
+      return;
+    }
+    if (showPostEmotion || showCalm || showAttention) return;
+
+    if (mode === 'free') {
+      if (!showFreeThemes) {
+        requestBack('themes');
+      } else {
+        requestBack('create');
+      }
+    } else {
+      requestBack('create');
+    }
+  }, [
+    sdRendering,
+    sdResult,
+    showPostEmotion,
+    showCalm,
+    showAttention,
+    mode,
+    showFreeThemes,
+    requestBack,
+  ]);
+
+  const backLabel = useMemo(() => {
+    if (mode === 'free') {
+      if (!showFreeThemes) return '换主题';
+      return '选画';
+    }
+    return '返回';
+  }, [mode, showFreeThemes]);
 
   const applyFreeTheme = (theme: FreeTheme | null) => {
     setFreeTheme(theme);
@@ -735,11 +821,11 @@ export default function PaintPage() {
             boxShadow: '3px 3px 0 #1A1A1A',
             padding: '0.5em 1.1em',
           }}
-          title="回去"
+          title={backLabel}
         >
           <ChevronLeft size={16} strokeWidth={2.8} color="#1A1A1A" />
           <span style={{ color: '#1A1A1A', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '-0.01em' }}>
-            返回
+            {backLabel}
           </span>
         </button>
 
@@ -1117,6 +1203,61 @@ export default function PaintPage() {
               handleExport();
             }}
           />
+        )}
+        {leaveConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+            style={{ background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(8px)', pointerEvents: 'auto' }}
+          >
+            <motion.div
+              initial={{ scale: 0.92, y: 18 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ type: 'spring', damping: 20 }}
+              className="w-full max-w-sm rounded-[2rem] bg-white p-6 text-center"
+              style={{ border: '2px solid #1A1A1A', boxShadow: '8px 8px 0 #1A1A1A' }}
+            >
+              <div className="mb-3" style={{ fontSize: 42, lineHeight: 1 }}>🎨</div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1A1A1A' }}>
+                {leaveConfirm.target === 'themes' ? '换主题？' : '离开画板？'}
+              </h3>
+              <p className="mt-3" style={{ fontSize: '0.86rem', fontWeight: 700, color: '#666', lineHeight: 1.6 }}>
+                当前画的内容不会保存
+              </p>
+              <div className="mt-5 flex gap-3">
+                <button
+                  onClick={() => setLeaveConfirm(null)}
+                  className="flex-1 rounded-full font-bold text-sm"
+                  style={{
+                    background: '#FFFFFF',
+                    color: '#1A1A1A',
+                    border: '2px solid #1A1A1A',
+                    boxShadow: '3px 3px 0 #1A1A1A',
+                    cursor: 'pointer',
+                    padding: '0.85em 1.2em',
+                  }}
+                >
+                  继续画
+                </button>
+                <button
+                  onClick={() => executeBack(leaveConfirm.target)}
+                  className="flex-1 rounded-full font-bold text-sm"
+                  style={{
+                    background: '#7A51EC',
+                    color: 'white',
+                    border: '2px solid #1A1A1A',
+                    boxShadow: '3px 3px 0 #1A1A1A',
+                    cursor: 'pointer',
+                    padding: '0.85em 1.2em',
+                  }}
+                >
+                  {leaveConfirm.target === 'themes' ? '换主题' : '离开'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
         {sdError && (
           <motion.div
