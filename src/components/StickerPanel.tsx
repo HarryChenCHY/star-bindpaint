@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brush, X } from 'lucide-react';
+import { Brush, X, ChevronRight } from 'lucide-react';
 
 export interface StickerDef {
   id: string;
@@ -101,6 +101,7 @@ interface StickerPanelProps {
   onClearAllTracing?: () => void;
   onSwitchToBrush: () => void;
   onClose: () => void;
+  onCollapse?: () => void;
   /** 拼贴模式：贴纸栏常开，隐藏关闭按钮，选贴纸不自动收起 */
   persistent?: boolean;
   /** 嵌入页面布局（不 fixed 悬浮） */
@@ -114,7 +115,7 @@ export default function StickerPanel({
   tracingLocked, tracingVisible, hasTracing,
   onSelectSticker, onSelectTracing,
   onToggleLock, onToggleVisible, onDeleteTracing, onClearAllTracing,
-  onSwitchToBrush, onClose,
+  onSwitchToBrush, onClose, onCollapse,
   persistent = false,
   docked = false,
   bottomOffset = 'calc(4.75rem + env(safe-area-inset-bottom, 0px))',
@@ -315,6 +316,19 @@ export default function StickerPanel({
           title="关闭"
         >
           <X size={14} strokeWidth={3} color="#FFFFFF" />
+        </motion.button>
+      )}
+      {/* 收起 — 贴到侧边 */}
+      {persistent && onCollapse && (
+        <motion.button
+          whileHover={{ scale: 1.12 }}
+          whileTap={{ scale: 0.85 }}
+          onClick={onCollapse}
+          className="rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ width: 30, height: 30, background: '#E5E5E5', border: '2px solid #1A1A1A' }}
+          title="收起贴纸栏"
+        >
+          <ChevronRight size={14} strokeWidth={3} color="#1A1A1A" />
         </motion.button>
       )}
     </motion.div>

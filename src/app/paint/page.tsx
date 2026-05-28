@@ -96,6 +96,7 @@ export default function PaintPage() {
   // 难度模式（贴纸/描画/自由）
   const [difficultyLevel, setDifficultyLevel] = useState<'sticker' | 'tracing' | 'free'>('free');
   const [showPanel, setShowPanel] = useState(true);
+  const [panelCollapsed, setPanelCollapsed] = useState(false);
   const [stickerGuideVisible, setStickerGuideVisible] = useState(false);
   const [placedStickers, setPlacedStickers] = useState<PlacedSticker[]>([]);
   const [tracingRefs, setTracingRefs] = useState<TracingRef[]>([]);
@@ -878,15 +879,25 @@ export default function PaintPage() {
 
   const handleSDSave = async (imageBase64: string) => {
     try {
-      // 始终先压缩（SD返回的图太大，无论存 OSS 还是 localStorage 都先压缩）
       const compressed = await compressImage(imageBase64);
+      // 保存 AI 生成图
       await uploadAndSaveToGallery(
         compressed,
         `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
         0,
         'free'
       );
-      setSpriteMessage('油画版已放进画廊！');
+      // 同时保存原画
+      if (sdResult?.original) {
+        const originalCompressed = await compressImage(sdResult.original);
+        await uploadAndSaveToGallery(
+          originalCompressed,
+          `原画 ${new Date().toLocaleDateString('zh-CN')}`,
+          0,
+          'free'
+        );
+      }
+      setSpriteMessage('原画和油画版都已放进画廊！');
       setSpriteState('cheering');
     } catch (err) {
       console.error('[SD Save] 失败:', err);
@@ -1100,11 +1111,12 @@ export default function PaintPage() {
 
           {/* 贴纸栏：fixed 紧贴底栏上方，画板尺寸不变 */}
           <AnimatePresence>
-            {mode === 'free' && !showFreeThemes && difficultyLevel === 'sticker' && (
+            {mode === 'free' && !showFreeThemes && difficultyLevel === 'sticker' && showPanel && !panelCollapsed && (
               <StickerPanel
                 mode="sticker"
                 themeId={freeTheme?.id}
                 hasTracing={false}
+                onCollapse={() => { setPanelCollapsed(true); setShowPanel(false); }}
                 persistent
                 bottomOffset={paintBarBottom}
                 onSelectSticker={(s: StickerDef) => {
@@ -1125,6 +1137,20 @@ export default function PaintPage() {
               />
             )}
           </AnimatePresence>
+
+          {/* 贴纸栏收起后右侧浮动按钮 */}
+          {panelCollapsed && difficultyLevel === 'sticker' && (
+            <motion.button
+              initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+              whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+              onClick={() => { setPanelCollapsed(false); setShowPanel(true); }}
+              className="fixed z-30 rounded-full flex items-center justify-center"
+              style={{ right: 12, bottom: 'clamp(90px, 14vw, 120px)', width: 40, height: 40, background: '#7DC353', border: '2px solid #1A1A1A', boxShadow: '3px 3px 0 #1A1A1A' }}
+              title="展开贴纸栏"
+            >
+              <span style={{ fontSize: '1.1rem' }}>🖼️</span>
+            </motion.button>
+          )}
         </div>
 
       </div>
