@@ -28,7 +28,7 @@ import { getTracker } from '@/lib/painting-tracker';
 import { EmotionDetector, EmotionLevel } from '@/lib/emotion-detector';
 import { generateAttentionQuestion, generateCalmPrompt, generateSDRenderCommentary } from '@/lib/feedback-engine';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
-import { createThemeTracingRef } from '@/lib/tracing-scenes';
+import { createThemeTracingRef, THEME_TRACING_SCENES } from '@/lib/tracing-scenes';
 import { useAppSettings } from '@/contexts/AppContext';
 
 export default function PaintPage() {
@@ -823,11 +823,15 @@ export default function PaintPage() {
             onAutoComplete={handleAutoComplete}
             sourceImage={sourceImage}
             tracingSceneSrc={
-              difficultyLevel === 'tracing'
-                ? tracingRefs.find(r => r.id === 'theme-scene')?.src ?? null
+              difficultyLevel === 'tracing' && freeTheme && !showFreeThemes
+                ? THEME_TRACING_SCENES[freeTheme.id] ?? null
                 : null
             }
-            tracingSceneVisible={tracingRefs.find(r => r.id === 'theme-scene')?.visible ?? false}
+            tracingSceneVisible={
+              difficultyLevel === 'tracing' && freeTheme && !showFreeThemes
+                ? (tracingRefs.find(r => r.id === 'theme-scene')?.visible ?? true)
+                : false
+            }
           >
             {/* 贴纸/描画 React overlay — 画布内部 */}
             {mode === 'free' && (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') && (
@@ -899,9 +903,17 @@ export default function PaintPage() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
-                  if (difficultyLevel === 'tracing' && tracingRefs.length > 0) {
-                    const allVisible = tracingRefs.every(r => r.visible);
-                    setTracingRefs(prev => prev.map(r => ({ ...r, visible: !allVisible })));
+                  if (difficultyLevel === 'tracing' && freeTheme) {
+                    const sceneRef = tracingRefs.find(r => r.id === 'theme-scene');
+                    const currentlyVisible = sceneRef?.visible ?? true;
+                    if (sceneRef) {
+                      setTracingRefs(prev => prev.map(r =>
+                        r.id === 'theme-scene' ? { ...r, visible: !currentlyVisible } : r
+                      ));
+                    } else {
+                      const scene = createThemeTracingRef(freeTheme.id, canvasSize.w, canvasSize.h);
+                      if (scene) setTracingRefs([{ ...scene, visible: !currentlyVisible }]);
+                    }
                   } else {
                     setShowPanel(true);
                   }
@@ -912,7 +924,7 @@ export default function PaintPage() {
                 <span style={{ fontSize: '1rem' }}>{difficultyLevel === 'tracing' ? '📐' : '🖼️'}</span>
                 <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#1A1A1A' }}>
                   {difficultyLevel === 'tracing'
-                    ? (tracingRefs.every(r => r.visible) ? '隐藏参考' : '显示参考')
+                    ? ((tracingRefs.find(r => r.id === 'theme-scene')?.visible ?? true) ? '隐藏参考' : '显示参考')
                     : '贴纸'}
                 </span>
               </motion.button>

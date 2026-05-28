@@ -65,7 +65,6 @@ export default function PaintCanvas({
   tracingSceneVisible = true,
 }: PaintCanvasProps) {
   const baseCanvasRef = useRef<HTMLCanvasElement>(null);      // Layer 1: 已完成笔触
-  const tracingCanvasRef = useRef<HTMLCanvasElement>(null);   // Layer 1.5: 描线场景底图
   const userCanvasRef = useRef<HTMLCanvasElement>(null);      // Layer 2: 用户绘制
   const guideCanvasRef = useRef<HTMLCanvasElement>(null);     // Layer 3: 引导线
   const undoStackRef = useRef<ImageData[]>([]);               // 撤销栈（自由模式）
@@ -417,32 +416,8 @@ export default function PaintCanvas({
     }
   }, [sourceImage, width, height]);
 
-  // 描画临摹：固定场景图铺底
-  useEffect(() => {
-    const canvas = tracingCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.clearRect(0, 0, width, height);
-    if (!tracingSceneSrc || !tracingSceneVisible) return;
-
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, width, height);
-      ctx.globalAlpha = 0.38;
-      const scale = Math.min(width / img.naturalWidth, height / img.naturalHeight) * 0.92;
-      const dw = img.naturalWidth * scale;
-      const dh = img.naturalHeight * scale;
-      const dx = (width - dw) / 2;
-      const dy = (height - dh) / 2;
-      ctx.drawImage(img, dx, dy, dw, dh);
-      ctx.globalAlpha = 1;
-    };
-    img.onerror = () => {
-      ctx.clearRect(0, 0, width, height);
-    };
-    img.src = tracingSceneSrc;
-  }, [tracingSceneSrc, tracingSceneVisible, width, height]);
+  // 描画临摹：固定场景图铺底（DOM 层，SVG viewBox 比 canvas drawImage 更可靠）
+  const showTracingScene = Boolean(tracingSceneSrc && tracingSceneVisible);
 
   return (
     <div
@@ -467,13 +442,18 @@ export default function PaintCanvas({
         style={{ width: '100%', height: '100%' }}
       />
       {/* Layer 1.5: Tracing scene underlay */}
-      <canvas
-        ref={tracingCanvasRef}
-        width={width}
-        height={height}
-        className="absolute inset-0 pointer-events-none"
-        style={{ width: '100%', height: '100%' }}
-      />
+      {showTracingScene && (
+        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={tracingSceneSrc!}
+            alt=""
+            draggable={false}
+            className="w-full h-full"
+            style={{ objectFit: 'contain', opacity: 0.42, padding: '3%' }}
+          />
+        </div>
+      )}
       {/* Layer 2: User drawing */}
       <canvas
         ref={userCanvasRef}
@@ -483,6 +463,7 @@ export default function PaintCanvas({
         style={{
           width: '100%',
           height: '100%',
+          zIndex: 2,
           ...(mode === 'auto' ? { cursor: 'default' } : null),
         }}
       />
@@ -492,10 +473,12 @@ export default function PaintCanvas({
         width={width}
         height={height}
         className="absolute inset-0 pointer-events-none"
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: '100%', height: '100%', zIndex: 3 }}
       />
-      {/* Layer 4: Sticker/Tracing React overlay (children) */}
-      {children}
+      {/* Layer 4: Sticker overlay (children) */}
+      <div className="absolute inset-0" style={{ zIndex: 4 }}>
+        {children}
+      </div>
     </div>
   );
 }
