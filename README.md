@@ -57,7 +57,7 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 系统同步采集绘画过程数据（情绪变化、色彩偏好、笔触节奏、专注区域），由**腾讯混元大模型**（`hunyuan-vision` 多模态 / `hy3-preview` 文本）生成**有数据支撑的陪伴笔记**——
 不是临床诊断，而是让监护人在每一次画画后多一份具体的看见。
 
-> **AI 核心底座：腾讯混元** — 图生图与 LLM 两条链路均以混元为主模型，阿里百炼仅作降级备用。
+> **AI 核心底座：腾讯混元** — 图生图与 LLM 两条链路均由腾讯混元驱动。
 
 ---
 
@@ -80,14 +80,12 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 
 ## 🤖 腾讯混元 AI 能力（核心）
 
-本项目 **两条云端 AI 链路均以腾讯混元为主模型**，通过 [TokenHub 腾讯混元 MaaS](https://tokenhub.tencentmaas.com) 接入；阿里百炼仅在混元不可用或未配置时降级。
+本项目 **两条云端 AI 链路均由腾讯混元驱动**，通过 [TokenHub 腾讯混元 MaaS](https://tokenhub.tencentmaas.com) 接入。
 
-| 能力 | API | 主模型（腾讯混元） | 输入 | 输出 |
+| 能力 | API | 腾讯混元模型 | 输入 | 输出 |
 |:---:|------|------|------|------|
 | 🎨 **变成油画** | `POST /api/sd-render` | **`hy-image-v3.0`** 图生图 | 用户简笔画 + 大师风格 Prompt | 完整油画（异步轮询 ≤ 60s） |
 | 📋 **疗愈观察报告** | `POST /api/analyze` | **`hunyuan-vision`**（含画作多模态）/ **`hy3-preview`**（纯文本） | 绘画行为数据 Prompt + 作品截图 | 温暖、非诊断性的陪伴观察笔记 |
-
-**降级链**（仅备用）：混元失败或未配置 `HUNYUAN_API_KEY` 时 → 阿里百炼（`wanx2.1-imageedit` / `qwen-vl-plus`）。
 
 ---
 
@@ -165,11 +163,10 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 | 🖌️ | **Canvas 2D** | 三层画布架构 · 引导线 / 用户笔迹 / 风格化结果 |
 | 🧠 | **笔触分解引擎** | Hertzmann 1998 多层误差驱动 + Sobel 梯度追踪 + 边界感知 |
 | 🎭 | **实时风格化引擎** | 6 种大师风格 · 纯前端零依赖运行 |
-| 🎨 | **腾讯混元生图 `hy-image-v3.0`** ⭐ | **主模型** · `/api/sd-render`「变成油画」图生图（异步轮询 ≤ 60s） |
-| 📋 | **腾讯混元大模型** ⭐ | **主模型** · `/api/analyze` 疗愈报告（`hunyuan-vision` 多模态 + `hy3-preview` 文本） |
-| 🔄 | **混元优先降级链** | 混元主路 → 百炼备用 · 图片 OSS→base64 · 离线 localStorage 50 幅 LRU |
+| 🎨 | **腾讯混元生图 `hy-image-v3.0`** ⭐ | `/api/sd-render`「变成油画」图生图（异步轮询 ≤ 60s） |
+| 📋 | **腾讯混元大模型** ⭐ | `/api/analyze` 疗愈报告（`hunyuan-vision` 多模态 + `hy3-preview` 文本） |
+| 🔄 | **离线容错** | 图片 OSS→base64 · 画廊 localStorage 50 幅 LRU |
 | ☁️ | **阿里云 OSS** | 画廊图片云端存储（HMAC-SHA1 签名 REST API） |
-| 🛡️ | **阿里百炼**（备用） | `wanx2.1-imageedit` / `qwen-vl-plus` · 仅混元不可用时降级 |
 
 ---
 
@@ -182,8 +179,7 @@ npm run dev    # → http://localhost:3000（端口占用时自动回退）
 
 **线上访问**：https://www.star-bindpaint.online
 
-> 💡 **推荐配置 `HUNYUAN_API_KEY`**（腾讯混元 TokenHub），即可启用完整的「变成油画」与「疗愈观察报告」体验。
-> `DASHSCOPE_API_KEY` 为可选备用；未配置任何 Key 时画板与画廊正常，AI 功能会提示配置混元。
+> 💡 配置 **`HUNYUAN_API_KEY`**（腾讯混元 TokenHub），即可启用「变成油画」与「疗愈观察报告」。未配置时画板与画廊正常，AI 功能会提示配置混元。
 
 ---
 
@@ -228,8 +224,8 @@ src/
 │   ├── settings/page.tsx     # 家长设置
 │   ├── intro/page.tsx        # 产品介绍
 │   └── api/
-│       ├── analyze/route.ts   # 疗愈报告 · 腾讯混元 hunyuan-vision / hy3-preview（主）
-│       ├── sd-render/route.ts # 变成油画 · 腾讯混元 hy-image-v3.0 图生图（主）
+│       ├── analyze/route.ts   # 疗愈报告 · 腾讯混元 hunyuan-vision / hy3-preview
+│       ├── sd-render/route.ts # 变成油画 · 腾讯混元 hy-image-v3.0 图生图
 │       └── upload/route.ts    # OSS 图片上传
 ├── contexts/
 │   └── AppContext.tsx         # 全局设置（安静模式/难度/先看后做）
@@ -281,8 +277,7 @@ npx vercel --prod
 
 | 变量 | 说明 |
 |------|------|
-| **`HUNYUAN_API_KEY`** ⭐ | **必配（主模型）** · 腾讯混元 TokenHub API Key · 同时驱动 `hy-image-v3.0` 图生图 + `hunyuan-vision` / `hy3-preview` LLM |
-| `DASHSCOPE_API_KEY` | 可选 · 阿里百炼 API Key · 混元不可用时的降级备用 |
+| **`HUNYUAN_API_KEY`** ⭐ | **必配** · 腾讯混元 TokenHub API Key · 驱动 `hy-image-v3.0` 图生图 + `hunyuan-vision` / `hy3-preview` LLM |
 | `OSS_BUCKET` | OSS Bucket 名称 |
 | `OSS_REGION` | OSS 地域（如 oss-cn-shenzhen） |
 | `OSS_ACCESS_KEY_ID` | OSS AccessKey ID |
