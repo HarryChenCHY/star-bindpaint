@@ -35,7 +35,7 @@ export default function TracingSceneLayer({ src, visible = true }: TracingSceneL
   return (
     <div
       className="absolute inset-0 pointer-events-none"
-      style={{ zIndex: 1, opacity: 0.42, padding: '3%' }}
+      style={{ zIndex: 1, opacity: 0.5, padding: '1%' }}
       aria-hidden
     >
       <div

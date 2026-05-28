@@ -1,38 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 768 768">
-  <g stroke="#999" stroke-width="5" fill="none" stroke-dasharray="10 5">
-    <circle cx="160" cy="130" r="50"/>
-    <g stroke-linecap="round">
-      <line x1="160" y1="55" x2="160" y2="35"/><line x1="160" y1="205" x2="160" y2="225"/>
-      <line x1="85" y1="130" x2="65" y2="130"/><line x1="235" y1="130" x2="255" y2="130"/>
-      <line x1="107" y1="77" x2="92" y2="62"/><line x1="213" y1="77" x2="228" y2="62"/>
-      <line x1="107" y1="183" x2="92" y2="198"/><line x1="213" y1="183" x2="228" y2="198"/>
-    </g>
-    <circle cx="147" cy="122" r="5" fill="#BBB"/><circle cx="173" cy="122" r="5" fill="#BBB"/>
-    <path d="M145 148 Q160 160 175 148" stroke="#BBB" stroke-width="4" stroke-linecap="round"/>
+  <g stroke="#999" stroke-width="7" fill="none" stroke-dasharray="14 7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="130" cy="130" r="80"/>
+    <line x1="130" y1="20" x2="130" y2="5"/><line x1="130" y1="240" x2="130" y2="255"/>
+    <line x1="20" y1="130" x2="5" y2="130"/><line x1="240" y1="130" x2="255" y2="130"/>
+    <line x1="73" y1="73" x2="58" y2="58"/><line x1="187" y1="73" x2="202" y2="58"/>
+    <line x1="73" y1="187" x2="58" y2="202"/><line x1="187" y1="187" x2="202" y2="202"/>
+    <circle cx="108" cy="118" r="8" fill="#BBB"/><circle cx="152" cy="118" r="8" fill="#BBB"/>
+    <path d="M100 155 Q130 178 160 155" stroke-width="5"/>
   </g>
-  <g stroke="#999" stroke-width="5" fill="none" stroke-dasharray="10 5">
-    <rect x="110" y="520" width="45" height="110" rx="4"/>
-    <circle cx="132" cy="485" r="65"/>
+  <g stroke="#999" stroke-width="7" fill="none" stroke-dasharray="14 7">
+    <rect x="120" y="480" width="70" height="160" rx="6"/>
+    <circle cx="155" cy="430" r="105"/>
   </g>
-  <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4">
-    <circle cx="280" cy="580" r="14"/>
-    <ellipse cx="280" cy="555" rx="14" ry="22"/><ellipse cx="280" cy="605" rx="14" ry="22"/>
-    <ellipse cx="255" cy="580" rx="22" ry="14"/><ellipse cx="305" cy="580" rx="22" ry="14"/>
+  <g stroke="#999" stroke-width="7" fill="none" stroke-dasharray="14 7" stroke-linejoin="round">
+    <rect x="400" y="420" width="280" height="220" rx="8"/>
+    <polygon points="540,280 380,420 700,420"/>
+    <rect x="490" y="520" width="70" height="120" rx="4"/>
+    <rect x="440" y="470" width="55" height="55" rx="4"/><rect x="580" y="470" width="55" height="55" rx="4"/>
   </g>
-  <g stroke="#999" stroke-width="5" fill="none" stroke-dasharray="10 5" stroke-linejoin="round">
-    <rect x="470" y="430" width="200" height="160" rx="4"/>
-    <polygon points="570,340 450,430 690,430"/>
-    <rect x="530" y="500" width="45" height="90"/>
-    <rect x="590" y="470" width="40" height="40"/><rect x="650" y="470" width="40" height="40"/>
-  </g>
-  <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4">
-    <circle cx="560" cy="620" r="35"/>
-    <polygon points="535,595 525,565 548,582"/><polygon points="585,595 595,565 572,582"/>
-    <circle cx="548" cy="615" r="5"/><circle cx="572" cy="615" r="5"/>
-    <ellipse cx="560" cy="630" rx="7" ry="5"/>
-  </g>
-  <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4">
-    <polygon points="650,120 660,145 688,145 666,160 674,186 650,170 626,186 634,160 612,145 640,145"/>
-    <path d="M700 200 Q670 200 660 230 Q650 260 700 260 Q680 240 688 215 Q695 205 700 200"/>
-  </g>
+  <line x1="60" y1="640" x2="708" y2="640" stroke="#999" stroke-width="6" stroke-dasharray="14 7" stroke-linecap="round"/>
 </svg>

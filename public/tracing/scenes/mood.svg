@@ -1,12 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 768 768">
-  <path d="M120 180 Q280 120 380 220 Q480 340 320 420 Q160 480 100 320 Q80 240 120 180" fill="none" stroke="#999" stroke-width="6" stroke-dasharray="12 6"/>
-  <path d="M80 520 Q160 460 240 520 Q320 580 400 520 Q480 460 560 520 Q640 580 720 520" fill="none" stroke="#999" stroke-width="5" stroke-dasharray="10 5" stroke-linecap="round"/>
-  <polyline points="100,620 160,560 220,620 280,560 340,620 400,560 460,620" fill="none" stroke="#999" stroke-width="5" stroke-dasharray="10 5" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="580" cy="200" r="70" fill="none" stroke="#999" stroke-width="5" stroke-dasharray="10 5"/>
-  <rect x="520" y="380" width="120" height="120" rx="8" fill="none" stroke="#999" stroke-width="5" stroke-dasharray="10 5"/>
-  <polygon points="620,580 635,625 685,625 645,655 660,700 620,670 580,700 595,655 555,625 605,625" fill="none" stroke="#999" stroke-width="4" stroke-dasharray="8 4" stroke-linejoin="round"/>
-  <g fill="none" stroke="#999" stroke-width="3" stroke-dasharray="6 3">
-    <circle cx="200" cy="650" r="10"/><circle cx="250" cy="680" r="7"/><circle cx="300" cy="640" r="8"/>
-    <circle cx="350" cy="670" r="6"/><circle cx="180" cy="700" r="5"/>
-  </g>
+  <path d="M80 200 Q260 80 420 200 Q560 300 400 400 Q200 480 80 320 Q40 250 80 200" fill="none" stroke="#999" stroke-width="8" stroke-dasharray="14 7"/>
+  <path d="M40 580 Q200 480 384 560 Q560 640 728 520" fill="none" stroke="#999" stroke-width="8" stroke-dasharray="14 7" stroke-linecap="round"/>
+  <polyline points="60,680 180,580 300,680 420,580 540,680 660,580" fill="none" stroke="#999" stroke-width="7" stroke-dasharray="14 7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="560" cy="220" r="100" fill="none" stroke="#999" stroke-width="7" stroke-dasharray="14 7"/>
+  <rect x="480" y="360" width="160" height="160" rx="12" fill="none" stroke="#999" stroke-width="7" stroke-dasharray="14 7"/>
+  <polygon points="560,680 520,600 600,600" fill="none" stroke="#999" stroke-width="6" stroke-dasharray="12 6" stroke-linejoin="round"/>
 </svg>

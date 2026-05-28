@@ -1,22 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 768 768">
-  <g stroke="#999" stroke-width="5" fill="none" stroke-dasharray="10 5" stroke-linejoin="round">
-    <ellipse cx="384" cy="480" rx="110" ry="100"/>
-    <circle cx="384" cy="300" r="75"/>
-    <ellipse cx="340" cy="160" rx="28" ry="90" transform="rotate(-8,340,160)"/>
-    <ellipse cx="428" cy="160" rx="28" ry="90" transform="rotate(8,428,160)"/>
-    <circle cx="360" cy="290" r="10"/><circle cx="408" cy="290" r="10"/>
-    <circle cx="330" cy="320" r="16" stroke-width="3" stroke-dasharray="6 3"/>
-    <circle cx="438" cy="320" r="16" stroke-width="3" stroke-dasharray="6 3"/>
-    <path d="M378 315 L390 315 M384 315 L384 328" stroke-width="4" stroke-linecap="round"/>
+  <g stroke="#999" stroke-width="7" fill="none" stroke-dasharray="14 7" stroke-linejoin="round">
+    <ellipse cx="384" cy="500" rx="140" ry="125"/>
+    <circle cx="384" cy="290" r="95"/>
+    <ellipse cx="310" cy="120" rx="38" ry="115" transform="rotate(-8,310,120)"/>
+    <ellipse cx="458" cy="120" rx="38" ry="115" transform="rotate(8,458,120)"/>
+    <circle cx="350" cy="275" r="14"/><circle cx="418" cy="275" r="14"/>
+    <circle cx="320" cy="320" r="22" stroke-width="5" stroke-dasharray="10 5"/>
+    <circle cx="448" cy="320" r="22" stroke-width="5" stroke-dasharray="10 5"/>
+    <path d="M365 305 L403 305 M384 305 L384 330" stroke-width="6" stroke-linecap="round"/>
   </g>
-  <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4" stroke-linejoin="round">
-    <polygon points="560,520 530,420 590,420"/>
-    <line x1="545" y1="418" x2="535" y2="390" stroke-linecap="round"/>
-    <line x1="560" y1="418" x2="560" y2="385" stroke-linecap="round"/>
-    <line x1="575" y1="418" x2="585" y2="390" stroke-linecap="round"/>
-  </g>
-  <g stroke="#999" stroke-width="3" fill="none" stroke-dasharray="6 3" stroke-linecap="round">
-    <path d="M200 580 Q205 540 212 580"/><path d="M230 580 Q238 520 248 580"/>
-    <path d="M260 580 Q268 550 278 580"/><path d="M600 580 Q608 530 618 580"/>
+  <g stroke="#999" stroke-width="7" fill="none" stroke-dasharray="14 7" stroke-linejoin="round">
+    <polygon points="600,560 560,420 640,420"/>
+    <line x1="575" y1="418" x2="560" y2="370" stroke-linecap="round"/>
+    <line x1="600" y1="418" x2="600" y2="360" stroke-linecap="round"/>
+    <line x1="625" y1="418" x2="640" y2="370" stroke-linecap="round"/>
   </g>
 </svg>
