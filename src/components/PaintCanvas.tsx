@@ -5,6 +5,7 @@ import { DrawingEngine, matchScore } from '@/lib/drawing-engine';
 import { drawStroke, drawGuideStroke, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
 import { MasterStyleProfile, stylizeStroke, drawStylizedStroke } from '@/lib/style-transfer';
 import { renderSprayDot } from '@/lib/spray-engine';
+import TracingSceneLayer from '@/components/TracingSceneLayer';
 
 export type PaintMode = 'follow' | 'auto' | 'free';
 
@@ -443,16 +444,7 @@ export default function PaintCanvas({
       />
       {/* Layer 1.5: Tracing scene underlay */}
       {showTracingScene && (
-        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={tracingSceneSrc!}
-            alt=""
-            draggable={false}
-            className="w-full h-full"
-            style={{ objectFit: 'contain', opacity: 0.42, padding: '3%' }}
-          />
-        </div>
+        <TracingSceneLayer src={tracingSceneSrc!} visible={tracingSceneVisible} />
       )}
       {/* Layer 2: User drawing */}
       <canvas

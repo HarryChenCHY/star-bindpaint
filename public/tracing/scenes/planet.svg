@@ -1,31 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 768 768">
-  <!--  -->
-  <circle cx="384" cy="380" r="140" fill="none" stroke="#999" stroke-width="6" stroke-dasharray="12 6"/>
-  <!-- 
-„?P -->
   <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4" stroke-linejoin="round">
     <rect x="340" y="370" width="50" height="40" rx="2"/>
     <polygon points="365,345 325,370 405,370"/>
     <rect x="355" y="395" width="15" height="15"/>
   </g>
-  <!-- 
-„ -->
   <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4">
     <rect x="420" y="390" width="12" height="30"/>
     <circle cx="426" cy="375" r="22"/>
   </g>
-  <!-- Ý¤I¯ -->
-  <ellipse cx="384" cy="380" rx="200" ry="55" fill="none" stroke="#999" stroke-width="5" stroke-dasharray="10 5" transform="rotate(-15,384,380)"/>
-  <!--  -->
   <g stroke="#999" stroke-width="3" fill="none" stroke-dasharray="6 3" stroke-linejoin="round">
     <polygon points="120,150 130,175 158,175 136,190 144,216 120,200 96,216 104,190 82,175 110,175"/>
     <polygon points="650,100 658,118 678,118 662,130 668,148 650,136 632,148 638,130 622,118 642,118"/>
     <polygon points="680,500 688,518 708,518 692,530 698,548 680,536 662,548 668,530 652,518 672,518"/>
     <polygon points="100,550 108,568 128,568 112,580 118,598 100,586 82,598 88,580 72,568 92,568"/>
   </g>
-  <!-- ® -->
-  <path d="M600 200 Q560 200 545 240 Q530 280 600 280 Q575 255 585 225 Q595 210 600 200" fill="none" stroke="#999" stroke-width="5" stroke-dasharray="10 5"/>
-  <!-- k­ -->
   <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4" stroke-linejoin="round">
     <polygon points="180,280 180,340 200,340 200,280"/>
     <polygon points="170,340 190,360 210,340"/>
