@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <!-- [w¹ -->
+  <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4">
+    <circle cx="100" cy="400" r="30"/>
+    <path d="M130 400 Q200 400 240 385" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="270" cy="378" r="25"/>
+    <circle cx="262" cy="372" r="4" fill="#BBB"/>
+  </g>
+  <!-- //„ï„ -->
+  <path d="M240 385 Q320 320 400 380 Q480 440 560 360 Q640 280 680 340" fill="none" stroke="#999" stroke-width="6" stroke-dasharray="12 6" stroke-linecap="round"/>
+  <!-- ¿± -->
+  <g stroke="#999" stroke-width="3" fill="none" stroke-dasharray="6 3">
+    <circle cx="350" cy="350" r="10"/><ellipse cx="350" cy="332" rx="10" ry="16"/><ellipse cx="350" cy="368" rx="10" ry="16"/>
+    <ellipse cx="332" cy="350" rx="16" ry="10"/><ellipse cx="368" cy="350" rx="16" ry="10"/>
+  </g>
+  <g stroke="#999" stroke-width="3" fill="none" stroke-dasharray="6 3" transform="translate(480,420)">
+    <circle cx="0" cy="0" r="8"/><ellipse cx="0" cy="-14" rx="8" ry="12"/><ellipse cx="0" cy="14" rx="8" ry="12"/>
+    <ellipse cx="-14" cy="0" rx="12" ry="8"/><ellipse cx="14" cy="0" rx="12" ry="8"/>
+  </g>
+  <!-- ó4 -->
+  <ellipse cx="620" cy="480" rx="45" ry="25" fill="none" stroke="#999" stroke-width="4" stroke-dasharray="8 4"/>
+  <ellipse cx="180" cy="520" rx="35" ry="20" fill="none" stroke="#999" stroke-width="4" stroke-dasharray="8 4"/>
+  <!-- tv -->
+  <g stroke="#999" stroke-width="3" fill="none" stroke-dasharray="6 3">
+    <ellipse cx="520" cy="260" rx="30" ry="40" transform="rotate(-20,520,260)"/>
+    <ellipse cx="560" cy="260" rx="30" ry="40" transform="rotate(20,560,260)"/>
+    <line x1="540" y1="240" x2="540" y2="290" stroke-width="4"/>
+  </g>
+</svg>

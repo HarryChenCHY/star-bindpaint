@@ -28,6 +28,7 @@ import { getTracker } from '@/lib/painting-tracker';
 import { EmotionDetector, EmotionLevel } from '@/lib/emotion-detector';
 import { generateAttentionQuestion, generateCalmPrompt, generateSDRenderCommentary } from '@/lib/feedback-engine';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
+import { createThemeTracingRef } from '@/lib/tracing-scenes';
 import { useAppSettings } from '@/contexts/AppContext';
 
 export default function PaintPage() {
@@ -166,7 +167,7 @@ export default function PaintPage() {
       setSpriteState('guiding');
       const diff = (sessionStorage.getItem('star-bindpaint-difficulty') as 'sticker' | 'tracing' | 'free') || 'free';
       setDifficultyLevel(diff);
-      setShowPanel(diff === 'sticker' || diff === 'tracing');
+      setShowPanel(diff === 'sticker');
       setShowFreeThemes(true); // 所有难度都先选主题
 
       const tracker = getTracker();
@@ -618,7 +619,45 @@ export default function PaintPage() {
     }
   };
 
-  // 压缩图片用于 localStorage 存储（SD 返回的图太大）
+  const handleBack = () => {
+    router.push('/create');
+  };
+
+  const applyFreeTheme = (theme: FreeTheme | null) => {
+    setFreeTheme(theme);
+    setFreeThemeStep(0);
+    setShowFreeThemes(false);
+    setPlacedStickers([]);
+    if (theme && difficultyLevel === 'tracing') {
+      const scene = createThemeTracingRef(theme.id, canvasSize.w, canvasSize.h);
+      setTracingRefs(scene ? [scene] : []);
+      setShowPanel(false);
+      setSpriteMessage(theme.steps[0]?.hint || '跟着虚线描一描吧~');
+    } else if (theme && difficultyLevel === 'sticker') {
+      setTracingRefs([]);
+      setShowPanel(true);
+      setSpriteMessage(theme.steps[0]?.hint || '开始画吧~');
+    } else {
+      setTracingRefs([]);
+      setShowPanel(difficultyLevel === 'sticker');
+      setSpriteMessage('跟着心画吧~');
+    }
+    if (theme) getTracker().setThemeId(theme.id);
+  };
+
+  // 描画临摹：主题选定后确保场景图加载（canvas 尺寸就绪后补一次）
+  useEffect(() => {
+    if (mode !== 'free' || difficultyLevel !== 'tracing' || !freeTheme || showFreeThemes) return;
+    const scene = createThemeTracingRef(freeTheme.id, canvasSize.w, canvasSize.h);
+    if (!scene) return;
+    setTracingRefs(prev => {
+      const existing = prev.find(r => r.id === 'theme-scene');
+      if (existing?.src === scene.src) {
+        return prev.map(r => r.id === 'theme-scene' ? { ...r, ...scene, visible: r.visible } : r);
+      }
+      return [scene];
+    });
+  }, [mode, difficultyLevel, freeTheme, showFreeThemes, canvasSize.w, canvasSize.h]);
   const compressImage = (dataUrl: string, maxSize = 400, quality = 0.6): Promise<string> => {
     return new Promise((resolve, reject) => {
       const img = new window.Image();
@@ -688,7 +727,7 @@ export default function PaintPage() {
       <header className="flex items-center justify-between px-3 sm:px-6 py-3 gap-2"
         style={{ borderBottom: '2px solid #1A1A1A' }}>
         <button
-          onClick={() => router.push('/')}
+          onClick={handleBack}
           className="flex items-center gap-1.5 rounded-full transition-all"
           style={{
             background: '#FFFFFF',
@@ -752,17 +791,8 @@ export default function PaintPage() {
           {mode === 'free' && showFreeThemes && (
             <div className="absolute inset-0 z-20 flex items-center justify-center" style={{ background: 'rgba(250,250,250,0.95)' }}>
               <FreeModeThemes
-                onSelect={(theme) => {
-                  setFreeTheme(theme);
-                  setFreeThemeStep(0);
-                  setShowFreeThemes(false);
-                  if (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') setShowPanel(true);
-                  setSpriteMessage(theme.steps[0]?.hint || '开始画吧~');
-                }}
-                onSkip={() => {
-                  setShowFreeThemes(false);
-                  if (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') setShowPanel(true);
-                }}
+                onSelect={(theme) => applyFreeTheme(theme)}
+                onSkip={() => applyFreeTheme(null)}
               />
             </div>
           )}
@@ -792,6 +822,12 @@ export default function PaintPage() {
             onAutoProgress={handleAutoProgress}
             onAutoComplete={handleAutoComplete}
             sourceImage={sourceImage}
+            tracingSceneSrc={
+              difficultyLevel === 'tracing'
+                ? tracingRefs.find(r => r.id === 'theme-scene')?.src ?? null
+                : null
+            }
+            tracingSceneVisible={tracingRefs.find(r => r.id === 'theme-scene')?.visible ?? false}
           >
             {/* 贴纸/描画 React overlay — 画布内部 */}
             {mode === 'free' && (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') && (
@@ -840,7 +876,7 @@ export default function PaintPage() {
                     }}
                   />
                 ))}
-                {tracingRefs.map(t => (
+                {tracingRefs.filter(r => r.id !== 'theme-scene').map(t => (
                   <TracingItem
                     key={t.id}
                     tracing={t}
@@ -854,7 +890,7 @@ export default function PaintPage() {
             )}
           </PaintCanvas>
 
-          {/* 贴纸/描画面板开关按钮 */}
+          {/* 贴纸面板开关 / 描线参考图显隐 */}
           {mode === 'free' && (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') && !showPanel && !showFreeThemes && (
             <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30">
               <motion.button
@@ -862,52 +898,39 @@ export default function PaintPage() {
                 animate={{ scale: 1, opacity: 1 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() => setShowPanel(true)}
+                onClick={() => {
+                  if (difficultyLevel === 'tracing' && tracingRefs.length > 0) {
+                    const allVisible = tracingRefs.every(r => r.visible);
+                    setTracingRefs(prev => prev.map(r => ({ ...r, visible: !allVisible })));
+                  } else {
+                    setShowPanel(true);
+                  }
+                }}
                 className="rounded-full px-4 py-2 flex items-center gap-2"
                 style={{ background: difficultyLevel === 'tracing' ? '#F9B801' : '#7DC353', border: '2px solid #1A1A1A', boxShadow: '3px 3px 0 #1A1A1A' }}
               >
                 <span style={{ fontSize: '1rem' }}>{difficultyLevel === 'tracing' ? '📐' : '🖼️'}</span>
                 <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#1A1A1A' }}>
-                  {difficultyLevel === 'tracing' ? '参考图' : '贴纸'}
+                  {difficultyLevel === 'tracing'
+                    ? (tracingRefs.every(r => r.visible) ? '隐藏参考' : '显示参考')
+                    : '贴纸'}
                 </span>
               </motion.button>
             </div>
           )}
 
-          {/* 底部面板（L1 贴纸 / L2 描画） */}
+          {/* 底部贴纸面板（仅贴纸拼贴模式） */}
           <AnimatePresence>
-            {mode === 'free' && showPanel && !showFreeThemes && (
+            {mode === 'free' && showPanel && !showFreeThemes && difficultyLevel === 'sticker' && (
               <StickerPanel
-                mode={difficultyLevel === 'tracing' ? 'tracing' : 'sticker'}
+                mode="sticker"
                 themeId={freeTheme?.id}
-                hasTracing={tracingRefs.length > 0}
-                tracingLocked={tracingRefs.length > 0 && tracingRefs.every(r => r.locked)}
-                tracingVisible={tracingRefs.length > 0 && tracingRefs.every(r => r.visible)}
+                hasTracing={false}
                 onSelectSticker={(s: StickerDef) => {
                   const id = `s${++stickerIdRef.current}`;
                   setPlacedStickers(prev => [...prev, { id, src: s.src, x: canvasSize.w / 2, y: canvasSize.h / 2, width: 100, height: 100 }]);
                   setShowPanel(false);
                 }}
-                onSelectTracing={(src: string) => {
-                  const id = `t${++stickerIdRef.current}`;
-                  setTracingRefs(prev => [...prev, { id, src, x: canvasSize.w / 2, y: canvasSize.h / 2, width: 200, height: 200, visible: true, locked: false }]);
-                  setShowPanel(false);
-                }}
-                onToggleLock={() => {
-                  if (tracingRefs.length === 0) return;
-                  const allLocked = tracingRefs.every(r => r.locked);
-                  setTracingRefs(prev => prev.map(r => ({ ...r, locked: !allLocked })));
-                }}
-                onToggleVisible={() => {
-                  if (tracingRefs.length === 0) return;
-                  const allVisible = tracingRefs.every(r => r.visible);
-                  setTracingRefs(prev => prev.map(r => ({ ...r, visible: !allVisible })));
-                }}
-                onDeleteTracing={() => {
-                  if (tracingRefs.length === 0) return;
-                  setTracingRefs(prev => prev.slice(1));
-                }}
-                onClearAllTracing={() => setTracingRefs([])}
                 onSwitchToBrush={() => setShowPanel(false)}
                 onClose={() => setShowPanel(false)}
               />

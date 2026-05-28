@@ -32,6 +32,9 @@ interface PaintCanvasProps {
   onAutoProgress?: (current: number, total: number) => void;
   onAutoComplete?: () => void;
   sourceImage?: HTMLImageElement | null;
+  /** 描画临摹：固定场景图，绘制在画布底层 */
+  tracingSceneSrc?: string | null;
+  tracingSceneVisible?: boolean;
 }
 
 export default function PaintCanvas({
@@ -58,8 +61,11 @@ export default function PaintCanvas({
   onAutoProgress,
   onAutoComplete,
   sourceImage,
+  tracingSceneSrc,
+  tracingSceneVisible = true,
 }: PaintCanvasProps) {
   const baseCanvasRef = useRef<HTMLCanvasElement>(null);      // Layer 1: 已完成笔触
+  const tracingCanvasRef = useRef<HTMLCanvasElement>(null);   // Layer 1.5: 描线场景底图
   const userCanvasRef = useRef<HTMLCanvasElement>(null);      // Layer 2: 用户绘制
   const guideCanvasRef = useRef<HTMLCanvasElement>(null);     // Layer 3: 引导线
   const undoStackRef = useRef<ImageData[]>([]);               // 撤销栈（自由模式）
@@ -411,6 +417,33 @@ export default function PaintCanvas({
     }
   }, [sourceImage, width, height]);
 
+  // 描画临摹：固定场景图铺底
+  useEffect(() => {
+    const canvas = tracingCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, width, height);
+    if (!tracingSceneSrc || !tracingSceneVisible) return;
+
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, width, height);
+      ctx.globalAlpha = 0.38;
+      const scale = Math.min(width / img.naturalWidth, height / img.naturalHeight) * 0.92;
+      const dw = img.naturalWidth * scale;
+      const dh = img.naturalHeight * scale;
+      const dx = (width - dw) / 2;
+      const dy = (height - dh) / 2;
+      ctx.drawImage(img, dx, dy, dw, dh);
+      ctx.globalAlpha = 1;
+    };
+    img.onerror = () => {
+      ctx.clearRect(0, 0, width, height);
+    };
+    img.src = tracingSceneSrc;
+  }, [tracingSceneSrc, tracingSceneVisible, width, height]);
+
   return (
     <div
       className="relative overflow-hidden"
@@ -431,6 +464,14 @@ export default function PaintCanvas({
         width={width}
         height={height}
         className="absolute inset-0 bg-white"
+        style={{ width: '100%', height: '100%' }}
+      />
+      {/* Layer 1.5: Tracing scene underlay */}
+      <canvas
+        ref={tracingCanvasRef}
+        width={width}
+        height={height}
+        className="absolute inset-0 pointer-events-none"
         style={{ width: '100%', height: '100%' }}
       />
       {/* Layer 2: User drawing */}

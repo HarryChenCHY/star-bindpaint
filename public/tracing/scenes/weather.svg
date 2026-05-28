@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <!-- *3 -->
+  <g stroke="#999" stroke-width="5" fill="none" stroke-dasharray="10 5">
+    <circle cx="180" cy="140" r="55"/>
+    <g stroke-linecap="round">
+      <line x1="180" y1="55" x2="180" y2="30"/><line x1="180" y1="225" x2="180" y2="250"/>
+      <line x1="95" y1="140" x2="70" y2="140"/><line x1="265" y1="140" x2="290" y2="140"/>
+      <line x1="120" y1="80" x2="100" y2="60"/><line x1="240" y1="80" x2="260" y2="60"/>
+      <line x1="120" y1="200" x2="100" y2="220"/><line x1="240" y1="200" x2="260" y2="220"/>
+    </g>
+    <circle cx="165" cy="130" r="6" fill="#BBB"/><circle cx="195" cy="130" r="6" fill="#BBB"/>
+    <path d="M160 160 Q180 175 200 160" stroke="#BBB" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- ‘5 -->
+  <g stroke="#999" stroke-width="5" fill="none" stroke-dasharray="10 5">
+    <ellipse cx="420" cy="120" rx="55" ry="35"/><ellipse cx="490" cy="105" rx="65" ry="42"/><ellipse cx="560" cy="120" rx="45" ry="30"/>
+  </g>
+  <!-- iy -->
+  <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4" stroke-linecap="round">
+    <path d="M280 320 Q384 180 488 320"/><path d="M300 320 Q384 210 468 320"/><path d="M320 320 Q384 240 448 320"/>
+  </g>
+  <!-- èô -->
+  <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4">
+    <path d="M600 200 Q615 230 600 260 Q585 230 600 200"/><path d="M640 230 Q655 260 640 290 Q625 260 640 230"/>
+    <path d="M580 280 Q595 310 580 340 Q565 310 580 280"/>
+  </g>
+  <!-- ?P -->
+  <g stroke="#999" stroke-width="5" fill="none" stroke-dasharray="10 5" stroke-linejoin="round">
+    <rect x="480" y="480" width="180" height="140" rx="4"/>
+    <polygon points="570,400 460,480 680,480"/>
+    <rect x="530" y="540" width="40" height="80"/><rect x="590" y="520" width="35" height="35"/><rect x="640" y="520" width="35" height="35"/>
+  </g>
+  <!-- ' -->
+  <g stroke="#999" stroke-width="5" fill="none" stroke-dasharray="10 5">
+    <rect x="155" y="500" width="50" height="120" rx="4"/>
+    <circle cx="180" cy="460" r="70"/>
+  </g>
+</svg>

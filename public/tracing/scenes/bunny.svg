@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <!-- ŒtTP -->
+  <g stroke="#999" stroke-width="5" fill="none" stroke-dasharray="10 5" stroke-linejoin="round">
+    <!-- «S -->
+    <ellipse cx="384" cy="480" rx="110" ry="100"/>
+    <!-- 4 -->
+    <circle cx="384" cy="300" r="75"/>
+    <!-- 35 -->
+    <ellipse cx="340" cy="160" rx="28" ry="90" transform="rotate(-8,340,160)"/>
+    <ellipse cx="428" cy="160" rx="28" ry="90" transform="rotate(8,428,160)"/>
+    <!-- <[ -->
+    <circle cx="360" cy="290" r="10"/><circle cx="408" cy="290" r="10"/>
+    <!-- n¢ -->
+    <circle cx="330" cy="320" r="16" stroke-width="3" stroke-dasharray="6 3"/>
+    <circle cx="438" cy="320" r="16" stroke-width="3" stroke-dasharray="6 3"/>
+    <!-- 4ô -->
+    <path d="M378 315 L390 315 M384 315 L384 328" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- á\ -->
+  <g stroke="#999" stroke-width="4" fill="none" stroke-dasharray="8 4" stroke-linejoin="round">
+    <polygon points="560,520 530,420 590,420"/>
+    <line x1="545" y1="418" x2="535" y2="390" stroke-linecap="round"/>
+    <line x1="560" y1="418" x2="560" y2="385" stroke-linecap="round"/>
+    <line x1="575" y1="418" x2="585" y2="390" stroke-linecap="round"/>
+  </g>
+  <!-- I -->
+  <g stroke="#999" stroke-width="3" fill="none" stroke-dasharray="6 3" stroke-linecap="round">
+    <path d="M200 580 Q205 540 212 580"/><path d="M230 580 Q238 520 248 580"/>
+    <path d="M260 580 Q268 550 278 580"/><path d="M600 580 Q608 530 618 580"/>
+    <path d="M630 580 Q635 555 642 580"/>
+  </g>
+</svg>
