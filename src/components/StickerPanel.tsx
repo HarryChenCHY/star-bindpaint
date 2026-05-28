@@ -135,7 +135,30 @@ export default function StickerPanel({
   );
   const themedTracing = themeId && THEME_TRACING[themeId] ? THEME_TRACING[themeId] : defaultTracing;
 
-  const items = mode === 'tracing' ? (tracingItems || themedTracing) : allStickers;
+  const tracingList = tracingItems || themedTracing;
+
+  const renderItemButton = (
+    item: { src: string; label: string },
+    key: string,
+    onClick: () => void,
+  ) => (
+    <motion.button
+      key={key}
+      whileHover={{ scale: 1.2, y: -5 }}
+      whileTap={{ scale: 0.85 }}
+      onClick={onClick}
+      className="flex flex-col items-center gap-0.5 flex-shrink-0"
+      title={item.label}
+    >
+      <div
+        className="rounded-xl flex items-center justify-center bg-white flex-shrink-0"
+        style={{ width: 42, height: 42, border: '2px solid #E5E5E5' }}
+      >
+        <img src={item.src} alt={item.label} style={{ width: 30, height: 30, objectFit: 'contain' }} draggable={false} />
+      </div>
+      <span style={{ fontSize: '0.52rem', fontWeight: 700, color: '#888', whiteSpace: 'nowrap' }}>{item.label}</span>
+    </motion.button>
+  );
 
   return (
     <motion.div
@@ -145,30 +168,9 @@ export default function StickerPanel({
       className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-2.5 rounded-[1.25rem] bg-white"
       style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A', maxWidth: 'calc(100vw - 2rem)' }}
     >
-      {items.map(item => (
-        <motion.button
-          key={item.src || item.id}
-          whileHover={{ scale: 1.2, y: -5 }}
-          whileTap={{ scale: 0.85 }}
-          onClick={() => {
-            if (mode === 'tracing') {
-              onSelectTracing?.(item.src);
-            } else {
-              onSelectSticker?.({ id: item.id || '', src: item.src, label: item.label, emoji: '' });
-            }
-          }}
-          className="flex flex-col items-center gap-0.5 flex-shrink-0"
-          title={item.label}
-        >
-          <div
-            className="rounded-xl flex items-center justify-center bg-white flex-shrink-0"
-            style={{ width: 42, height: 42, border: '2px solid #E5E5E5' }}
-          >
-            <img src={item.src} alt={item.label} style={{ width: 30, height: 30, objectFit: 'contain' }} draggable={false} />
-          </div>
-          <span style={{ fontSize: '0.52rem', fontWeight: 700, color: '#888', whiteSpace: 'nowrap' }}>{item.label}</span>
-        </motion.button>
-      ))}
+      {mode === 'tracing'
+        ? tracingList.map(item => renderItemButton(item, item.src, () => onSelectTracing?.(item.src)))
+        : allStickers.map(item => renderItemButton(item, item.id, () => onSelectSticker?.(item)))}
 
       {/* Tracing controls — lock, hide, delete */}
       {mode === 'tracing' && hasTracing && (
