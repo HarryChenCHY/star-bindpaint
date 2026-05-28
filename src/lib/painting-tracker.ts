@@ -82,6 +82,12 @@ export interface PaintingSession {
   canvasSize: { width: number; height: number };
   /** 自由创作主题 ID（用于心理学参考维度） */
   themeId?: string;
+  /** 自由创作难度（贴纸/描画/自由） */
+  difficulty?: 'sticker' | 'tracing' | 'free';
+  /** 大师风格（自由模式选的大师） */
+  styleId?: string;
+  /** 原画在 OSS 上的路径 */
+  originalImagePath?: string;
 }
 
 // ── 采集器类 ────────────────────────────────────────────────────────────
@@ -168,6 +174,18 @@ export class PaintingTracker {
   /** 设置自由创作主题 ID */
   setThemeId(themeId: string) {
     this.session.themeId = themeId;
+  }
+
+  setDifficulty(d: 'sticker' | 'tracing' | 'free') {
+    this.session.difficulty = d;
+  }
+
+  setStyleId(id: string) {
+    this.session.styleId = id;
+  }
+
+  setOriginalImagePath(path: string) {
+    this.session.originalImagePath = path;
   }
 
   /** 设置参数 */
@@ -546,6 +564,47 @@ ${this.getThemePsychologySection(s.themeId)}
     if (h < 290) return '紫色';
     return '粉色';
   }
+
+  /** 导出埋点 JSON（上传到 OSS sessions/） */
+  toAnalyticsJSON() {
+    const s = this.session;
+    return {
+      id: s.id,
+      startTime: s.startTime,
+      startedAt: s.startTime > 0 ? toBeijingTime(s.startTime) : null,
+      endTime: s.endTime,
+      endedAt: s.endTime > 0 ? toBeijingTime(s.endTime) : null,
+      durationSec: s.endTime > 0 ? Math.round((s.endTime - s.startTime) / 1000) : 0,
+      mode: s.mode,
+      guideSubMode: s.guideSubMode,
+      difficulty: s.difficulty || null,
+      styleId: s.styleId || null,
+      themeId: s.themeId || null,
+      masterwork: s.masterwork,
+      isCustomUpload: s.isCustomUpload,
+      mood: s.mood,
+      roughness: s.roughness,
+      emotionBefore: s.emotionBefore || null,
+      emotionAfter: s.emotionAfter || null,
+      calmTriggered: s.calmTriggered,
+      totalStrokes: s.totalStrokes,
+      completedStrokes: s.completedStrokes,
+      skippedStrokes: s.skippedStrokes,
+      batchedStrokes: s.batchedStrokes,
+      completionRate: s.totalStrokes > 0 ? Math.round((s.completedStrokes + s.batchedStrokes) / s.totalStrokes * 100) : null, // 跟画模式才有意义，自由模式为 null
+      avgWaitTimeSec: this.getAverageWaitTime(),
+      avgDrawDurationSec: this.getAverageDrawDuration(),
+      strokeRhythm: this.getStrokeRhythm(),
+      colorDistribution: this.getColorDistribution(),
+      focusRegion: this.getFocusRegion(),
+      sharedAttentionCount: s.sharedAttentionResponses.length,
+      originalImagePath: s.originalImagePath || null,
+    };
+  }
+}
+
+function toBeijingTime(ms: number): string {
+  return new Date(ms).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
 }
 
 // ── 单例导出（全局使用一个 tracker）────────────────────────────────────
