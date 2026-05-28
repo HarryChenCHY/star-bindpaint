@@ -110,6 +110,7 @@ export default function PaintPage() {
   const [sdCommentary, setSdCommentary] = useState<string[]>([]);
   const sdStartTimeRef = useRef(0);
   const sdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const analyticsSentRef = useRef(false); // 防止同一次 session 重复上报
 
   type BackTarget = 'themes' | 'create';
   const [leaveConfirm, setLeaveConfirm] = useState<{ target: BackTarget } | null>(null);
@@ -173,9 +174,11 @@ export default function PaintPage() {
       const diff = (sessionStorage.getItem('star-bindpaint-difficulty') as 'sticker' | 'tracing' | 'free') || 'free';
       setDifficultyLevel(diff);
       setShowPanel(diff === 'sticker');
-      setShowFreeThemes(true); // 所有难度都先选主题
+      setShowFreeThemes(true);
 
       const tracker = getTracker();
+      tracker.setDifficulty(diff);
+      tracker.setStyleId(style.id);
       tracker.setMode('free', 'assist');
       tracker.setCanvasSize(768, 768);
       tracker.setCustomUpload();
@@ -508,6 +511,32 @@ export default function PaintPage() {
     if (!canvas) return;
 
     const dataUrl = canvas.toDataURL('image/png');
+    const tracker = getTracker();
+    tracker.finishSession(dataUrl);
+    if (!analyticsSentRef.current) {
+      analyticsSentRef.current = true;
+      // 上传原画到 OSS
+      const sessionPayload = { ...tracker.toAnalyticsJSON(), sessionId: tracker.getSession().id };
+      fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: dataUrl }),
+      }).then(r => r.json()).then(d => {
+        if (d.path) tracker.setOriginalImagePath(d.path);
+        return fetch('/api/analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...sessionPayload, originalImagePath: d.path || null }),
+        });
+      }).catch(() => {
+        fetch('/api/analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(sessionPayload),
+        }).catch(() => {});
+      });
+    }
+
     setSavedDataUrl(dataUrl);
     setShowPostEmotion(true);
     setSpriteMessage('画完啦！告诉我现在感觉怎么样？');
@@ -572,8 +601,32 @@ export default function PaintPage() {
     setSdResult(null);
     setSdError(null);
 
-    // 生成轮播文案
     const tracker = getTracker();
+    tracker.finishSession(dataUrl);
+    if (!analyticsSentRef.current) {
+      analyticsSentRef.current = true;
+      const sessionPayload = { ...tracker.toAnalyticsJSON(), sessionId: tracker.getSession().id };
+      fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: dataUrl }),
+      }).then(r => r.json()).then(d => {
+        if (d.path) tracker.setOriginalImagePath(d.path);
+        return fetch('/api/analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...sessionPayload, originalImagePath: d.path || null }),
+        });
+      }).catch(() => {
+        fetch('/api/analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(sessionPayload),
+        }).catch(() => {});
+      });
+    }
+
+    // 生成轮播文案
     const commentary = generateSDRenderCommentary({
       masterId: styleId,
       colorDistribution: tracker.getColorDistribution(),
@@ -612,6 +665,24 @@ export default function PaintPage() {
       setSdResult({ original: dataUrl, rendered: data.imageBase64, duration: data.duration });
       setSpriteMessage('看！你的涂鸦变成了一幅画~');
       setSpriteState('cheering');
+
+      // 上传 AI 生成图并更新埋点
+      fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: data.imageBase64 }),
+      }).then(r => r.json()).then(d => {
+        const sessionId = tracker.getSession().id;
+        fetch('/api/analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId,
+            renderedImagePath: d.path || null,
+            renderedAt: new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }),
+          }),
+        }).catch(() => {});
+      }).catch(() => {});
     } catch (err) {
       const message = err instanceof Error ? err.message : '未知错误';
       setSdError(message);
