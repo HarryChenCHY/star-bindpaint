@@ -1304,7 +1304,13 @@ export default function PaintPage() {
             duration={sdResult.duration}
             onClose={() => setSdResult(null)}
             onSave={handleSDSave}
-            onFinish={() => {
+            onFinish={async () => {
+              try {
+                const compressed = await compressImage(sdResult.rendered);
+                await uploadAndSaveToGallery(compressed, `油画版 ${new Date().toLocaleDateString('zh-CN')}`, 0, 'free');
+              } catch (err) {
+                console.error('[SD Finish] AI 图保存失败:', err);
+              }
               setSdResult(null);
               handleExport();
             }}
