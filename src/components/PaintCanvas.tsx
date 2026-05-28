@@ -18,6 +18,7 @@ interface PaintCanvasProps {
   brushColor?: string;
   brushWidth?: number;
   autoSpeed?: number;
+  autoStartIdx?: number;
   masterStyle?: MasterStyleProfile | null;
   freeColor?: [number, number, number];
   eraserMode?: boolean;
@@ -43,6 +44,7 @@ export default function PaintCanvas({
   brushColor,
   brushWidth = 4,
   autoSpeed = 30,
+  autoStartIdx,
   masterStyle,
   freeColor,
   eraserMode = false,
@@ -69,6 +71,8 @@ export default function PaintCanvas({
   sprayModeRef.current = sprayMode;
   const sprayIsDownRef = useRef(false);                        // 喷雾是否按下中
   const [autoIdx, setAutoIdx] = useState(0);
+  const autoStartIdxRef = useRef(0);
+  autoStartIdxRef.current = autoStartIdx ?? 0;
 
   // 初始化手绘引擎（跟画/自由模式）
   useEffect(() => {
@@ -307,7 +311,7 @@ export default function PaintCanvas({
     const ctx = baseCanvas.getContext('2d')!;
 
     autoPlayRef.current.running = true;
-    let idx = autoIdx;
+    let idx = autoStartIdxRef.current;
 
     function playNext() {
       if (!autoPlayRef.current.running || idx >= strokes.length) {
@@ -330,7 +334,7 @@ export default function PaintCanvas({
       autoPlayRef.current.running = false;
       clearTimeout(autoPlayRef.current.timeoutId);
     };
-  }, [mode, strokes, autoSpeed]);
+  }, [mode, strokes, autoSpeed, onAutoComplete, onAutoProgress]);
 
   // 绘制辅助模式下的 AI 笔触替换
   const drawAIStrokeOnBase = useCallback((stroke: StrokeDrawData) => {
@@ -389,6 +393,7 @@ export default function PaintCanvas({
         setAutoIdx(0);
         onUndoAvailable?.(false);
       },
+      setAutoIdx,
       getBaseCanvas: () => baseCanvasRef.current,
       saveUndoSnapshot,
       undo,

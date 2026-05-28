@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ImagePlus } from 'lucide-react';
@@ -36,6 +37,7 @@ export default function PaintPage() {
   const [guideSubMode, setGuideSubMode] = useState<'assist' | 'real'>('assist');
   const [brushWidth, setBrushWidth] = useState(4);
   const [autoSpeed, setAutoSpeed] = useState(200);
+  const [autoStartIdx, setAutoStartIdx] = useState(0);
   const [roughness, setRoughness] = useState(2);
   const [autoFillRatio, setAutoFillRatio] = useState(200);
   const [fillMode, setFillMode] = useState<'companion' | 'precise'>('companion');
@@ -100,6 +102,7 @@ export default function PaintPage() {
   // SD 渲染
   const [sdRendering, setSdRendering] = useState(false);
   const [sdResult, setSdResult] = useState<{ original: string; rendered: string; duration: number } | null>(null);
+  const [sdError, setSdError] = useState<string | null>(null);
   const [sdElapsed, setSdElapsed] = useState(0);
   const [sdCommentary, setSdCommentary] = useState<string[]>([]);
   const sdStartTimeRef = useRef(0);
@@ -382,6 +385,7 @@ export default function PaintPage() {
     if (paintCanvas) paintCanvas.clearAll();
     guideRef.current.reset();
     setProgress(0);
+    setAutoStartIdx(0);
     setUserStrokeCount(0);
     emotionDetectorRef.current?.reset();
   };
@@ -397,6 +401,31 @@ export default function PaintPage() {
     guide.skip();
     emotionDetectorRef.current?.reportSkip();
   };
+
+  const handleEnterAutoMode = useCallback(() => {
+    if (mode !== 'follow' || strokes.length === 0) return;
+
+    const guide = guideRef.current;
+    const startIdx = guide.getState().currentIndex;
+    const remaining = strokes.length - startIdx;
+    if (remaining <= 0) {
+      setSpriteMessage('已经全部画完啦~');
+      setSpriteState('cheering');
+      return;
+    }
+
+    const paintCanvas = (window as unknown as Record<string, { clearUser?: () => void }>).__paintCanvas;
+    paintCanvas?.clearUser?.();
+
+    flushSync(() => {
+      setAutoStartIdx(startIdx);
+      setMode('auto');
+    });
+
+    getTracker().setMode('auto', guideSubMode);
+    setSpriteMessage('Starry 正在帮你画完剩下的笔触~');
+    setSpriteState('guiding');
+  }, [mode, strokes.length, guideSubMode]);
 
   const handleBatchDraw = (count: number) => {
     const paintCanvas = (window as unknown as Record<string, {
@@ -534,6 +563,9 @@ export default function PaintPage() {
     const styleId = selectedStyle?.id || 'vangogh';
     const themePrompt = freeTheme?.sdPrompt || '';
 
+    setSdResult(null);
+    setSdError(null);
+
     // 生成轮播文案
     const tracker = getTracker();
     const commentary = generateSDRenderCommentary({
@@ -575,7 +607,9 @@ export default function PaintPage() {
       setSpriteMessage('看！你的涂鸦变成了一幅画~');
       setSpriteState('cheering');
     } catch (err) {
-      setSpriteMessage(`渲染失败：${err instanceof Error ? err.message : '未知错误'}`);
+      const message = err instanceof Error ? err.message : '未知错误';
+      setSdError(message);
+      setSpriteMessage(`渲染失败：${message}`);
       setSpriteState('idle');
     } finally {
       if (sdTimerRef.current) clearInterval(sdTimerRef.current);
@@ -742,6 +776,7 @@ export default function PaintPage() {
             guideSubMode={guideSubMode}
             brushWidth={brushWidth}
             autoSpeed={autoSpeed}
+            autoStartIdx={autoStartIdx}
             masterStyle={selectedStyle}
             freeColor={freeColor}
             freeSat={freeSat}
@@ -1048,20 +1083,67 @@ export default function PaintPage() {
             }}
           />
         )}
+        {sdError && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+            style={{ background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(8px)', pointerEvents: 'auto' }}
+          >
+            <motion.div
+              initial={{ scale: 0.92, y: 18 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ type: 'spring', damping: 20 }}
+              className="w-full max-w-sm rounded-[2rem] bg-white p-6 text-center"
+              style={{ border: '2px solid #1A1A1A', boxShadow: '8px 8px 0 #1A1A1A' }}
+            >
+              <div className="mb-3" style={{ fontSize: 42, lineHeight: 1 }}>🪄</div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1A1A1A' }}>油画生成失败</h3>
+              <p className="mt-3" style={{ fontSize: '0.86rem', fontWeight: 700, color: '#666', lineHeight: 1.6 }}>
+                {sdError}
+              </p>
+              <p className="mt-2" style={{ fontSize: '0.75rem', fontWeight: 600, color: '#999', lineHeight: 1.5 }}>
+                如果是在 Vercel，请确认已配置 HUNYUAN_API_KEY 或 DASHSCOPE_API_KEY。
+              </p>
+              <button
+                onClick={() => setSdError(null)}
+                className="mt-5 w-full rounded-full font-bold text-sm"
+                style={{
+                  background: '#7A51EC',
+                  color: 'white',
+                  border: '2px solid #1A1A1A',
+                  boxShadow: '3px 3px 0 #1A1A1A',
+                  cursor: 'pointer',
+                  padding: '0.85em 1.2em',
+                }}
+              >
+                回到画板检查
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* ═══ Bottom Toolbar (Figma-style) ═══ */}
       <PaintBottomBar
         mode={mode}
         onModeChange={(m) => {
-          // 一旦进入任何模式并开始工作，就锁定不允许切换
-          if (mode === 'free') return; // 自由模式永远锁定
-          if ((mode === 'follow' || mode === 'auto') && sourceImage) return; // 跟画/自动模式有画作时锁定
+          if (mode === m) return;
+          if (mode === 'free') return;
+          if (m === 'free' && sourceImage) return;
+          if (m === 'auto' && mode === 'follow') {
+            handleEnterAutoMode();
+            return;
+          }
+
           setMode(m);
+          getTracker().setMode(m, guideSubMode);
           if (m === 'free' && !selectedStyle) {
             setSelectedStyle(MASTER_STYLES[1]);
           }
         }}
+        onEnterAutoMode={handleEnterAutoMode}
         brushWidth={brushWidth}
         onBrushWidthChange={setBrushWidth}
         guideSubMode={guideSubMode}

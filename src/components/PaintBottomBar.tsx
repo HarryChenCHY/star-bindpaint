@@ -27,6 +27,7 @@ type PaintMode = 'follow' | 'auto' | 'free';
 interface Props {
   mode: PaintMode;
   onModeChange: (m: PaintMode) => void;
+  onEnterAutoMode?: () => void;
 
   brushWidth: number;
   onBrushWidthChange: (w: number) => void;
@@ -142,7 +143,6 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
       style={{ bottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
       <motion.div
         ref={containerRef}
-        layout
         transition={{ type: 'spring', stiffness: 320, damping: 28 }}
         className="pointer-events-auto flex flex-wrap items-center justify-center gap-1 px-1.5 py-1.5 rounded-[1.35rem] bg-white max-w-[calc(100vw-0.75rem)] sm:flex-nowrap sm:gap-1.5 sm:px-2 sm:py-2 sm:rounded-[1.5rem]"
         style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A' }}
@@ -156,8 +156,11 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
             color={m.color}
             active={p.mode === m.id}
             onClick={() => {
-              // 自由模式锁定：不允许从 free 切回其他模式
               if (p.mode === 'free' && m.id !== 'free') return;
+              if (m.id === 'auto' && p.mode === 'follow' && p.onEnterAutoMode) {
+                p.onEnterAutoMode();
+                return;
+              }
               p.onModeChange(m.id);
             }}
           />
@@ -399,6 +402,7 @@ function ModeBtn({
   return (
     <div className="relative">
       <motion.button
+        type="button"
         onClick={onClick}
         onHoverStart={() => setHover(true)}
         onHoverEnd={() => setHover(false)}
