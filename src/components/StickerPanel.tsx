@@ -23,40 +23,65 @@ const THEME_STICKERS: Record<string, StickerDef[]> = {
     { id: 'rainbow', src: '/stickers/rainbow.svg', label: '彩虹', emoji: '🌈' },
     { id: 'raindrop', src: '/stickers/raindrop.svg', label: '雨滴', emoji: '🌧️' },
     { id: 'snowflake', src: '/stickers/snowflake.svg', label: '雪花', emoji: '❄️' },
+    { id: 'house', src: '/stickers/house.svg', label: '小房子', emoji: '🏠' },
+    { id: 'tree', src: '/stickers/tree.svg', label: '大树', emoji: '🌳' },
   ],
   mood: [
-    { id: 'smile', src: '/stickers/smile.svg', label: '笑脸', emoji: '😊' },
-    { id: 'tear', src: '/stickers/tear.svg', label: '泪滴', emoji: '💧' },
+    { id: 'color-blob', src: '/stickers/color-blob.svg', label: '色块', emoji: '🫧' },
+    { id: 'wave-line', src: '/stickers/wave-line.svg', label: '波浪线', emoji: '〰️' },
+    { id: 'zigzag-line', src: '/stickers/zigzag-line.svg', label: '锯齿线', emoji: '⚡' },
+    { id: 'circle-shape', src: '/stickers/circle-shape.svg', label: '圆圈', emoji: '⭕' },
+    { id: 'square-shape', src: '/stickers/square-shape.svg', label: '方块', emoji: '⬜' },
+    { id: 'dot-cluster', src: '/stickers/dot-cluster.svg', label: '小点点', emoji: '✨' },
     { id: 'star', src: '/stickers/star.svg', label: '星星', emoji: '⭐' },
   ],
   safe_place: [
     { id: 'house', src: '/stickers/house.svg', label: '房子', emoji: '🏠' },
     { id: 'tree', src: '/stickers/tree.svg', label: '大树', emoji: '🌳' },
     { id: 'bird', src: '/stickers/bird.svg', label: '小鸟', emoji: '🐦' },
+    { id: 'catface', src: '/stickers/catface.svg', label: '小猫', emoji: '🐱' },
+    { id: 'moon', src: '/stickers/moon.svg', label: '月亮', emoji: '🌙' },
   ],
   slow_line: [
+    { id: 'snail', src: '/stickers/snail.svg', label: '蜗牛', emoji: '🐌' },
+    { id: 'river-curve', src: '/stickers/river-curve.svg', label: '弯弯线', emoji: '🌊' },
+    { id: 'stone', src: '/stickers/stone.svg', label: '石头', emoji: '🪨' },
     { id: 'butterfly', src: '/stickers/butterfly.svg', label: '蝴蝶', emoji: '🦋' },
-    { id: 'spiral', src: '/stickers/spiral.svg', label: '螺旋', emoji: '🌀' },
     { id: 'sparkle', src: '/stickers/sparkle.svg', label: '星光', emoji: '✨' },
   ],
   planet: [
-    { id: 'sun', src: '/stickers/sun.svg', label: '恒星', emoji: '☀️' },
-    { id: 'ring', src: '/stickers/ring.svg', label: '光环', emoji: '🪐' },
+    { id: 'planet', src: '/stickers/planet.svg', label: '星球', emoji: '🌍' },
+    { id: 'house', src: '/stickers/house.svg', label: '小房子', emoji: '🏡' },
+    { id: 'tree', src: '/stickers/tree.svg', label: '小树', emoji: '🌳' },
+    { id: 'catface', src: '/stickers/catface.svg', label: '小动物', emoji: '🐱' },
+    { id: 'moon', src: '/stickers/moon.svg', label: '月亮', emoji: '🌙' },
+    { id: 'ring', src: '/stickers/ring.svg', label: '光环', emoji: '🛡️' },
     { id: 'rocket', src: '/stickers/rocket.svg', label: '火箭', emoji: '🚀' },
   ],
   kitty: [
-    { id: 'catface', src: '/stickers/catface.svg', label: '猫脸', emoji: '🐱' },
-    { id: 'fishbone', src: '/stickers/fishbone.svg', label: '鱼骨', emoji: '🐟' },
+    { id: 'cat-head', src: '/stickers/cat-head.svg', label: '圆脑袋', emoji: '⭕' },
+    { id: 'cat-ear', src: '/stickers/cat-ear.svg', label: '尖耳朵', emoji: '△' },
+    { id: 'cat-face-detail', src: '/stickers/cat-face-detail.svg', label: '眼鼻嘴', emoji: '👀' },
+    { id: 'cat-body', src: '/stickers/cat-body.svg', label: '身体', emoji: '〰️' },
+    { id: 'cat-tail', src: '/stickers/cat-tail.svg', label: '尾巴', emoji: '🌀' },
+    { id: 'cat-paw', src: '/stickers/cat-paw.svg', label: '脚掌', emoji: '🐾' },
     { id: 'yarn', src: '/stickers/yarn.svg', label: '毛线球', emoji: '🧶' },
   ],
   bunny: [
-    { id: 'bunnyear', src: '/stickers/bunnyear.svg', label: '兔耳', emoji: '🐰' },
+    { id: 'bunny-body', src: '/stickers/bunny-body.svg', label: '圆身体', emoji: '⭕' },
+    { id: 'bunny-head', src: '/stickers/bunny-head.svg', label: '圆脑袋', emoji: '🟡' },
+    { id: 'bunnyear', src: '/stickers/bunnyear.svg', label: '长耳朵', emoji: '📏' },
+    { id: 'bunny-face', src: '/stickers/bunny-face.svg', label: '表情', emoji: '👀' },
     { id: 'carrot', src: '/stickers/carrot.svg', label: '胡萝卜', emoji: '🥕' },
     { id: 'grass', src: '/stickers/grass.svg', label: '草叶', emoji: '🌿' },
   ],
   fish: [
-    { id: 'fish', src: '/stickers/fish.svg', label: '小鱼', emoji: '🐟' },
-    { id: 'bubble', src: '/stickers/bubble.svg', label: '气泡', emoji: '🫧' },
+    { id: 'fish-body', src: '/stickers/fish-body.svg', label: '鱼身体', emoji: '🏈' },
+    { id: 'fish-tail', src: '/stickers/fish-tail.svg', label: '鱼尾巴', emoji: '△' },
+    { id: 'fish-face', src: '/stickers/fish-face.svg', label: '眼和嘴', emoji: '👁️' },
+    { id: 'fish-fin', src: '/stickers/fish-fin.svg', label: '鱼鳍', emoji: '🌊' },
+    { id: 'bubble', src: '/stickers/bubble.svg', label: '气泡', emoji: '💧' },
+    { id: 'seaweed', src: '/stickers/seaweed.svg', label: '水草', emoji: '🌿' },
     { id: 'shell', src: '/stickers/shell.svg', label: '贝壳', emoji: '🐚' },
   ],
 };
@@ -85,48 +110,77 @@ export default function StickerPanel({
   onToggleLock, onToggleVisible, onDeleteTracing, onClearAllTracing,
   onSwitchToBrush, onClose,
 }: StickerPanelProps) {
-  const allStickers = [...COMMON_STICKERS, ...(THEME_STICKERS[themeId || ''] || [])];
+  const themeStickers = THEME_STICKERS[themeId || ''] || [];
+  const themeIds = new Set(themeStickers.map(s => s.id));
+  const commonExtras = COMMON_STICKERS.filter(s => !themeIds.has(s.id));
+  const allStickers = themeId && themeStickers.length > 0
+    ? [...themeStickers, ...commonExtras]
+    : [...COMMON_STICKERS, ...themeStickers];
 
   const THEME_TRACING: Record<string, { src: string; label: string }[]> = {
     weather: [
       { src: '/tracing/sun.svg', label: '太阳' },
-      { src: '/tracing/house.svg', label: '房子' },
+      { src: '/tracing/cloud.svg', label: '云朵' },
+      { src: '/tracing/rainbow.svg', label: '彩虹' },
+      { src: '/tracing/raindrop.svg', label: '雨滴' },
+      { src: '/tracing/house.svg', label: '小房子' },
       { src: '/tracing/tree.svg', label: '大树' },
     ],
     mood: [
+      { src: '/tracing/color-blob.svg', label: '色块' },
+      { src: '/tracing/wave-line.svg', label: '波浪线' },
+      { src: '/tracing/zigzag-line.svg', label: '锯齿线' },
+      { src: '/tracing/circle-shape.svg', label: '圆圈' },
+      { src: '/tracing/square-shape.svg', label: '方块' },
+      { src: '/tracing/dot-cluster.svg', label: '小点点' },
       { src: '/tracing/star.svg', label: '星星' },
-      { src: '/tracing/butterfly.svg', label: '蝴蝶' },
-      { src: '/tracing/fish.svg', label: '小鱼' },
     ],
     safe_place: [
       { src: '/tracing/house.svg', label: '房子' },
       { src: '/tracing/tree.svg', label: '大树' },
+      { src: '/tracing/flower.svg', label: '小花' },
       { src: '/tracing/cat.svg', label: '小猫' },
+      { src: '/tracing/star.svg', label: '星星' },
+      { src: '/tracing/moon.svg', label: '月亮' },
     ],
     slow_line: [
-      { src: '/tracing/butterfly.svg', label: '蝴蝶' },
-      { src: '/tracing/star.svg', label: '星星' },
-      { src: '/tracing/fish.svg', label: '小鱼' },
+      { src: '/tracing/snail.svg', label: '蜗牛' },
+      { src: '/tracing/start-dot.svg', label: '起点' },
+      { src: '/tracing/river-curve.svg', label: '弯弯线' },
+      { src: '/tracing/flower.svg', label: '小花' },
+      { src: '/tracing/stone.svg', label: '石头' },
     ],
     planet: [
+      { src: '/tracing/planet.svg', label: '星球' },
+      { src: '/tracing/house-on-planet.svg', label: '星球+房子' },
+      { src: '/tracing/tree-on-planet.svg', label: '星球+树' },
       { src: '/tracing/star.svg', label: '星星' },
-      { src: '/tracing/sun.svg', label: '太阳' },
-      { src: '/tracing/butterfly.svg', label: '蝴蝶' },
+      { src: '/tracing/moon.svg', label: '月亮' },
+      { src: '/tracing/ring.svg', label: '保护光环' },
     ],
     kitty: [
-      { src: '/tracing/cat.svg', label: '小猫' },
-      { src: '/tracing/fish.svg', label: '小鱼' },
-      { src: '/tracing/butterfly.svg', label: '蝴蝶' },
+      { src: '/tracing/cat-head.svg', label: '圆脑袋' },
+      { src: '/tracing/cat-ears.svg', label: '尖耳朵' },
+      { src: '/tracing/cat-face-detail.svg', label: '眼鼻嘴' },
+      { src: '/tracing/cat-body.svg', label: '身体' },
+      { src: '/tracing/cat-tail.svg', label: '身体+尾巴' },
+      { src: '/tracing/cat-paws-whiskers.svg', label: '脚掌胡须' },
     ],
     bunny: [
-      { src: '/tracing/tree.svg', label: '大树' },
-      { src: '/tracing/house.svg', label: '房子' },
-      { src: '/tracing/butterfly.svg', label: '蝴蝶' },
+      { src: '/tracing/bunny-body.svg', label: '圆身体' },
+      { src: '/tracing/bunny-head.svg', label: '圆脑袋' },
+      { src: '/tracing/bunny-ears.svg', label: '长耳朵' },
+      { src: '/tracing/bunny-face.svg', label: '表情' },
+      { src: '/tracing/carrot.svg', label: '胡萝卜' },
+      { src: '/tracing/grass-patch.svg', label: '小草' },
     ],
     fish: [
-      { src: '/tracing/fish.svg', label: '小鱼' },
-      { src: '/tracing/star.svg', label: '星星' },
-      { src: '/tracing/sun.svg', label: '太阳' },
+      { src: '/tracing/fish-body.svg', label: '鱼身体' },
+      { src: '/tracing/fish-tail.svg', label: '鱼尾巴' },
+      { src: '/tracing/fish-face.svg', label: '眼和嘴' },
+      { src: '/tracing/fish-fins.svg', label: '鱼鳍花纹' },
+      { src: '/tracing/bubble-group.svg', label: '泡泡' },
+      { src: '/tracing/seaweed.svg', label: '水草' },
     ],
   };
 
@@ -168,9 +222,14 @@ export default function StickerPanel({
       className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-2.5 rounded-[1.25rem] bg-white"
       style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A', maxWidth: 'calc(100vw - 2rem)' }}
     >
-      {mode === 'tracing'
-        ? tracingList.map(item => renderItemButton(item, item.src, () => onSelectTracing?.(item.src)))
-        : allStickers.map(item => renderItemButton(item, item.id, () => onSelectSticker?.(item)))}
+      <div
+        className="flex items-center gap-1.5 overflow-x-auto flex-nowrap min-w-0"
+        style={{ maxWidth: 'calc(100vw - 9rem)', scrollbarWidth: 'thin' }}
+      >
+        {mode === 'tracing'
+          ? tracingList.map(item => renderItemButton(item, item.src, () => onSelectTracing?.(item.src)))
+          : allStickers.map(item => renderItemButton(item, item.id, () => onSelectSticker?.(item)))}
+      </div>
 
       {/* Tracing controls — lock, hide, delete */}
       {mode === 'tracing' && hasTracing && (
