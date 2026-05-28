@@ -39,7 +39,7 @@ export default function TracingSceneLayer({ src, visible = true }: TracingSceneL
       aria-hidden
     >
       <div
-        className="w-full h-full [&>svg]:block [&>svg]:w-full [&>svg]:h-full"
+        className="w-full h-full pointer-events-none [&>svg]:block [&>svg]:w-full [&>svg]:h-full [&>svg]:pointer-events-none"
         dangerouslySetInnerHTML={{ __html: svgMarkup }}
       />
     </div>

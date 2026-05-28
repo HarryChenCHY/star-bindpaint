@@ -456,6 +456,7 @@ export default function PaintCanvas({
           width: '100%',
           height: '100%',
           zIndex: 2,
+          pointerEvents: 'auto',
           ...(mode === 'auto' ? { cursor: 'default' } : null),
         }}
       />
@@ -467,8 +468,8 @@ export default function PaintCanvas({
         className="absolute inset-0 pointer-events-none"
         style={{ width: '100%', height: '100%', zIndex: 3 }}
       />
-      {/* Layer 4: Sticker overlay (children) */}
-      <div className="absolute inset-0" style={{ zIndex: 4 }}>
+      {/* Layer 4: Sticker overlay (children) — 须穿透点击到 user canvas */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 4 }}>
         {children}
       </div>
     </div>
