@@ -27,6 +27,7 @@ interface PaintCanvasProps {
   onUserStrokeDone?: (userPoints: Vec2[], score: number) => void;
   onUserStrokeStart?: () => void;
   onUndoAvailable?: (available: boolean) => void;
+  children?: React.ReactNode;
   onAutoProgress?: (current: number, total: number) => void;
   onAutoComplete?: () => void;
   sourceImage?: HTMLImageElement | null;
@@ -51,6 +52,7 @@ export default function PaintCanvas({
   onUserStrokeDone,
   onUserStrokeStart,
   onUndoAvailable,
+  children,
   onAutoProgress,
   onAutoComplete,
   sourceImage,
@@ -352,6 +354,17 @@ export default function PaintCanvas({
     return true;
   }, [onUndoAvailable]);
 
+  const saveUndoSnapshot = useCallback(() => {
+    const baseCanvas = baseCanvasRef.current;
+    if (!baseCanvas) return;
+    const ctx = baseCanvas.getContext('2d');
+    if (!ctx) return;
+    const snapshot = ctx.getImageData(0, 0, width, height);
+    undoStackRef.current.push(snapshot);
+    if (undoStackRef.current.length > 30) undoStackRef.current.shift();
+    onUndoAvailable?.(true);
+  }, [width, height, onUndoAvailable]);
+
   const canUndo = useCallback(() => undoStackRef.current.length > 0, []);
 
   useEffect(() => {
@@ -377,10 +390,11 @@ export default function PaintCanvas({
         onUndoAvailable?.(false);
       },
       getBaseCanvas: () => baseCanvasRef.current,
+      saveUndoSnapshot,
       undo,
       canUndo,
     };
-  }, [drawAIStrokeOnBase, undo, canUndo, width, height, onUndoAvailable]);
+  }, [drawAIStrokeOnBase, undo, canUndo, saveUndoSnapshot, width, height, onUndoAvailable]);
 
   // 绘制半透明源图（参考层）
   useEffect(() => {
@@ -434,6 +448,8 @@ export default function PaintCanvas({
         className="absolute inset-0 pointer-events-none"
         style={{ width: '100%', height: '100%' }}
       />
+      {/* Layer 4: Sticker/Tracing React overlay (children) */}
+      {children}
     </div>
   );
 }

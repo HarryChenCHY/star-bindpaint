@@ -16,6 +16,9 @@ import FreeModeThemes, { FreeTheme, ThemeStepGuide } from '@/components/FreeMode
 import CaregiverTips from '@/components/CaregiverTips';
 import SDRenderResult from '@/components/SDRenderResult';
 import SDRenderLoading from '@/components/SDRenderLoading';
+import StickerPanel, { StickerDef } from '@/components/StickerPanel';
+import StickerItem, { PlacedSticker } from '@/components/StickerItem';
+import TracingItem, { TracingRef } from '@/components/TracingItem';
 import { decomposeImage, imageSourceFromImage, StrokeDrawData, drawStroke, Vec2 } from '@/lib/stroke-engine';
 import { matchScore } from '@/lib/drawing-engine';
 import { GuideSystem } from '@/lib/guide-system';
@@ -86,6 +89,14 @@ export default function PaintPage() {
     }
   }, []);
 
+  // 难度模式（贴纸/描画/自由）
+  const [difficultyLevel, setDifficultyLevel] = useState<'sticker' | 'tracing' | 'free'>('free');
+  const [showPanel, setShowPanel] = useState(true);
+  const [placedStickers, setPlacedStickers] = useState<PlacedSticker[]>([]);
+  const [tracingRefs, setTracingRefs] = useState<TracingRef[]>([]);
+  const stickerIdRef = useRef(0);
+  const lastFixedCanvasRef = useRef<ImageData | null>(null);
+
   // SD 渲染
   const [sdRendering, setSdRendering] = useState(false);
   const [sdResult, setSdResult] = useState<{ original: string; rendered: string; duration: number } | null>(null);
@@ -150,7 +161,10 @@ export default function PaintPage() {
       setStrokes([]);
       setLoading(false);
       setSpriteState('guiding');
-      setSpriteMessage(`自由创作 · ${style.name}风格 — 画出你想画的！`);
+      const diff = (sessionStorage.getItem('star-bindpaint-difficulty') as 'sticker' | 'tracing' | 'free') || 'free';
+      setDifficultyLevel(diff);
+      setShowPanel(diff === 'sticker' || diff === 'tracing');
+      setShowFreeThemes(true); // 所有难度都先选主题
 
       const tracker = getTracker();
       tracker.setMode('free', 'assist');
@@ -708,10 +722,13 @@ export default function PaintPage() {
                   setFreeTheme(theme);
                   setFreeThemeStep(0);
                   setShowFreeThemes(false);
+                  if (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') setShowPanel(true);
                   setSpriteMessage(theme.steps[0]?.hint || '开始画吧~');
-                  getTracker().setThemeId(theme.id);
                 }}
-                onSkip={() => setShowFreeThemes(false)}
+                onSkip={() => {
+                  setShowFreeThemes(false);
+                  if (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') setShowPanel(true);
+                }}
               />
             </div>
           )}
@@ -740,7 +757,127 @@ export default function PaintPage() {
             onAutoProgress={handleAutoProgress}
             onAutoComplete={handleAutoComplete}
             sourceImage={sourceImage}
-          />
+          >
+            {/* 贴纸/描画 React overlay — 画布内部 */}
+            {mode === 'free' && (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') && (
+              <>
+                {placedStickers.map(s => (
+                  <StickerItem
+                    key={s.id}
+                    sticker={s}
+                    containerWidth={canvasSize.w}
+                    containerHeight={canvasSize.h}
+                    onFix={(id) => {
+                      const sticker = placedStickers.find(p => p.id === id);
+                      if (sticker) {
+                        const pc = (window as unknown as Record<string, {
+                          getBaseCanvas: () => HTMLCanvasElement | null;
+                          saveUndoSnapshot: () => void;
+                        }>).__paintCanvas;
+                        pc?.saveUndoSnapshot();
+                        const img = new Image();
+                        img.onload = () => {
+                          const baseCanvas = pc?.getBaseCanvas();
+                          if (baseCanvas) {
+                            const ctx = baseCanvas.getContext('2d');
+                            if (ctx) {
+                              ctx.drawImage(img,
+                                sticker.x - sticker.width / 2,
+                                sticker.y - sticker.height / 2,
+                                sticker.width, sticker.height
+                              );
+                            }
+                          }
+                        };
+                        img.src = sticker.src;
+                      }
+                      setPlacedStickers(prev => prev.filter(p => p.id !== id));
+                      setShowPanel(true);
+                    }}
+                    onDelete={(id) => {
+                      setPlacedStickers(prev => prev.filter(p => p.id !== id));
+                    }}
+                    onMove={(id, x, y) => {
+                      setPlacedStickers(prev => prev.map(p => p.id === id ? { ...p, x, y } : p));
+                    }}
+                    onResize={(id, w, h) => {
+                      setPlacedStickers(prev => prev.map(p => p.id === id ? { ...p, width: w, height: h } : p));
+                    }}
+                  />
+                ))}
+                {tracingRefs.map(t => (
+                  <TracingItem
+                    key={t.id}
+                    tracing={t}
+                    containerWidth={canvasSize.w}
+                    containerHeight={canvasSize.h}
+                    onMove={(x, y) => setTracingRefs(prev => prev.map(r => r.id === t.id ? { ...r, x, y } : r))}
+                    onResize={(w, h) => setTracingRefs(prev => prev.map(r => r.id === t.id ? { ...r, width: w, height: h } : r))}
+                  />
+                ))}
+              </>
+            )}
+          </PaintCanvas>
+
+          {/* 贴纸/描画面板开关按钮 */}
+          {mode === 'free' && (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') && !showPanel && !showFreeThemes && (
+            <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30">
+              <motion.button
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setShowPanel(true)}
+                className="rounded-full px-4 py-2 flex items-center gap-2"
+                style={{ background: difficultyLevel === 'tracing' ? '#F9B801' : '#7DC353', border: '2px solid #1A1A1A', boxShadow: '3px 3px 0 #1A1A1A' }}
+              >
+                <span style={{ fontSize: '1rem' }}>{difficultyLevel === 'tracing' ? '📐' : '🖼️'}</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#1A1A1A' }}>
+                  {difficultyLevel === 'tracing' ? '参考图' : '贴纸'}
+                </span>
+              </motion.button>
+            </div>
+          )}
+
+          {/* 底部面板（L1 贴纸 / L2 描画） */}
+          <AnimatePresence>
+            {mode === 'free' && showPanel && !showFreeThemes && (
+              <StickerPanel
+                mode={difficultyLevel === 'tracing' ? 'tracing' : 'sticker'}
+                themeId={freeTheme?.id}
+                hasTracing={tracingRefs.length > 0}
+                tracingLocked={tracingRefs.length > 0 && tracingRefs.every(r => r.locked)}
+                tracingVisible={tracingRefs.length > 0 && tracingRefs.every(r => r.visible)}
+                onSelectSticker={(s: StickerDef) => {
+                  const id = `s${++stickerIdRef.current}`;
+                  setPlacedStickers(prev => [...prev, { id, src: s.src, x: canvasSize.w / 2, y: canvasSize.h / 2, width: 100, height: 100 }]);
+                  setShowPanel(false);
+                }}
+                onSelectTracing={(src: string) => {
+                  const id = `t${++stickerIdRef.current}`;
+                  setTracingRefs(prev => [...prev, { id, src, x: canvasSize.w / 2, y: canvasSize.h / 2, width: 200, height: 200, visible: true, locked: false }]);
+                  setShowPanel(false);
+                }}
+                onToggleLock={() => {
+                  if (tracingRefs.length === 0) return;
+                  const allLocked = tracingRefs.every(r => r.locked);
+                  setTracingRefs(prev => prev.map(r => ({ ...r, locked: !allLocked })));
+                }}
+                onToggleVisible={() => {
+                  if (tracingRefs.length === 0) return;
+                  const allVisible = tracingRefs.every(r => r.visible);
+                  setTracingRefs(prev => prev.map(r => ({ ...r, visible: !allVisible })));
+                }}
+                onDeleteTracing={() => {
+                  if (tracingRefs.length === 0) return;
+                  setTracingRefs(prev => prev.slice(1));
+                }}
+                onClearAllTracing={() => setTracingRefs([])}
+                onSwitchToBrush={() => setShowPanel(false)}
+                onClose={() => setShowPanel(false)}
+              />
+            )}
+          </AnimatePresence>
 
           {/* 共同注意弹窗 */}
           <AnimatePresence>
