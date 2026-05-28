@@ -46,7 +46,7 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 
 ### ✨ 第二步 · 自由创作
 
-画任何你想画的内容，每一笔实时变成大师的油画风格，还能一键"变成油画"让 AI 渲染为完整油画
+画任何你想画的内容，每一笔实时变成大师的油画风格，还能一键「变成油画」——由**腾讯混元生图 hy-image-v3.0** 将简笔画渲染为完整油画
 
 > *"我梦想着绘画，然后我画下了我的梦。"* — 梵高
 
@@ -54,8 +54,10 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 </tr>
 </table>
 
-系统同步采集绘画过程数据（情绪变化、色彩偏好、笔触节奏、专注区域），由腾讯混元 / 阿里百炼大模型生成**有数据支撑的陪伴笔记**——
+系统同步采集绘画过程数据（情绪变化、色彩偏好、笔触节奏、专注区域），由**腾讯混元大模型**（`hunyuan-vision` 多模态 / `hy3-preview` 文本）生成**有数据支撑的陪伴笔记**——
 不是临床诊断，而是让监护人在每一次画画后多一份具体的看见。
+
+> **AI 核心底座：腾讯混元** — 图生图与 LLM 两条链路均以混元为主模型，阿里百炼仅作降级备用。
 
 ---
 
@@ -63,8 +65,8 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 
 | | 模式 | 描述 | 适合场景 |
 |:---:|------|------|---------|
-| 1️⃣ | **临摹学习** | 选择大师画作 → 你画1笔AI补100笔 → 跟着引导线完成 | 建立信心 |
-| 2️⃣ | **自由创作** | 自由画 + 6种大师风格实时转换 + 主题引导 + 一键变成油画 | 自由表达 |
+| 1️⃣ | **临摹学习** | 选择大师画作 → **跟画 / 自动播放 / 自由** 三种模式 → 你画1笔AI补100笔 → 点「自动」可一键画完剩余笔触 | 建立信心 |
+| 2️⃣ | **自由创作** | 三层难度（**贴纸拼贴 / 描画临摹 / 自由创作**）+ 6种大师风格实时转换 + 主题引导 + 一键变成油画 | 自由表达 |
 
 **附加能力**（贯穿两步）：
 
@@ -72,7 +74,20 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 |:---:|------|
 | 👀 共同注意 | 每画几笔 AI 暂停提问："这是什么颜色？在哪里？" |
 | 📝 主题引导 | 5个低门槛主题（☀️天气 / 🎨心情 / 🏠安全地点 / 〰️慢线条 / 🪐小星球） |
-| ✨ 变成油画 | 一键将简笔画渲染为完整大师级油画 |
+| ✨ 变成油画 | 一键将简笔画交给 **腾讯混元 hy-image-v3.0** 渲染为完整大师级油画 |
+
+---
+
+## 🤖 腾讯混元 AI 能力（核心）
+
+本项目 **两条云端 AI 链路均以腾讯混元为主模型**，通过 [TokenHub 腾讯混元 MaaS](https://tokenhub.tencentmaas.com) 接入；阿里百炼仅在混元不可用或未配置时降级。
+
+| 能力 | API | 主模型（腾讯混元） | 输入 | 输出 |
+|:---:|------|------|------|------|
+| 🎨 **变成油画** | `POST /api/sd-render` | **`hy-image-v3.0`** 图生图 | 用户简笔画 + 大师风格 Prompt | 完整油画（异步轮询 ≤ 60s） |
+| 📋 **疗愈观察报告** | `POST /api/analyze` | **`hunyuan-vision`**（含画作多模态）/ **`hy3-preview`**（纯文本） | 绘画行为数据 Prompt + 作品截图 | 温暖、非诊断性的陪伴观察笔记 |
+
+**降级链**（仅备用）：混元失败或未配置 `HUNYUAN_API_KEY` 时 → 阿里百炼（`wanx2.1-imageedit` / `qwen-vl-plus`）。
 
 ---
 
@@ -88,7 +103,7 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 | 🎨 | **选择体验** — 临摹30幅经典或自由创作选风格 | *"我闭上眼睛，为的是能看见。"* — 高更 |
 | ✏️ | **创作过程** — 跟着引导线或随意画 + 实时风格化 | *"试着在你的画中注入灵魂。"* — 伦勃朗 |
 | 😌 | **情绪后测** — 画完后再选心情，量化情绪变化 | *"画一幅画就像做一次实验。"* — 萨金特 |
-| 📋 | **疗愈报告** — LLM 生成温暖的观察记录 | *"你的笔触温柔地改变了心情。"* — Starry |
+| 📋 | **疗愈报告** — **腾讯混元大模型**生成温暖的观察记录 | *"你的笔触温柔地改变了心情。"* — Starry |
 
 ---
 
@@ -150,10 +165,11 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 | 🖌️ | **Canvas 2D** | 三层画布架构 · 引导线 / 用户笔迹 / 风格化结果 |
 | 🧠 | **笔触分解引擎** | Hertzmann 1998 多层误差驱动 + Sobel 梯度追踪 + 边界感知 |
 | 🎭 | **实时风格化引擎** | 6 种大师风格 · 纯前端零依赖运行 |
-| 🎨 | **腾讯混元生图 hy-image-v3.0** | "变成油画" AI 深度渲染（异步轮询 ≤ 60s） |
-| 📋 | **腾讯混元 / 阿里百炼 LLM** | 多模态观察报告（hunyuan-vision → qwen-vl-plus 降级链） |
+| 🎨 | **腾讯混元生图 `hy-image-v3.0`** ⭐ | **主模型** · `/api/sd-render`「变成油画」图生图（异步轮询 ≤ 60s） |
+| 📋 | **腾讯混元大模型** ⭐ | **主模型** · `/api/analyze` 疗愈报告（`hunyuan-vision` 多模态 + `hy3-preview` 文本） |
+| 🔄 | **混元优先降级链** | 混元主路 → 百炼备用 · 图片 OSS→base64 · 离线 localStorage 50 幅 LRU |
 | ☁️ | **阿里云 OSS** | 画廊图片云端存储（HMAC-SHA1 签名 REST API） |
-| 🔄 | **三层降级链** | LLM 主备 · 图片 OSS→base64 · 离线 localStorage 50 幅 LRU |
+| 🛡️ | **阿里百炼**（备用） | `wanx2.1-imageedit` / `qwen-vl-plus` · 仅混元不可用时降级 |
 
 ---
 
@@ -161,13 +177,13 @@ AI 将大师经典画作拆解为笔触序列，你画 1 笔系统自动补 100 
 
 ```bash
 npm install
-npm run dev    # → http://localhost:3001（3000 常被占用，dev server 自动回退）
+npm run dev    # → http://localhost:3000（端口占用时自动回退）
 ```
 
 **线上访问**：https://www.star-bindpaint.online
 
-> 💡 完整 LLM 体验需在 `.env.local` 配置 `HUNYUAN_API_KEY` 与 `DASHSCOPE_API_KEY`。
-> 未配置时画板与画廊功能正常，仅"变成油画"和"观察报告"会降级提示。
+> 💡 **推荐配置 `HUNYUAN_API_KEY`**（腾讯混元 TokenHub），即可启用完整的「变成油画」与「疗愈观察报告」体验。
+> `DASHSCOPE_API_KEY` 为可选备用；未配置任何 Key 时画板与画廊正常，AI 功能会提示配置混元。
 
 ---
 
@@ -190,8 +206,8 @@ npm run dev    # → http://localhost:3001（3000 常被占用，dev server 自�
 | `/` | 🏠 产品封面展示页 |
 | `/onboard` | 😊 情绪前测 + 能量选择 |
 | `/create` | 🎨 大师作品库 / 自由创作 / 上传图片 |
-| `/paint` | ✏️ 核心画布（临摹 / 自由 + 风格化 + 变成油画） |
-| `/report` | 📋 AI 疗愈观察报告 |
+| `/paint` | ✏️ 核心画布（跟画 / 自动 / 自由 + 风格化 + 混元变成油画） |
+| `/report` | 📋 腾讯混元生成的 AI 疗愈观察报告 |
 | `/gallery` | 🖼️ 我的画廊 |
 | `/settings` | ⚙️ 家长/治疗师设置 |
 | `/intro` | 📖 产品介绍 |
@@ -212,13 +228,18 @@ src/
 │   ├── settings/page.tsx     # 家长设置
 │   ├── intro/page.tsx        # 产品介绍
 │   └── api/
-│       ├── analyze/route.ts  # 通义千问 VL 疗愈分析
-│       ├── sd-render/route.ts # "变成油画" DashScope 渲染
-│       └── upload/route.ts   # OSS 图片上传
+│       ├── analyze/route.ts   # 疗愈报告 · 腾讯混元 hunyuan-vision / hy3-preview（主）
+│       ├── sd-render/route.ts # 变成油画 · 腾讯混元 hy-image-v3.0 图生图（主）
+│       └── upload/route.ts    # OSS 图片上传
 ├── contexts/
 │   └── AppContext.tsx         # 全局设置（安静模式/难度/先看后做）
 ├── components/
 │   ├── PaintCanvas.tsx        # 三层 Canvas 画布 + 风格化集成
+│   ├── PaintBottomBar.tsx     # 底部工具栏（跟画/自动/自由模式切换）
+│   ├── StickerPanel.tsx       # 贴纸/描画面板（L1/L2 难度）
+│   ├── StickerItem.tsx        # 可拖拽贴纸
+│   ├── TracingItem.tsx        # 可拖拽参考图
+│   ├── SDRenderLoading.tsx    # 混元生图等待动画
 │   ├── MasterBubble.tsx       # 大师对话气泡（打字机效果）
 │   ├── MasterQuoteCard.tsx    # 随机大师名言卡片
 │   ├── EmotionPicker.tsx      # 情绪前后测选择器
@@ -229,7 +250,7 @@ src/
 │   ├── SharedAttention.tsx    # 共同注意问答
 │   ├── FreeModeThemes.tsx     # 自由模式主题引导（5主题+分步提示）
 │   ├── CaregiverTips.tsx      # 照护者陪伴提示
-│   ├── SDRenderResult.tsx     # "变成油画" 前后对比展示
+│   ├── SDRenderResult.tsx     # 混元「变成油画」前后对比展示
 │   ├── StarrySprite.tsx       # 画笔精灵 Starry
 │   └── ToolBar.tsx            # 工具栏（图标化按钮）
 ├── lib/
@@ -260,12 +281,14 @@ npx vercel --prod
 
 | 变量 | 说明 |
 |------|------|
-| `HUNYUAN_API_KEY` | 腾讯混元 API Key（TokenHub） |
-| `DASHSCOPE_API_KEY` | 阿里云百炼 API Key（降级备用） |
+| **`HUNYUAN_API_KEY`** ⭐ | **必配（主模型）** · 腾讯混元 TokenHub API Key · 同时驱动 `hy-image-v3.0` 图生图 + `hunyuan-vision` / `hy3-preview` LLM |
+| `DASHSCOPE_API_KEY` | 可选 · 阿里百炼 API Key · 混元不可用时的降级备用 |
 | `OSS_BUCKET` | OSS Bucket 名称 |
 | `OSS_REGION` | OSS 地域（如 oss-cn-shenzhen） |
 | `OSS_ACCESS_KEY_ID` | OSS AccessKey ID |
 | `OSS_ACCESS_KEY_SECRET` | OSS AccessKey Secret |
+
+> 线上部署至少配置 **`HUNYUAN_API_KEY`** 并勾选 **Production** 环境，修改后需 Redeploy 生效。
 
 ---
 
