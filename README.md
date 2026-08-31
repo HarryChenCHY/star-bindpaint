@@ -269,21 +269,48 @@ src/
 
 ## 🌐 部署
 
+### 方式一：腾讯云 CloudBase 云托管（推荐，当前线上方案）
+
+- **环境 ID**：`startrace-d5gbndi213c162cc5`（上海地域 · 体验版）
+- **服务名**：`startrace`（容器型 · 0.5 核 / 1GB · 最小实例 1 · 公网访问）
+- **访问地址**：https://startrace-306119-11-1416317231.sh.run.tcloudbase.com/
+
+部署方式（本地代码直接部署，项目根目录含 `Dockerfile`）：
+
+```bash
+# 控制台：https://console.cloud.tencent.com/tcb/cloudrun?envId=startrace-d5gbndi213c162cc5
+# 或使用 CloudBase MCP / CLI 将本地目录部署到 startrace 服务
+```
+
+容器构建要点（见根目录 `Dockerfile`）：
+- Next.js `output: "standalone"` 模式，运行 `node server.js`
+- 监听端口 **3000**，Node 20 alpine 多阶段构建
+
+### 方式二：Vercel
+
 ```bash
 npx vercel --prod
 ```
 
-环境变量（Vercel Settings → Environment Variables）：
+### 环境变量（云托管服务设置 / Vercel Settings）
 
 | 变量 | 说明 |
 |------|------|
 | **`HUNYUAN_API_KEY`** ⭐ | **必配** · 腾讯混元 TokenHub API Key · 驱动 `hy-image-v3.0` 图生图 + `hunyuan-vision` / `hy3-preview` LLM |
+| `DASHSCOPE_API_KEY` | 阿里云百炼 API Key（LLM 降级链路） |
 | `OSS_BUCKET` | OSS Bucket 名称 |
 | `OSS_REGION` | OSS 地域（如 oss-cn-shenzhen） |
 | `OSS_ACCESS_KEY_ID` | OSS AccessKey ID |
 | `OSS_ACCESS_KEY_SECRET` | OSS AccessKey Secret |
 
-> 线上部署至少配置 **`HUNYUAN_API_KEY`** 并勾选 **Production** 环境，修改后需 Redeploy 生效。
+> 未配置 AI Key 时画板与画廊功能正常，「变成油画」与「疗愈报告」会提示配置混元。云托管修改环境变量后需重新部署生效。
+
+### 使用的 CloudBase 资源
+
+| 资源 | 说明 |
+|------|------|
+| 云托管（Cloud Run） | `startrace` 容器服务 · 承载 Next.js 全栈应用（页面 + 3 个 API 路由） |
+| PostgreSQL | `pgdb-0ak5xpq5`（预装，暂未使用） |
 
 ---
 
