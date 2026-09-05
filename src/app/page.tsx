@@ -284,7 +284,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-7xl px-5 pb-4 sm:px-8 lg:px-10">
+        <section className="mx-auto w-full max-w-7xl px-5 pb-4 pt-8 sm:px-8 sm:pt-10 lg:px-10 lg:pt-12">
           <div className="grid items-stretch gap-5 lg:grid-cols-[1.35fr_0.65fr]">
             <DailyWishCard onStart={() => router.push('/create')} onOpenStarMap={() => router.push('/gallery')} />
             <div className="rounded-[1.7rem] p-5 sm:p-6" style={{ background: COLORS.white, border: `2px solid ${COLORS.ink}`, boxShadow: `6px 6px 0 ${COLORS.mint}` }}>
