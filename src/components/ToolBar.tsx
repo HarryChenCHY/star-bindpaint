@@ -106,7 +106,7 @@ export default function ToolBar({
   onAutoSpeedChange,
   fillMode = 'companion',
   onFillModeChange,
-  autoFillRatio = 20,
+  autoFillRatio = 10,
   onAutoFillRatioChange,
   showSubMode = false,
   showSpeed = false,
@@ -178,17 +178,17 @@ export default function ToolBar({
             />
             <p style={{ fontSize: '0.7rem', color: '#888', fontWeight: 600, marginTop: 6 }}>
               {fillMode === 'companion'
-                ? `你画 1 笔 → Starry 帮画 ${autoFillRatio} 笔`
+                ? `你画 1 笔 → 月亮伙伴帮画 ${autoFillRatio} 笔`
                 : '每一笔都由你来画'}
             </p>
             {fillMode === 'companion' && onAutoFillRatioChange && (
               <div className="mt-3">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span style={{ fontSize: '0.7rem', color: '#1A1A1A', fontWeight: 700 }}>Starry 帮多少</span>
+                  <span style={{ fontSize: '0.7rem', color: '#1A1A1A', fontWeight: 700 }}>月亮伙伴帮多少</span>
                   <span style={{ fontSize: '0.85rem', fontWeight: 900, color: '#7A51EC' }}>1 : {autoFillRatio}</span>
                 </div>
                 <input
-                  type="range" min="20" max="200" step="10" value={autoFillRatio}
+                  type="range" min="1" max="20" step="1" value={autoFillRatio}
                   onChange={e => onAutoFillRatioChange(Number(e.target.value))}
                   className="w-full h-1.5 rounded-full appearance-none"
                   style={{ background: '#E5E5E5', accentColor: '#7A51EC' }}
@@ -232,10 +232,10 @@ export default function ToolBar({
           <div style={divider} />
           <div>
             <label style={{ ...labelStyle, display: 'flex', marginBottom: '0.5rem' }}>
-              <Sparkles size={13} strokeWidth={2.5} /> Starry 帮画
+              <Sparkles size={13} strokeWidth={2.5} /> 月亮伙伴帮画
             </label>
             <div className="grid grid-cols-3 gap-2 mb-2">
-              {[10, 30, 50].map(n => (
+              {[5, 10, 20].map(n => (
                 <button
                   key={n}
                   onClick={() => onBatchDraw(n)}

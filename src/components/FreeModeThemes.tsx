@@ -6,7 +6,7 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 export interface ThemeStep {
   icon: string;
   label: string;
-  hint: string; // 给孩子看的提示
+  hint: string;
 }
 
 export interface FreeTheme {
@@ -29,31 +29,31 @@ export const FREE_THEMES: FreeTheme[] = [
       { icon: '🌈', label: '彩虹或雨', hint: '如果是晴天画彩虹，下雨就画雨滴' },
       { icon: '🏠', label: '地面', hint: '最后画一点地面，小房子或者小树' },
     ],
-    sdPrompt: 'a cheerful landscape with sun, clouds, and sky, children drawing style, simple and colorful',
+    sdPrompt: 'a cheerful landscape with sun, clouds, and sky, beginner-friendly illustration, simple and colorful',
   },
   {
-    id: 'mood',
+    id: 'palette_study',
     icon: '🎨',
-    label: '用颜色画出心情',
+    label: '用三种颜色练习构图',
     steps: [
-      { icon: '🫧', label: '选颜色', hint: '选一个代表你心情的颜色，大胆涂上去' },
-      { icon: '〰️', label: '画线条', hint: '开心画波浪线，难过画直线，紧张画锯齿' },
+      { icon: '🫧', label: '主色', hint: '先选一个主色，画出最大的色块' },
+      { icon: '〰️', label: '线条', hint: '换第二种颜色，用直线或曲线连接色块' },
       { icon: '⭕', label: '画形状', hint: '用圆圈、方块或者星星填满画面' },
       { icon: '✨', label: '加装饰', hint: '最后加一些小点点或小星星' },
     ],
-    sdPrompt: 'abstract emotional artwork with flowing colors and shapes, expressive and vibrant, artistic mood painting',
+    sdPrompt: 'abstract color study with flowing lines and geometric shapes, expressive and vibrant composition',
   },
   {
-    id: 'safe_place',
+    id: 'cottage',
     icon: '🏠',
-    label: '画一个安全的地方',
+    label: '画一座花园小屋',
     steps: [
-      { icon: '🏠', label: '房子', hint: '画一个让你感到安全的小房子' },
+      { icon: '🏠', label: '房子', hint: '先用方形和三角形画一座小房子' },
       { icon: '🌳', label: '树和花', hint: '在旁边画一棵大树和小花' },
       { icon: '🐱', label: '小动物', hint: '画一个陪伴你的小动物' },
       { icon: '💫', label: '天空', hint: '画蓝天或者星空，让画面完整' },
     ],
-    sdPrompt: 'a cozy safe house with garden, trees and flowers, warm and peaceful scenery, gentle sunlight, a small cute animal nearby',
+    sdPrompt: 'a cozy cottage with garden, trees and flowers, warm scenery, gentle sunlight, a small animal nearby',
   },
   {
     id: 'slow_line',
@@ -89,7 +89,7 @@ export const FREE_THEMES: FreeTheme[] = [
       { icon: '〰️', label: '身体尾巴', hint: '脑袋下面画一个大椭圆当身体，右边画一条弯弯的曲线当尾巴' },
       { icon: '🐾', label: '小脚掌', hint: '身体下面画四个小圆点当脚掌，嘴边加三条短线当胡须' },
     ],
-    sdPrompt: 'a cute cartoon cat sitting happily, simple round face with triangle ears, warm and friendly, children illustration style',
+    sdPrompt: 'a cute cartoon cat sitting happily, simple round face with triangle ears, warm beginner-friendly illustration',
   },
   {
     id: 'bunny',
@@ -102,7 +102,7 @@ export const FREE_THEMES: FreeTheme[] = [
       { icon: '👀', label: '表情', hint: '脑袋里画两个点当眼睛，一个X形小嘴，再画两个粉色圆圈当腮红' },
       { icon: '🥕', label: '加场景', hint: '旁边画一根胡萝卜（三角形+几条线当叶子），地上画几撮小草' },
     ],
-    sdPrompt: 'a cute fluffy bunny rabbit with long ears sitting next to a carrot, green grass, cheerful children book illustration style',
+    sdPrompt: 'a cute fluffy bunny rabbit with long ears sitting next to a carrot, green grass, cheerful picture-book illustration',
   },
   {
     id: 'fish',
@@ -115,7 +115,7 @@ export const FREE_THEMES: FreeTheme[] = [
       { icon: '🌊', label: '鱼鳍花纹', hint: '身体上面画一排小三角当背鳍，肚子画几条弧线当花纹' },
       { icon: '💧', label: '水泡泡', hint: '嘴巴前画几个小圆圈当泡泡，旁边画几条波浪线当水草' },
     ],
-    sdPrompt: 'a happy colorful fish swimming in clear water with bubbles and seaweed, underwater scene, playful children illustration',
+    sdPrompt: 'a happy colorful fish swimming in clear water with bubbles and seaweed, playful underwater illustration',
   },
 ];
 
@@ -131,9 +131,12 @@ export default function FreeModeThemes({ onSelect, onSkip }: FreeModeThemesProps
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col gap-3 w-full max-w-sm"
     >
-      <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#888', textAlign: 'center' }}>
-        选一个梦想，让 Starry 陪你把它画出来
-      </p>
+      <div className="text-center">
+        <p style={{ fontWeight: 900, fontSize: '1.05rem', color: '#17233F' }}>选择一颗自由星愿</p>
+        <p style={{ fontWeight: 700, fontSize: '0.8rem', color: '#65708A', marginTop: 4 }}>
+          月亮伙伴会把主题拆成几个简单星点，零基础也能马上动笔
+        </p>
+      </div>
       <div className="grid grid-cols-1 gap-2">
         {FREE_THEMES.map(t => (
           <button
@@ -146,7 +149,7 @@ export default function FreeModeThemes({ onSelect, onSkip }: FreeModeThemesProps
             <div>
               <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1A1A1A' }}>{t.label}</span>
               <span style={{ fontSize: '0.7rem', color: '#BBB', fontWeight: 600, marginLeft: 8 }}>
-                {t.steps.length} 步引导
+                {t.steps.length} 个绘画星点
               </span>
             </div>
           </button>
@@ -157,7 +160,7 @@ export default function FreeModeThemes({ onSelect, onSkip }: FreeModeThemesProps
         className="text-center mt-2"
         style={{ color: '#BBB', fontWeight: 600, fontSize: '0.8rem' }}
       >
-        或者，跟着心画...
+        不设主题，直接进入自由星域 →
       </button>
     </motion.div>
   );

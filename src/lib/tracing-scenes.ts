@@ -1,8 +1,8 @@
 /** 每个自由创作主题对应一张固定全画布描线场景图 */
 export const THEME_TRACING_SCENES: Record<string, string> = {
   weather: '/tracing/scenes/weather.svg',
-  mood: '/tracing/scenes/mood.svg',
-  safe_place: '/tracing/scenes/safe_place.svg',
+  palette_study: '/tracing/scenes/mood.svg',
+  cottage: '/tracing/scenes/safe_place.svg',
   slow_line: '/tracing/scenes/slow_line.svg',
   planet: '/tracing/scenes/planet.svg',
   kitty: '/tracing/scenes/kitty.svg',

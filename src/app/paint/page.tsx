@@ -1,71 +1,77 @@
 'use client';
 
+/* eslint-disable react-hooks/set-state-in-effect */
+
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ImagePlus } from 'lucide-react';
+import { ChevronLeft, CircleDot, ImagePlus, Layers3, Moon, Route, Sparkles } from 'lucide-react';
 import PaintCanvas, { PaintMode } from '@/components/PaintCanvas';
 import PaintBottomBar from '@/components/PaintBottomBar';
-import StarrySprite, { SpriteState } from '@/components/StarrySprite';
+import MoonCompanion, { CompanionState } from '@/components/MoonCompanion';
 import ProgressRing from '@/components/ProgressRing';
-import EmotionPicker, { Emotion } from '@/components/EmotionPicker';
 import VisualSchedule from '@/components/VisualSchedule';
-import CalmBreathing from '@/components/CalmBreathing';
-import SharedAttention from '@/components/SharedAttention';
 import FreeModeThemes, { FreeTheme, ThemeStepGuide } from '@/components/FreeModeThemes';
-import CaregiverTips from '@/components/CaregiverTips';
 import SDRenderResult from '@/components/SDRenderResult';
 import SDRenderLoading from '@/components/SDRenderLoading';
 import StickerPanel, { StickerDef } from '@/components/StickerPanel';
 import StickerItem, { PlacedSticker } from '@/components/StickerItem';
 import TracingItem, { TracingRef } from '@/components/TracingItem';
-import { decomposeImage, imageSourceFromImage, StrokeDrawData, drawStroke, Vec2 } from '@/lib/stroke-engine';
-import { matchScore } from '@/lib/drawing-engine';
+import { decomposeImage, imageSourceFromImage, GuidanceLevel, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
 import { GuideSystem } from '@/lib/guide-system';
-import { saveToGallery, uploadAndSaveToGallery } from '@/lib/gallery-store';
-import { getTracker } from '@/lib/painting-tracker';
-import { EmotionDetector, EmotionLevel } from '@/lib/emotion-detector';
-import { generateAttentionQuestion, generateCalmPrompt, generateSDRenderCommentary } from '@/lib/feedback-engine';
+import { uploadAndSaveToGallery } from '@/lib/gallery-store';
+import { getTracker, resetTracker } from '@/lib/painting-tracker';
+import { generateSDRenderCommentary } from '@/lib/feedback-engine';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
 import { createThemeTracingRef, THEME_TRACING_SCENES } from '@/lib/tracing-scenes';
 import { drawStickerOnCanvas, loadStickerDimensions } from '@/lib/sticker-utils';
+import { recordPracticeCompletion, recordPracticeStart } from '@/lib/practice-store';
+import { getResearchEnvelope, loadPrivacyPreferences } from '@/lib/privacy-settings';
 import { useAppSettings } from '@/contexts/AppContext';
+
+function sessionResearchPayload(tracker: ReturnType<typeof getTracker>) {
+  const envelope = getResearchEnvelope();
+  return envelope ? { ...tracker.toAnalyticsJSON(), ...envelope } : null;
+}
+
+function sendResearchRecord(payload: Record<string, unknown>, keepalive = false) {
+  return fetch('/api/analytics', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    keepalive,
+  }).catch(() => null);
+}
 
 export default function PaintPage() {
   const router = useRouter();
   const { settings } = useAppSettings();
   const [mode, setMode] = useState<PaintMode>('follow');
-  const [guideSubMode, setGuideSubMode] = useState<'assist' | 'real'>('assist');
+  const [guideSubMode, setGuideSubMode] = useState<'assist' | 'real'>('real');
+  const [guidanceLevel, setGuidanceLevel] = useState<GuidanceLevel>('full');
   const [brushWidth, setBrushWidth] = useState(4);
   const [autoSpeed, setAutoSpeed] = useState(200);
   const [autoStartIdx, setAutoStartIdx] = useState(0);
-  const [roughness, setRoughness] = useState(2);
-  const [autoFillRatio, setAutoFillRatio] = useState(200);
-  const [fillMode, setFillMode] = useState<'companion' | 'precise'>('companion');
+  const [autoCompletionPending, setAutoCompletionPending] = useState(false);
+  const [autoFillRatio, setAutoFillRatio] = useState(10);
+  const [fillMode, setFillMode] = useState<'companion' | 'precise'>('precise');
   const [strokes, setStrokes] = useState<StrokeDrawData[]>([]);
   const [currentGuideStroke, setCurrentGuideStroke] = useState<StrokeDrawData | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingMsg, setLoadingMsg] = useState('');
   const [progress, setProgress] = useState(0);
-  const [spriteState, setSpriteState] = useState<SpriteState>('thinking');
+  const [spriteState, setSpriteState] = useState<CompanionState>('thinking');
   const [spriteMessage, setSpriteMessage] = useState('正在分析图片...');
   const [sourceImage, setSourceImage] = useState<HTMLImageElement | null>(null);
   const [canvasSize, setCanvasSize] = useState({ w: 400, h: 400 });
 
-  // 情绪后测
-  const [showPostEmotion, setShowPostEmotion] = useState(false);
-  const [postEmotion, setPostEmotion] = useState<string>('');
+  const [showCompletion, setShowCompletion] = useState(false);
   const [savedDataUrl, setSavedDataUrl] = useState<string>('');
 
-  // ASD 集成状态
-  const [showCalm, setShowCalm] = useState(false);
-  const [showAttention, setShowAttention] = useState(false);
-  const [attentionQ, setAttentionQ] = useState<{ question: string; options: { label: string; correct: boolean }[] } | null>(null);
   const [freeTheme, setFreeTheme] = useState<FreeTheme | null>(null);
   const [freeThemeStep, setFreeThemeStep] = useState(0);
   const [showFreeThemes, setShowFreeThemes] = useState(true); // 自由模式初始显示主题选择
-  const [caregiverState, setCaregiverState] = useState<'painting' | 'stuck' | 'completed' | 'resting'>('painting');
   const [userStrokeCount, setUserStrokeCount] = useState(0);
   const [promptCardCollapsed, setPromptCardCollapsed] = useState(false);
 
@@ -101,7 +107,6 @@ export default function PaintPage() {
   const [placedStickers, setPlacedStickers] = useState<PlacedSticker[]>([]);
   const [tracingRefs, setTracingRefs] = useState<TracingRef[]>([]);
   const stickerIdRef = useRef(0);
-  const lastFixedCanvasRef = useRef<ImageData | null>(null);
 
   // SD 渲染
   const [sdRendering, setSdRendering] = useState(false);
@@ -112,6 +117,9 @@ export default function PaintPage() {
   const sdStartTimeRef = useRef(0);
   const sdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const analyticsSentRef = useRef(false); // 防止同一次 session 重复上报
+  const autoTrackedIndexRef = useRef(0);
+  const trackerInitializedRef = useRef(false);
+  const abandonmentTimerRef = useRef<number | null>(null);
 
   type BackTarget = 'themes' | 'create';
   const [leaveConfirm, setLeaveConfirm] = useState<{ target: BackTarget } | null>(null);
@@ -123,51 +131,60 @@ export default function PaintPage() {
     };
   }, []);
 
-  const guideRef = useRef<GuideSystem>(new GuideSystem());
-  const emotionDetectorRef = useRef<EmotionDetector | null>(null);
-  const attentionIntervalRef = useRef(3); // 每 N 笔问一次（用户画3笔问1次）
-  const batchingRef = useRef(false); // 批量绘制中，抑制引导线更新
-
-  // 初始化情绪检测器
   useEffect(() => {
-    const detector = new EmotionDetector((level: EmotionLevel) => {
-      if (level === 'moderate' || level === 'severe') {
-        setShowCalm(true);
-        setCaregiverState('stuck');
-        const tracker = getTracker();
-        tracker.recordCalmTriggered();
-      } else if (level === 'mild') {
-        setSpriteMessage(generateCalmPrompt('mild'));
+    if (abandonmentTimerRef.current !== null) {
+      window.clearTimeout(abandonmentTimerRef.current);
+      abandonmentTimerRef.current = null;
+    }
+
+    const recordAbandonedSession = (tracker = getTracker()) => {
+      if (analyticsSentRef.current) return;
+      const session = tracker.getSession();
+      if (session.startTime <= 0 || session.endTime > 0) return;
+
+      tracker.abandonSession();
+      const researchPayload = sessionResearchPayload(tracker);
+      if (!researchPayload) return;
+      analyticsSentRef.current = true;
+      const payload = JSON.stringify(researchPayload);
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/analytics', new Blob([payload], { type: 'application/json' }));
+      } else {
+        fetch('/api/analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true,
+        }).catch(() => {});
       }
-    });
-    emotionDetectorRef.current = detector;
-    return () => { emotionDetectorRef.current = null; };
+    };
+    const handlePageHide = () => recordAbandonedSession();
+
+    window.addEventListener('pagehide', handlePageHide);
+    return () => {
+      window.removeEventListener('pagehide', handlePageHide);
+      const trackerAtUnmount = getTracker();
+      abandonmentTimerRef.current = window.setTimeout(() => recordAbandonedSession(trackerAtUnmount), 0);
+    };
   }, []);
 
-  // 空闲检测定时器（仅跟画模式，自由模式不检测）
-  useEffect(() => {
-    if (loading || showCalm || showPostEmotion || mode === 'free') return;
-    const interval = setInterval(() => {
-      const detector = emotionDetectorRef.current;
-      if (detector) {
-        const level = detector.checkIdle();
-        if (level === 'moderate' || level === 'severe') {
-          setShowCalm(true);
-          setCaregiverState('stuck');
-          getTracker().recordCalmTriggered();
-        }
-      }
-    }, 30000); // 每 30 秒检查一次（呼吸引导冷却 5 分钟，无需高频轮询）
-    return () => clearInterval(interval);
-  }, [loading, showCalm, showPostEmotion, mode]);
+  const guideRef = useRef<GuideSystem>(new GuideSystem());
+  const batchingRef = useRef(false); // 批量绘制中，抑制引导线更新
 
   useEffect(() => {
+    if (!trackerInitializedRef.current) {
+      resetTracker();
+      trackerInitializedRef.current = true;
+    }
+
     // 检查是否是自由创作模式（无需源图片）
     const freeStyleId = sessionStorage.getItem('star-bindpaint-free-style');
     if (freeStyleId) {
+      const savedGuidance = (sessionStorage.getItem('startrace-guidance-level') || 'full') as GuidanceLevel;
       const style = MASTER_STYLES.find(s => s.id === freeStyleId) || MASTER_STYLES[1]; // 默认梵高
       setSelectedStyle(style);
       setMode('free');
+      setGuidanceLevel(savedGuidance);
       setCanvasSize({ w: 768, h: 768 });
       setStrokes([]);
       setLoading(false);
@@ -181,6 +198,7 @@ export default function PaintPage() {
       tracker.setDifficulty(diff);
       tracker.setStyleId(style.id);
       tracker.setMode('free', 'assist');
+      tracker.setGuidanceLevel(savedGuidance);
       tracker.setCanvasSize(768, 768);
       tracker.setCustomUpload();
       tracker.startSession(0);
@@ -191,7 +209,8 @@ export default function PaintPage() {
     if (!dataUrl) { router.push('/create'); return; }
 
     const savedRoughness = parseInt(sessionStorage.getItem('star-bindpaint-roughness') || '2');
-    setRoughness(savedRoughness);
+    const savedGuidance = (sessionStorage.getItem('startrace-guidance-level') || 'full') as GuidanceLevel;
+    setGuidanceLevel(savedGuidance);
 
     const img = new Image();
     img.onload = async () => {
@@ -209,16 +228,15 @@ export default function PaintPage() {
       setCanvasSize({ w: cw, h: ch });
 
       setSpriteState('thinking');
-      setSpriteMessage('正在拆解图片为笔触序列...');
+      setSpriteMessage('正在把画面拆成一条条星迹…');
 
       try {
         const imgSrc = imageSourceFromImage(img, 512);
-        setLoadingMsg('ETF 方向场计算中...');
-        const savedMoodForEngine = sessionStorage.getItem('star-bindpaint-mood') || 'original';
+        setLoadingMsg('正在分析画面结构与笔触方向…');
         const result = await decomposeImage(imgSrc, cw, ch, {
-          roughness: roughness,
+          roughness: savedRoughness,
           lloydIter: 12,
-          mood: savedMoodForEngine,
+          palette: 'original',
         });
 
         setLoadingMsg(`生成了 ${result.length} 笔触，准备中...`);
@@ -226,8 +244,9 @@ export default function PaintPage() {
 
         // 初始化数据采集器
         const tracker = getTracker();
-        tracker.setMode(mode, guideSubMode);
-        tracker.setRoughness(roughness);
+        tracker.setMode('follow', 'real');
+        tracker.setGuidanceLevel(savedGuidance);
+        tracker.setRoughness(savedRoughness);
         tracker.setCanvasSize(cw, ch);
         const masterInfo = sessionStorage.getItem('star-bindpaint-master');
         if (masterInfo) {
@@ -236,19 +255,17 @@ export default function PaintPage() {
         } else {
           tracker.setCustomUpload();
         }
-        const savedMood = sessionStorage.getItem('star-bindpaint-mood') || '';
-        tracker.setMood(savedMood);
         tracker.startSession(result.length);
 
         guideRef.current.loadStrokes(result);
         const state = guideRef.current.getState();
         setCurrentGuideStroke(state.currentStroke);
         setSpriteState('guiding');
-        setSpriteMessage(`共 ${result.length} 笔，跟着引导线画吧~`);
+        setSpriteMessage(`已经生成 ${result.length} 条星迹，从黄色星点开始。`);
         setLoading(false);
       } catch (err) {
         console.error(err);
-        setSpriteMessage('分析出错了，请返回重试');
+        setSpriteMessage('星迹生成失败，请返回重新选择图片。');
         setSpriteState('idle');
       }
     };
@@ -266,23 +283,23 @@ export default function PaintPage() {
       }
       const prog = state.totalStrokes > 0 ? state.currentIndex / state.totalStrokes : 0;
       setProgress(prog);
-      setSpriteState(state.spriteState as SpriteState);
+      setSpriteState(state.spriteState as CompanionState);
 
       // 给用户有意义的进度引导（不只是默认消息）
       if (mode === 'follow' && !state.completed) {
         const percent = Math.round(prog * 100);
         if (percent < 10) {
-          setSpriteMessage('好的画作从底色开始，让我们耐心铺上第一层~');
+          setSpriteMessage('先完成大形笔触，画面的骨架会慢慢出现。');
         } else if (percent < 25) {
-          setSpriteMessage('背景慢慢浮现了，像晨雾中的风景...');
+          setSpriteMessage('大形已经出现，继续沿星迹建立画面结构。');
         } else if (percent < 50) {
-          setSpriteMessage('快一半了！画面像一首正在写的诗~');
+          setSpriteMessage('接近一半了，现在正在补充中等大小的笔触。');
         } else if (percent < 75) {
-          setSpriteMessage('细节开始出现了，每一笔都是你的语言');
+          setSpriteMessage('细节开始出现，注意每条星迹的方向变化。');
         } else if (percent < 95) {
-          setSpriteMessage('快完成了！大师看到也会微笑的~');
+          setSpriteMessage('已经进入最后的细节层，保持自己的绘画节奏。');
         } else {
-          setSpriteMessage('最后几笔...你的画正在呼吸了');
+          setSpriteMessage('最后几条星迹，完成后就能点亮这幅作品。');
         }
       } else {
         setSpriteMessage(state.message);
@@ -290,16 +307,14 @@ export default function PaintPage() {
 
       if (state.completed) {
         setProgress(1);
-        setCaregiverState('completed');
       }
     });
 
     return unsubscribe;
-  }, [guideSubMode]);
+  }, [guideSubMode, mode]);
 
   const handleUserStrokeDone = useCallback((userPoints: Vec2[], score: number) => {
     const tracker = getTracker();
-    const detector = emotionDetectorRef.current;
 
     if (mode === 'follow') {
       const guide = guideRef.current;
@@ -311,93 +326,112 @@ export default function PaintPage() {
         ? `rgba(${Math.round(currentGuideStroke.color[0]*255)},${Math.round(currentGuideStroke.color[1]*255)},${Math.round(currentGuideStroke.color[2]*255)},1)`
         : '';
 
-      tracker.strokeCompleted(guideState.currentIndex, color, region, score);
-
       const { passed, shouldReplace } = guide.submitStroke(score);
 
-      // 情绪检测
-      if (passed) {
-        detector?.reportSuccess();
-      } else {
-        detector?.reportFailure();
+      const paintCanvas = (window as unknown as Record<string, {
+        drawAIStrokeOnBase: (stroke: StrokeDrawData) => void;
+        commitUserToBase: () => void;
+        clearUser: () => void;
+      }>).__paintCanvas;
+
+      if (!passed) {
+        tracker.strokeRejected();
+        paintCanvas?.clearUser();
+        return;
       }
 
-      if (passed && shouldReplace) {
-        const paintCanvas = (window as unknown as Record<string, { drawAIStrokeOnBase: (s: StrokeDrawData) => void; clearUser: () => void }>).__paintCanvas;
-        if (paintCanvas && currentGuideStroke) {
-          paintCanvas.clearUser();
-          paintCanvas.drawAIStrokeOnBase(currentGuideStroke);
-        }
+      tracker.strokeCompleted(guideState.currentIndex, color, region, score);
 
-        // 更新用户手绘笔数
-        setUserStrokeCount(prev => {
-          const newCount = prev + 1;
-          // 共同注意：每 N 笔弹出一个问题
-          if (newCount % attentionIntervalRef.current === 0 && fillMode === 'companion' && currentGuideStroke) {
-            const q = generateAttentionQuestion(
-              currentGuideStroke.color,
-              region,
-              { w: canvasSize.w, h: canvasSize.h }
-            );
-            setAttentionQ(q);
-            setShowAttention(true);
+      setUserStrokeCount(previous => previous + 1);
+
+      if (shouldReplace && currentGuideStroke) {
+        paintCanvas?.clearUser();
+        paintCanvas?.drawAIStrokeOnBase(currentGuideStroke);
+      } else {
+        paintCanvas?.commitUserToBase();
+      }
+
+      if (fillMode === 'companion' && autoFillRatio > 0 && paintCanvas) {
+        batchingRef.current = true;
+        setCurrentGuideStroke(null);
+        setTimeout(() => {
+          let drawn = 0;
+          for (let i = 0; i < autoFillRatio; i++) {
+            const nextStroke = guide.getCurrentStroke();
+            if (!nextStroke) break;
+            paintCanvas.drawAIStrokeOnBase(nextStroke);
+            guide.skip();
+            drawn++;
           }
-          return newCount;
-        });
-
-        // 陪画模式：用户画完1笔后，AI 一次性画 N 笔（不逐笔动画）
-        if (fillMode === 'companion' && autoFillRatio > 0 && paintCanvas) {
-          // 批量绘制期间隐藏引导线（防止闪烁）
-          batchingRef.current = true;
-          setCurrentGuideStroke(null);
-          setTimeout(() => {
-            let drawn = 0;
-            for (let i = 0; i < autoFillRatio; i++) {
-              const nextStroke = guide.getCurrentStroke();
-              if (!nextStroke) break;
-              paintCanvas.drawAIStrokeOnBase(nextStroke);
-              guide.skip();
-              drawn++;
-            }
-            if (drawn > 0) {
-              tracker.strokesBatched(guideState.currentIndex + 1, drawn);
-            }
-            // 批量结束后显示最终的下一笔引导
-            batchingRef.current = false;
-            const finalNext = guide.getCurrentStroke();
-            setCurrentGuideStroke(finalNext);
-          }, 300);
-        }
+          if (drawn > 0) tracker.strokesBatched(guideState.currentIndex + 1, drawn);
+          batchingRef.current = false;
+          setCurrentGuideStroke(guide.getCurrentStroke());
+        }, 300);
       }
     } else if (mode === 'free') {
+      setUserStrokeCount(previous => previous + 1);
       const center = userPoints.length > 0
         ? userPoints[Math.floor(userPoints.length / 2)]
         : { x: 0, y: 0 };
       tracker.strokeCompleted(tracker.getSession().strokes.length, '', center, score);
       guideRef.current.freeModeFeedback();
-      detector?.reportSuccess();
     }
-  }, [mode, currentGuideStroke, fillMode, autoFillRatio, canvasSize]);
+  }, [mode, currentGuideStroke, fillMode, autoFillRatio]);
 
   const handleAutoProgress = useCallback((current: number, total: number) => {
+    if (current > autoTrackedIndexRef.current) {
+      getTracker().strokesBatched(autoTrackedIndexRef.current, current - autoTrackedIndexRef.current);
+      autoTrackedIndexRef.current = current;
+    }
+    guideRef.current.syncProgress(current);
     setProgress(current / total);
   }, []);
 
   const handleAutoComplete = useCallback(() => {
+    guideRef.current.syncProgress(strokes.length, true);
     setSpriteState('cheering');
-    setSpriteMessage('你的画完成了一场和色彩的对话 ✨');
+    setSpriteMessage('全部星迹已经点亮，正在为你整理作品。');
     setProgress(1);
-    setCaregiverState('completed');
-  }, []);
+    setAutoCompletionPending(true);
+  }, [strokes.length]);
 
   const handleReset = () => {
     const paintCanvas = (window as unknown as Record<string, { clearAll: () => void }>).__paintCanvas;
     if (paintCanvas) paintCanvas.clearAll();
+    const previousTracker = getTracker();
+    const previousSession = previousTracker.getSession();
+    if (previousSession.startTime > 0 && previousSession.endTime === 0) {
+      previousTracker.abandonSession();
+      const payload = sessionResearchPayload(previousTracker);
+      if (payload) sendResearchRecord(payload, true);
+    }
+
+    const nextMode = mode === 'auto' ? 'follow' : mode;
+    const tracker = resetTracker();
+    if (previousSession.masterwork) {
+      tracker.setMasterwork(previousSession.masterwork.id, previousSession.masterwork.title, previousSession.masterwork.artist);
+    } else {
+      tracker.setCustomUpload();
+    }
+    tracker.setMode(nextMode, guideSubMode);
+    tracker.setGuidanceLevel(guidanceLevel);
+    tracker.setRoughness(previousSession.roughness);
+    tracker.setCanvasSize(canvasSize.w, canvasSize.h);
+    if (previousSession.difficulty) tracker.setDifficulty(previousSession.difficulty);
+    if (previousSession.styleId) tracker.setStyleId(previousSession.styleId);
+    if (previousSession.themeId) tracker.setThemeId(previousSession.themeId);
+    tracker.startSession(nextMode === 'free' ? 0 : strokes.length);
+
     guideRef.current.reset();
     setProgress(0);
     setAutoStartIdx(0);
+    autoTrackedIndexRef.current = 0;
+    setAutoCompletionPending(false);
     setUserStrokeCount(0);
-    emotionDetectorRef.current?.reset();
+    analyticsSentRef.current = false;
+    if (mode === 'auto') {
+      setMode('follow');
+    }
   };
 
   const handleSkip = () => {
@@ -409,7 +443,6 @@ export default function PaintPage() {
       tracker.strokeSkipped(guide.getState().currentIndex, mid);
     }
     guide.skip();
-    emotionDetectorRef.current?.reportSkip();
   };
 
   const handleEnterAutoMode = useCallback(() => {
@@ -419,8 +452,9 @@ export default function PaintPage() {
     const startIdx = guide.getState().currentIndex;
     const remaining = strokes.length - startIdx;
     if (remaining <= 0) {
-      setSpriteMessage('已经全部画完啦~');
+      setSpriteMessage('全部星迹已经点亮，可以完成并保存作品。');
       setSpriteState('cheering');
+      setAutoCompletionPending(true);
       return;
     }
 
@@ -432,10 +466,21 @@ export default function PaintPage() {
       setMode('auto');
     });
 
+    autoTrackedIndexRef.current = startIdx;
+    getTracker().recordAutoStart();
     getTracker().setMode('auto', guideSubMode);
-    setSpriteMessage('Starry 正在帮你画完剩下的笔触~');
+    setSpriteMessage('月亮伙伴正在演示剩余星迹。');
     setSpriteState('guiding');
   }, [mode, strokes.length, guideSubMode]);
+
+  const handlePauseAuto = useCallback(() => {
+    const guide = guideRef.current;
+    setMode('follow');
+    setCurrentGuideStroke(guide.getCurrentStroke());
+    getTracker().setMode('follow', guideSubMode);
+    setSpriteMessage('自动续画已暂停，随时可以从这里继续。');
+    setSpriteState('guiding');
+  }, [guideSubMode]);
 
   const handleBatchDraw = (count: number) => {
     const paintCanvas = (window as unknown as Record<string, {
@@ -448,64 +493,20 @@ export default function PaintPage() {
     const guide = guideRef.current;
     const startIdx = guide.getState().currentIndex;
 
+    let drawn = 0;
     for (let i = 0; i < count; i++) {
       const stroke = guide.getCurrentStroke();
       if (!stroke) break;
       paintCanvas.drawAIStrokeOnBase(stroke);
       guide.skip();
+      drawn++;
     }
 
-    tracker.strokesBatched(startIdx, count);
+    if (drawn > 0) tracker.strokesBatched(startIdx, drawn);
   };
 
-  // ── 共同注意回答 ──
-  const handleAttentionAnswer = (option: { label: string; correct: boolean }) => {
-    const tracker = getTracker();
-    tracker.recordSharedAttention(attentionQ?.question || '', option.label, option.correct);
-    setShowAttention(false);
-
-    // 根据问题类型给有意义的反馈（不只是"答对了"）
-    const question = attentionQ?.question || '';
-    let feedback = '';
-
-    if (question.includes('什么颜色')) {
-      if (option.correct) {
-        feedback = `对！这是${option.label}~ 你的眼睛真厉害`;
-      } else {
-        feedback = `这个其实是${attentionQ?.options.find(o => o.correct)?.label}哦，没关系~`;
-      }
-    } else if (question.includes('画在哪里')) {
-      if (option.correct) {
-        feedback = `没错！就是在${option.label}~ 你观察得很仔细`;
-      } else {
-        feedback = `是在${attentionQ?.options.find(o => o.correct)?.label}哦，继续看~`;
-      }
-    } else if (question.includes('想到什么感觉')) {
-      // 情感联想题没有对错，给肯定
-      const colorName = question.replace('让你想到什么感觉？', '');
-      const colorMeaning: Record<string, string> = {
-        '红色': '在梵高的画里，红色常常代表热烈的生命力',
-        '蓝色': '莫奈最爱用蓝色画水面，代表宁静和深远',
-        '绿色': '高更用绿色画大自然，代表生命和自由',
-        '黄色': '梵高的向日葵就是金黄色的，代表温暖和希望',
-        '紫色': '莫奈的睡莲里有很多紫色，神秘又美丽',
-        '橙色': '伦勃朗喜欢用橙色画烛光，温暖又亲切',
-      };
-      feedback = colorMeaning[colorName] || `每种颜色都有自己的故事~`;
-    } else {
-      feedback = '继续画吧~';
-    }
-
-    setSpriteMessage(feedback);
-    setSpriteState('guiding');
-    setAttentionQ(null);
-    setTimeout(() => {
-      setSpriteState('guiding');
-    }, 3000);
-  };
-
-  // ── 保存 & 情绪后测 ──
-  const handleExport = () => {
+  // ── 完成作品 ──
+  const handleExport = useCallback(() => {
     const paintCanvas = (window as unknown as Record<string, { getBaseCanvas: () => HTMLCanvasElement | null }>).__paintCanvas;
     if (!paintCanvas) return;
     const canvas = paintCanvas.getBaseCanvas();
@@ -515,81 +516,86 @@ export default function PaintPage() {
     const tracker = getTracker();
     tracker.finishSession(dataUrl);
     if (!analyticsSentRef.current) {
-      analyticsSentRef.current = true;
-      // 上传原画到 OSS
-      const sessionPayload = { ...tracker.toAnalyticsJSON(), sessionId: tracker.getSession().id };
-      fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: dataUrl }),
-      }).then(r => r.json()).then(d => {
-        if (d.path) tracker.setOriginalImagePath(d.path);
-        return fetch('/api/analytics', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...sessionPayload, originalImagePath: d.path || null }),
-        });
-      }).catch(() => {
-        fetch('/api/analytics', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(sessionPayload),
-        }).catch(() => {});
-      });
+      const payload = sessionResearchPayload(tracker);
+      if (payload) {
+        analyticsSentRef.current = true;
+        sendResearchRecord(payload);
+      }
     }
 
     setSavedDataUrl(dataUrl);
-    setShowPostEmotion(true);
-    setSpriteMessage('画完啦！告诉我现在感觉怎么样？');
+    setShowCompletion(true);
+    setSpriteMessage('这幅作品已经点亮，保存后会进入你的星图。');
     setSpriteState('cheering');
+  }, []);
+
+  useEffect(() => {
+    if (!autoCompletionPending) return;
+    const timer = window.setTimeout(() => {
+      setAutoCompletionPending(false);
+      handleExport();
+    }, 650);
+    return () => window.clearTimeout(timer);
+  }, [autoCompletionPending, handleExport]);
+
+  const recordSavedPractice = (galleryItemId: string) => {
+    const session = getTracker().getSession();
+    recordPracticeCompletion({
+      sessionId: session.id,
+      galleryItemId,
+      completedAt: new Date(session.endTime || Date.now()).toISOString(),
+      mode: session.mode,
+      userStrokes: Math.max(session.completedStrokes, userStrokeCount),
+      totalStrokes: Math.max(session.totalStrokes, strokes.length, session.completedStrokes, userStrokeCount),
+      durationMs: session.startTime > 0 ? Math.max(0, (session.endTime || Date.now()) - session.startTime) : 0,
+      guidanceLevel,
+    });
   };
 
-  const handlePostEmotionConfirm = () => {
+  const handleCompletionSave = async () => {
     const dataUrl = savedDataUrl;
     if (!dataUrl) return;
 
     const tracker = getTracker();
-    if (postEmotion) {
-      tracker.setEmotionAfter(postEmotion);
-    }
-    const emotionBefore = sessionStorage.getItem('star-bindpaint-emotion-before') || '';
-    if (emotionBefore) {
-      tracker.setEmotionBefore(emotionBefore);
-    }
-
     tracker.finishSession(dataUrl);
-    const prompt = tracker.buildAnalysisPrompt();
+    const session = tracker.getSession();
 
-    sessionStorage.setItem('star-bindpaint-session', JSON.stringify(tracker.getSession()));
-    sessionStorage.setItem('star-bindpaint-prompt', prompt);
-    sessionStorage.setItem('star-bindpaint-emotion-after', postEmotion);
+    const privacy = loadPrivacyPreferences();
+    const galleryItem = await uploadAndSaveToGallery(
+      dataUrl,
+      `作品 ${new Date().toLocaleDateString('zh-CN')}`,
+      Math.max(strokes.length, session.completedStrokes, userStrokeCount),
+      mode,
+      {
+        userStrokeCount: Math.max(session.completedStrokes, userStrokeCount),
+        guidanceLevel,
+        durationMs: session.startTime > 0 ? Math.max(0, session.endTime - session.startTime) : 0,
+      },
+      privacy.artworkCloudUpload,
+      privacy.participantId,
+    );
+    const reportSession = { ...session, finalImageBase64: '' };
+    try {
+      sessionStorage.setItem('star-bindpaint-session', JSON.stringify(reportSession));
+      sessionStorage.setItem('star-bindpaint-report-gallery-id', galleryItem.id);
+      sessionStorage.removeItem('star-bindpaint-prompt');
+    } catch {
+      // 作品已进入星图，反馈数据写入失败不应阻断保存流程。
+    }
+    recordSavedPractice(galleryItem.id);
 
-    saveToGallery({
-      imageDataUrl: dataUrl,
-      title: `作品 ${new Date().toLocaleDateString('zh-CN')}`,
-      strokeCount: strokes.length,
-      mode: mode,
-    });
-
-    setSpriteMessage('作品已保存！正在生成观察报告...');
-    setShowPostEmotion(false);
-
-    setTimeout(() => {
-      router.push('/report');
-    }, 1000);
+    setSpriteMessage('作品已保存到星图。');
+    setShowCompletion(false);
+    router.push('/gallery');
   };
 
-  // ── 呼吸引导返回 ──
-  const handleCalmReturn = () => {
-    setShowCalm(false);
-    setCaregiverState('painting');
-    emotionDetectorRef.current?.reset();
-    setSpriteMessage('深呼吸之后，画笔也变轻了~');
-    setSpriteState('guiding');
-  };
-
-  // ── SD 渲染（变成油画）──
+  // ── AI 星光变换（风格化渲染）──
   const handleSDRender = async () => {
+    if (settings.confirmBeforeAi && sessionStorage.getItem('startrace-ai-transfer-confirmed') !== 'true') {
+      const confirmed = window.confirm('AI 星光变换需要把当前画布临时发送给图像生成服务，仅用于本次生成。是否继续？');
+      if (!confirmed) return;
+      sessionStorage.setItem('startrace-ai-transfer-confirmed', 'true');
+    }
     const paintCanvas = (window as unknown as Record<string, { getBaseCanvas: () => HTMLCanvasElement | null }>).__paintCanvas;
     if (!paintCanvas) return;
     const canvas = paintCanvas.getBaseCanvas();
@@ -605,26 +611,11 @@ export default function PaintPage() {
     const tracker = getTracker();
     tracker.finishSession(dataUrl);
     if (!analyticsSentRef.current) {
-      analyticsSentRef.current = true;
-      const sessionPayload = { ...tracker.toAnalyticsJSON(), sessionId: tracker.getSession().id };
-      fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: dataUrl }),
-      }).then(r => r.json()).then(d => {
-        if (d.path) tracker.setOriginalImagePath(d.path);
-        return fetch('/api/analytics', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...sessionPayload, originalImagePath: d.path || null }),
-        });
-      }).catch(() => {
-        fetch('/api/analytics', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(sessionPayload),
-        }).catch(() => {});
-      });
+      const payload = sessionResearchPayload(tracker);
+      if (payload) {
+        analyticsSentRef.current = true;
+        sendResearchRecord(payload);
+      }
     }
 
     // 生成轮播文案
@@ -633,7 +624,6 @@ export default function PaintPage() {
       colorDistribution: tracker.getColorDistribution(),
       strokeRhythm: tracker.getStrokeRhythm(),
       durationMinutes: tracker.getDurationMinutes(),
-      emotionBefore: tracker.getSession().emotionBefore || sessionStorage.getItem('star-bindpaint-emotion-before') || '',
       totalStrokes: tracker.getSession().completedStrokes,
       freeThemeSteps: freeTheme?.steps?.map(s => s.hint),
     });
@@ -647,7 +637,7 @@ export default function PaintPage() {
     }, 200);
 
     setSdRendering(true);
-    setSpriteMessage('Starry 正在把你的画变成一首诗...');
+    setSpriteMessage('月亮伙伴正在生成风格化结果…');
     setSpriteState('thinking');
 
     try {
@@ -664,26 +654,19 @@ export default function PaintPage() {
 
       const data = await res.json();
       setSdResult({ original: dataUrl, rendered: data.imageBase64, duration: data.duration });
-      setSpriteMessage('看！你的涂鸦变成了一幅画~');
+      setSpriteMessage('AI 风格化结果已经生成，看看星光变换前后的差别。');
       setSpriteState('cheering');
 
-      // 上传 AI 生成图并更新埋点
-      fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: data.imageBase64 }),
-      }).then(r => r.json()).then(d => {
-        const sessionId = tracker.getSession().id;
-        fetch('/api/analytics', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sessionId,
-            renderedImagePath: d.path || null,
-            renderedAt: new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }),
-          }),
-        }).catch(() => {});
-      }).catch(() => {});
+      const envelope = getResearchEnvelope();
+      if (envelope) {
+        sendResearchRecord({
+          ...envelope,
+          recordType: 'render',
+          sessionId: tracker.getSession().id,
+          renderedAt: new Date().toISOString(),
+          durationMs: Number(data.duration) || null,
+        });
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : '未知错误';
       setSdError(message);
@@ -729,7 +712,7 @@ export default function PaintPage() {
     setShowFreeThemes(true);
     setStickerGuideVisible(false);
     setSpriteState('guiding');
-    setSpriteMessage('选一个梦想，让 Starry 陪你把它画出来');
+    setSpriteMessage('选择一个主题，月亮伙伴会提供绘画步骤。');
   }, [clearFreeCanvas]);
 
   const executeBack = useCallback((target: BackTarget) => {
@@ -755,7 +738,7 @@ export default function PaintPage() {
       setSdResult(null);
       return;
     }
-    if (showPostEmotion || showCalm || showAttention) return;
+    if (showCompletion) return;
 
     if (mode === 'free') {
       if (!showFreeThemes) {
@@ -769,9 +752,7 @@ export default function PaintPage() {
   }, [
     sdRendering,
     sdResult,
-    showPostEmotion,
-    showCalm,
-    showAttention,
+    showCompletion,
     mode,
     showFreeThemes,
     requestBack,
@@ -880,24 +861,38 @@ export default function PaintPage() {
   const handleSDSave = async (imageBase64: string) => {
     try {
       const compressed = await compressImage(imageBase64);
+      const session = getTracker().getSession();
+      const privacy = loadPrivacyPreferences();
+      const practiceDetails = {
+        userStrokeCount: Math.max(session.completedStrokes, userStrokeCount),
+        guidanceLevel,
+        durationMs: session.startTime > 0 ? Math.max(0, (session.endTime || Date.now()) - session.startTime) : 0,
+      };
       // 保存 AI 生成图
-      await uploadAndSaveToGallery(
+      const renderedItem = await uploadAndSaveToGallery(
         compressed,
-        `油画版 ${new Date().toLocaleDateString('zh-CN')}`,
-        0,
-        'free'
+        `AI 风格版 ${new Date().toLocaleDateString('zh-CN')}`,
+        Math.max(session.completedStrokes, userStrokeCount),
+        'free',
+        practiceDetails,
+        privacy.artworkCloudUpload,
+        privacy.participantId,
       );
+      recordSavedPractice(renderedItem.id);
       // 同时保存原画
       if (sdResult?.original) {
         const originalCompressed = await compressImage(sdResult.original);
         await uploadAndSaveToGallery(
           originalCompressed,
           `原画 ${new Date().toLocaleDateString('zh-CN')}`,
-          0,
-          'free'
+          Math.max(session.completedStrokes, userStrokeCount),
+          'free',
+          practiceDetails,
+          privacy.artworkCloudUpload,
+          privacy.participantId,
         );
       }
-      setSpriteMessage('原画和油画版都已放进画廊！');
+      setSpriteMessage('原画和 AI 风格版都已放进星图。');
       setSpriteState('cheering');
     } catch (err) {
       console.error('[SD Save] 失败:', err);
@@ -906,11 +901,24 @@ export default function PaintPage() {
     setSdResult(null);
   };
 
+  const currentStep = Math.min(strokes.length, Math.round(progress * strokes.length) + (progress < 1 ? 1 : 0));
+  const phaseLabel = progress < 0.25 ? '建立大形' : progress < 0.65 ? '组织结构' : progress < 0.95 ? '补充细节' : '完成作品';
+  const guidanceLabel: Record<GuidanceLevel, string> = {
+    full: '完整星迹',
+    balanced: '适度星迹',
+    light: '起点提示',
+  };
+  const currentStrokeColor = currentGuideStroke
+    ? `rgb(${Math.round(currentGuideStroke.color[0] * 255)}, ${Math.round(currentGuideStroke.color[1] * 255)}, ${Math.round(currentGuideStroke.color[2] * 255)})`
+    : '#D9DDEA';
+
   // ── Loading ──
   if (loading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-6 bg-white">
-        <StarrySprite state={spriteState} message={spriteMessage} />
+      <div className="flex min-h-screen flex-1 flex-col items-center justify-center gap-6" style={{ background: '#F6F7FB' }}>
+        <div className="w-full max-w-sm rounded-[2rem] bg-white p-7" style={{ border: '2px solid #17233F', boxShadow: '7px 7px 0 #6558D9' }}>
+          <MoonCompanion state={spriteState} message={spriteMessage} />
+        </div>
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
@@ -918,14 +926,14 @@ export default function PaintPage() {
           style={{ border: '3px solid #E5E5E5', borderTopColor: '#7A51EC' }}
         />
         <p style={{ fontSize: '0.85rem', color: '#888888', fontWeight: 700 }}>
-          {loadingMsg || '每一笔都在等待它的故事...'}
+          {loadingMsg || '正在准备第一颗星点…'}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-white" data-calm={settings.calmMode}>
+    <div className="flex h-screen flex-1 flex-col bg-white">
       {/* Header */}
       <header className="flex items-center justify-between px-3 sm:px-6 py-3 gap-2"
         style={{ borderBottom: '2px solid #1A1A1A' }}>
@@ -946,10 +954,10 @@ export default function PaintPage() {
           </span>
         </button>
 
-        <span style={{ fontWeight: 900, fontSize: '0.95rem', color: '#1A1A1A', letterSpacing: '-0.02em' }}>
-          {mode === 'follow' && '跟画'}
-          {mode === 'auto' && '自动播放'}
-          {mode === 'free' && '自由创作'}
+        <span className="inline-flex items-center gap-2" style={{ fontWeight: 900, fontSize: '0.95rem', color: '#17233F', letterSpacing: '-0.02em' }}>
+          {mode === 'follow' && <><Route size={17} color="#6558D9" /> 沿星迹绘画</>}
+          {mode === 'auto' && <><Sparkles size={17} color="#6558D9" /> 月亮伙伴自动续画</>}
+          {mode === 'free' && <><Sparkles size={17} color="#6558D9" /> 自由星域</>}
         </span>
 
         {mode === 'free' ? (
@@ -981,7 +989,6 @@ export default function PaintPage() {
             <VisualSchedule
               currentStep={Math.round(progress * strokes.length)}
               totalSteps={strokes.length}
-              calmMode={settings.calmMode}
             />
           </div>
         )}
@@ -990,7 +997,7 @@ export default function PaintPage() {
         <div className="flex-1 flex items-center justify-center p-2 sm:p-3 relative min-w-0 min-h-0"
           style={{
             background: '#FAFAFA',
-            pointerEvents: (sdRendering || sdResult || showPostEmotion || showCalm) ? 'none' : 'auto',
+            pointerEvents: (sdRendering || sdResult || showCompletion) ? 'none' : 'auto',
             paddingBottom: paintBarBottom,
           }}>
 
@@ -1011,7 +1018,7 @@ export default function PaintPage() {
             mode={mode}
             strokes={strokes}
             currentGuideStroke={currentGuideStroke}
-            guideSubMode={guideSubMode}
+            guidanceLevel={guidanceLevel}
             brushWidth={brushWidth}
             autoSpeed={autoSpeed}
             autoStartIdx={autoStartIdx}
@@ -1023,8 +1030,10 @@ export default function PaintPage() {
             sprayMode={sprayMode}
             onUserStrokeDone={handleUserStrokeDone}
             onUserStrokeStart={() => {
-              getTracker().strokeStart();
-              emotionDetectorRef.current?.reportPointerDown();
+              const tracker = getTracker();
+              tracker.strokeStart();
+              const session = tracker.getSession();
+              recordPracticeStart(session.id, session.mode);
             }}
             onUndoAvailable={setCanUndo}
             onAutoProgress={handleAutoProgress}
@@ -1098,17 +1107,6 @@ export default function PaintPage() {
           </PaintCanvas>
           </div>
 
-          {/* 共同注意弹窗 */}
-          <AnimatePresence>
-            {showAttention && attentionQ && (
-              <SharedAttention
-                question={attentionQ.question}
-                options={attentionQ.options}
-                onAnswer={handleAttentionAnswer}
-              />
-            )}
-          </AnimatePresence>
-
           {/* 贴纸栏：fixed 紧贴底栏上方，画板尺寸不变 */}
           <AnimatePresence>
             {mode === 'free' && !showFreeThemes && difficultyLevel === 'sticker' && showPanel && !panelCollapsed && (
@@ -1155,14 +1153,14 @@ export default function PaintPage() {
 
       </div>
 
-      {/* 自由创作：右侧竖向紧凑卡片栈，可整体折叠成小球 */}
+      {/* 自由星域：月亮伙伴与主题步骤使用同一套世界观反馈 */}
       {mode === 'free' ? (
         <div
           className="fixed z-30 flex flex-col gap-2 pointer-events-none"
           style={{
             top: 'clamp(64px, 10vw, 80px)',
             right: 'clamp(8px, 2vw, 14px)',
-            width: promptCardCollapsed ? 52 : 'clamp(104px, 28vw, 156px)',
+            width: promptCardCollapsed ? 52 : 'clamp(190px, 28vw, 238px)',
           }}
         >
           {promptCardCollapsed ? (
@@ -1180,34 +1178,35 @@ export default function PaintPage() {
                 boxShadow: '4px 4px 0 #1A1A1A',
               }}
               onClick={() => setPromptCardCollapsed(false)}
-              aria-label="展开自由创作提示"
-              title="展开提示"
+              aria-label="展开月亮伙伴"
+              title="展开月亮伙伴"
             >
-              <span style={{ fontSize: 24, lineHeight: 1 }}>★</span>
+              <Moon size={25} color="#17233F" strokeWidth={2.6} />
             </motion.button>
           ) : (
             <>
-              <motion.button
-                type="button"
+              <motion.div
                 initial={{ opacity: 0, x: 16, y: -8 }}
                 animate={{ opacity: 1, x: 0, y: 0 }}
-                whileTap={{ scale: 0.96 }}
                 transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-                className="flex flex-col items-center justify-center gap-1.5 rounded-[1.05rem] bg-white pointer-events-auto"
+                className="rounded-[1.3rem] bg-white pointer-events-auto"
                 style={{
-                  border: '2px solid #1A1A1A',
-                  boxShadow: '3px 3px 0 #1A1A1A',
-                  padding: '0.55rem 0.45rem',
+                  border: '2px solid #17233F',
+                  boxShadow: '5px 5px 0 #6558D9',
+                  padding: '0.72rem',
                 }}
-                onClick={() => setPromptCardCollapsed(true)}
-                aria-label="折叠自由创作提示"
-                title="折叠提示"
               >
-                <ProgressRing progress={progress} size={54} strokeWidth={5} label="自由创作" />
-                <span style={{ fontSize: '0.58rem', fontWeight: 800, color: '#999', lineHeight: 1 }}>
-                  点击收起
-                </span>
-              </motion.button>
+                <MoonCompanion state={spriteState} message={spriteMessage} compact />
+                <div className="my-3 h-px" style={{ background: '#D9DDEA' }} />
+                <div className="flex items-center justify-between rounded-xl px-3 py-2" style={{ background: '#F6F7FB' }}>
+                  <div>
+                    <p className="text-[9px] font-black tracking-[0.1em]" style={{ color: '#6558D9' }}>自由星域</p>
+                    <p className="mt-1 text-xs font-black" style={{ color: '#17233F' }}>已留下 {userStrokeCount} 笔星光</p>
+                  </div>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: '#FFD166', border: '1.5px solid #17233F' }}><Sparkles size={18} color="#17233F" /></span>
+                </div>
+                <button type="button" onClick={() => setPromptCardCollapsed(true)} className="mt-3 w-full text-center text-[10px] font-black" style={{ color: '#8E98AD' }}>收起月亮伙伴</button>
+              </motion.div>
 
               {freeTheme && !showFreeThemes && (
                 <div className="pointer-events-auto min-w-0">
@@ -1221,7 +1220,7 @@ export default function PaintPage() {
                         setFreeThemeStep(next);
                         setSpriteMessage(freeTheme.steps[next].hint);
                       } else {
-                        // 最后一步「画好了」→ 先变成油画，再由 SD 结果页面引导完成
+                        // 最后一步「画好了」→ 进入 AI 星光变换
                         handleSDRender();
                       }
                     }}
@@ -1237,55 +1236,69 @@ export default function PaintPage() {
           style={{
             top: 'clamp(64px, 10vw, 80px)',
             right: 'clamp(8px, 2vw, 16px)',
-            width: promptCardCollapsed ? 52 : 'clamp(132px, 32vw, 196px)',
+            width: promptCardCollapsed ? 52 : 'clamp(190px, 28vw, 248px)',
           }}
         >
-          <motion.button
-            type="button"
+          <motion.div
             initial={{ opacity: 0, x: 20, y: -10 }}
             animate={{ opacity: 1, x: 0, y: 0 }}
-            whileTap={{ scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-            className="flex flex-col items-center justify-center gap-2 rounded-[1.25rem] bg-white pointer-events-auto"
+            className="rounded-[1.4rem] bg-white pointer-events-auto"
             style={{
-              border: '2px solid #1A1A1A',
-              boxShadow: '4px 4px 0 #1A1A1A',
+              border: '2px solid #17233F',
+              boxShadow: '5px 5px 0 #6558D9',
               minHeight: promptCardCollapsed ? 52 : undefined,
               padding: promptCardCollapsed ? 0 : '0.75rem',
             }}
-            onClick={() => setPromptCardCollapsed(prev => !prev)}
-            aria-label={promptCardCollapsed ? '展开提示卡片' : '折叠提示卡片'}
-            title={promptCardCollapsed ? '展开提示' : '折叠提示'}
           >
             {promptCardCollapsed ? (
-              <span style={{ fontSize: 24, lineHeight: 1 }}>★</span>
+              <button type="button" onClick={() => setPromptCardCollapsed(false)} className="flex h-[52px] w-[52px] items-center justify-center" aria-label="展开月亮伙伴">
+                <Moon size={25} color="#17233F" strokeWidth={2.6} />
+              </button>
             ) : (
-              <>
-                <StarrySprite state={spriteState} message={spriteMessage} />
-                <div className="flex justify-center pt-1">
-                  <ProgressRing
-                    progress={progress}
-                    label={`${Math.round(progress * strokes.length)} / ${strokes.length} 笔`}
-                  />
+              <div>
+                <MoonCompanion state={spriteState} message={spriteMessage} compact />
+                <div className="my-3 h-px" style={{ background: '#D9DDEA' }} />
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[9px] font-black tracking-[0.1em]" style={{ color: '#6558D9' }}>{phaseLabel}</p>
+                    <p className="mt-1 text-xs font-black">星迹 {currentStep} / {strokes.length}</p>
+                  </div>
+                  <ProgressRing progress={progress} size={48} strokeWidth={5} />
                 </div>
-                <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#999', marginTop: -2 }}>
-                  点击收起
-                </span>
-              </>
+                <div className="mt-3 flex items-center justify-between rounded-xl px-3 py-2" style={{ background: '#F6F7FB' }}>
+                  <span className="inline-flex items-center gap-2 text-[10px] font-black"><span className="h-4 w-4 rounded-full" style={{ background: currentStrokeColor, border: '1.5px solid #17233F' }} />当前笔触</span>
+                  <span className="text-[10px] font-black" style={{ color: '#6558D9' }}>{guidanceLabel[guidanceLevel]}</span>
+                </div>
+                {mode === 'follow' && progress < 1 && (
+                  <button type="button" onClick={handleEnterAutoMode} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-black" style={{ background: '#FFD166', color: '#17233F', border: '1.5px solid #17233F', boxShadow: '2px 2px 0 #17233F' }}>
+                    <Sparkles size={15} /> 月亮伙伴完成剩余 {Math.max(0, strokes.length - Math.round(progress * strokes.length))} 笔
+                  </button>
+                )}
+                {mode === 'auto' && progress < 1 && (
+                  <button type="button" onClick={handlePauseAuto} className="mt-3 w-full rounded-xl px-3 py-2.5 text-[11px] font-black text-white" style={{ background: '#6558D9', border: '1.5px solid #17233F' }}>暂停自动续画</button>
+                )}
+                {progress >= 1 && (
+                  <button type="button" onClick={handleExport} className="mt-3 w-full rounded-xl px-3 py-2.5 text-[11px] font-black text-white" style={{ background: '#17233F', boxShadow: '2px 2px 0 #FFD166' }}>完成并保存作品</button>
+                )}
+                <div className="mt-3 grid grid-cols-3 gap-1.5">
+                  {([
+                    ['full', Route, '完整'],
+                    ['balanced', Layers3, '适度'],
+                    ['light', CircleDot, '起点'],
+                  ] as const).map(([level, Icon, label]) => (
+                    <button key={level} type="button" onClick={() => { setGuidanceLevel(level); getTracker().setGuidanceLevel(level); sessionStorage.setItem('startrace-guidance-level', level); }} className="rounded-xl px-2 py-2 text-center" style={{ background: guidanceLevel === level ? '#FFD166' : '#F6F7FB', border: `1.5px solid ${guidanceLevel === level ? '#17233F' : 'transparent'}` }}>
+                      <Icon className="mx-auto" size={15} strokeWidth={2.6} />
+                      <span className="mt-1 block text-[9px] font-black">{label}</span>
+                    </button>
+                  ))}
+                </div>
+                <button type="button" onClick={() => setPromptCardCollapsed(true)} className="mt-3 w-full text-center text-[10px] font-black" style={{ color: '#8E98AD' }}>收起月亮伙伴</button>
+              </div>
             )}
-          </motion.button>
+          </motion.div>
         </div>
       )}
-
-      {/* ═══ 照护者陪伴提示 ═══ */}
-      <CaregiverTips currentState={caregiverState} mode={mode} />
-
-      {/* ═══ 平静呼吸引导 ═══ */}
-      <AnimatePresence>
-        {showCalm && (
-          <CalmBreathing onReturn={handleCalmReturn} />
-        )}
-      </AnimatePresence>
 
       {/* ═══ SD 渲染结果 ═══ */}
       <AnimatePresence>
@@ -1307,7 +1320,22 @@ export default function PaintPage() {
             onFinish={async () => {
               try {
                 const compressed = await compressImage(sdResult.rendered);
-                await uploadAndSaveToGallery(compressed, `油画版 ${new Date().toLocaleDateString('zh-CN')}`, 0, 'free');
+                const session = getTracker().getSession();
+                const privacy = loadPrivacyPreferences();
+                const galleryItem = await uploadAndSaveToGallery(
+                  compressed,
+                  `AI 风格版 ${new Date().toLocaleDateString('zh-CN')}`,
+                  Math.max(session.completedStrokes, userStrokeCount),
+                  'free',
+                  {
+                    userStrokeCount: Math.max(session.completedStrokes, userStrokeCount),
+                    guidanceLevel,
+                    durationMs: session.startTime > 0 ? Math.max(0, (session.endTime || Date.now()) - session.startTime) : 0,
+                  },
+                  privacy.artworkCloudUpload,
+                  privacy.participantId,
+                );
+                recordSavedPractice(galleryItem.id);
               } catch (err) {
                 console.error('[SD Finish] AI 图保存失败:', err);
               }
@@ -1387,12 +1415,12 @@ export default function PaintPage() {
               style={{ border: '2px solid #1A1A1A', boxShadow: '8px 8px 0 #1A1A1A' }}
             >
               <div className="mb-3" style={{ fontSize: 42, lineHeight: 1 }}>🪄</div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1A1A1A' }}>油画生成失败</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1A1A1A' }}>AI 星光变换失败</h3>
               <p className="mt-3" style={{ fontSize: '0.86rem', fontWeight: 700, color: '#666', lineHeight: 1.6 }}>
                 {sdError}
               </p>
               <p className="mt-2" style={{ fontSize: '0.75rem', fontWeight: 600, color: '#999', lineHeight: 1.5 }}>
-                如果是在 Vercel，请确认已配置 HUNYUAN_API_KEY 或 DASHSCOPE_API_KEY。
+                图像生成服务暂时不可用，请稍后重试。
               </p>
               <button
                 onClick={() => setSdError(null)}
@@ -1422,6 +1450,10 @@ export default function PaintPage() {
           if (m === 'free' && sourceImage) return;
           if (m === 'auto' && mode === 'follow') {
             handleEnterAutoMode();
+            return;
+          }
+          if (m === 'follow' && mode === 'auto') {
+            handlePauseAuto();
             return;
           }
 
@@ -1485,47 +1517,43 @@ export default function PaintPage() {
         onToggleTracingReference={handleToggleTracingReference}
       />
 
-      {/* ═══ 情绪后测弹窗 ═══ */}
-      {showPostEmotion && (
+      {/* ═══ 作品完成弹窗 ═══ */}
+      {showCompletion && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)' }}
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          style={{ background: 'rgba(23,35,63,0.7)', backdropFilter: 'blur(10px)' }}
         >
           <motion.div
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', damping: 20 }}
-            className="bg-white rounded-[2rem] p-8 max-w-sm w-full mx-4 shadow-2xl"
-            style={{ border: '2px solid #1A1A1A' }}
+            className="w-full max-w-md rounded-[2rem] bg-white p-6"
+            style={{ border: '2px solid #17233F', boxShadow: '9px 9px 0 #6558D9' }}
           >
-            {savedDataUrl && (
-              <div className="flex justify-center mb-5">
-                <img src={savedDataUrl} alt="你的作品" className="w-32 h-32 rounded-2xl object-cover" style={{ border: '2px solid #E5E5E5' }} />
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl" style={{ background: '#FFD166', border: '2px solid #17233F' }}><Sparkles size={24} color="#17233F" strokeWidth={2.6} /></span>
+              <div><p className="text-[10px] font-black tracking-[0.12em]" style={{ color: '#6558D9' }}>点亮一颗新星</p><h3 className="mt-1 text-2xl font-black tracking-[-0.04em]" style={{ color: '#17233F' }}>本次绘画已经完成</h3></div>
+            </div>
 
-            <h3 className="text-center mb-2" style={{ fontWeight: 900, fontSize: '1.3rem', color: '#1A1A1A' }}>
-              画完啦！
-            </h3>
-            <p className="text-center mb-6" style={{ fontSize: '0.9rem', color: '#888', fontWeight: 600 }}>
-              现在感觉怎么样？
-            </p>
+            {savedDataUrl && <div className="mt-5 aspect-[4/3] rounded-2xl bg-cover bg-center" style={{ backgroundImage: `url(${savedDataUrl})`, border: '2px solid #17233F' }} role="img" aria-label="本次绘画作品预览" />}
 
-            <EmotionPicker
-              selected={postEmotion}
-              onSelect={(e: Emotion) => setPostEmotion(e)}
-            />
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {[
+                [`${Math.round(progress * 100)}%`, '星迹进度'],
+                [String(userStrokeCount), '亲手完成'],
+                [guidanceLabel[guidanceLevel], '引导方式'],
+              ].map(([value, label]) => (
+                <div key={label} className="rounded-xl p-3 text-center" style={{ background: '#F6F7FB' }}><p className="text-sm font-black" style={{ color: '#17233F' }}>{value}</p><p className="mt-1 text-[9px] font-extrabold" style={{ color: '#536079' }}>{label}</p></div>
+              ))}
+            </div>
 
-            <div className="flex flex-col items-center mt-6 gap-3">
-              <button
-                onClick={handlePostEmotionConfirm}
-                className="btn-black w-full"
-                style={{ fontSize: '1rem', padding: '0.9em 2em' }}
-              >
-                {postEmotion ? '查看观察报告 →' : '跳过，直接查看报告'}
-              </button>
+            <p className="mt-4 text-sm font-bold leading-6" style={{ color: '#536079' }}>作品会进入“我的星图”，本次完成笔触与辅助使用情况也会保留下来，帮助你观察练习变化。</p>
+
+            <div className="mt-6 flex gap-3">
+              <button onClick={() => setShowCompletion(false)} className="flex-1 rounded-full px-4 py-3 text-sm font-black" style={{ border: '2px solid #17233F', color: '#17233F' }}>继续调整</button>
+              <button onClick={handleCompletionSave} className="flex-1 rounded-full px-4 py-3 text-sm font-black text-white" style={{ background: '#17233F', boxShadow: '3px 3px 0 #FFD166' }}>保存到星图</button>
             </div>
           </motion.div>
         </motion.div>

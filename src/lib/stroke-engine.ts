@@ -31,7 +31,7 @@ export interface DecomposeOptions {
   lloydIter?: number;   // 保留接口兼容（本算法不使用）
   pixelStep?: number;   // 路径插值步长
   padding?: number;     // 保留接口兼容
-  mood?: string;        // 情绪色调：warm/calm/vivid/dreamy/original
+  palette?: string;
 }
 
 // ── 公共工具函数 ────────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ export async function decomposeImage(
   canvasH: number,
   opts: DecomposeOptions = {}
 ): Promise<StrokeDrawData[]> {
-  const { roughness = 2, mood = 'original' } = opts;
+  const { roughness = 2, palette = 'original' } = opts;
 
   await new Promise(r => setTimeout(r, 10));
 
@@ -118,9 +118,8 @@ export async function decomposeImage(
     allStrokes.push(...layerStrokes);
   }
 
-  // 情绪色调偏移
-  if (mood && mood !== 'original') {
-    applyMoodShift(allStrokes, mood);
+  if (palette && palette !== 'original') {
+    applyPaletteShift(allStrokes, palette);
   }
 
   return allStrokes;
@@ -375,13 +374,12 @@ function renderStrokeToBuffer(
   canvas: Float32Array, w: number, h: number,
   stroke: StrokeDrawData
 ) {
-  const radius = Math.max(1, Math.round(stroke.width / 2));
   const [cr, cg, cb] = stroke.color;
   const alpha = 0.85;
 
   for (const pt of stroke.points) {
     const px = Math.round(pt.x), py = Math.round(pt.y);
-    // 简化：只画中心点（完整圆形渲染太慢）
+    // 虚拟画布只记录中心线，用于估算下一层误差；最终输出仍使用完整笔刷宽度。
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
         const x = px + dx, y = py + dy;
@@ -402,11 +400,11 @@ function shuffleArray<T>(arr: T[]) {
   }
 }
 
-// ── 情绪色调偏移 ────────────────────────────────────────────────────────
+// ── 配色色调偏移 ────────────────────────────────────────────────────────
 
-function applyMoodShift(strokes: StrokeDrawData[], mood: string) {
+function applyPaletteShift(strokes: StrokeDrawData[], palette: string) {
   for (const s of strokes) {
-    let [r, g, b] = s.color;
+    const [r, g, b] = s.color;
     const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
     let h = 0, sat = max === 0 ? 0 : d / max, v = max;
     if (d > 0) {
@@ -415,7 +413,7 @@ function applyMoodShift(strokes: StrokeDrawData[], mood: string) {
       else h = ((r - g) / d + 4) / 6;
     }
 
-    switch (mood) {
+    switch (palette) {
       case 'warm':
         h = (h + 15 / 360 + 1) % 1;
         sat = Math.min(1, sat + 0.1);
@@ -488,24 +486,39 @@ export function drawStroke(ctx: CanvasRenderingContext2D, stroke: StrokeDrawData
 /**
  * 绘制引导线（紫色虚线 + 绿色起点 + 红色终点）
  */
-export function drawGuideStroke(ctx: CanvasRenderingContext2D, stroke: StrokeDrawData) {
+export type GuidanceLevel = 'full' | 'balanced' | 'light';
+
+export function drawGuideStroke(
+  ctx: CanvasRenderingContext2D,
+  stroke: StrokeDrawData,
+  guidanceLevel: GuidanceLevel = 'full',
+) {
   const pts = stroke.points;
   if (pts.length < 2) return;
 
   ctx.save();
-  ctx.setLineDash([6, 4]);
-  ctx.lineWidth = Math.max(2, stroke.width * 0.5);
+  ctx.setLineDash(guidanceLevel === 'full' ? [8, 6] : [3, 9]);
+  ctx.lineWidth = Math.min(
+    guidanceLevel === 'full' ? 7 : 5,
+    Math.max(2, stroke.width * (guidanceLevel === 'full' ? 0.36 : 0.24)),
+  );
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  // 主线（紫色发光）
-  ctx.shadowColor = '#7A51EC';
-  ctx.shadowBlur = 8;
-  ctx.strokeStyle = 'rgba(122, 81, 236, 0.7)';
+  ctx.shadowColor = '#6558D9';
+  ctx.shadowBlur = guidanceLevel === 'full' ? 9 : 4;
+  ctx.strokeStyle = guidanceLevel === 'full' ? 'rgba(101, 88, 217, 0.78)' : 'rgba(101, 88, 217, 0.42)';
 
   ctx.beginPath();
   ctx.moveTo(pts[0].x, pts[0].y);
-  if (pts.length === 2) {
+  if (guidanceLevel === 'light') {
+    const directionPoint = pts[Math.min(2, pts.length - 1)];
+    const dx = directionPoint.x - pts[0].x;
+    const dy = directionPoint.y - pts[0].y;
+    const length = Math.hypot(dx, dy) || 1;
+    const hintLength = Math.min(28, length);
+    ctx.lineTo(pts[0].x + dx / length * hintLength, pts[0].y + dy / length * hintLength);
+  } else if (pts.length === 2) {
     ctx.lineTo(pts[1].x, pts[1].y);
   } else {
     for (let i = 0; i < pts.length - 1; i++) {
@@ -524,16 +537,39 @@ export function drawGuideStroke(ctx: CanvasRenderingContext2D, stroke: StrokeDra
   ctx.setLineDash([]);
   ctx.shadowBlur = 0;
 
-  // 起点（绿色圆点）
-  ctx.fillStyle = '#7DC353';
+  const start = pts[0];
+  const starRadius = Math.max(7, Math.min(12, stroke.width * 0.75));
+  ctx.fillStyle = 'rgba(255, 209, 102, 0.28)';
   ctx.beginPath();
-  ctx.arc(pts[0].x, pts[0].y, 5, 0, Math.PI * 2);
+  ctx.arc(start.x, start.y, starRadius + 7, 0, Math.PI * 2);
   ctx.fill();
 
-  // 终点（红色方块）
-  const last = pts[pts.length - 1];
-  ctx.fillStyle = '#F302C9';
-  ctx.fillRect(last.x - 4, last.y - 4, 8, 8);
+  ctx.fillStyle = '#FFD166';
+  ctx.strokeStyle = '#17233F';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const radius = i % 2 === 0 ? starRadius : starRadius * 0.46;
+    const angle = -Math.PI / 2 + i * Math.PI / 5;
+    const x = start.x + Math.cos(angle) * radius;
+    const y = start.y + Math.sin(angle) * radius;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  if (guidanceLevel === 'full') {
+    const last = pts[pts.length - 1];
+    ctx.fillStyle = '#FFFFFF';
+    ctx.strokeStyle = '#6558D9';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(last.x, last.y, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
 
   ctx.restore();
 }

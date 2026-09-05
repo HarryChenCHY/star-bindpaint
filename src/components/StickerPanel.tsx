@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+/* eslint-disable @next/next/no-img-element */
+
+import { motion } from 'framer-motion';
 import { Brush, X, ChevronRight } from 'lucide-react';
 
 export interface StickerDef {
@@ -26,7 +27,7 @@ const THEME_STICKERS: Record<string, StickerDef[]> = {
     { id: 'house', src: '/stickers/house.svg', label: '小房子', emoji: '🏠' },
     { id: 'tree', src: '/stickers/tree.svg', label: '大树', emoji: '🌳' },
   ],
-  mood: [
+  palette_study: [
     { id: 'color-blob', src: '/stickers/color-blob.svg', label: '色块', emoji: '🫧' },
     { id: 'wave-line', src: '/stickers/wave-line.svg', label: '波浪线', emoji: '〰️' },
     { id: 'zigzag-line', src: '/stickers/zigzag-line.svg', label: '锯齿线', emoji: '⚡' },
@@ -35,7 +36,7 @@ const THEME_STICKERS: Record<string, StickerDef[]> = {
     { id: 'dot-cluster', src: '/stickers/dot-cluster.svg', label: '小点点', emoji: '✨' },
     { id: 'star', src: '/stickers/star.svg', label: '星星', emoji: '⭐' },
   ],
-  safe_place: [
+  cottage: [
     { id: 'house', src: '/stickers/house.svg', label: '房子', emoji: '🏠' },
     { id: 'tree', src: '/stickers/tree.svg', label: '大树', emoji: '🌳' },
     { id: 'bird', src: '/stickers/bird.svg', label: '小鸟', emoji: '🐦' },
@@ -136,7 +137,7 @@ export default function StickerPanel({
       { src: '/tracing/house.svg', label: '小房子' },
       { src: '/tracing/tree.svg', label: '大树' },
     ],
-    mood: [
+    palette_study: [
       { src: '/tracing/color-blob.svg', label: '色块' },
       { src: '/tracing/wave-line.svg', label: '波浪线' },
       { src: '/tracing/zigzag-line.svg', label: '锯齿线' },
@@ -145,7 +146,7 @@ export default function StickerPanel({
       { src: '/tracing/dot-cluster.svg', label: '小点点' },
       { src: '/tracing/star.svg', label: '星星' },
     ],
-    safe_place: [
+    cottage: [
       { src: '/tracing/house.svg', label: '房子' },
       { src: '/tracing/tree.svg', label: '大树' },
       { src: '/tracing/flower.svg', label: '小花' },

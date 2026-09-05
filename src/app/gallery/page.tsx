@@ -1,14 +1,16 @@
 'use client';
 
+/* eslint-disable @next/next/no-img-element */
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Download, Trash2, X, Sparkles, Trash } from 'lucide-react';
+import { Brush, CalendarDays, ChevronLeft, Download, Flame, Sparkles, Trash, Trash2, X } from 'lucide-react';
 import { loadGallery, deleteFromGallery, clearGallery, GalleryItem } from '@/lib/gallery-store';
-import StarrySprite from '@/components/StarrySprite';
-import MasterQuoteCard from '@/components/MasterQuoteCard';
+import DailyWishCard from '@/components/DailyWishCard';
+import MoonCompanion from '@/components/MoonCompanion';
 import TiltedCard from '@/components/TiltedCard';
-import { MiniStar } from '@/components/Characters';
+import { getPracticeOverview, PracticeOverview } from '@/lib/practice-store';
 
 const MODE_COLOR: Record<string, string> = {
   follow: '#F9B801',
@@ -16,12 +18,30 @@ const MODE_COLOR: Record<string, string> = {
   free: '#7DC353',
 };
 
+const MODE_LABEL: Record<string, string> = {
+  follow: '沿星迹',
+  auto: '自动续画',
+  free: '自由星域',
+};
+
 export default function GalleryPage() {
   const router = useRouter();
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [selected, setSelected] = useState<GalleryItem | null>(null);
+  const [overview, setOverview] = useState<PracticeOverview | null>(null);
 
-  useEffect(() => { setItems(loadGallery()); }, []);
+  useEffect(() => {
+    const refresh = () => {
+      setItems(loadGallery());
+      setOverview(getPracticeOverview());
+    };
+    const frame = window.requestAnimationFrame(refresh);
+    window.addEventListener('startrace-practice-updated', refresh);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('startrace-practice-updated', refresh);
+    };
+  }, []);
 
   const handleDelete = (id: string) => {
     deleteFromGallery(id);
@@ -30,7 +50,7 @@ export default function GalleryPage() {
   };
 
   const handleClear = () => {
-    if (confirm('确定清空所有作品？')) { clearGallery(); setItems([]); }
+    if (confirm('确定清空所有星图作品？练习日期与连续动笔记录会保留。')) { clearGallery(); setItems([]); }
   };
 
   const handleDownload = (item: GalleryItem) => {
@@ -64,9 +84,9 @@ export default function GalleryPage() {
           返回
         </motion.button>
         <div className="flex items-center gap-2">
-          <MiniStar color="#F9B801" size={18} />
+            <Sparkles color="#6558D9" size={18} strokeWidth={2.8} />
           <h1 style={{ fontWeight: 900, fontSize: 'clamp(1rem, 3.6vw, 1.3rem)', letterSpacing: '-0.03em', color: '#1A1A1A', textTransform: 'uppercase' }}>
-            我的画廊
+            我的星图
           </h1>
         </div>
         {items.length > 0
@@ -88,18 +108,48 @@ export default function GalleryPage() {
               }}
             >
               <Trash size={14} strokeWidth={2.5} />
-              清空
+              清空作品
             </motion.button>
           )
           : <div style={{ width: '60px' }} />
         }
       </header>
 
-      <div className="px-4 sm:px-8 py-6 sm:py-10 max-w-5xl mx-auto w-full flex-1">
+      <div className="px-4 sm:px-8 py-6 sm:py-10 max-w-6xl mx-auto w-full flex-1">
+        <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+          <DailyWishCard compact onStart={() => router.push('/create')} onOpenStarMap={() => document.getElementById('star-map-grid')?.scrollIntoView({ behavior: 'smooth' })} />
+          <div className="grid grid-cols-3 gap-2 rounded-[1.7rem] bg-white p-4 sm:p-5" style={{ border: '2px solid #17233F', boxShadow: '6px 6px 0 #69D2C2' }}>
+            {[
+              [Flame, `${overview?.currentStreak ?? 0} 天`, '连续动笔', '#FF8FAB'],
+              [CalendarDays, String(overview?.totalSessions ?? 0), '完成练习', '#FFD166'],
+              [Brush, String(overview?.totalUserStrokes ?? 0), '亲手笔触', '#69D2C2'],
+            ].map(([Icon, value, label, color]) => {
+              const StatIcon = Icon as typeof Flame;
+              return (
+                <div key={String(label)} className="flex min-w-0 flex-col items-center justify-center rounded-2xl px-2 py-4 text-center" style={{ background: '#F6F7FB' }}>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: String(color), border: '1.5px solid #17233F' }}><StatIcon size={17} strokeWidth={2.7} /></span>
+                  <p className="mt-3 text-lg font-black tracking-[-0.04em]" style={{ color: '#17233F' }}>{String(value)}</p>
+                  <p className="mt-1 text-[9px] font-black tracking-[0.08em]" style={{ color: '#65708A' }}>{String(label)}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div id="star-map-grid" className="mb-5 mt-10 flex scroll-mt-6 items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-black tracking-[0.14em]" style={{ color: '#6558D9' }}>点亮过的世界</p>
+            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]" style={{ color: '#17233F' }}>作品星图</h2>
+          </div>
+          <p className="text-xs font-bold" style={{ color: '#65708A' }}>{items.length} 颗作品星</p>
+        </div>
+
         {/* Empty */}
         {items.length === 0 && (
-          <div className="flex flex-col items-center justify-center gap-6 py-20">
-            <StarrySprite state="idle" message="空白的画布正等着你的色彩..." />
+          <div className="flex flex-col items-center justify-center gap-6 rounded-[1.7rem] py-16" style={{ background: '#F6F7FB', border: '2px dashed #8E98AD' }}>
+            <div className="max-w-xs rounded-[1.4rem] bg-white p-5" style={{ border: '2px solid #17233F', boxShadow: '5px 5px 0 #6558D9' }}>
+              <MoonCompanion state="idle" message="星图还没有作品，从今天的第一笔开始点亮它。" />
+            </div>
             <motion.button
               onClick={() => router.push('/create')}
               whileHover={{ scale: 1.05, y: -2 }}
@@ -117,7 +167,7 @@ export default function GalleryPage() {
               }}
             >
               <Sparkles size={15} strokeWidth={2.5} />
-              开始创作 →
+              开始今日星愿 →
             </motion.button>
           </div>
         )}
@@ -163,6 +213,10 @@ export default function GalleryPage() {
                           {item.strokeCount}笔
                         </span>
                       </div>
+                      <div className="mt-2 flex items-center justify-between text-[10px] font-extrabold" style={{ color: '#536079' }}>
+                        <span>亲手 {item.userStrokeCount ?? item.strokeCount} 笔</span>
+                        <span>{MODE_LABEL[item.mode] || '绘画'}</span>
+                      </div>
                     </div>
                   </div>
                 </TiltedCard>
@@ -171,12 +225,6 @@ export default function GalleryPage() {
           </motion.div>
         )}
 
-        {/* 大师名言 */}
-        {items.length > 0 && (
-          <div className="mt-10">
-            <MasterQuoteCard variant="default" />
-          </div>
-        )}
       </div>
 
       {/* Modal */}
@@ -202,7 +250,7 @@ export default function GalleryPage() {
                   {selected.title}
                 </h2>
                 <p style={{ fontSize: '0.8rem', color: '#888888', fontWeight: 600, marginBottom: '1.25rem' }}>
-                  {new Date(selected.date).toLocaleDateString('zh-CN')} · {selected.strokeCount} 笔 · {selected.mode} 模式
+                  {new Date(selected.date).toLocaleDateString('zh-CN')} · 共 {selected.strokeCount} 笔 · 亲手 {selected.userStrokeCount ?? selected.strokeCount} 笔 · {MODE_LABEL[selected.mode] || '绘画'}
                 </p>
                 <div className="flex gap-3">
                   <motion.button

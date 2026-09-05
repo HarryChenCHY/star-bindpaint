@@ -1,114 +1,123 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-/**
- * POST /api/analyze
- * 接收绘画 session 数据，调用腾讯混元大模型生成疗愈观察报告
- * 降级：如果混元不可用，fallback 到阿里云百炼
- */
+type MetricInput = {
+  mode?: unknown;
+  guidanceLevel?: unknown;
+  totalStrokes?: unknown;
+  userStrokes?: unknown;
+  aiAssistedStrokes?: unknown;
+  skippedStrokes?: unknown;
+  completionRate?: unknown;
+  manualContributionRate?: unknown;
+  aiAssistanceRate?: unknown;
+  firstStrokeLatencySec?: unknown;
+  averageWaitSec?: unknown;
+  durationSec?: unknown;
+};
+
+function numberOrNull(value: unknown, minimum = 0, maximum = 1_000_000): number | null {
+  if (value === null || value === undefined) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? Math.min(maximum, Math.max(minimum, parsed)) : null;
+}
+
+function normalizeMetrics(input: MetricInput) {
+  return {
+    mode: ['follow', 'auto', 'free'].includes(String(input.mode)) ? String(input.mode) : 'follow',
+    guidanceLevel: ['full', 'balanced', 'light'].includes(String(input.guidanceLevel)) ? String(input.guidanceLevel) : 'full',
+    totalStrokes: numberOrNull(input.totalStrokes, 0, 100_000) ?? 0,
+    userStrokes: numberOrNull(input.userStrokes, 0, 100_000) ?? 0,
+    aiAssistedStrokes: numberOrNull(input.aiAssistedStrokes, 0, 100_000) ?? 0,
+    skippedStrokes: numberOrNull(input.skippedStrokes, 0, 100_000) ?? 0,
+    completionRate: numberOrNull(input.completionRate, 0, 100),
+    manualContributionRate: numberOrNull(input.manualContributionRate, 0, 100),
+    aiAssistanceRate: numberOrNull(input.aiAssistanceRate, 0, 100),
+    firstStrokeLatencySec: numberOrNull(input.firstStrokeLatencySec, 0, 86_400),
+    averageWaitSec: numberOrNull(input.averageWaitSec, 0, 86_400),
+    durationSec: numberOrNull(input.durationSec, 0, 86_400) ?? 0,
+  };
+}
+
+function buildPrompt(work: string, metrics: ReturnType<typeof normalizeMetrics>) {
+  return `你是“月亮伙伴”，请把以下一次绘画交互数据写成 3—4 句简洁中文学习反馈，并给出 1 条下一次可执行的小建议。
+
+必须遵守：只解释提供的数据；不推断主观状态、性格、天赋或健康状况；不使用医疗化或心理改善表述；不宣称产品带来因果效果；不把完成率或贴合度说成能力评分；不提及任何机构、团队、模型或厂商。
+
+作品：${work}
+模式：${metrics.mode}
+引导等级：${metrics.guidanceLevel}
+练习时长：${metrics.durationSec.toFixed(0)} 秒
+首次动笔时延：${metrics.firstStrokeLatencySec === null ? '未记录' : `${metrics.firstStrokeLatencySec.toFixed(1)} 秒`}
+规划笔触：${metrics.totalStrokes}
+亲手笔触：${metrics.userStrokes}
+AI 辅助笔触：${metrics.aiAssistedStrokes}
+跳过笔触：${metrics.skippedStrokes}
+内容覆盖率：${metrics.completionRate === null ? '不适用' : `${metrics.completionRate.toFixed(1)}%`}
+亲手完成率：${metrics.manualContributionRate === null ? '不适用' : `${metrics.manualContributionRate.toFixed(1)}%`}
+AI 辅助率：${metrics.aiAssistanceRate === null ? '不适用' : `${metrics.aiAssistanceRate.toFixed(1)}%`}
+平均笔间停留：${metrics.averageWaitSec === null ? '未记录' : `${metrics.averageWaitSec.toFixed(1)} 秒`}`;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { prompt, imageBase64 } = body;
-
-    if (!prompt) {
-      return NextResponse.json({ error: '缺少 prompt' }, { status: 400 });
+    const contentLength = Number(req.headers.get('content-length') || 0);
+    if (contentLength > 16_384) {
+      return NextResponse.json({ error: '请求内容过大' }, { status: 413 });
     }
 
-    // 构造消息：文本 + 图片（多模态，OpenAI 兼容格式）
-    const messages: Array<{ role: string; content: string | Array<{ type: string; text?: string; image_url?: { url: string } }> }> = [];
-
-    if (imageBase64) {
-      messages.push({
-        role: 'user',
-        content: [
-          { type: 'text', text: prompt },
-          {
-            type: 'image_url',
-            image_url: {
-              url: imageBase64.startsWith('data:') ? imageBase64 : `data:image/png;base64,${imageBase64}`,
-            },
-          },
-        ],
-      });
-    } else {
-      messages.push({ role: 'user', content: prompt });
+    const rawBody = await req.text();
+    if (Buffer.byteLength(rawBody, 'utf8') > 16_384) return NextResponse.json({ error: '请求内容过大' }, { status: 413 });
+    let body: { metrics?: MetricInput; work?: unknown };
+    try { body = JSON.parse(rawBody) as typeof body; } catch { return NextResponse.json({ error: '请求格式无效' }, { status: 400 }); }
+    if (!body.metrics || typeof body.metrics !== 'object') {
+      return NextResponse.json({ error: '缺少学习指标' }, { status: 400 });
     }
 
-    // 优先使用腾讯混元
-    const hunyuanKey = process.env.HUNYUAN_API_KEY;
-    const dashscopeKey = process.env.DASHSCOPE_API_KEY;
+    const metrics = normalizeMetrics(body.metrics);
+    const work = typeof body.work === 'string' ? body.work.slice(0, 120) : '本次绘画练习';
+    const prompt = buildPrompt(work, metrics);
+    const messages = [{ role: 'user', content: prompt }];
+    const primaryKey = process.env.HUNYUAN_API_KEY;
+    const fallbackKey = process.env.DASHSCOPE_API_KEY;
+
+    if (!primaryKey && !fallbackKey) {
+      return NextResponse.json({ error: '文字生成服务暂不可用' }, { status: 503 });
+    }
 
     let response: Response;
-
-    if (hunyuanKey) {
-      // 腾讯混元（TokenHub OpenAI 兼容接口）
+    if (primaryKey) {
       response = await fetch('https://tokenhub.tencentmaas.com/v1/chat/completions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${hunyuanKey}`,
-        },
-        body: JSON.stringify({
-          model: imageBase64 ? 'hunyuan-vision' : 'hy3-preview',
-          messages,
-          max_tokens: 1024,
-          temperature: 0.7,
-          stream: false,
-        }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${primaryKey}` },
+        body: JSON.stringify({ model: 'hy3-preview', messages, max_tokens: 600, temperature: 0.45, stream: false }),
+        signal: AbortSignal.timeout(15_000),
       });
-
-      // 如果混元失败且有 dashscope key，降级
-      if (!response.ok && dashscopeKey) {
-        console.warn('[/api/analyze] 混元失败，降级到百炼');
-        response = await callDashScope(dashscopeKey, messages, imageBase64);
-      }
-    } else if (dashscopeKey) {
-      // 降级：阿里云百炼
-      response = await callDashScope(dashscopeKey, messages, imageBase64);
+      if (!response.ok && fallbackKey) response = await callFallback(fallbackKey, messages);
     } else {
-      return NextResponse.json({ error: 'API Key 未配置（HUNYUAN_API_KEY 或 DASHSCOPE_API_KEY）' }, { status: 500 });
+      response = await callFallback(fallbackKey!, messages);
     }
 
     if (!response.ok) {
-      const errText = await response.text();
-      console.error('[/api/analyze] API 错误:', response.status, errText);
-      return NextResponse.json(
-        { error: `LLM API 调用失败: ${response.status}`, detail: errText },
-        { status: 502 }
-      );
+      console.error('[/api/analyze] upstream status:', response.status);
+      return NextResponse.json({ error: '文字生成服务暂不可用' }, { status: 502 });
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || '未能生成分析报告';
+    const report = String(data.choices?.[0]?.message?.content || '').trim().slice(0, 1_500);
+    if (!report) return NextResponse.json({ error: '未生成有效反馈' }, { status: 502 });
 
-    return NextResponse.json({
-      report: content,
-      model: data.model || 'unknown',
-      usage: data.usage,
-    });
-  } catch (err) {
-    console.error('[/api/analyze] 错误:', err);
-    return NextResponse.json(
-      { error: '服务端错误', detail: String(err) },
-      { status: 500 }
-    );
+    return NextResponse.json({ schemaVersion: 2, report, generatedBy: 'ai' });
+  } catch (error) {
+    console.error('[/api/analyze] request failed:', error instanceof Error ? error.name : 'unknown');
+    return NextResponse.json({ error: '文字生成服务暂不可用' }, { status: 500 });
   }
 }
 
-// 阿里云百炼降级调用
-async function callDashScope(apiKey: string, messages: unknown[], hasImage: boolean): Promise<Response> {
-  // 百炼需要特定的消息格式
+async function callFallback(apiKey: string, messages: Array<{ role: string; content: string }>): Promise<Response> {
   return fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: hasImage ? 'qwen-vl-plus' : 'qwen-turbo',
-      messages,
-      max_tokens: 1024,
-      temperature: 0.7,
-    }),
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({ model: 'qwen-turbo', messages, max_tokens: 600, temperature: 0.45 }),
+    signal: AbortSignal.timeout(15_000),
   });
 }

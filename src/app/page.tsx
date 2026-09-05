@@ -2,326 +2,493 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
-import { StarChar, FlowerChar, BlobChar, MiniStar, MiniCircle } from '@/components/Characters';
-import MasterQuoteCard from '@/components/MasterQuoteCard';
-import TiltedCard from '@/components/TiltedCard';
+import {
+  ArrowRight,
+  BookOpen,
+  BrainCircuit,
+  Brush,
+  CalendarDays,
+  Check,
+  CircleDot,
+  FlaskConical,
+  Image as ImageIcon,
+  Layers3,
+  Moon,
+  Route,
+  Sparkles,
+  TrendingUp,
+  Upload,
+} from 'lucide-react';
+import DailyWishCard from '@/components/DailyWishCard';
 
-const Ballpit = dynamic(() => import('@/components/Ballpit'), { ssr: false });
+const COLORS = {
+  ink: '#17233F',
+  inkSoft: '#536079',
+  purple: '#6558D9',
+  purpleSoft: '#ECEAFE',
+  yellow: '#FFD166',
+  mint: '#69D2C2',
+  pink: '#FF8FAB',
+  paper: '#F6F7FB',
+  white: '#FFFFFF',
+};
+
+const FEATURES = [
+  {
+    icon: CircleDot,
+    eyebrow: '知道从哪开始',
+    title: '把复杂画面变成一颗颗星点',
+    body: '图片不再是一整块“不会画”。系统先找出结构，再按由大到小的顺序安排每一笔。',
+    color: COLORS.yellow,
+  },
+  {
+    icon: Route,
+    eyebrow: '看清下一笔',
+    title: '沿着星迹完成真实笔触',
+    body: '每次只呈现当前路径、方向和颜色，让注意力停留在眼前这一笔，而不是最终成品。',
+    color: COLORS.mint,
+  },
+  {
+    icon: TrendingUp,
+    eyebrow: '愿意再次动笔',
+    title: '让完成感变成练习习惯',
+    body: '作品、练习次数和逐渐减少的辅助都会进入星图，帮助你看见自己正在进步。',
+    color: COLORS.pink,
+  },
+];
+
+const STEPS = [
+  { num: '01', icon: ImageIcon, title: '选择画面', body: '从示例作品开始，或上传一张你真正想画的图片。' },
+  { num: '02', icon: Layers3, title: '拆解笔触', body: '系统分析画面层次，生成由粗到细的有序笔触。' },
+  { num: '03', icon: CircleDot, title: '找到星点', body: '月亮伙伴指出落笔位置、方向和这一笔的颜色。' },
+  { num: '04', icon: Brush, title: '跟随星迹', body: '一笔一笔完成，也可以随时调整提示与辅助强度。' },
+  { num: '05', icon: Sparkles, title: '点亮星图', body: '保存作品和练习记录，下一次从更少的提示开始。' },
+];
 
 export default function HomePage() {
   const router = useRouter();
 
   return (
-    <div className="flex-1 flex flex-col bg-white overflow-x-hidden">
+    <div className="min-h-screen overflow-x-hidden" style={{ background: COLORS.paper, color: COLORS.ink }}>
+      <nav
+        className="relative z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-5 sm:px-8 lg:px-10"
+        aria-label="主导航"
+      >
+        <button
+          onClick={() => router.push('/')}
+          className="flex items-center gap-3 text-left"
+          aria-label="返回星迹智绘首页"
+        >
+          <span
+            className="flex h-10 w-10 items-center justify-center rounded-2xl"
+            style={{ background: COLORS.yellow, border: `2px solid ${COLORS.ink}`, boxShadow: `3px 3px 0 ${COLORS.ink}` }}
+          >
+            <Moon size={21} strokeWidth={2.6} />
+          </span>
+          <span>
+            <span className="block text-base font-black leading-none tracking-[-0.03em] sm:text-lg">星迹智绘</span>
+            <span className="mt-1 block text-[10px] font-extrabold tracking-[0.18em]" style={{ color: COLORS.inkSoft }}>
+              STARTRACE
+            </span>
+          </span>
+        </button>
 
-      {/* ═══ NAV ══════════════════════════════════════════════ */}
-      <nav className="flex items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-5 gap-3" style={{ borderBottom: '2px solid #1A1A1A' }}>
-        <span style={{ fontWeight: 900, fontSize: 'clamp(1.1rem, 4vw, 1.4rem)', letterSpacing: '-0.03em', color: '#1A1A1A' }}>
-          星绘<span style={{ color: '#7A51EC' }}>智愈</span>
-        </span>
         <div className="flex items-center gap-2 sm:gap-3">
-          <button onClick={() => router.push('/gallery')} className="btn-black hidden sm:inline-flex" style={{ padding: '0.55em 1.4em', fontSize: '0.9rem' }}>
-            我的画廊
+          <button
+            onClick={() => router.push('/intro')}
+            className="hidden rounded-full px-4 py-2.5 text-sm font-extrabold md:inline-flex"
+            style={{ background: COLORS.purpleSoft, border: `2px solid ${COLORS.ink}`, color: COLORS.purple }}
+          >
+            产品研究
           </button>
-          <button onClick={() => router.push('/onboard')} className="btn-purple" style={{ padding: '0.55em 1.1em', fontSize: '0.85rem' }}>
-            开始创作
+          <button
+            onClick={() => router.push('/gallery')}
+            className="hidden rounded-full px-4 py-2.5 text-sm font-extrabold sm:inline-flex"
+            style={{ background: COLORS.white, border: `2px solid ${COLORS.ink}` }}
+          >
+            我的星图
+          </button>
+          <button
+            onClick={() => router.push('/create')}
+            className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-black text-white sm:px-5"
+            style={{ background: COLORS.ink, boxShadow: `3px 3px 0 ${COLORS.yellow}` }}
+          >
+            开始第一幅
+            <ArrowRight size={16} strokeWidth={2.8} />
           </button>
         </div>
       </nav>
 
-      {/* ═══ HERO ══════════════════════════════════════════════ */}
-      <section className="isolate px-4 sm:px-8 md:px-16 py-10 sm:py-16 md:py-24 max-w-7xl mx-auto w-full relative">
-        {/* 卡通彩球氛围背景（白/黄/粉/绿/紫，跟随光标互动） */}
-        <div
-          className="absolute inset-0 z-0 overflow-hidden rounded-[2rem] sm:rounded-[3rem] mx-2 sm:mx-4 pointer-events-none"
-          style={{ opacity: 0.5 }}
-        >
-          <Ballpit
-            count={35}
-            colors={[0xffffff, 0xf9b801, 0xff8fb1, 0x6bcb77, 0x7a51ec]}
-            gravity={0}
-            friction={0.998}
-            wallBounce={0.96}
-            maxVelocity={0.15}
-            minSize={0.4}
-            maxSize={1.0}
-            ambientIntensity={1.5}
-            lightIntensity={280}
-            materialParams={{
-              metalness: 0,
-              roughness: 0.45,
-              clearcoat: 1,
-              clearcoatRoughness: 0.1,
-            }}
-            followCursor={false}
-          />
-        </div>
-        <div className="relative z-10 flex flex-col lg:flex-row items-center gap-8 sm:gap-12 lg:gap-20">
+      <main>
+        <section className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-5 pb-20 pt-10 sm:px-8 sm:pt-16 lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:pb-28 lg:pt-20">
+          <div className="pointer-events-none absolute left-[8%] top-8 h-2 w-2 rounded-full" style={{ background: COLORS.yellow }} />
+          <div className="pointer-events-none absolute left-[46%] top-20 h-1.5 w-1.5 rounded-full" style={{ background: COLORS.mint }} />
+          <div className="pointer-events-none absolute right-[7%] top-10 h-2.5 w-2.5 rounded-full" style={{ background: COLORS.pink }} />
 
-          {/* Left — text */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex-1 max-w-xl"
+            className="relative z-10"
           >
-            {/* Tag */}
-            <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-7"
-              style={{ background: '#F9B801', color: '#1A1A1A' }}>
-              <MiniStar color="#1A1A1A" size={14} />
-              <span style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-                2026 LIGHT 创造营
-              </span>
+            <div
+              className="mb-7 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black tracking-[0.08em]"
+              style={{ background: COLORS.purpleSoft, color: COLORS.purple, border: `1.5px solid ${COLORS.purple}` }}
+            >
+              <Sparkles size={15} strokeWidth={2.6} />
+              为零基础绘画者设计
             </div>
 
-            {/* Headline */}
-            <h1 style={{ fontSize: 'clamp(2.6rem, 11vw, 5.5rem)', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 0.95, color: '#1A1A1A', textTransform: 'uppercase' }}>
-              STAR<br />
-              <span style={{ color: '#7A51EC' }}>PAINT</span><br />
-              智愈
+            <h1 className="max-w-2xl text-[clamp(3rem,7vw,5.7rem)] font-black leading-[0.94] tracking-[-0.065em]">
+              <span className="block">不会画，</span>
+              <span className="block">也可以从</span>
+              <span className="relative inline-block" style={{ color: COLORS.purple }}>
+                第一笔开始。
+                <svg className="absolute -bottom-3 left-0 h-4 w-full" viewBox="0 0 360 18" fill="none" aria-hidden="true">
+                  <path d="M4 11C90 2 229 19 356 6" stroke={COLORS.yellow} strokeWidth="8" strokeLinecap="round" />
+                </svg>
+              </span>
             </h1>
 
-            <p className="mt-5 sm:mt-6 mb-8 sm:mb-10" style={{ fontSize: 'clamp(0.95rem, 2.6vw, 1.1rem)', color: '#666666', fontWeight: 600, lineHeight: 1.6, letterSpacing: '-0.01em', maxWidth: '400px' }}>
-              临摹大师经典画作，或自由画出你想画的——AI 实时将每一笔变成油画风格，在创作中感受疗愈
+            <p className="mt-9 max-w-xl text-base font-bold leading-8 sm:text-lg" style={{ color: COLORS.inkSoft }}>
+              上传一张想画的图片，智能笔触引擎会把它拆成清晰、有顺序的绘画路径。月亮伙伴陪你找到第一笔，再沿着星迹一笔一笔完成。
             </p>
 
-            <div className="flex gap-3 flex-wrap relative" style={{ zIndex: 20, pointerEvents: 'auto' }}>
-              <button onClick={() => router.push('/onboard')} className="btn-black" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.05rem)', paddingLeft: 'clamp(1.4rem, 5vw, 2.2rem)', paddingRight: 'clamp(1.4rem, 5vw, 2.2rem)' }}>
-                开始创作
+            <div className="mt-9 flex flex-wrap gap-3">
+              <motion.button
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => router.push('/create')}
+                className="inline-flex items-center gap-2 rounded-full px-6 py-4 text-base font-black text-white"
+                style={{ background: COLORS.ink, boxShadow: `5px 5px 0 ${COLORS.yellow}` }}
+              >
+                <Upload size={19} strokeWidth={2.7} />
+                开始我的第一幅画
+              </motion.button>
+              <button
+                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                className="inline-flex items-center gap-2 rounded-full px-6 py-4 text-base font-black"
+                style={{ background: COLORS.white, border: `2px solid ${COLORS.ink}` }}
+              >
+                看看怎么画
+                <ArrowRight size={18} strokeWidth={2.7} />
               </button>
-              <button onClick={() => router.push('/intro')} className="btn-purple" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.05rem)' }}>
-                了解更多
-              </button>
+            </div>
+
+            <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm font-extrabold" style={{ color: COLORS.inkSoft }}>
+              {['不用先学理论', '每次只画一笔', '提示可以逐渐减少'].map(item => (
+                <span key={item} className="inline-flex items-center gap-2">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full" style={{ background: COLORS.mint }}>
+                    <Check size={13} color={COLORS.ink} strokeWidth={3} />
+                  </span>
+                  {item}
+                </span>
+              ))}
             </div>
           </motion.div>
 
-          {/* Right — characters */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.175, 0.885, 0.32, 1.275] }}
-            className="flex-1 flex items-center justify-center gap-3 sm:gap-6 relative w-full"
+            initial={{ opacity: 0, scale: 0.94, rotate: 1.5 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ duration: 0.7, delay: 0.12 }}
+            className="relative mx-auto w-full max-w-[590px]"
           >
-            <div className="animate-float" style={{ animationDelay: '0s', width: 'clamp(72px, 16vw, 130px)' }}>
-              <StarChar size="100%" />
+            <div
+              className="absolute -left-4 top-12 z-10 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-black sm:-left-8"
+              style={{ background: COLORS.yellow, border: `2px solid ${COLORS.ink}`, boxShadow: `3px 3px 0 ${COLORS.ink}` }}
+            >
+              <CircleDot size={16} />
+              星点 08 / 24
             </div>
-            <div className="animate-float" style={{ animationDelay: '-1.2s', marginTop: '2rem', width: 'clamp(60px, 14vw, 110px)' }}>
-              <FlowerChar size="100%" />
-            </div>
-            <div className="animate-float" style={{ animationDelay: '-2.4s', width: 'clamp(56px, 12vw, 100px)' }}>
-              <BlobChar size="100%" />
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* ═══ COLOR BLOCKS DIVIDER ══════════════════════════════ */}
-      <div className="flex h-6 overflow-hidden">
-        {['#F9B801', '#F302C9', '#7DC353', '#7A51EC', '#F9B801', '#F302C9', '#7DC353', '#7A51EC'].map((c, i) => (
-          <div key={i} className="flex-1" style={{ background: c }} />
-        ))}
-      </div>
-
-      {/* ═══ FEATURES ══════════════════════════════════════════ */}
-      <section id="features" className="px-4 sm:px-8 md:px-16 py-12 sm:py-20 bg-white">
-        <div className="max-w-7xl mx-auto w-full">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12">
-            <p style={{ fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.12em', color: '#888888', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-              核心体验
-            </p>
-            <h2 style={{ fontSize: 'clamp(2.2rem, 5vw, 3.5rem)', color: '#1A1A1A', textTransform: 'uppercase' }}>
-              从<span style={{ color: '#F9B801' }}>学</span>到<span style={{ color: '#F302C9' }}>创</span><br />两步体验
-            </h2>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-            {[
-              {
-                bg: '#F9B801',
-                char: <StarChar size={100} />,
-                title: '临摹学习',
-                desc: 'GUIDED LEARNING',
-                body: '选择6位大师30幅经典画作，你画1笔AI补100笔，跟着引导线轻松完成一幅油画',
-                tag: '第一步',
-              },
-              {
-                bg: '#F302C9',
-                char: <FlowerChar size={90} />,
-                title: '自由创作',
-                desc: 'FREE CREATION + STYLE TRANSFER',
-                body: '画任何你想画的，每一笔实时变成大师油画风格，还能一键"变成油画"',
-                tag: '第二步',
-              },
-              {
-                bg: '#7DC353',
-                char: <BlobChar size={85} />,
-                title: '疗愈观察',
-                desc: 'AI THERAPY REPORT',
-                body: '情绪前后测 + AI 分析绘画行为（色彩/节奏/专注区域），生成温暖的观察报告',
-                tag: '闭环',
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <TiltedCard
-                  containerHeight="auto"
-                  containerWidth="100%"
-                  imageHeight="auto"
-                  imageWidth="100%"
-                  rotateAmplitude={9}
-                  scaleOnHover={1.03}
-                  showTooltip
-                  captionText={item.title}
-                >
-                  <div
-                    className="rounded-[1.5rem] overflow-hidden bg-white w-full"
-                    style={{ border: '2px solid #1A1A1A', boxShadow: '5px 5px 0 #1A1A1A' }}
-                  >
-                    {/* Color block top */}
-                    <div className="flex items-end justify-center pt-8 pb-0" style={{ background: item.bg, minHeight: '160px', borderBottom: '2px solid #1A1A1A' }}>
-                      {item.char}
-                    </div>
-                    {/* Content */}
-                    <div className="p-6 bg-white">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.03em' }}>{item.title}</h3>
-                        <span className="rounded-full px-3 py-1" style={{ background: item.bg, fontSize: '0.7rem', fontWeight: 800, color: '#1A1A1A', letterSpacing: '0.04em', border: '1.5px solid #1A1A1A' }}>
-                          {item.tag}
-                        </span>
-                      </div>
-                      <p style={{ fontSize: '0.72rem', fontWeight: 700, color: '#AAAAAA', letterSpacing: '0.1em', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-                        {item.desc}
-                      </p>
-                      <p style={{ fontSize: '0.9rem', color: '#666666', lineHeight: 1.6, fontWeight: 600 }}>{item.body}</p>
-                    </div>
-                  </div>
-                </TiltedCard>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ TECH ══════════════════════════════════════════════ */}
-      <section className="px-4 sm:px-8 md:px-16 py-12 sm:py-20" style={{ background: '#1A1A1A' }}>
-        <div className="max-w-7xl mx-auto w-full">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12">
-            <p style={{ fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.12em', color: '#888888', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-              核心技术
-            </p>
-            <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)', color: '#FFFFFF', textTransform: 'uppercase' }}>
-              <span style={{ color: '#F9B801' }}>交大</span>算法 + <span style={{ color: '#7A51EC' }}>混元</span>大模型
-            </h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            {[
-              { icon: '🧠', title: '多层笔触分解算法', desc: '多尺度误差驱动 + 梯度追踪弯曲笔触 + 边界感知，将图片智能拆解为有序笔触序列', color: '#F9B801' },
-              { icon: '🎨', title: '实时风格化引擎', desc: '6种大师风格（莫奈/梵高/高更/伦勃朗/毕加索/萨金特），逐笔实时变换', color: '#F302C9' },
-              { icon: '✨', title: '变成油画 · AI 渲染', desc: '腾讯混元生图 hy-image-v3.0，将简笔画一键渲染为完整的大师级油画', color: '#7DC353' },
-              { icon: '📋', title: 'LLM 疗愈报告', desc: '腾讯混元大模型多模态分析绘画行为数据，生成温暖的观察记录', color: '#7A51EC' },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="flex items-start gap-4 p-5 rounded-[1.25rem]"
-                style={{ background: '#2A2A2A' }}
-              >
-                <div className="w-11 h-11 rounded-[0.875rem] flex items-center justify-center text-xl flex-shrink-0" style={{ background: item.color }}>
-                  {item.icon}
-                </div>
+            <div
+              className="relative overflow-hidden rounded-[2rem] p-3 sm:p-4"
+              style={{ background: COLORS.white, border: `2px solid ${COLORS.ink}`, boxShadow: `10px 10px 0 ${COLORS.purple}` }}
+            >
+              <div className="flex items-center justify-between px-2 pb-3 pt-1">
                 <div>
-                  <h4 style={{ fontWeight: 800, color: '#FFFFFF', fontSize: '0.95rem', letterSpacing: '-0.02em', marginBottom: '0.3rem' }}>{item.title}</h4>
-                  <p style={{ fontSize: '0.85rem', color: '#888888', lineHeight: 1.6 }}>{item.desc}</p>
+                  <p className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>正在探索</p>
+                  <p className="mt-1 text-sm font-black">窗边的向日葵</p>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+                <div className="flex items-center gap-2 rounded-full px-3 py-2 text-xs font-extrabold" style={{ background: COLORS.purpleSoft, color: COLORS.purple }}>
+                  <Moon size={15} />
+                  月亮伙伴
+                </div>
+              </div>
 
-      {/* ═══ MASTER QUOTE ═══ */}
-      <div className="px-4 sm:px-8 md:px-16 py-6 sm:py-8 max-w-3xl mx-auto w-full">
-        <MasterQuoteCard variant="banner" />
-      </div>
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[1.35rem]" style={{ background: '#FFF9E8', border: `2px solid ${COLORS.ink}` }}>
+                <svg className="h-full w-full" viewBox="0 0 560 420" fill="none" role="img" aria-label="笔触拆解示意图">
+                  <rect width="560" height="420" fill="#FFF9E8" />
+                  <path d="M0 302C118 277 196 329 309 295C399 268 470 274 560 247V420H0V302Z" fill="#D7EEE6" />
+                  <path d="M42 85C125 40 223 63 279 119C320 160 348 164 413 124C469 90 521 106 550 130" stroke="#DED9FF" strokeWidth="32" strokeLinecap="round" />
+                  <path d="M96 286C169 236 242 225 305 248C352 265 411 250 467 211" stroke="#6558D9" strokeWidth="18" strokeLinecap="round" opacity="0.16" />
+                  <path d="M104 280C178 231 242 224 306 246C355 263 410 246 466 207" stroke="#6558D9" strokeWidth="5" strokeLinecap="round" strokeDasharray="10 12" />
+                  <circle cx="104" cy="280" r="13" fill="#FFD166" stroke="#17233F" strokeWidth="4" />
+                  <circle cx="466" cy="207" r="7" fill="#FFFFFF" stroke="#6558D9" strokeWidth="4" />
+                  <path d="M297 272C298 235 301 201 305 169" stroke="#4F8C68" strokeWidth="9" strokeLinecap="round" />
+                  <path d="M305 221C273 208 255 192 245 170" stroke="#4F8C68" strokeWidth="7" strokeLinecap="round" />
+                  <path d="M305 205C337 190 360 168 370 143" stroke="#4F8C68" strokeWidth="7" strokeLinecap="round" />
+                  <g transform="translate(305 143)">
+                    {[0, 45, 90, 135, 180, 225, 270, 315].map(angle => (
+                      <ellipse key={angle} cx="0" cy="-40" rx="15" ry="31" fill="#FFD166" stroke="#17233F" strokeWidth="3" transform={`rotate(${angle})`} />
+                    ))}
+                    <circle r="31" fill="#9C6137" stroke="#17233F" strokeWidth="4" />
+                    <circle r="18" fill="#6C3F27" opacity="0.7" />
+                  </g>
+                  <circle cx="503" cy="63" r="29" fill="#FFD166" opacity="0.75" />
+                  <circle cx="491" cy="54" r="28" fill="#FFF9E8" />
+                </svg>
 
-      {/* ═══ FLOW ══════════════════════════════════════════════ */}
-      <section className="px-4 sm:px-8 md:px-16 py-12 sm:py-20 bg-white">
-        <div className="max-w-4xl mx-auto w-full">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
-            <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)', color: '#1A1A1A', textTransform: 'uppercase' }}>
-              五步<span style={{ color: '#7DC353' }}>完成</span>疗愈
-            </h2>
-          </motion.div>
-
-          <div
-            className="flex items-start justify-start md:justify-center gap-3 md:gap-4 overflow-x-auto md:overflow-visible md:flex-wrap pb-2 -mx-4 px-4 md:mx-0 md:px-0"
-            style={{ scrollbarWidth: 'none' }}
-          >
-            {[
-              { num: '01', icon: '😊', label: '选心情', desc: '告诉我今天感觉怎样', color: '#F9B801' },
-              { num: '02', icon: '🎨', label: '选大师', desc: '莫奈/梵高/高更...', color: '#F302C9' },
-              { num: '03', icon: '✏️', label: '陪画创作', desc: '你画1笔 AI补50笔', color: '#7DC353' },
-              { num: '04', icon: '😌', label: '选心情', desc: '画完后感觉变了吗', color: '#7BA7CC' },
-              { num: '05', icon: '📋', label: '观察报告', desc: 'AI生成疗愈记录', color: '#7A51EC' },
-            ].map((step, i) => (
-              <div key={i} className="flex items-center gap-2 md:gap-4 flex-shrink-0">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.12 }}
-                  className="flex flex-col items-center gap-2 w-24 sm:w-28 md:w-32"
+                <div
+                  className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-2xl p-3"
+                  style={{ background: 'rgba(255,255,255,0.92)', border: `1.5px solid ${COLORS.ink}` }}
                 >
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[1.25rem] flex items-center justify-center text-xl sm:text-2xl"
-                    style={{ background: step.color, border: '2px solid #1A1A1A' }}>
-                    {step.icon}
+                  <span className="flex h-10 w-10 flex-none items-center justify-center rounded-xl" style={{ background: COLORS.yellow }}>
+                    <Moon size={21} strokeWidth={2.5} />
+                  </span>
+                  <div>
+                    <p className="text-xs font-black" style={{ color: COLORS.purple }}>下一笔</p>
+                    <p className="mt-0.5 text-sm font-extrabold">从黄色星点出发，顺着紫色轨迹向右画。</p>
                   </div>
-                  <span style={{ fontSize: '0.65rem', fontWeight: 800, color: step.color, letterSpacing: '0.08em' }}>{step.num}</span>
-                  <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.02em' }}>{step.label}</span>
-                  <span style={{ fontSize: '0.72rem', color: '#888888', fontWeight: 600, textAlign: 'center' }}>{step.desc}</span>
-                </motion.div>
-                {i < 4 && <span style={{ color: '#DDDDDD', fontSize: '1.5rem', fontWeight: 900, marginBottom: '2.5rem' }} className="hidden md:block">→</span>}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 pt-3">
+                {[
+                  ['大形', '已完成', COLORS.mint],
+                  ['结构', '进行中', COLORS.yellow],
+                  ['细节', '稍后', COLORS.purpleSoft],
+                ].map(([label, state, color]) => (
+                  <div key={label} className="rounded-xl px-3 py-2.5" style={{ background: color }}>
+                    <p className="text-[10px] font-black tracking-[0.08em]" style={{ color: COLORS.inkSoft }}>{label}</p>
+                    <p className="mt-0.5 text-xs font-black">{state}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </section>
+
+        <section className="border-y-2" style={{ borderColor: COLORS.ink, background: COLORS.ink }}>
+          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-px sm:grid-cols-3">
+            {[
+              ['0基础', '不需要先掌握素描和色彩理论'],
+              ['1笔', '把复杂画面缩小成眼前一步'],
+              ['持续画', '用可见进度建立动笔习惯'],
+            ].map(([value, label], index) => (
+              <div key={value} className="px-6 py-7 text-center" style={{ background: index === 1 ? '#222F4E' : COLORS.ink }}>
+                <p className="text-2xl font-black" style={{ color: index === 0 ? COLORS.yellow : index === 1 ? COLORS.mint : COLORS.pink }}>{value}</p>
+                <p className="mt-2 text-sm font-bold text-white/70">{label}</p>
               </div>
             ))}
           </div>
+        </section>
 
-          <div className="flex justify-center mt-12">
-            <button onClick={() => router.push('/onboard')} className="btn-black" style={{ fontSize: '1.05rem', paddingLeft: '3rem', paddingRight: '3rem', paddingTop: '1em', paddingBottom: '1em' }}>
-              立即体验
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ FOOTER ════════════════════════════════════════════ */}
-      <footer className="px-4 sm:px-8 py-8 sm:py-10" style={{ background: '#F5F5F5', borderTop: '2px solid #1A1A1A' }}>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-          <div>
-            <div style={{ fontWeight: 900, fontSize: '1.5rem', letterSpacing: '-0.03em', color: '#1A1A1A' }}>
-              星绘<span style={{ color: '#7A51EC' }}>智愈</span>
+        <section className="mx-auto w-full max-w-7xl px-5 pb-4 sm:px-8 lg:px-10">
+          <div className="grid items-stretch gap-5 lg:grid-cols-[1.35fr_0.65fr]">
+            <DailyWishCard onStart={() => router.push('/create')} onOpenStarMap={() => router.push('/gallery')} />
+            <div className="rounded-[1.7rem] p-5 sm:p-6" style={{ background: COLORS.white, border: `2px solid ${COLORS.ink}`, boxShadow: `6px 6px 0 ${COLORS.mint}` }}>
+              <p className="text-[10px] font-black tracking-[0.14em]" style={{ color: COLORS.purple }}>你的练习会留下什么</p>
+              <h2 className="mt-3 text-2xl font-black tracking-[-0.045em]">不是打卡压力，是看得见的动笔轨迹。</h2>
+              <p className="mt-3 text-sm font-bold leading-6" style={{ color: COLORS.inkSoft }}>每次完成都会进入星图，并记录日期、亲手完成笔数和所用引导，为后续观察绘画入门变化提供依据。</p>
             </div>
-            <p style={{ fontSize: '0.8rem', color: '#888888', fontWeight: 600, marginTop: '0.25rem' }}>
-              上海交通大学 · 星月绘愈社 · 2026 Light 创造营
+          </div>
+        </section>
+
+        <section id="how-it-works" className="mx-auto w-full max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+          <div className="max-w-3xl">
+            <p className="text-xs font-black tracking-[0.18em]" style={{ color: COLORS.purple }}>为什么更容易开始</p>
+            <h2 className="mt-4 text-[clamp(2.2rem,5vw,4.3rem)] font-black leading-[1.02] tracking-[-0.055em]">
+              难的往往不是画不好，
+              <br />而是不知道第一笔落在哪里。
+            </h2>
+            <p className="mt-6 max-w-2xl text-base font-bold leading-8" style={{ color: COLORS.inkSoft }}>
+              星迹智绘不替你跳过绘画过程。它把复杂任务拆小、把下一步说清，再把画笔交回给你。
             </p>
           </div>
-          <div className="flex gap-2 flex-wrap justify-center">
-            {['Next.js', '笔触分解', 'Canvas 2D', '触屏适配', '零依赖算法'].map(tag => (
-              <span key={tag} className="px-3 py-1 rounded-full"
-                style={{ background: 'white', border: '1.5px solid #1A1A1A', fontSize: '0.75rem', fontWeight: 700, color: '#1A1A1A' }}>
-                {tag}
-              </span>
-            ))}
+
+          <div className="mt-12 grid gap-5 lg:grid-cols-3">
+            {FEATURES.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <motion.article
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ delay: index * 0.08 }}
+                  className="rounded-[1.75rem] p-6 sm:p-7"
+                  style={{ background: COLORS.white, border: `2px solid ${COLORS.ink}`, boxShadow: `6px 6px 0 ${feature.color}` }}
+                >
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl" style={{ background: feature.color }}>
+                    <Icon size={24} strokeWidth={2.6} />
+                  </span>
+                  <p className="mt-7 text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>{feature.eyebrow}</p>
+                  <h3 className="mt-2 text-2xl font-black leading-tight tracking-[-0.04em]">{feature.title}</h3>
+                  <p className="mt-4 text-sm font-bold leading-7" style={{ color: COLORS.inkSoft }}>{feature.body}</p>
+                </motion.article>
+              );
+            })}
           </div>
+        </section>
+
+        <section id="product-research" className="scroll-mt-6 px-5 py-20 sm:px-8 lg:px-10 lg:py-28" style={{ background: COLORS.ink }}>
+          <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div>
+              <div
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black tracking-[0.12em]"
+                style={{ background: COLORS.yellow, color: COLORS.ink }}
+              >
+                <FlaskConical size={16} strokeWidth={2.6} />
+                RESEARCH PROTOTYPE
+              </div>
+              <h2 className="mt-6 max-w-xl text-[clamp(2.35rem,5vw,4.6rem)] font-black leading-[1.02] tracking-[-0.055em] text-white">
+                不只完成一幅画，
+                <br />也验证一种新的入门方式。
+              </h2>
+              <p className="mt-6 max-w-xl text-base font-bold leading-8 text-white/68">
+                星迹智绘将笔触拆解算法转化为可交互的绘画引导，研究它能否降低零基础用户的首次动笔阻力，并提高持续练习频次。
+              </p>
+              <button
+                onClick={() => router.push('/intro')}
+                className="mt-8 inline-flex items-center gap-2 rounded-full px-6 py-4 text-base font-black"
+                style={{ background: COLORS.white, color: COLORS.ink, boxShadow: `5px 5px 0 ${COLORS.purple}` }}
+              >
+                <BookOpen size={19} strokeWidth={2.6} />
+                查看完整产品与技术介绍
+                <ArrowRight size={18} strokeWidth={2.8} />
+              </button>
+            </div>
+
+            <div
+              className="rounded-[2rem] p-5 sm:p-7"
+              style={{ background: '#222F4E', border: '2px solid rgba(255,255,255,0.24)' }}
+            >
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-black tracking-[0.14em]" style={{ color: COLORS.mint }}>研究路径</p>
+                  <p className="mt-1 text-lg font-black text-white">从技术能力到可测量的学习行为</p>
+                </div>
+                <BrainCircuit size={28} color={COLORS.yellow} strokeWidth={2.2} />
+              </div>
+              <div className="grid gap-3 sm:grid-cols-4">
+                {[
+                  ['01', '参考图像', '选择真正想画的内容'],
+                  ['02', '笔触拆解', '生成由粗到细的路径'],
+                  ['03', '渐进引导', '每次只解决下一笔'],
+                  ['04', '行为验证', '记录动笔与完成变化'],
+                ].map(([num, title, body], index) => (
+                  <div key={num} className="relative rounded-2xl p-4" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                    <p className="text-xs font-black" style={{ color: [COLORS.yellow, COLORS.mint, '#B8AEFF', COLORS.pink][index] }}>{num}</p>
+                    <p className="mt-7 text-sm font-black text-white">{title}</p>
+                    <p className="mt-2 text-xs font-bold leading-5 text-white/55">{body}</p>
+                    {index < 3 && (
+                      <ArrowRight className="absolute -right-2.5 top-7 z-10 hidden sm:block" size={18} color={COLORS.yellow} strokeWidth={3} />
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                {[
+                  ['首次落笔时间', '启动阻力'],
+                  ['完成与独立笔触', '入门帮助'],
+                  ['练习启动频次', '持续动笔'],
+                ].map(([metric, meaning]) => (
+                  <div key={metric} className="rounded-xl px-3 py-3" style={{ background: COLORS.white }}>
+                    <p className="text-xs font-black" style={{ color: COLORS.ink }}>{metric}</p>
+                    <p className="mt-1 text-[10px] font-extrabold" style={{ color: COLORS.inkSoft }}>{meaning}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-28" style={{ background: COLORS.white }}>
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+              <div>
+                <p className="text-xs font-black tracking-[0.18em]" style={{ color: COLORS.purple }}>一次完整练习</p>
+                <h2 className="mt-4 text-[clamp(2.2rem,5vw,4.3rem)] font-black leading-none tracking-[-0.055em]">
+                  五步完成一幅画
+                </h2>
+              </div>
+              <p className="max-w-md text-sm font-bold leading-7" style={{ color: COLORS.inkSoft }}>
+                从“想画”到“真的画完”，每一步都有明确结果，也始终保留你自己动笔的空间。
+              </p>
+            </div>
+
+            <div className="mt-12 grid gap-4 md:grid-cols-5">
+              {STEPS.map((step, index) => {
+                const Icon = step.icon;
+                const accents = [COLORS.yellow, COLORS.mint, COLORS.purpleSoft, '#FFE5ED', '#E6F3FF'];
+                return (
+                  <motion.article
+                    key={step.num}
+                    initial={{ opacity: 0, y: 18 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.06 }}
+                    className="relative rounded-[1.5rem] p-5"
+                    style={{ background: accents[index], border: `2px solid ${COLORS.ink}` }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>{step.num}</span>
+                      <Icon size={22} strokeWidth={2.6} />
+                    </div>
+                    <h3 className="mt-8 text-lg font-black tracking-[-0.03em]">{step.title}</h3>
+                    <p className="mt-3 text-sm font-bold leading-6" style={{ color: COLORS.inkSoft }}>{step.body}</p>
+                  </motion.article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+          <div
+            className="relative overflow-hidden rounded-[2.25rem] px-6 py-12 sm:px-10 lg:grid lg:grid-cols-[1fr_auto] lg:items-center lg:gap-12 lg:px-14 lg:py-16"
+            style={{ background: COLORS.purple, color: COLORS.white, border: `2px solid ${COLORS.ink}`, boxShadow: `9px 9px 0 ${COLORS.yellow}` }}
+          >
+            <div className="absolute -right-12 -top-16 h-56 w-56 rounded-full border-[34px] border-white/10" aria-hidden="true" />
+            <div className="relative z-10">
+              <div className="mb-5 flex items-center gap-2 text-xs font-black tracking-[0.16em] text-white/75">
+                <CalendarDays size={17} />
+                今天就留下第一条星迹
+              </div>
+              <h2 className="max-w-3xl text-[clamp(2.3rem,5vw,4.5rem)] font-black leading-[1.02] tracking-[-0.055em]">
+                你不需要先成为会画画的人。
+              </h2>
+              <p className="mt-5 max-w-2xl text-base font-bold leading-8 text-white/75">
+                先完成第一笔，再完成第一幅。月亮伙伴会在下一颗星点等你。
+              </p>
+            </div>
+            <motion.button
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => router.push('/create')}
+              className="relative z-10 mt-8 inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-base font-black lg:mt-0"
+              style={{ background: COLORS.yellow, color: COLORS.ink, border: `2px solid ${COLORS.ink}` }}
+            >
+              开始画第一笔
+              <ArrowRight size={19} strokeWidth={2.8} />
+            </motion.button>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t-2 px-5 py-8 sm:px-8 lg:px-10" style={{ borderColor: COLORS.ink, background: COLORS.white }}>
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: COLORS.yellow }}>
+              <Moon size={19} strokeWidth={2.5} />
+            </span>
+            <div>
+              <p className="font-black tracking-[-0.03em]">星迹智绘 StarTrace</p>
+              <p className="mt-0.5 text-xs font-bold" style={{ color: COLORS.inkSoft }}>沿着星迹，一笔一笔画出自己的世界。</p>
+            </div>
+          </div>
+          <p className="text-xs font-bold" style={{ color: COLORS.inkSoft }}>智能笔触拆解 · 渐进式绘画引导 · 作品成长记录</p>
         </div>
       </footer>
     </div>

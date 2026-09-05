@@ -106,7 +106,7 @@ export default function SDRenderLoading({ styleName, progress, commentaryMessage
         <div className="mt-4">
           <div className="flex justify-between items-center mb-1.5">
             <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#999' }}>
-              Starry 正在邀请 {styleName} 先生...
+              月亮伙伴正在生成 {styleName} 风格星光...
             </span>
             <span style={{ fontSize: '0.95rem', fontWeight: 900, color: '#1A1A1A' }}>
               {pct}%

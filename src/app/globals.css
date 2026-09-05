@@ -212,6 +212,7 @@ h1, h2, h3, h4, h5, h6 {
 /* ── Canvas touch ──────────────────────── */
 canvas.paint-canvas {
   touch-action: none;
+  cursor: url('/cursors/star-wand.svg') 25 6, crosshair;
 }
 
 /* ── Scrollbar ─────────────────────────── */
@@ -253,40 +254,18 @@ canvas.paint-canvas {
 .animate-pop-in        { animation: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
 
 /* ── Calm Mode ────────────────────────── */
-[data-calm="true"] {
-  --color-yellow:  #7BA7CC;
-  --color-pink:    #7BA7CC;
-  --color-green:   #7BA7CC;
-  --color-purple:  #7BA7CC;
-  --color-black:   #333333;
-  --color-bg:      #FAFAFA;
-  --color-bg-soft: #F5F5F5;
-  --color-border:  #E0E0E0;
-  --color-text:    #333333;
-  --color-muted:   #999999;
-}
-
-[data-calm="true"] body,
-[data-calm="true"] {
-  background: #FAFAFA !important;
-  font-size: 18px;
-}
-
-[data-calm="true"] .animate-float,
-[data-calm="true"] .animate-wiggle,
-[data-calm="true"] .animate-bounce-gentle,
-[data-calm="true"] .animate-pop-in {
+[data-reduced-motion="true"] .animate-float,
+[data-reduced-motion="true"] .animate-wiggle,
+[data-reduced-motion="true"] .animate-bounce-gentle,
+[data-reduced-motion="true"] .animate-pop-in {
   animation: none !important;
 }
 
-[data-calm="true"] .btn-black {
-  background: #555;
-  box-shadow: none;
-}
-
-[data-calm="true"] .btn-purple {
-  background: #7BA7CC;
-  box-shadow: none;
+[data-reduced-motion="true"] *,
+[data-reduced-motion="true"] *::before,
+[data-reduced-motion="true"] *::after {
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
 }
 
 .dark {

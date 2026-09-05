@@ -8,8 +8,8 @@ import GlobalDock from "@/components/GlobalDock";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: "星绘智愈 - AI 辅助油画创作",
-  description: "让每个人都能画出大师级油画",
+  title: "星迹智绘 StarTrace - 从第一笔开始学画画",
+  description: "面向零基础绘画者的智能笔触拆解与渐进式绘画引导应用",
 };
 
 export const viewport = {
@@ -17,7 +17,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 5,
   viewportFit: 'cover' as const,
-  themeColor: '#FFFFFF',
+  themeColor: '#F6F7FB',
 };
 
 export default function RootLayout({

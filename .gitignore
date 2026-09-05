@@ -41,7 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 # internal plan docs (not for public repo)
-ASD_IMPROVEMENT_PLAN.md
 GPTimprovement.md
 PLAN_COMPARISON.md
 WECHAT_MINIPROGRAM.md

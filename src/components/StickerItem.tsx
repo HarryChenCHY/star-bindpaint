@@ -1,5 +1,8 @@
 'use client';
 
+/* eslint-disable react-hooks/exhaustive-deps, react-hooks/immutability, react-hooks/preserve-manual-memoization */
+/* eslint-disable @next/next/no-img-element */
+
 import { useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Maximize2, X } from 'lucide-react';

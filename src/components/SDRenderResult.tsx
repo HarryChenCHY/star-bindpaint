@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable @next/next/no-img-element */
+
 import { motion } from 'framer-motion';
 
 interface SDRenderResultProps {
@@ -33,10 +35,10 @@ export default function SDRenderResult({ originalImage, renderedImage, style, du
         {/* 标题 */}
         <div className="text-center mb-5">
           <h3 style={{ fontWeight: 900, fontSize: 'clamp(1.15rem, 5vw, 1.3rem)', color: '#1A1A1A' }}>
-            ✨ Starry 的魔法
+            ✨ 月亮伙伴的星光变换
           </h3>
           <p style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600, marginTop: 4 }}>
-            {style} 油画家先生用时 {Math.round(duration / 1000)} 秒完成
+            AI 用时 {Math.round(duration / 1000)} 秒生成 {style} 风格结果
           </p>
         </div>
 
@@ -60,7 +62,7 @@ export default function SDRenderResult({ originalImage, renderedImage, style, du
           {/* 渲染结果 */}
           <div className="flex-1">
             <p className="text-center mb-2" style={{ fontSize: '0.75rem', fontWeight: 700, color: '#7A51EC', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              ✨ 油画版
+              ✨ AI 风格版
             </p>
             <div className="rounded-xl overflow-hidden" style={{ border: '2px solid #7A51EC', boxShadow: '0 4px 20px rgba(122,81,236,0.2)' }}>
               <img src={renderedImage} alt="AI渲染结果" className="w-full object-contain bg-white" style={{ maxHeight: '30vh' }} />
@@ -98,11 +100,15 @@ export default function SDRenderResult({ originalImage, renderedImage, style, du
               padding: '0.85em 1.2em',
             }}
           >
-            <span>🖼️</span> 放进画廊
+            <span>🖼️</span> 放进星图
           </button>
           <button
             onPointerDown={(e) => { e.stopPropagation(); }}
-            onClick={(e) => { e.stopPropagation(); onFinish ? onFinish() : onClose(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onFinish) onFinish();
+              else onClose();
+            }}
             className="flex-1 rounded-full font-bold text-sm flex items-center justify-center gap-2"
             style={{
               background: '#7A51EC',

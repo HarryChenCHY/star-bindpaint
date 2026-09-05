@@ -1,588 +1,450 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import StarrySprite from '@/components/StarrySprite';
-import ImageUploader from '@/components/ImageUploader';
-import { MiniStar } from '@/components/Characters';
-import { MASTER_ARTISTS, MOOD_OPTIONS, MasterArtist, Masterwork } from '@/lib/masterworks';
-import { MASTER_DIALOGUES } from '@/lib/master-dialogues';
-import { MASTER_STYLES } from '@/lib/style-transfer';
-import MasterBubble from '@/components/MasterBubble';
-import MasterQuoteCard from '@/components/MasterQuoteCard';
-import TiltedCard from '@/components/TiltedCard';
+/* eslint-disable react-hooks/set-state-in-effect */
 
-type SourceMode = 'masters' | 'upload' | 'free';
+import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Brush,
+  Check,
+  CircleDot,
+  Image as ImageIcon,
+  Layers3,
+  Moon,
+  Palette,
+  Route,
+  Sparkles,
+  Upload,
+  Wand2,
+} from 'lucide-react';
+import ImageUploader from '@/components/ImageUploader';
+import { MASTER_ARTISTS, MasterArtist, Masterwork } from '@/lib/masterworks';
+import { MASTER_STYLES } from '@/lib/style-transfer';
+import { useAppSettings } from '@/contexts/AppContext';
+
+type SourceMode = 'examples' | 'upload' | 'free';
+type GuidanceLevel = 'full' | 'balanced' | 'light';
+type PreparedSource = {
+  kind: 'example' | 'upload';
+  title: string;
+  subtitle: string;
+  preview: string;
+};
+
+const COLORS = {
+  ink: '#17233F',
+  inkSoft: '#536079',
+  purple: '#6558D9',
+  purpleSoft: '#ECEAFE',
+  yellow: '#FFD166',
+  mint: '#69D2C2',
+  pink: '#FF8FAB',
+  paper: '#F6F7FB',
+  white: '#FFFFFF',
+};
+
+const GUIDANCE_OPTIONS: Array<{
+  id: GuidanceLevel;
+  title: string;
+  body: string;
+  badge: string;
+}> = [
+  { id: 'full', title: '完整引导', body: '显示起点、轨迹、方向和颜色', badge: '第一次画推荐' },
+  { id: 'balanced', title: '适度引导', body: '显示起点与轨迹，保留更多判断', badge: '已有少量经验' },
+  { id: 'light', title: '轻量提示', body: '仅提示结构顺序和起笔区域', badge: '想自主练习' },
+];
+
+const BRUSH_OPTIONS = [
+  { value: 1, title: '细节更多', body: '更多小笔触，适合慢慢完成' },
+  { value: 2, title: '均衡笔触', body: '结构和细节比较平衡' },
+  { value: 3, title: '大笔概括', body: '更少、更大的笔触，较快完成' },
+];
+
+function cacheImage(img: HTMLImageElement) {
+  const canvas = document.createElement('canvas');
+  const maxSize = 512;
+  let width = img.naturalWidth;
+  let height = img.naturalHeight;
+
+  if (Math.max(width, height) > maxSize) {
+    const scale = maxSize / Math.max(width, height);
+    width = Math.round(width * scale);
+    height = Math.round(height * scale);
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+  canvas.getContext('2d')?.drawImage(img, 0, 0, width, height);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+  sessionStorage.setItem('star-bindpaint-source', dataUrl);
+  sessionStorage.setItem('star-bindpaint-source-w', String(width));
+  sessionStorage.setItem('star-bindpaint-source-h', String(height));
+  return dataUrl;
+}
 
 export default function CreatePage() {
   const router = useRouter();
-  const [sourceMode, setSourceMode] = useState<SourceMode>('masters');
-  const [selectedArtist, setSelectedArtist] = useState<MasterArtist | null>(null);
-  const [selectedWork, setSelectedWork] = useState<Masterwork | null>(null);
-  const [selectedMood, setSelectedMood] = useState('original');
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const { settings, hydrated } = useAppSettings();
+  const [sourceMode, setSourceMode] = useState<SourceMode>('examples');
+  const [preparedSource, setPreparedSource] = useState<PreparedSource | null>(null);
+  const [preparing, setPreparing] = useState(false);
+  const [prepareError, setPrepareError] = useState('');
+  const [guidance, setGuidance] = useState<GuidanceLevel>('full');
   const [roughness, setRoughness] = useState(2);
-  const [dialogueMsg, setDialogueMsg] = useState('');
-  const [bgImage, setBgImage] = useState('/masterworks/monet/water_lilies_1918.jpg');
   const [selectedFreeStyle, setSelectedFreeStyle] = useState('vangogh');
 
-  // 选择大师作品后加载图片到 sessionStorage
-  const handleSelectWork = (artist: MasterArtist, work: Masterwork) => {
-    setSelectedWork(work);
-    setSelectedArtist(artist);
-    setBgImage(work.image);
+  useEffect(() => {
+    if (hydrated) setGuidance(settings.defaultGuidance);
+  }, [hydrated, settings.defaultGuidance]);
 
-    // 设置鼓励语
-    const d = MASTER_DIALOGUES[artist.id];
-    if (d) {
-      const enc = d.encouragements[Math.floor(Math.random() * d.encouragements.length)];
-      setDialogueMsg(enc);
-    }
+  const curatedWorks = useMemo(
+    () => MASTER_ARTISTS.flatMap(artist => artist.works.slice(0, 2).map(work => ({ artist, work }))),
+    [],
+  );
 
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const maxSize = 512;
-      let w = img.naturalWidth;
-      let h = img.naturalHeight;
-      if (Math.max(w, h) > maxSize) {
-        const scale = maxSize / Math.max(w, h);
-        w = Math.round(w * scale);
-        h = Math.round(h * scale);
-      }
-      canvas.width = w;
-      canvas.height = h;
-      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-      sessionStorage.setItem('star-bindpaint-source', canvas.toDataURL('image/jpeg', 0.9));
-      sessionStorage.setItem('star-bindpaint-source-w', String(w));
-      sessionStorage.setItem('star-bindpaint-source-h', String(h));
-      sessionStorage.setItem('star-bindpaint-master', JSON.stringify({
-        id: work.id,
-        title: work.title,
-        artist: artist.name,
-      }));
-      setImageLoaded(true);
-    };
-    img.src = work.image;
-  };
-
-  // 用户上传自己的图片
-  const handleImageUploaded = (img: HTMLImageElement) => {
-    const canvas = document.createElement('canvas');
-    const maxSize = 512;
-    let w = img.naturalWidth;
-    let h = img.naturalHeight;
-    if (Math.max(w, h) > maxSize) {
-      const scale = maxSize / Math.max(w, h);
-      w = Math.round(w * scale);
-      h = Math.round(h * scale);
-    }
-    canvas.width = w;
-    canvas.height = h;
-    canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-    sessionStorage.setItem('star-bindpaint-source', canvas.toDataURL('image/jpeg', 0.9));
-    sessionStorage.setItem('star-bindpaint-source-w', String(w));
-    sessionStorage.setItem('star-bindpaint-source-h', String(h));
+  const resetPreparedSource = () => {
+    setPreparedSource(null);
+    setPrepareError('');
+    sessionStorage.removeItem('star-bindpaint-source');
     sessionStorage.removeItem('star-bindpaint-master');
-    setSelectedArtist(null);
-    setSelectedWork(null);
-    setImageLoaded(true);
   };
 
-  const handleStart = () => {
+  const changeMode = (mode: SourceMode) => {
+    setSourceMode(mode);
+    resetPreparedSource();
+  };
+
+  const handleSelectWork = (artist: MasterArtist, work: Masterwork) => {
+    setPreparing(true);
+    setPrepareError('');
+
+    const image = new window.Image();
+    image.crossOrigin = 'anonymous';
+    image.onload = () => {
+      try {
+        cacheImage(image);
+        sessionStorage.setItem('star-bindpaint-master', JSON.stringify({
+          id: work.id,
+          title: work.title,
+          artist: artist.name,
+        }));
+        sessionStorage.removeItem('star-bindpaint-free-style');
+        setPreparedSource({
+          kind: 'example',
+          title: `《${work.title}》`,
+          subtitle: `${artist.name} · ${work.year}`,
+          preview: work.image,
+        });
+      } catch {
+        setPrepareError('图片准备失败，请换一幅作品重试。');
+      } finally {
+        setPreparing(false);
+      }
+    };
+    image.onerror = () => {
+      setPreparing(false);
+      setPrepareError('图片加载失败，请换一幅作品重试。');
+    };
+    image.src = work.image;
+  };
+
+  const handleImageUploaded = (image: HTMLImageElement) => {
+    setPreparing(true);
+    setPrepareError('');
+    try {
+      const dataUrl = cacheImage(image);
+      sessionStorage.removeItem('star-bindpaint-master');
+      sessionStorage.removeItem('star-bindpaint-free-style');
+      setPreparedSource({
+        kind: 'upload',
+        title: '我的参考图片',
+        subtitle: '已准备生成星迹',
+        preview: dataUrl,
+      });
+    } catch {
+      setPrepareError('图片处理失败，请尝试 JPG 或 PNG 图片。');
+    } finally {
+      setPreparing(false);
+    }
+  };
+
+  const handleStartGuided = () => {
+    if (!preparedSource) return;
     sessionStorage.setItem('star-bindpaint-roughness', String(roughness));
-    sessionStorage.setItem('star-bindpaint-mood', selectedMood);
+    sessionStorage.setItem('startrace-guidance-level', guidance);
+    sessionStorage.setItem('startrace-entry-mode', preparedSource.kind);
     sessionStorage.removeItem('star-bindpaint-free-style');
     router.push('/paint');
   };
 
-  const [freeDifficulty, setFreeDifficulty] = useState<'sticker' | 'tracing' | 'free'>('free');
-
   const handleStartFree = () => {
     sessionStorage.setItem('star-bindpaint-free-style', selectedFreeStyle);
-    sessionStorage.setItem('star-bindpaint-difficulty', freeDifficulty);
+    sessionStorage.setItem('star-bindpaint-difficulty', 'free');
+    sessionStorage.setItem('startrace-entry-mode', 'free');
+    sessionStorage.setItem('startrace-guidance-level', guidance);
     sessionStorage.removeItem('star-bindpaint-source');
+    sessionStorage.removeItem('star-bindpaint-master');
     router.push('/paint');
   };
 
-  const roughnessLabels = ['很多很多笔 🐢', '不多不少 🌿', '大大的笔触 🎨', '超大笔刷 🖌️'];
-  const ready = imageLoaded;
-
-  // 情绪色调对应的 CSS 滤镜（实时预览用）
-  function getMoodFilter(mood: string): string {
-    switch (mood) {
-      case 'warm': return 'sepia(0.2) saturate(1.2) hue-rotate(-10deg)';
-      case 'calm': return 'saturate(0.8) brightness(1.05) hue-rotate(15deg)';
-      case 'vivid': return 'saturate(1.5)';
-      case 'dreamy': return 'saturate(0.7) brightness(1.15) hue-rotate(20deg)';
-      default: return 'none';
-    }
-  }
-
   return (
-    <div className="flex-1 flex flex-col min-h-screen relative">
-      {/* 大师画作背景（fixed：滚动时永远覆盖视口，避免长内容下方露白） */}
-      <div className="fixed inset-0 z-0 pointer-events-none transition-all duration-700">
-        <img src={bgImage} alt="" className="w-full h-full object-cover transition-all duration-700" />
-        <div className="absolute inset-0" style={{ background: 'rgba(255,255,255,0.78)', backdropFilter: 'blur(2px)' }} />
-      </div>
-
-      {/* Header */}
-      <header className="relative z-10 flex items-center justify-between px-3 sm:px-8 py-4 sm:py-5 gap-2" style={{ borderBottom: '2px solid #1A1A1A', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)' }}>
-        <button onClick={() => router.push('/')} className="flex items-center gap-2"
-          style={{ fontWeight: 800, fontSize: 'clamp(0.8rem, 2.4vw, 0.9rem)', color: '#1A1A1A' }}>
-          <span className="hidden sm:inline">← 返回首页</span>
-          <span className="sm:hidden">← 返回</span>
-        </button>
-        <span style={{ fontWeight: 900, fontSize: 'clamp(0.95rem, 3vw, 1.1rem)', letterSpacing: '-0.03em', color: '#1A1A1A' }}>
-          选择画作
-        </span>
-        <div className="hidden sm:block" style={{ width: '80px' }} />
+    <div className="min-h-screen overflow-x-hidden pb-28" style={{ background: COLORS.paper, color: COLORS.ink }}>
+      <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur" style={{ borderColor: '#D9DDEA' }}>
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-10">
+          <button onClick={() => router.push('/')} className="flex items-center gap-2 text-sm font-black">
+            <ArrowLeft size={18} strokeWidth={2.8} />
+            <span className="hidden sm:inline">返回首页</span>
+          </button>
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: COLORS.yellow, border: `2px solid ${COLORS.ink}` }}>
+              <Moon size={19} strokeWidth={2.6} />
+            </span>
+            <div>
+              <p className="text-sm font-black tracking-[-0.03em]">开始一条新星迹</p>
+              <p className="text-[9px] font-extrabold tracking-[0.14em]" style={{ color: COLORS.inkSoft }}>CREATE WITH STARTRACE</p>
+            </div>
+          </div>
+          <button onClick={() => router.push('/intro')} className="hidden text-sm font-black sm:block" style={{ color: COLORS.purple }}>
+            产品说明
+          </button>
+          <div className="w-[18px] sm:hidden" />
+        </div>
       </header>
 
-      <div className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-6 sm:py-8 max-w-4xl mx-auto w-full">
+      <main className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 lg:px-10 lg:py-14">
+        <section className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black tracking-[0.1em]" style={{ background: COLORS.purpleSoft, color: COLORS.purple }}>
+              <Sparkles size={15} strokeWidth={2.6} />
+              第一步不是画得好，而是选一幅想画的
+            </div>
+            <h1 className="mt-6 max-w-4xl text-[clamp(2.7rem,6vw,5.4rem)] font-black leading-[0.98] tracking-[-0.06em]">
+              今天想沿着哪条
+              <span className="block" style={{ color: COLORS.purple }}>星迹开始？</span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-base font-bold leading-8" style={{ color: COLORS.inkSoft }}>
+              选择一幅示例作品，或上传你真正想画的图片。系统会先拆解画面，再把复杂任务变成眼前的一笔。
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-extrabold" style={{ color: COLORS.inkSoft }}>
+            <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ background: COLORS.yellow, color: COLORS.ink }}>1</span>
+            选画面
+            <ArrowRight size={14} />
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">2</span>
+            设引导
+            <ArrowRight size={14} />
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">3</span>
+            开始画
+          </div>
+        </section>
 
-        {/* Source mode tabs */}
-        <div className="flex gap-2 mb-8 justify-center flex-wrap">
-          <button
-            onClick={() => { setSourceMode('masters'); setImageLoaded(false); setSelectedWork(null); }}
-            className="px-5 py-2.5 rounded-full text-sm transition-all"
-            style={{
-              fontWeight: 800,
-              background: sourceMode === 'masters' ? '#1A1A1A' : '#F5F5F5',
-              color: sourceMode === 'masters' ? '#FFFFFF' : '#1A1A1A',
-              border: '2px solid #1A1A1A',
-            }}
-          >
-            大师作品库
-          </button>
-          <button
-            onClick={() => { setSourceMode('free'); setImageLoaded(false); setSelectedWork(null); }}
-            className="px-5 py-2.5 rounded-full text-sm transition-all"
-            style={{
-              fontWeight: 800,
-              background: sourceMode === 'free' ? '#7A51EC' : '#F5F5F5',
-              color: sourceMode === 'free' ? '#FFFFFF' : '#1A1A1A',
-              border: `2px solid ${sourceMode === 'free' ? '#7A51EC' : '#1A1A1A'}`,
-            }}
-          >
-            自由创作
-          </button>
-          <button
-            onClick={() => { setSourceMode('upload'); setImageLoaded(false); setSelectedWork(null); }}
-            className="px-5 py-2.5 rounded-full text-sm transition-all"
-            style={{
-              fontWeight: 800,
-              background: sourceMode === 'upload' ? '#1A1A1A' : '#F5F5F5',
-              color: sourceMode === 'upload' ? '#FFFFFF' : '#1A1A1A',
-              border: '2px solid #1A1A1A',
-            }}
-          >
-            上传图片
-          </button>
+        <div className="mt-10 flex flex-wrap gap-2" role="tablist" aria-label="创作方式">
+          {([
+            ['examples', ImageIcon, '精选临摹', '零基础推荐'],
+            ['upload', Upload, '上传图片', '画自己喜欢的'],
+            ['free', Palette, '自由画布', '不使用拆解路径'],
+          ] as const).map(([id, Icon, title, detail]) => {
+            const active = sourceMode === id;
+            return (
+              <button
+                key={id}
+                role="tab"
+                aria-selected={active}
+                onClick={() => changeMode(id)}
+                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-left transition-transform hover:-translate-y-0.5 sm:px-5"
+                style={{
+                  background: active ? COLORS.ink : COLORS.white,
+                  color: active ? COLORS.white : COLORS.ink,
+                  border: `2px solid ${COLORS.ink}`,
+                  boxShadow: active ? `4px 4px 0 ${COLORS.yellow}` : 'none',
+                }}
+              >
+                <Icon size={20} strokeWidth={2.5} />
+                <span>
+                  <span className="block text-sm font-black">{title}</span>
+                  <span className="mt-0.5 block text-[10px] font-bold" style={{ color: active ? 'rgba(255,255,255,0.62)' : COLORS.inkSoft }}>{detail}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        <AnimatePresence mode="wait">
-          {/* ===== 大师作品库 ===== */}
-          {sourceMode === 'masters' && (
-            <motion.div key="masters" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
-
-              {/* 未选画家：展示画家列表 */}
-              {!selectedArtist && (
+        {sourceMode !== 'free' ? (
+          <div className="mt-8 grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-start">
+            <section className="rounded-[2rem] bg-white p-5 sm:p-7" style={{ border: `2px solid ${COLORS.ink}` }}>
+              <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-center mb-6" style={{ color: '#888', fontWeight: 700, fontSize: '0.95rem' }}>
-                    选择一位大师，临摹他的经典作品，与他进行心灵对话
+                  <p className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>
+                    {sourceMode === 'examples' ? '选择参考画面' : '上传参考画面'}
                   </p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {MASTER_ARTISTS.map((artist) => (
-                      <motion.div
-                        key={artist.id}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => {
-                          setSelectedArtist(artist);
-                          setBgImage(artist.works[0].image);
-                          const d = MASTER_DIALOGUES[artist.id];
-                          if (d) setDialogueMsg(d.greetings[Math.floor(Math.random() * d.greetings.length)]);
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <TiltedCard
-                          containerHeight="auto"
-                          containerWidth="100%"
-                          imageHeight="auto"
-                          imageWidth="100%"
-                          rotateAmplitude={10}
-                          scaleOnHover={1.04}
-                          showTooltip
-                          captionText={`${artist.name} · ${artist.nameEn}`}
-                        >
-                          <div
-                            className="rounded-[1.5rem] overflow-hidden text-left relative w-full"
-                            style={{ border: '2px solid #1A1A1A', minHeight: '180px', boxShadow: '4px 4px 0 #1A1A1A' }}
-                          >
-                            {/* 底图：第一张画作 */}
-                            <div className="absolute inset-0">
-                              <img
-                                src={artist.works[0].image}
-                                alt=""
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)' }} />
-                            </div>
-
-                            {/* 内容 */}
-                            <div className="relative p-4 flex flex-col justify-end h-full" style={{ minHeight: '180px' }}>
-                              {/* 头像 */}
-                              <div className="absolute top-3 right-3 w-12 h-12 rounded-full overflow-hidden" style={{ border: '2px solid #FFFFFF', boxShadow: '2px 2px 0 #1A1A1A' }}>
-                                <img
-                                  src={`/master/${artist.id}/image.png`}
-                                  alt={artist.name}
-                                  className="w-full h-full object-cover"
-                                  loading="lazy"
-                                />
-                              </div>
-
-                              <h3 style={{ fontWeight: 900, fontSize: '1.2rem', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
-                                {artist.name}
-                              </h3>
-                              <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginTop: '2px' }}>
-                                {artist.nameEn}
-                              </p>
-                              <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginTop: '4px' }}>
-                                {artist.style} · {artist.period}
-                              </p>
-                            </div>
-                          </div>
-                        </TiltedCard>
-                      </motion.div>
-                    ))}
-                  </div>
+                  <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">
+                    {sourceMode === 'examples' ? '从适合拆解的作品开始' : '把喜欢的图片变成绘画步骤'}
+                  </h2>
                 </div>
-              )}
-
-              {/* 已选画家：展示该画家的作品 */}
-              {selectedArtist && !selectedWork && (
-                <div>
-                  <button
-                    onClick={() => { setSelectedArtist(null); setDialogueMsg(''); }}
-                    style={{ fontWeight: 800, fontSize: '0.85rem', color: '#888', marginBottom: '16px' }}
-                  >
-                    ← 返回画家列表
-                  </button>
-
-                  {/* 大师对话气泡 */}
-                  <MasterBubble
-                    artistId={selectedArtist.id}
-                    artistName={selectedArtist.name}
-                    message={dialogueMsg}
-                    quote={MASTER_DIALOGUES[selectedArtist.id]?.quote}
-                    className="mb-6"
-                  />
-
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center"
-                      style={{ background: selectedArtist.color }}>
-                      <span className="text-white text-xl font-bold">{selectedArtist.name[0]}</span>
-                    </div>
-                    <div>
-                      <h2 style={{ fontWeight: 900, fontSize: '1.4rem', color: '#1A1A1A', letterSpacing: '-0.03em' }}>
-                        {selectedArtist.name}的作品
-                      </h2>
-                      <p style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600 }}>{selectedArtist.description}</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {selectedArtist.works.map((work) => (
-                      <motion.div
-                        key={work.id}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => handleSelectWork(selectedArtist, work)}
-                        onMouseEnter={() => {
-                          const story = MASTER_DIALOGUES[selectedArtist.id]?.workStories[work.id];
-                          if (story) setDialogueMsg(story);
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <TiltedCard
-                          containerHeight="auto"
-                          containerWidth="100%"
-                          imageHeight="auto"
-                          imageWidth="100%"
-                          rotateAmplitude={9}
-                          scaleOnHover={1.04}
-                          showTooltip
-                          captionText={work.title}
-                        >
-                          <div
-                            className="rounded-[1.25rem] overflow-hidden text-left bg-white w-full"
-                            style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A' }}
-                          >
-                            <div className="aspect-[4/3] overflow-hidden bg-gray-100">
-                              <img src={work.image} alt={work.title}
-                                className="w-full h-full object-cover" loading="lazy" />
-                            </div>
-                            <div className="p-3" style={{ borderTop: '2px solid #1A1A1A' }}>
-                              <h4 style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1A1A1A', letterSpacing: '-0.02em' }}>{work.title}</h4>
-                              <p style={{ fontSize: '0.7rem', color: '#AAA', fontWeight: 600 }}>{work.titleEn} · {work.year}</p>
-                            </div>
-                          </div>
-                        </TiltedCard>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 已选作品：显示预览 + 进入下一步 */}
-              {selectedWork && (
-                <div className="flex flex-col items-center gap-6">
-                  <button
-                    onClick={() => { setSelectedWork(null); setImageLoaded(false); setDialogueMsg(MASTER_DIALOGUES[selectedArtist!.id]?.greetings[0] || ''); }}
-                    style={{ fontWeight: 800, fontSize: '0.85rem', color: '#888', alignSelf: 'flex-start' }}
-                  >
-                    ← 换一幅画
-                  </button>
-
-                  {/* 大师鼓励语 */}
-                  <MasterBubble
-                    artistId={selectedArtist!.id}
-                    artistName={selectedArtist!.name}
-                    message={dialogueMsg}
-                    className="w-full"
-                  />
-
-                  <div className="rounded-[1.5rem] overflow-hidden max-w-sm w-full" style={{ border: '2px solid #1A1A1A' }}>
-                    <img
-                      src={selectedWork.image}
-                      alt={selectedWork.title}
-                      className="w-full transition-all duration-500"
-                      style={{ filter: getMoodFilter(selectedMood) }}
-                    />
-                    <div className="p-4 bg-white">
-                      <h3 style={{ fontWeight: 900, fontSize: '1.2rem', color: '#1A1A1A' }}>
-                        {selectedArtist?.name} ·《{selectedWork.title}》
-                      </h3>
-                      <p style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600 }}>
-                        {selectedWork.titleEn}, {selectedWork.year}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          )}
-
-          {/* ===== 上传模式 ===== */}
-          {sourceMode === 'upload' && (
-            <motion.div key="upload" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-              className="flex flex-col items-center gap-6">
-              <p style={{ color: '#888', fontWeight: 700, fontSize: '0.95rem' }}>
-                上传你自己的图片，AI 将分析并生成笔触
-              </p>
-              <ImageUploader onImageLoaded={handleImageUploaded} />
-              <MasterQuoteCard variant="compact" className="mt-4" />
-            </motion.div>
-          )}
-
-          {/* ===== 自由创作模式 ===== */}
-          {sourceMode === 'free' && (
-            <motion.div key="free" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-              className="flex flex-col items-center gap-6">
-              <div className="text-center">
-                <h3 style={{ fontWeight: 900, fontSize: '1.3rem', color: '#1A1A1A', marginBottom: 8 }}>
-                  自由画，AI 实时变成油画
-                </h3>
-                <p style={{ color: '#888', fontWeight: 600, fontSize: '0.9rem', maxWidth: 400 }}>
-                  画任何你想画的内容，每一笔都会被实时转化为大师的油画风格
-                </p>
+                <span className="hidden rounded-full px-3 py-2 text-xs font-black sm:inline-flex" style={{ background: COLORS.yellow }}>
+                  {sourceMode === 'examples' ? `${curatedWorks.length} 幅精选` : 'JPG / PNG'}
+                </span>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-xl">
-                {MASTER_STYLES.map(style => {
-                  const artist = MASTER_ARTISTS.find(a => a.id === style.id);
-                  const bgWork = artist?.works[0]?.image || '';
-                  const isSelected = selectedFreeStyle === style.id;
-                  return (
-                    <motion.div
-                      key={style.id}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => setSelectedFreeStyle(style.id)}
-                      className="cursor-pointer"
-                    >
-                      <TiltedCard
-                        containerHeight="auto"
-                        containerWidth="100%"
-                        imageHeight="auto"
-                        imageWidth="100%"
-                        rotateAmplitude={10}
-                        scaleOnHover={1.04}
-                        showTooltip
-                        captionText={`${style.name}风格`}
-                      >
-                        <div
-                          className="rounded-[1.5rem] overflow-hidden text-left relative w-full"
-                          style={{
-                            border: isSelected ? `3px solid ${style.color}` : '2px solid #1A1A1A',
-                            minHeight: '180px',
-                            boxShadow: isSelected ? `4px 4px 0 ${style.color}` : '4px 4px 0 #1A1A1A',
-                          }}
-                        >
-                          {/* 画作背景 */}
-                          <div className="absolute inset-0">
-                            {bgWork && <img src={bgWork} alt="" className="w-full h-full object-cover" loading="lazy" />}
-                            <div className="absolute inset-0" style={{ background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, ${style.color}30 50%, rgba(0,0,0,0.2) 100%)` }} />
-                          </div>
-
-                          {/* 选中标记 */}
-                          {isSelected && (
-                            <div className="absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: style.color, border: '2px solid #1A1A1A' }}>
-                              <span style={{ color: 'white', fontSize: '0.7rem', fontWeight: 900 }}>✓</span>
-                            </div>
-                          )}
-
-                          {/* 头像 */}
-                          <div className="absolute top-3 right-3 w-10 h-10 rounded-full overflow-hidden" style={{ border: '2px solid #FFFFFF', boxShadow: '2px 2px 0 #1A1A1A' }}>
-                            <img
-                              src={`/master/${style.id}/image.png`}
-                              alt={style.name}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-
-                          {/* 文字内容 */}
-                          <div className="relative p-4 flex flex-col justify-end h-full" style={{ minHeight: '160px' }}>
-                            <h4 style={{ fontWeight: 900, fontSize: '1.1rem', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
-                              {style.name}风格
-                            </h4>
-                            <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.7)', fontWeight: 700, textTransform: 'uppercase', marginTop: '2px', letterSpacing: '0.04em' }}>
-                              {style.nameEn} Style
-                            </p>
-                            <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginTop: '4px', lineHeight: 1.3 }}>
-                              {style.description}
-                            </p>
-                          </div>
-                        </div>
-                      </TiltedCard>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              {/* 难度选择 — 三步递进 */}
-              <div className="mt-6 w-full">
-                <p style={{ fontSize: '0.85rem', fontWeight: 800, color: '#888', marginBottom: 10, letterSpacing: '0.04em' }}>
-                  选择难度
-                </p>
-                <div className="flex gap-2">
-                  {([
-                    { id: 'sticker' as const, icon: '🖼️', label: '贴纸拼贴', desc: '拖放贴纸完成画面', color: '#7DC353' },
-                    { id: 'tracing' as const, icon: '✏️', label: '描画临摹', desc: '跟着参考图描画', color: '#F9B801' },
-                    { id: 'free' as const, icon: '🎨', label: '自由创作', desc: '主题引导自由画', color: '#7A51EC' },
-                  ]).map(d => {
-                    const active = freeDifficulty === d.id;
+              {sourceMode === 'examples' ? (
+                <div className="mt-7 grid grid-cols-2 gap-4 md:grid-cols-3">
+                  {curatedWorks.map(({ artist, work }) => {
+                    const selected = preparedSource?.kind === 'example' && preparedSource.title === `《${work.title}》`;
                     return (
                       <motion.button
-                        key={d.id}
-                        whileHover={{ scale: 1.04, y: -2 }}
-                        whileTap={{ scale: 0.96 }}
-                        onClick={() => setFreeDifficulty(d.id)}
-                        className="flex-1 rounded-xl py-3 px-2 flex flex-col items-center gap-1"
+                        key={`${artist.id}-${work.id}`}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleSelectWork(artist, work)}
+                        className="overflow-hidden rounded-[1.4rem] text-left"
                         style={{
-                          background: active ? d.color : '#FFFFFF',
-                          border: '2px solid #1A1A1A',
-                          boxShadow: active ? '3px 3px 0 #1A1A1A' : 'none',
-                          color: active ? '#FFFFFF' : '#1A1A1A',
+                          background: COLORS.white,
+                          border: `2px solid ${selected ? COLORS.purple : COLORS.ink}`,
+                          boxShadow: selected ? `5px 5px 0 ${COLORS.purple}` : `3px 3px 0 ${COLORS.ink}`,
                         }}
                       >
-                        <span style={{ fontSize: '1.3rem' }}>{d.icon}</span>
-                        <span style={{ fontSize: '0.72rem', fontWeight: 900, color: active ? '#FFFFFF' : '#1A1A1A' }}>
-                          {d.label}
-                        </span>
-                        <span style={{ fontSize: '0.58rem', fontWeight: 600, color: active ? 'rgba(255,255,255,0.7)' : '#888' }}>
-                          {d.desc}
-                        </span>
+                        <div className="relative aspect-[4/3] overflow-hidden" style={{ background: COLORS.paper }}>
+                          <Image src={work.image} alt={work.title} fill sizes="(max-width: 768px) 50vw, 28vw" className="object-cover transition-transform duration-300 hover:scale-105" />
+                          {selected && <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full" style={{ background: COLORS.yellow, border: `2px solid ${COLORS.ink}` }}><Check size={17} strokeWidth={3} /></span>}
+                        </div>
+                        <div className="p-4">
+                          <p className="text-sm font-black">《{work.title}》</p>
+                          <p className="mt-1 text-xs font-bold" style={{ color: COLORS.inkSoft }}>{artist.name} · {artist.style}</p>
+                        </div>
                       </motion.button>
                     );
                   })}
                 </div>
+              ) : (
+                <div className="mt-7">
+                  <ImageUploader onImageLoaded={handleImageUploaded} />
+                  <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                    {[
+                      ['画面清晰', '主体轮廓越明确，星迹越容易跟随'],
+                      ['内容适中', '第一次建议选择一个主体的画面'],
+                      ['尊重隐私', '避免上传含敏感个人信息的图片'],
+                    ].map(([title, body], index) => (
+                      <div key={title} className="rounded-2xl p-4" style={{ background: [COLORS.yellow, '#E5F5F1', COLORS.purpleSoft][index] }}>
+                        <p className="text-xs font-black">{title}</p>
+                        <p className="mt-2 text-xs font-bold leading-5" style={{ color: COLORS.inkSoft }}>{body}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {preparing && <p className="mt-5 text-center text-sm font-black" style={{ color: COLORS.purple }}>正在准备图像与星迹数据…</p>}
+              {prepareError && <p className="mt-5 rounded-xl px-4 py-3 text-sm font-bold" style={{ background: '#FFE3EC', color: '#9B2743' }}>{prepareError}</p>}
+            </section>
+
+            <aside className="rounded-[2rem] bg-white p-5 sm:p-6 lg:sticky lg:top-24" style={{ border: `2px solid ${COLORS.ink}`, boxShadow: `6px 6px 0 ${preparedSource ? COLORS.mint : '#D9DDEA'}` }}>
+              {preparedSource ? (
+                <>
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl" style={{ border: `2px solid ${COLORS.ink}` }}>
+                    <Image src={preparedSource.preview} alt={preparedSource.title} fill sizes="(max-width: 1024px) 100vw, 32vw" unoptimized={preparedSource.preview.startsWith('data:')} className="object-cover" />
+                  </div>
+                  <div className="mt-4 flex items-start justify-between gap-3">
+                    <div><p className="text-base font-black">{preparedSource.title}</p><p className="mt-1 text-xs font-bold" style={{ color: COLORS.inkSoft }}>{preparedSource.subtitle}</p></div>
+                    <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full" style={{ background: COLORS.mint }}><Check size={17} strokeWidth={3} /></span>
+                  </div>
+
+                  <div className="my-6 h-px" style={{ background: '#D9DDEA' }} />
+                  <p className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>引导强度</p>
+                  <div className="mt-3 space-y-2">
+                    {GUIDANCE_OPTIONS.map(option => {
+                      const selected = guidance === option.id;
+                      return (
+                        <button key={option.id} onClick={() => setGuidance(option.id)} className="w-full rounded-2xl p-3 text-left" style={{ background: selected ? COLORS.purpleSoft : COLORS.paper, border: `1.5px solid ${selected ? COLORS.purple : 'transparent'}` }}>
+                          <div className="flex items-center justify-between gap-2"><span className="text-sm font-black">{option.title}</span>{selected && <CircleDot size={17} color={COLORS.purple} strokeWidth={3} />}</div>
+                          <p className="mt-1 text-[11px] font-bold leading-5" style={{ color: COLORS.inkSoft }}>{option.body}</p>
+                          {option.id === 'full' && <p className="mt-2 text-[10px] font-black" style={{ color: COLORS.purple }}>{option.badge}</p>}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <p className="mt-6 text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>笔触颗粒度</p>
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {BRUSH_OPTIONS.map(option => {
+                      const selected = roughness === option.value;
+                      return (
+                        <button key={option.value} onClick={() => setRoughness(option.value)} className="rounded-xl p-3 text-center" title={option.body} style={{ background: selected ? COLORS.yellow : COLORS.paper, border: `1.5px solid ${selected ? COLORS.ink : 'transparent'}` }}>
+                          <Brush className="mx-auto" size={18 + option.value * 2} strokeWidth={2.5} />
+                          <span className="mt-2 block text-[10px] font-black leading-4">{option.title}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button onClick={handleStartGuided} className="mt-6 flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-base font-black text-white" style={{ background: COLORS.ink, boxShadow: `4px 4px 0 ${COLORS.yellow}` }}>
+                    生成星迹并开始 <ArrowRight size={18} strokeWidth={2.8} />
+                  </button>
+                </>
+              ) : (
+                <div className="flex min-h-[390px] flex-col items-center justify-center text-center">
+                  <span className="flex h-16 w-16 items-center justify-center rounded-[1.4rem]" style={{ background: COLORS.purpleSoft }}><Route size={30} color={COLORS.purple} strokeWidth={2.4} /></span>
+                  <h3 className="mt-6 text-xl font-black">先选择一幅画面</h3>
+                  <p className="mt-3 max-w-[240px] text-sm font-bold leading-6" style={{ color: COLORS.inkSoft }}>选好后，这里会出现引导强度和笔触设置。</p>
+                  <div className="mt-7 flex items-center gap-2 text-xs font-black" style={{ color: COLORS.purple }}><CircleDot size={15} /> 星点 <ArrowRight size={14} /> <Route size={15} /> 星迹 <ArrowRight size={14} /> <Brush size={15} /> 动笔</div>
+                </div>
+              )}
+            </aside>
+          </div>
+        ) : (
+          <section className="mt-8 grid gap-7 rounded-[2rem] bg-white p-5 sm:p-8 lg:grid-cols-[1fr_0.72fr]" style={{ border: `2px solid ${COLORS.ink}` }}>
+            <div>
+              <p className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>自由画布</p>
+              <h2 className="mt-3 text-3xl font-black tracking-[-0.04em]">不跟参考图，直接表达自己的想法</h2>
+              <p className="mt-4 max-w-2xl text-sm font-bold leading-7" style={{ color: COLORS.inkSoft }}>自由模式保留实时笔触风格化，但不生成星点和星迹，不作为笔触拆解研究的核心练习路径。</p>
+              <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {MASTER_STYLES.map(style => {
+                  const selected = selectedFreeStyle === style.id;
+                  return (
+                    <button key={style.id} onClick={() => setSelectedFreeStyle(style.id)} className="rounded-2xl p-4 text-left" style={{ background: selected ? `${style.color}22` : COLORS.paper, border: `2px solid ${selected ? style.color : 'transparent'}` }}>
+                      <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: style.color }}><Wand2 size={18} color="white" /></span>
+                      <p className="mt-5 text-sm font-black">{style.name}风格</p>
+                      <p className="mt-1 text-[10px] font-bold leading-4" style={{ color: COLORS.inkSoft }}>{style.description}</p>
+                    </button>
+                  );
+                })}
               </div>
-
-              <button onClick={handleStartFree} className="btn-black mt-4"
-                style={{ fontSize: '1.1rem', padding: '1em 3em' }}>
-                开始自由创作 →
+            </div>
+            <aside className="flex flex-col justify-between rounded-[1.6rem] p-6" style={{ background: COLORS.ink, color: COLORS.white }}>
+              <div>
+                <Palette size={32} color={COLORS.yellow} />
+                <h3 className="mt-8 text-2xl font-black">一张空白画布</h3>
+                <div className="mt-5 space-y-3 text-sm font-bold text-white/65">
+                  <p className="flex gap-2"><Check size={17} color={COLORS.mint} /> 自主选择颜色和画笔</p>
+                  <p className="flex gap-2"><Check size={17} color={COLORS.mint} /> 实时笔触风格化</p>
+                  <p className="flex gap-2"><Check size={17} color={COLORS.mint} /> 完成后保存到星图</p>
+                </div>
+              </div>
+              <button onClick={handleStartFree} className="mt-10 flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-base font-black" style={{ background: COLORS.yellow, color: COLORS.ink }}>
+                打开自由画布 <ArrowRight size={18} strokeWidth={2.8} />
               </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* ===== 情绪色调选择（图片准备好后显示）===== */}
-        {ready && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            className="mt-8 p-6 rounded-[1.5rem]" style={{ background: '#F5F5F5', border: '2px solid #1A1A1A' }}>
-            <h3 style={{ fontWeight: 800, fontSize: '1rem', color: '#1A1A1A', marginBottom: '12px' }}>
-              选择情绪色调
-            </h3>
-            <p style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600, marginBottom: '16px' }}>
-              为这幅画选择一种情绪氛围，让你的创作独一无二
-            </p>
-            <div className="flex gap-2 flex-wrap">
-              {MOOD_OPTIONS.map(mood => (
-                <button
-                  key={mood.id}
-                  onClick={() => setSelectedMood(mood.id)}
-                  className="px-4 py-2 rounded-full text-sm transition-all"
-                  style={{
-                    fontWeight: 700,
-                    background: selectedMood === mood.id ? mood.color : 'white',
-                    color: selectedMood === mood.id ? 'white' : '#1A1A1A',
-                    border: `2px solid ${selectedMood === mood.id ? mood.color : '#E5E5E5'}`,
-                  }}
-                >
-                  {mood.label}
-                </button>
-              ))}
-            </div>
-          </motion.div>
+            </aside>
+          </section>
         )}
 
-        {/* ===== 笔触密度（图片准备好后显示）===== */}
-        {ready && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="mt-4 p-6 rounded-[1.5rem]" style={{ background: '#F5F5F5', border: '2px solid #1A1A1A' }}>
-            <div className="flex items-center justify-between mb-4">
-              <label style={{ fontWeight: 800, fontSize: '1rem', color: '#1A1A1A' }}>🖌️ 笔画大小</label>
-              <span className="rounded-full px-3 py-1" style={{ background: '#F9B801', fontSize: '0.75rem', fontWeight: 800, color: '#1A1A1A' }}>
-                {roughnessLabels[roughness - 1]}
-              </span>
-            </div>
-            <input type="range" min="1" max="4" step="1" value={roughness}
-              onChange={e => setRoughness(Number(e.target.value))}
-              className="w-full h-2 rounded-full appearance-none"
-              style={{ accentColor: '#7A51EC', background: '#DDD' }} />
-            <div className="flex justify-between mt-2">
-              {['细细的', '刚刚好', '大一点', '超大的'].map(l => (
-                <span key={l} style={{ fontSize: '0.7rem', fontWeight: 700, color: '#AAA' }}>{l}</span>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        {/* ===== 开始按钮 ===== */}
-        {ready && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-            className="flex justify-center mt-8 mb-12">
-            <button onClick={handleStart} className="btn-black"
-              style={{ fontSize: '1.1rem', padding: '1em 3em' }}>
-              开始创作 →
-            </button>
-          </motion.div>
-        )}
-      </div>
+        <section className="mt-10 grid gap-3 sm:grid-cols-3">
+          {[
+            [Layers3, '先拆解', '系统先处理结构，不要求你先懂理论'],
+            [CircleDot, '再落笔', '每次只关注当前这一颗星点'],
+            [Route, '可退出', '熟悉以后逐渐减少轨迹辅助'],
+          ].map(([Icon, title, body], index) => {
+            const TipIcon = Icon as typeof Layers3;
+            return (
+              <div key={title as string} className="flex gap-4 rounded-2xl p-4" style={{ background: [COLORS.yellow, '#E5F5F1', COLORS.purpleSoft][index] }}>
+                <TipIcon className="flex-none" size={22} strokeWidth={2.5} />
+                <div><p className="text-sm font-black">{title as string}</p><p className="mt-1 text-xs font-bold leading-5" style={{ color: COLORS.inkSoft }}>{body as string}</p></div>
+              </div>
+            );
+          })}
+        </section>
+      </main>
     </div>
   );
 }

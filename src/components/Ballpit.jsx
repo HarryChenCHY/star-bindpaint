@@ -105,11 +105,13 @@ class x {
   }
   #u(e) {
     this.#s = e[0].isIntersecting;
-    this.#s ? this.#w() : this.#z();
+    if (this.#s) this.#w();
+    else this.#z();
   }
   #v() {
     if (this.#s) {
-      document.hidden ? this.#z() : this.#w();
+      if (document.hidden) this.#z();
+      else this.#w();
     }
   }
   #f() {

@@ -3,7 +3,7 @@
  * 管理笔触队列、引导状态、判定逻辑
  */
 
-import { StrokeDrawData, Vec2 } from './stroke-engine';
+import { StrokeDrawData } from './stroke-engine';
 
 export type GuideMode = 'assist' | 'real';  // 辅助模式 | 真实模式
 
@@ -18,41 +18,39 @@ export interface GuideState {
   waitingForUser: boolean;
   /** 最近的匹配分数 */
   lastScore: number;
-  /** 精灵消息 */
+  /** 月亮伙伴消息 */
   message: string;
-  /** 精灵状态 */
+  /** 月亮伙伴状态 */
   spriteState: 'idle' | 'guiding' | 'cheering' | 'thinking';
   /** 是否已完成所有笔触 */
   completed: boolean;
 }
 
 const MESSAGES_GUIDE = [
-  "沿着金色虚线画一笔~",
-  "跟着引导线的方向画~",
-  "看到发光的线了吗？跟着画~",
-  "这一笔往这个方向~",
+  '从黄色星点开始，沿着星迹画这一笔。',
+  '先看起点，再顺着轨迹移动画笔。',
+  '只关注眼前这一笔，不用急着看完整画面。',
+  '沿着星迹的方向，完成当前笔触。',
 ];
 
 const MESSAGES_GOOD = [
-  "画得真棒！",
-  "太厉害了！",
-  "完美！继续加油！",
-  "好漂亮的一笔！",
-  "真有天赋！",
+  '这一笔已经点亮，继续寻找下一颗星点。',
+  '完成一笔，画面的结构又清楚了一些。',
+  '轨迹已完成，下一笔会接着出现。',
+  '很好，你正在建立自己的绘画节奏。',
 ];
 
 const MESSAGES_TRY = [
-  "再试一次，你可以的！",
-  "没关系，跟着虚线再画一次~",
-  "加油，往那个方向~",
+  '可以再试一次：先对准黄色星点。',
+  '试着把方向放慢一些，再沿星迹走一遍。',
+  '这一笔还没有匹配，看看起点和方向。',
 ];
 
 const MESSAGES_FREE = [
-  "画得很有创意！",
-  "好漂亮的颜色！",
-  "继续发挥想象力~",
-  "你的画好有意思！",
-  "真棒，继续画吧！",
+  '这笔颜色已经留在画布上。',
+  '继续沿着自己的想法画。',
+  '新的笔触已经加入作品。',
+  '保持这个节奏，继续完成画面。',
 ];
 
 function randomPick<T>(arr: T[]): T {
@@ -73,7 +71,7 @@ export class GuideSystem {
       currentStroke: null,
       waitingForUser: false,
       lastScore: 0,
-      message: "上传一张图片开始创作吧~",
+      message: '选择一张图片，开始生成星迹。',
       spriteState: 'idle',
       completed: false,
     };
@@ -115,7 +113,7 @@ export class GuideSystem {
       currentStroke: strokes.length > 0 ? strokes[0] : null,
       waitingForUser: strokes.length > 0,
       lastScore: 0,
-      message: strokes.length > 0 ? randomPick(MESSAGES_GUIDE) : "没有检测到笔触",
+      message: strokes.length > 0 ? randomPick(MESSAGES_GUIDE) : '没有检测到可用笔触',
       spriteState: 'guiding',
       completed: false,
     };
@@ -157,6 +155,29 @@ export class GuideSystem {
   }
 
   /**
+   * 同步自动续画的位置。自动播放可能被暂停或再次进入，必须把当前索引
+   * 写回引导系统，否则会从旧位置重复播放。
+   */
+  syncProgress(index: number, notify = false) {
+    const nextIndex = Math.max(0, Math.min(index, this.strokes.length));
+    this.currentIdx = nextIndex;
+    const completed = nextIndex >= this.strokes.length;
+
+    this.state = {
+      ...this.state,
+      currentIndex: nextIndex,
+      totalStrokes: this.strokes.length,
+      currentStroke: completed ? null : this.strokes[nextIndex],
+      waitingForUser: !completed && this.strokes.length > 0,
+      completed,
+      message: completed ? '所有星迹已经完成，作品已点亮。' : '月亮伙伴正在完成剩余星迹。',
+      spriteState: completed ? 'cheering' : 'guiding',
+    };
+
+    if (notify) this.notify();
+  }
+
+  /**
    * 前进到下一笔（带动画延迟）
    */
   private advanceToNext() {
@@ -173,7 +194,7 @@ export class GuideSystem {
       this.state.waitingForUser = false;
       this.state.currentStroke = null;
       this.state.currentIndex = this.currentIdx;
-      this.state.message = "恭喜！你完成了一幅油画！";
+      this.state.message = '所有星迹已经完成，作品已点亮。';
       this.state.spriteState = 'cheering';
     } else {
       this.state.currentIndex = this.currentIdx;

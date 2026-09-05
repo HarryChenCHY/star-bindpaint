@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Brush,
   Music2,
   FastForward,
   Sparkles,
@@ -97,6 +96,8 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // 模式切换时必须同步关闭属于旧模式的浮层。
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(null);
   }, [p.mode]);
 
@@ -114,9 +115,9 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
   const close = () => setOpen(null);
 
   const MODES: { id: PaintMode; icon: ReactNode; label: string; color: string }[] = [
-    { id: 'follow', icon: <Brush size={20} strokeWidth={2.5} />, label: '跟画', color: '#F9B801' },
-    { id: 'auto', icon: <Play size={20} strokeWidth={2.5} />, label: '自动', color: '#F302C9' },
-    { id: 'free', icon: <PaletteIcon size={20} strokeWidth={2.5} />, label: '自由', color: '#7DC353' },
+    { id: 'follow', icon: <Wand2 size={20} strokeWidth={2.5} />, label: '沿星迹', color: '#F9B801' },
+    { id: 'auto', icon: <Play size={20} strokeWidth={2.5} />, label: '自动续画', color: '#F302C9' },
+    { id: 'free', icon: <Sparkles size={20} strokeWidth={2.5} />, label: '自由星域', color: '#7DC353' },
   ];
 
   if (collapsed) {
@@ -180,8 +181,8 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
         {p.mode === 'follow' && (
           <>
             <ToolBtn
-              icon={<Brush size={18} strokeWidth={2.5} />}
-              label="粗细"
+              icon={<Wand2 size={18} strokeWidth={2.5} />}
+              label="星光画笔"
               value={String(p.brushWidth)}
               isOpen={open === 'brush'}
               onClick={() => toggle('brush')}
@@ -189,8 +190,8 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
             />
             <ToolBtn
               icon={<Layers size={18} strokeWidth={2.5} />}
-              label="跟画模式"
-              value={p.guideSubMode === 'assist' ? '辅助' : '真实'}
+              label="笔迹方式"
+              value={p.guideSubMode === 'assist' ? 'AI 修正' : '保留原笔'}
               isOpen={open === 'submode'}
               onClick={() => toggle('submode')}
               popover={<SubModePopover value={p.guideSubMode} onChange={p.onGuideSubModeChange} />}
@@ -212,7 +213,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
             />
             <ToolBtn
               icon={<Sparkles size={18} strokeWidth={2.5} />}
-              label="Starry 帮画"
+              label="月亮伙伴帮画"
               isOpen={open === 'batch'}
               onClick={() => toggle('batch')}
               popover={
@@ -267,8 +268,8 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
               />
             )}
             <ToolBtn
-              icon={<Brush size={18} strokeWidth={2.5} />}
-              label="画笔"
+              icon={<Wand2 size={18} strokeWidth={2.5} />}
+              label="星光画笔"
               value={String(p.brushWidth)}
               isOpen={open === 'brush'}
               onClick={() => {
@@ -343,7 +344,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
             {p.onSDRender && (
               <DirectBtn
                 icon={<Wand2 size={17} strokeWidth={2.5} />}
-                label="变成油画"
+                label="AI 星光变换"
                 onClick={p.onSDRender}
                 disabled={p.sdRendering}
                 fillBg="#7A51EC"
@@ -429,6 +430,8 @@ function ModeBtn({
     <div className="relative">
       <motion.button
         type="button"
+        aria-label={label}
+        title={label}
         onClick={onClick}
         onHoverStart={() => setHover(true)}
         onHoverEnd={() => setHover(false)}
@@ -483,6 +486,9 @@ function ToolBtn({
   return (
     <div className="relative">
       <motion.button
+        type="button"
+        aria-label={label}
+        title={label}
         onClick={onClick}
         onHoverStart={() => setHover(true)}
         onHoverEnd={() => setHover(false)}
@@ -601,6 +607,9 @@ function DirectBtn({
   return (
     <div className="relative">
       <motion.button
+        type="button"
+        aria-label={label}
+        title={label}
         onClick={onClick}
         disabled={disabled}
         whileHover={!disabled ? { scale: 1.1 } : undefined}
@@ -731,13 +740,13 @@ function SubModePopover({
                 boxShadow: active ? '2px 2px 0 #1A1A1A' : 'none',
               }}
             >
-              {m === 'assist' ? '辅助' : '真实'}
+              {m === 'assist' ? 'AI 修正' : '保留原笔'}
             </motion.button>
           );
         })}
       </div>
       <p style={{ fontSize: '0.7rem', color: '#888', fontWeight: 600, marginTop: 8, lineHeight: 1.5 }}>
-        {value === 'assist' ? 'AI 笔触替换你的画迹' : '保留你的原始笔迹'}
+        {value === 'assist' ? '用规划笔触修正这一笔的结果' : '保留你亲手画下的真实笔迹'}
       </p>
     </div>
   );
@@ -801,7 +810,7 @@ function RhythmPopover({
         >
           <div className="flex items-center justify-between mb-1.5">
             <span style={{ fontSize: '0.74rem', color: '#1A1A1A', fontWeight: 700 }}>
-              Starry 帮多少
+              月亮伙伴帮多少
             </span>
             <span style={{ fontSize: '0.95rem', fontWeight: 900, color: '#7A51EC' }}>
               1 : {autoFillRatio}
@@ -809,9 +818,9 @@ function RhythmPopover({
           </div>
           <input
             type="range"
-            min="100"
-            max="500"
-            step="50"
+            min="1"
+            max="20"
+            step="1"
             value={autoFillRatio}
             onChange={e => onAutoFillRatioChange(Number(e.target.value))}
             className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
@@ -842,7 +851,7 @@ function BatchPopover({
   return (
     <div style={{ width: 224 }}>
       <div className="grid grid-cols-3 gap-2 mb-2">
-        {[10, 30, 50].map(n => (
+        {[5, 10, 20].map(n => (
           <motion.button
             key={n}
             whileHover={{ scale: 1.08, y: -1 }}

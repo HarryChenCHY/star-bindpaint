@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { DrawingEngine, matchScore } from '@/lib/drawing-engine';
-import { drawStroke, drawGuideStroke, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
+import { drawStroke, drawGuideStroke, GuidanceLevel, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
 import { MasterStyleProfile, stylizeStroke, drawStylizedStroke } from '@/lib/style-transfer';
 import { renderSprayDot } from '@/lib/spray-engine';
 import TracingSceneLayer from '@/components/TracingSceneLayer';
@@ -15,7 +15,7 @@ interface PaintCanvasProps {
   mode: PaintMode;
   strokes: StrokeDrawData[];
   currentGuideStroke: StrokeDrawData | null;
-  guideSubMode: 'assist' | 'real';
+  guidanceLevel?: GuidanceLevel;
   brushColor?: string;
   brushWidth?: number;
   autoSpeed?: number;
@@ -44,7 +44,7 @@ export default function PaintCanvas({
   mode,
   strokes,
   currentGuideStroke,
-  guideSubMode,
+  guidanceLevel = 'full',
   brushColor,
   brushWidth = 4,
   autoSpeed = 30,
@@ -72,13 +72,22 @@ export default function PaintCanvas({
   const drawingEngineRef = useRef<DrawingEngine | null>(null);
   const autoPlayRef = useRef<{ running: boolean; timeoutId: number }>({ running: false, timeoutId: 0 });
   const eraserModeRef = useRef(eraserMode);                   // 用 ref 避免引擎重建
-  eraserModeRef.current = eraserMode;
   const sprayModeRef = useRef(sprayMode);
-  sprayModeRef.current = sprayMode;
   const sprayIsDownRef = useRef(false);                        // 喷雾是否按下中
-  const [autoIdx, setAutoIdx] = useState(0);
+  const [, setAutoIdx] = useState(0);
   const autoStartIdxRef = useRef(0);
-  autoStartIdxRef.current = autoStartIdx ?? 0;
+
+  useEffect(() => {
+    eraserModeRef.current = eraserMode;
+  }, [eraserMode]);
+
+  useEffect(() => {
+    sprayModeRef.current = sprayMode;
+  }, [sprayMode]);
+
+  useEffect(() => {
+    autoStartIdxRef.current = autoStartIdx ?? 0;
+  }, [autoStartIdx]);
 
   // 初始化手绘引擎（跟画/自由模式）
   useEffect(() => {
@@ -132,7 +141,7 @@ export default function PaintCanvas({
       engine.destroy();
       drawingEngineRef.current = null;
     };
-  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, freeSat, freeVal, sprayMode, eraserMode, width, height, onUndoAvailable]);
+  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, freeSat, freeVal, sprayMode, eraserMode, width, height, brushWidth, onUndoAvailable]);
 
   // 橡皮擦模式：独立 pointer 事件，直接在 baseCanvas 上擦除
   useEffect(() => {
@@ -301,9 +310,9 @@ export default function PaintCanvas({
     ctx.clearRect(0, 0, width, height);
 
     if (mode === 'follow' && currentGuideStroke) {
-      drawGuideStroke(ctx, currentGuideStroke);
+      drawGuideStroke(ctx, currentGuideStroke, guidanceLevel);
     }
-  }, [mode, currentGuideStroke, width, height]);
+  }, [mode, currentGuideStroke, guidanceLevel, width, height]);
 
   // 自动播放模式
   useEffect(() => {
@@ -315,30 +324,47 @@ export default function PaintCanvas({
     const baseCanvas = baseCanvasRef.current;
     if (!baseCanvas || strokes.length === 0) return;
     const ctx = baseCanvas.getContext('2d')!;
+    const playback = autoPlayRef.current;
 
-    autoPlayRef.current.running = true;
+    playback.running = true;
     let idx = autoStartIdxRef.current;
+    const remainingAtStart = Math.max(1, strokes.length - idx);
+    // 保留全部真实笔触，只在自动续画时分帧批量绘制。
+    // 最慢档约 10–12 秒完成，最快档约 50 个事件循环完成。
+    const targetTicks = autoSpeed === 0 ? 50 : 220;
+    const strokesPerTick = Math.max(1, Math.ceil(remainingAtStart / targetTicks));
+    const tickDelay = autoSpeed === 0 ? 0 : Math.max(16, Math.round(autoSpeed / 4));
 
     function playNext() {
-      if (!autoPlayRef.current.running || idx >= strokes.length) {
-        autoPlayRef.current.running = false;
+      if (!playback.running || idx >= strokes.length) {
+        playback.running = false;
         if (idx >= strokes.length && onAutoComplete) onAutoComplete();
         return;
       }
 
-      drawStroke(ctx, strokes[idx]);
-      idx++;
+      const batchEnd = Math.min(strokes.length, idx + strokesPerTick);
+      while (idx < batchEnd) {
+        drawStroke(ctx, strokes[idx]);
+        idx++;
+      }
+      autoStartIdxRef.current = idx;
       setAutoIdx(idx);
       if (onAutoProgress) onAutoProgress(idx, strokes.length);
 
-      autoPlayRef.current.timeoutId = window.setTimeout(playNext, autoSpeed);
+      if (idx >= strokes.length) {
+        playback.running = false;
+        if (onAutoComplete) onAutoComplete();
+        return;
+      }
+
+      playback.timeoutId = window.setTimeout(playNext, tickDelay);
     }
 
     playNext();
 
     return () => {
-      autoPlayRef.current.running = false;
-      clearTimeout(autoPlayRef.current.timeoutId);
+      playback.running = false;
+      clearTimeout(playback.timeoutId);
     };
   }, [mode, strokes, autoSpeed, onAutoComplete, onAutoProgress]);
 
@@ -349,6 +375,17 @@ export default function PaintCanvas({
     const ctx = baseCanvas.getContext('2d')!;
     drawStroke(ctx, stroke);
   }, []);
+
+  const commitUserToBase = useCallback(() => {
+    const baseCanvas = baseCanvasRef.current;
+    const userCanvas = userCanvasRef.current;
+    if (!baseCanvas || !userCanvas) return;
+    const baseContext = baseCanvas.getContext('2d');
+    const userContext = userCanvas.getContext('2d');
+    if (!baseContext || !userContext) return;
+    baseContext.drawImage(userCanvas, 0, 0, width, height);
+    userContext.clearRect(0, 0, width, height);
+  }, [width, height]);
 
   // 公开方法给父组件调用
   const undo = useCallback(() => {
@@ -381,6 +418,7 @@ export default function PaintCanvas({
     // 暴露到 window 给其他逻辑使用
     (window as unknown as Record<string, unknown>).__paintCanvas = {
       drawAIStrokeOnBase,
+      commitUserToBase,
       clearUser: () => {
         const userCanvas = userCanvasRef.current;
         if (userCanvas) {
@@ -405,13 +443,13 @@ export default function PaintCanvas({
       undo,
       canUndo,
     };
-  }, [drawAIStrokeOnBase, undo, canUndo, saveUndoSnapshot, width, height, onUndoAvailable]);
+  }, [drawAIStrokeOnBase, commitUserToBase, undo, canUndo, saveUndoSnapshot, width, height, onUndoAvailable]);
 
   // 绘制半透明源图（参考层）
   useEffect(() => {
     if (sourceImage && baseCanvasRef.current) {
       const ctx = baseCanvasRef.current.getContext('2d')!;
-      ctx.globalAlpha = 0.08;
+      ctx.globalAlpha = 0.13;
       ctx.drawImage(sourceImage, 0, 0, width, height);
       ctx.globalAlpha = 1;
     }
@@ -457,7 +495,13 @@ export default function PaintCanvas({
           height: '100%',
           zIndex: 2,
           pointerEvents: 'auto',
-          ...(mode === 'auto' ? { cursor: 'default' } : null),
+          cursor: mode === 'auto'
+            ? 'default'
+            : eraserMode
+              ? 'url(/cursors/eraser.svg) 8 8, crosshair'
+              : sprayMode
+                ? 'crosshair'
+                : 'url(/cursors/star-wand.svg) 25 6, crosshair',
         }}
       />
       {/* Layer 3: Guide overlay */}

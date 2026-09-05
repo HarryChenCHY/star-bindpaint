@@ -119,12 +119,3 @@ export const MASTER_ARTISTS: MasterArtist[] = [
     ],
   },
 ];
-
-/** 所有情绪色调选项 */
-export const MOOD_OPTIONS = [
-  { id: 'warm', label: '温暖', color: '#F59E0B', description: '偏暖色调，让画面更温馨' },
-  { id: 'calm', label: '安静', color: '#4A90D9', description: '偏冷蓝调，带来平静感' },
-  { id: 'vivid', label: '鲜活', color: '#10B981', description: '高饱和度，充满生命力' },
-  { id: 'dreamy', label: '梦幻', color: '#A78BFA', description: '柔和紫粉调，如梦似幻' },
-  { id: 'original', label: '原色', color: '#666666', description: '保持作品原始色调' },
-];
