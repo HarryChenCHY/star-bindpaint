@@ -459,10 +459,12 @@ export default function PaintCanvas({
   const showTracingScene = Boolean(tracingSceneSrc && tracingSceneVisible);
 
   return (
+    <div className="h-full w-full min-h-0 min-w-0" style={{ containerType: 'size', display: 'grid', placeItems: 'center' }}>
     <div
       className="relative overflow-hidden"
       style={{
-        height: '100%',
+        width: `min(calc(100cqw - 4px), calc((100cqh - 4px) * ${width / height}))`,
+        boxSizing: 'content-box',
         aspectRatio: `${width} / ${height}`,
         maxWidth: '100%',
         maxHeight: '100%',
@@ -516,6 +518,7 @@ export default function PaintCanvas({
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 4 }}>
         {children}
       </div>
+    </div>
     </div>
   );
 }

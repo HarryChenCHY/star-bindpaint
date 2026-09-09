@@ -1,0 +1,109 @@
+{
+  "_note": "结构示例，非真实实验数据；null 表示待采集或不适用。",
+  "schemaVersion": "study-1.0",
+  "identity": {
+    "studyId": "startrace-novice-v1",
+    "participantId": "P001",
+    "pairId": "pair-example-001",
+    "sessionId": "session-example-guided"
+  },
+  "assignment": {
+    "mode": "study",
+    "condition": "guided",
+    "sequence": "AB",
+    "period": 2,
+    "assignmentId": "assignment-example-001"
+  },
+  "material": {
+    "sourceId": "still-life-v1",
+    "sourceHash": null,
+    "planHash": null,
+    "rubricVersion": "rubric-1.0"
+  },
+  "config": {
+    "protocolVersion": "1.0-proposal",
+    "appVersion": null,
+    "algorithmVersion": "budget-planner-proposed",
+    "guidanceLevel": "full",
+    "manualOnly": true,
+    "plannedStrokeCount": 180,
+    "maxPlannedStrokes": 200,
+    "timeLimitMs": 720000,
+    "idleThresholdMs": 5000,
+    "canvasWidth": 512,
+    "canvasHeight": 512,
+    "inputType": null
+  },
+  "timing": {
+    "readyAt": null,
+    "startedAt": null,
+    "endedAt": null,
+    "receivedAt": null,
+    "timezone": "Asia/Shanghai",
+    "generationMs": null,
+    "taskElapsedMs": null,
+    "visibleTaskMs": null,
+    "activeTaskMs": null,
+    "drawingMs": null,
+    "hiddenMs": null,
+    "explicitBreakMs": null,
+    "systemBlockedMs": null
+  },
+  "metrics": {
+    "firstPointerLatencyMs": null,
+    "firstMarkLatencyMs": null,
+    "manualAttemptCount": null,
+    "validStrokeCount": null,
+    "guideMatchedCount": null,
+    "guideBypassedCount": null,
+    "automaticStrokeCount": null,
+    "undoCount": null,
+    "idleGapCount5s": null,
+    "idleGapTotalMs": null,
+    "terminalGapMs": null,
+    "stepProgress": null,
+    "artworkCompletionScore": null,
+    "qualifiedCompletionTimeMs": null
+  },
+  "outcome": {
+    "reason": null,
+    "submittedWithinLimit": null,
+    "qualified": null
+  },
+  "questionnaires": {
+    "version": "brief-1.0",
+    "pre": {
+      "willingness": null,
+      "concern": null
+    },
+    "post": {
+      "willingness": null,
+      "concern": null,
+      "satisfaction": null,
+      "confidence": null
+    }
+  },
+  "artwork": {
+    "userOnlySnapshotId": null,
+    "privateObjectKey": null,
+    "ratings": []
+  },
+  "events": [],
+  "quality": {
+    "flags": [],
+    "lastEventSeq": null,
+    "checksum": null
+  },
+  "consent": {
+    "consentVersion": null,
+    "consentedAt": null,
+    "researchLogConsent": null,
+    "researchArtworkConsent": null
+  },
+  "storage": {
+    "revision": 0,
+    "stored": false,
+    "storageKey": null,
+    "acknowledgedAt": null
+  }
+}

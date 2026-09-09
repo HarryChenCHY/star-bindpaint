@@ -60,6 +60,7 @@ export default function PaintPage() {
   const [currentGuideStroke, setCurrentGuideStroke] = useState<StrokeDrawData | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingMsg, setLoadingMsg] = useState('');
+  const [loadError, setLoadError] = useState('');
   const [progress, setProgress] = useState(0);
   const [spriteState, setSpriteState] = useState<CompanionState>('thinking');
   const [spriteMessage, setSpriteMessage] = useState('正在分析图片...');
@@ -212,11 +213,19 @@ export default function PaintPage() {
     const savedGuidance = (sessionStorage.getItem('startrace-guidance-level') || 'full') as GuidanceLevel;
     setGuidanceLevel(savedGuidance);
 
+    let cancelled = false;
+    const fail = (message: string) => {
+      if (cancelled) return;
+      setLoadError(message);
+      setSpriteMessage(message);
+      setSpriteState('idle');
+    };
     const img = new Image();
     img.onload = async () => {
+      if (cancelled) return;
       setSourceImage(img);
-      const w = parseInt(sessionStorage.getItem('star-bindpaint-source-w') || '400');
-      const h = parseInt(sessionStorage.getItem('star-bindpaint-source-h') || '400');
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
 
       const maxCanvas = 768;
       let cw = w, ch = h;
@@ -238,6 +247,11 @@ export default function PaintPage() {
           lloydIter: 12,
           palette: 'original',
         });
+        if (cancelled) return;
+        if (!result.length) {
+          fail('这张图片没有可跟随的笔触，请选择主体更清晰、颜色对比更明显的图片。');
+          return;
+        }
 
         setLoadingMsg(`生成了 ${result.length} 笔触，准备中...`);
         setStrokes(result);
@@ -265,11 +279,16 @@ export default function PaintPage() {
         setLoading(false);
       } catch (err) {
         console.error(err);
-        setSpriteMessage('星迹生成失败，请返回重新选择图片。');
-        setSpriteState('idle');
+        fail('星迹生成失败，请返回重新选择图片。');
       }
     };
+    img.onerror = () => fail('参考图无法读取，请返回重新选择图片。');
     img.src = dataUrl;
+    return () => {
+      cancelled = true;
+      img.onload = null;
+      img.onerror = null;
+    };
   }, [router]);
 
   useEffect(() => {
@@ -919,15 +938,26 @@ export default function PaintPage() {
         <div className="w-full max-w-sm rounded-[2rem] bg-white p-7" style={{ border: '2px solid #17233F', boxShadow: '7px 7px 0 #6558D9' }}>
           <MoonCompanion state={spriteState} message={spriteMessage} />
         </div>
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          className="w-10 h-10 rounded-full"
-          style={{ border: '3px solid #E5E5E5', borderTopColor: '#7A51EC' }}
-        />
-        <p style={{ fontSize: '0.85rem', color: '#888888', fontWeight: 700 }}>
-          {loadingMsg || '正在准备第一颗星点…'}
-        </p>
+        {loadError ? (
+          <div className="px-5 text-center" role="alert">
+            <p className="max-w-sm text-sm font-bold leading-6 text-[#536079]">{loadError}</p>
+            <button onClick={() => router.push('/create')} className="mt-5 rounded-full bg-[#17233F] px-6 py-3 text-sm font-black text-white">
+              返回选择图片
+            </button>
+          </div>
+        ) : (
+          <>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+              className="w-10 h-10 rounded-full"
+              style={{ border: '3px solid #E5E5E5', borderTopColor: '#7A51EC' }}
+            />
+            <p style={{ fontSize: '0.85rem', color: '#888888', fontWeight: 700 }}>
+              {loadingMsg || '正在准备第一颗星点…'}
+            </p>
+          </>
+        )}
       </div>
     );
   }

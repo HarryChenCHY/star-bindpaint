@@ -2,7 +2,7 @@
 
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -72,17 +72,22 @@ function cacheImage(img: HTMLImageElement) {
 
   if (Math.max(width, height) > maxSize) {
     const scale = maxSize / Math.max(width, height);
-    width = Math.round(width * scale);
-    height = Math.round(height * scale);
+    width = Math.max(1, Math.round(width * scale));
+    height = Math.max(1, Math.round(height * scale));
   }
 
   canvas.width = width;
   canvas.height = height;
-  canvas.getContext('2d')?.drawImage(img, 0, 0, width, height);
+  const context = canvas.getContext('2d');
+  if (!context || !width || !height) throw new Error('无法处理图片，请换一张重试。');
+  // 透明参考图与白色画布保持一致，避免转为 JPEG 后出现黑底。
+  context.fillStyle = '#FFFFFF';
+  context.fillRect(0, 0, width, height);
+  context.drawImage(img, 0, 0, width, height);
   const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-  sessionStorage.setItem('star-bindpaint-source', dataUrl);
   sessionStorage.setItem('star-bindpaint-source-w', String(width));
   sessionStorage.setItem('star-bindpaint-source-h', String(height));
+  sessionStorage.setItem('star-bindpaint-source', dataUrl);
   return dataUrl;
 }
 
@@ -96,6 +101,9 @@ export default function CreatePage() {
   const [guidance, setGuidance] = useState<GuidanceLevel>('full');
   const [roughness, setRoughness] = useState(2);
   const [selectedFreeStyle, setSelectedFreeStyle] = useState('vangogh');
+  const sourceRequestRef = useRef(0);
+
+  useEffect(() => () => { sourceRequestRef.current += 1; }, []);
 
   useEffect(() => {
     if (hydrated) setGuidance(settings.defaultGuidance);
@@ -107,24 +115,31 @@ export default function CreatePage() {
   );
 
   const resetPreparedSource = () => {
+    sourceRequestRef.current += 1;
+    setPreparing(false);
     setPreparedSource(null);
     setPrepareError('');
     sessionStorage.removeItem('star-bindpaint-source');
+    sessionStorage.removeItem('star-bindpaint-source-w');
+    sessionStorage.removeItem('star-bindpaint-source-h');
     sessionStorage.removeItem('star-bindpaint-master');
   };
 
   const changeMode = (mode: SourceMode) => {
+    if (mode === sourceMode) return;
     setSourceMode(mode);
     resetPreparedSource();
   };
 
   const handleSelectWork = (artist: MasterArtist, work: Masterwork) => {
+    const request = ++sourceRequestRef.current;
     setPreparing(true);
     setPrepareError('');
 
     const image = new window.Image();
     image.crossOrigin = 'anonymous';
     image.onload = () => {
+      if (request !== sourceRequestRef.current) return;
       try {
         cacheImage(image);
         sessionStorage.setItem('star-bindpaint-master', JSON.stringify({
@@ -146,14 +161,14 @@ export default function CreatePage() {
       }
     };
     image.onerror = () => {
+      if (request !== sourceRequestRef.current) return;
       setPreparing(false);
       setPrepareError('图片加载失败，请换一幅作品重试。');
     };
     image.src = work.image;
   };
 
-  const handleImageUploaded = (image: HTMLImageElement) => {
-    setPreparing(true);
+  const handleImageUploaded = (image: HTMLImageElement, file: File) => {
     setPrepareError('');
     try {
       const dataUrl = cacheImage(image);
@@ -161,19 +176,17 @@ export default function CreatePage() {
       sessionStorage.removeItem('star-bindpaint-free-style');
       setPreparedSource({
         kind: 'upload',
-        title: '我的参考图片',
-        subtitle: '已准备生成星迹',
+        title: file.name,
+        subtitle: `${image.naturalWidth} × ${image.naturalHeight} · ${file.size < 1024 * 1024 ? `${Math.max(1, Math.ceil(file.size / 1024))} KB` : `${(file.size / 1024 / 1024).toFixed(1)} MB`} · 本地图片`,
         preview: dataUrl,
       });
     } catch {
-      setPrepareError('图片处理失败，请尝试 JPG 或 PNG 图片。');
-    } finally {
-      setPreparing(false);
+      throw new Error('图片准备失败，浏览器存储可能不足或不可用，请释放空间后重试。');
     }
   };
 
   const handleStartGuided = () => {
-    if (!preparedSource) return;
+    if (!preparedSource || preparing) return;
     sessionStorage.setItem('star-bindpaint-roughness', String(roughness));
     sessionStorage.setItem('startrace-guidance-level', guidance);
     sessionStorage.setItem('startrace-entry-mode', preparedSource.kind);
@@ -245,7 +258,7 @@ export default function CreatePage() {
         <div className="mt-10 flex flex-wrap gap-2" role="tablist" aria-label="创作方式">
           {([
             ['examples', ImageIcon, '精选临摹', '零基础推荐'],
-            ['upload', Upload, '上传图片', '画自己喜欢的'],
+            ['upload', Upload, '上传图片', '本地选图 · 小于 20 MB'],
             ['free', Palette, '自由画布', '不使用拆解路径'],
           ] as const).map(([id, Icon, title, detail]) => {
             const active = sourceMode === id;
@@ -286,7 +299,7 @@ export default function CreatePage() {
                   </h2>
                 </div>
                 <span className="hidden rounded-full px-3 py-2 text-xs font-black sm:inline-flex" style={{ background: COLORS.yellow }}>
-                  {sourceMode === 'examples' ? `${curatedWorks.length} 幅精选` : 'JPG / PNG'}
+                  {sourceMode === 'examples' ? `${curatedWorks.length} 幅精选` : '小于 20 MB'}
                 </span>
               </div>
 
@@ -320,7 +333,11 @@ export default function CreatePage() {
                 </div>
               ) : (
                 <div className="mt-7">
-                  <ImageUploader onImageLoaded={handleImageUploaded} />
+                  <ImageUploader
+                    onImageLoaded={handleImageUploaded}
+                    onLoadingChange={setPreparing}
+                    preview={preparedSource?.kind === 'upload' ? preparedSource.preview : null}
+                  />
                   <div className="mt-5 grid gap-3 sm:grid-cols-3">
                     {[
                       ['画面清晰', '主体轮廓越明确，星迹越容易跟随'],
@@ -336,18 +353,18 @@ export default function CreatePage() {
                 </div>
               )}
 
-              {preparing && <p className="mt-5 text-center text-sm font-black" style={{ color: COLORS.purple }}>正在准备图像与星迹数据…</p>}
-              {prepareError && <p className="mt-5 rounded-xl px-4 py-3 text-sm font-bold" style={{ background: '#FFE3EC', color: '#9B2743' }}>{prepareError}</p>}
+              {preparing && <p role="status" className="mt-5 text-center text-sm font-black" style={{ color: COLORS.purple }}>正在准备参考图…</p>}
+              {prepareError && <p role="alert" className="mt-5 rounded-xl px-4 py-3 text-sm font-bold" style={{ background: '#FFE3EC', color: '#9B2743' }}>{prepareError}</p>}
             </section>
 
             <aside className="rounded-[2rem] bg-white p-5 sm:p-6 lg:sticky lg:top-24" style={{ border: `2px solid ${COLORS.ink}`, boxShadow: `6px 6px 0 ${preparedSource ? COLORS.mint : '#D9DDEA'}` }}>
               {preparedSource ? (
                 <>
                   <div className="relative aspect-[4/3] overflow-hidden rounded-2xl" style={{ border: `2px solid ${COLORS.ink}` }}>
-                    <Image src={preparedSource.preview} alt={preparedSource.title} fill sizes="(max-width: 1024px) 100vw, 32vw" unoptimized={preparedSource.preview.startsWith('data:')} className="object-cover" />
+                    <Image src={preparedSource.preview} alt={preparedSource.title} fill sizes="(max-width: 1024px) 100vw, 32vw" unoptimized={preparedSource.preview.startsWith('data:')} className="bg-[#F6F7FB] object-contain" />
                   </div>
                   <div className="mt-4 flex items-start justify-between gap-3">
-                    <div><p className="text-base font-black">{preparedSource.title}</p><p className="mt-1 text-xs font-bold" style={{ color: COLORS.inkSoft }}>{preparedSource.subtitle}</p></div>
+                    <div className="min-w-0"><p className="line-clamp-2 break-words text-base font-black" title={preparedSource.title}>{preparedSource.title}</p><p className="mt-1 text-xs font-bold" style={{ color: COLORS.inkSoft }}>{preparedSource.subtitle}</p></div>
                     <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full" style={{ background: COLORS.mint }}><Check size={17} strokeWidth={3} /></span>
                   </div>
 
@@ -379,8 +396,9 @@ export default function CreatePage() {
                     })}
                   </div>
 
-                  <button onClick={handleStartGuided} className="mt-6 flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-base font-black text-white" style={{ background: COLORS.ink, boxShadow: `4px 4px 0 ${COLORS.yellow}` }}>
-                    生成星迹并开始 <ArrowRight size={18} strokeWidth={2.8} />
+                  <p className="mt-5 text-xs font-bold leading-6" style={{ color: COLORS.inkSoft }}>准备好后，系统会把参考图由大到小拆解成笔触，并逐笔提示起点、方向与颜色。</p>
+                  <button onClick={handleStartGuided} disabled={preparing} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-base font-black text-white disabled:cursor-wait disabled:opacity-50" style={{ background: COLORS.ink, boxShadow: `4px 4px 0 ${COLORS.yellow}` }}>
+                    {preparing ? '正在准备图片…' : '生成星迹并开始'} <ArrowRight size={18} strokeWidth={2.8} />
                   </button>
                 </>
               ) : (
