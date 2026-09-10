@@ -17,7 +17,7 @@ export function pilotSnapshot(repo: StudyRepository) {
     const a = latest('control'), b = latest('guided');
     const finished = (s?: Session) => !!s?.finalizedAt && !!s.post && ['submitted', 'timeout'].includes(s.state);
     const rated = (s?: Session) => !!s && ['rater1', 'rater2'].every(r => s.ratings.some(v => v.rater === r));
-    return { id: p.id, withdrawn: !!p.withdrawnAt, practice: !!p.practiceAt,
+    return { id: p.researchCode ?? p.id, withdrawn: !!p.withdrawnAt, practice: !!p.practiceAt,
       control: finished(a), guided: finished(b), interview: !!p.interview,
       rated: rated(a) && rated(b), complete: !p.withdrawnAt && !!p.practiceAt && finished(a) && finished(b) && !!p.interview };
   });

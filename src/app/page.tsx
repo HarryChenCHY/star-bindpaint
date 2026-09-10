@@ -9,6 +9,7 @@ import {
   Brush,
   CalendarDays,
   Check,
+  ChevronDown,
   CircleDot,
   FlaskConical,
   Image as ImageIcon,
@@ -102,7 +103,7 @@ export default function HomePage() {
             className="hidden rounded-full px-4 py-2.5 text-sm font-extrabold md:inline-flex"
             style={{ background: COLORS.purpleSoft, border: `2px solid ${COLORS.ink}`, color: COLORS.purple }}
           >
-            产品研究
+            产品介绍
           </button>
           <button
             onClick={() => router.push('/gallery')}
@@ -111,14 +112,7 @@ export default function HomePage() {
           >
             我的星图
           </button>
-          <button
-            onClick={() => router.push('/create')}
-            className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-black text-white sm:px-5"
-            style={{ background: COLORS.ink, boxShadow: `3px 3px 0 ${COLORS.yellow}` }}
-          >
-            开始第一幅
-            <ArrowRight size={16} strokeWidth={2.8} />
-          </button>
+
         </div>
       </nav>
 
@@ -162,20 +156,14 @@ export default function HomePage() {
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => router.push('/create')}
-                className="inline-flex items-center gap-2 rounded-full px-6 py-4 text-base font-black text-white"
-                style={{ background: COLORS.ink, boxShadow: `5px 5px 0 ${COLORS.yellow}` }}
+                className="inline-flex min-h-20 w-full max-w-[420px] items-center justify-center gap-3 rounded-[1.6rem] border-2 px-6 py-5 text-xl font-black sm:min-h-24 sm:text-2xl"
+                style={{ background: COLORS.yellow, color: COLORS.ink, borderColor: COLORS.ink, boxShadow: `7px 7px 0 ${COLORS.ink}` }}
               >
-                <Upload size={19} strokeWidth={2.7} />
+                <Upload size={27} strokeWidth={2.7} />
                 开始我的第一幅画
+                <ArrowRight size={24} strokeWidth={2.7} />
               </motion.button>
-              <button
-                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
-                className="inline-flex items-center gap-2 rounded-full px-6 py-4 text-base font-black"
-                style={{ background: COLORS.white, border: `2px solid ${COLORS.ink}` }}
-              >
-                看看怎么画
-                <ArrowRight size={18} strokeWidth={2.7} />
-              </button>
+
             </div>
 
             <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm font-extrabold" style={{ color: COLORS.inkSoft }}>
@@ -287,6 +275,11 @@ export default function HomePage() {
           </div>
         </section>
 
+        <details className="group" id="home-more">
+          <summary className="mx-auto flex max-w-7xl cursor-pointer list-none items-center justify-between gap-4 px-5 py-8 font-black sm:px-8 lg:px-10 [&::-webkit-details-marker]:hidden">
+            <span><span className="block text-lg">了解星迹智绘</span><span className="mt-1 block text-sm font-medium text-[#536079]">绘画方式、产品功能与练习记录</span></span>
+            <span className="flex items-center gap-2 rounded-full border-2 border-[#17233F] bg-white px-4 py-3"><span className="group-open:hidden">展开介绍</span><span className="hidden group-open:inline">收起介绍</span><ChevronDown size={20} className="transition-transform group-open:rotate-180" /></span>
+          </summary>
         <section className="mx-auto w-full max-w-7xl px-5 pb-4 pt-8 sm:px-8 sm:pt-10 lg:px-10 lg:pt-12">
           <div className="grid items-stretch gap-5 lg:grid-cols-[1.35fr_0.65fr]">
             <DailyWishCard onStart={() => router.push('/create')} onOpenStarMap={() => router.push('/gallery')} />
@@ -478,6 +471,7 @@ export default function HomePage() {
             </motion.button>
           </div>
         </section>
+        </details>
       </main>
 
       <footer className="border-t-2 px-5 py-8 sm:px-8 lg:px-10" style={{ borderColor: COLORS.ink, background: COLORS.white }}>

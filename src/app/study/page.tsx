@@ -142,7 +142,7 @@ export default function StudyPage() {
         <h1>两次绘画，一次体验记录</h1>
         <p className="study-muted">
           {p
-            ? `${p.id} · ${view?.config.stage === 'pilot' ? '预试' : '正式测试'}`
+            ? `${p.researchCode ?? p.id} · ${view?.config.stage === 'pilot' ? '预试' : '正式测试'}`
             : '同一幅画，两种绘画方式。按自己的节奏，不是考试。'}
         </p>
         {error && (
@@ -150,7 +150,12 @@ export default function StudyPage() {
             {error}
           </p>
         )}
-        {!view && <p>正在读取研究状态…</p>}
+        {!view && !error && <p>正在读取研究状态…</p>}
+        {!view && error && (
+          <button className="primary" disabled={busy} onClick={() => void run(async () => {})}>
+            {busy ? '正在重试…' : '重新读取研究状态'}
+          </button>
+        )}
         {view && !p && (
           <section className="study-card space-y-4">
             <h2>进入研究</h2>
@@ -170,12 +175,15 @@ export default function StudyPage() {
             <label>
               研究码{' '}
               <input
-                type="password"
+                type="text"
+                maxLength={64}
+                placeholder="自定义一个新的研究码"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 autoComplete="off"
               />
             </label>
+            <p className="study-muted">研究码用于命名本次两轮测试，请勿填写姓名或联系方式。支持文字、数字、下划线和短横线；已使用的研究码不能重复创建。</p>
             {[
               ['adult', '我已满 18 周岁'],
               [

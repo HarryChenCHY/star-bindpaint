@@ -1,7 +1,5 @@
 'use client';
 
-/* eslint-disable react-hooks/set-state-in-effect */
-
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -24,10 +22,8 @@ import {
 import ImageUploader from '@/components/ImageUploader';
 import { MASTER_ARTISTS, MasterArtist, Masterwork } from '@/lib/masterworks';
 import { MASTER_STYLES } from '@/lib/style-transfer';
-import { useAppSettings } from '@/contexts/AppContext';
 
 type SourceMode = 'examples' | 'upload' | 'free';
-type GuidanceLevel = 'full' | 'balanced' | 'light';
 type PreparedSource = {
   kind: 'example' | 'upload';
   title: string;
@@ -46,23 +42,6 @@ const COLORS = {
   paper: '#F6F7FB',
   white: '#FFFFFF',
 };
-
-const GUIDANCE_OPTIONS: Array<{
-  id: GuidanceLevel;
-  title: string;
-  body: string;
-  badge: string;
-}> = [
-  { id: 'full', title: '完整引导', body: '显示起点、轨迹、方向和颜色', badge: '第一次画推荐' },
-  { id: 'balanced', title: '适度引导', body: '显示起点与轨迹，保留更多判断', badge: '已有少量经验' },
-  { id: 'light', title: '轻量提示', body: '仅提示结构顺序和起笔区域', badge: '想自主练习' },
-];
-
-const BRUSH_OPTIONS = [
-  { value: 1, title: '细节更多', body: '1000 笔预算内，偏向细笔修整' },
-  { value: 2, title: '均衡笔触', body: '结构和细节比较平衡' },
-  { value: 3, title: '大笔概括', body: '1000 笔预算内，偏向较大笔刷' },
-];
 
 function cacheImage(img: HTMLImageElement) {
   const canvas = document.createElement('canvas');
@@ -93,21 +72,14 @@ function cacheImage(img: HTMLImageElement) {
 
 export default function CreatePage() {
   const router = useRouter();
-  const { settings, hydrated } = useAppSettings();
   const [sourceMode, setSourceMode] = useState<SourceMode>('examples');
   const [preparedSource, setPreparedSource] = useState<PreparedSource | null>(null);
   const [preparing, setPreparing] = useState(false);
   const [prepareError, setPrepareError] = useState('');
-  const [guidance, setGuidance] = useState<GuidanceLevel>('full');
-  const [roughness, setRoughness] = useState(2);
   const [selectedFreeStyle, setSelectedFreeStyle] = useState('vangogh');
   const sourceRequestRef = useRef(0);
 
   useEffect(() => () => { sourceRequestRef.current += 1; }, []);
-
-  useEffect(() => {
-    if (hydrated) setGuidance(settings.defaultGuidance);
-  }, [hydrated, settings.defaultGuidance]);
 
   const curatedWorks = useMemo(
     () => MASTER_ARTISTS.flatMap(artist => artist.works.slice(0, 2).map(work => ({ artist, work }))),
@@ -187,8 +159,8 @@ export default function CreatePage() {
 
   const handleStartGuided = () => {
     if (!preparedSource || preparing) return;
-    sessionStorage.setItem('star-bindpaint-roughness', String(roughness));
-    sessionStorage.setItem('startrace-guidance-level', guidance);
+    sessionStorage.setItem('star-bindpaint-roughness', '1');
+    sessionStorage.setItem('startrace-guidance-level', 'full');
     sessionStorage.setItem('startrace-entry-mode', preparedSource.kind);
     sessionStorage.removeItem('star-bindpaint-free-style');
     router.push('/paint');
@@ -198,7 +170,7 @@ export default function CreatePage() {
     sessionStorage.setItem('star-bindpaint-free-style', selectedFreeStyle);
     sessionStorage.setItem('star-bindpaint-difficulty', 'free');
     sessionStorage.setItem('startrace-entry-mode', 'free');
-    sessionStorage.setItem('startrace-guidance-level', guidance);
+    sessionStorage.setItem('startrace-guidance-level', 'full');
     sessionStorage.removeItem('star-bindpaint-source');
     sessionStorage.removeItem('star-bindpaint-master');
     router.push('/paint');
@@ -253,7 +225,7 @@ export default function CreatePage() {
             选画面
             <ArrowRight size={14} />
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">2</span>
-            设引导
+            生成星迹
             <ArrowRight size={14} />
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">3</span>
             开始画
@@ -374,33 +346,6 @@ export default function CreatePage() {
                   </div>
 
                   <div className="my-6 h-px" style={{ background: '#D9DDEA' }} />
-                  <p className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>引导强度</p>
-                  <div className="mt-3 space-y-2">
-                    {GUIDANCE_OPTIONS.map(option => {
-                      const selected = guidance === option.id;
-                      return (
-                        <button key={option.id} onClick={() => setGuidance(option.id)} className="w-full rounded-2xl p-3 text-left" style={{ background: selected ? COLORS.purpleSoft : COLORS.paper, border: `1.5px solid ${selected ? COLORS.purple : 'transparent'}` }}>
-                          <div className="flex items-center justify-between gap-2"><span className="text-sm font-black">{option.title}</span>{selected && <CircleDot size={17} color={COLORS.purple} strokeWidth={3} />}</div>
-                          <p className="mt-1 text-[11px] font-bold leading-5" style={{ color: COLORS.inkSoft }}>{option.body}</p>
-                          {option.id === 'full' && <p className="mt-2 text-[10px] font-black" style={{ color: COLORS.purple }}>{option.badge}</p>}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <p className="mt-6 text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>笔触颗粒度</p>
-                  <div className="mt-3 grid grid-cols-3 gap-2">
-                    {BRUSH_OPTIONS.map(option => {
-                      const selected = roughness === option.value;
-                      return (
-                        <button key={option.value} onClick={() => setRoughness(option.value)} className="rounded-xl p-3 text-center" title={option.body} style={{ background: selected ? COLORS.yellow : COLORS.paper, border: `1.5px solid ${selected ? COLORS.ink : 'transparent'}` }}>
-                          <Brush className="mx-auto" size={18 + option.value * 2} strokeWidth={2.5} />
-                          <span className="mt-2 block text-[10px] font-black leading-4">{option.title}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
                   <p className="mt-5 text-xs font-bold leading-6" style={{ color: COLORS.inkSoft }}>准备好后，系统会在 1000 笔以内分配笔触，保留整体色彩和主要形状，并逐笔提示起点、方向与颜色。</p>
                   <button onClick={handleStartGuided} disabled={preparing} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-base font-black text-white disabled:cursor-wait disabled:opacity-50" style={{ background: COLORS.ink, boxShadow: `4px 4px 0 ${COLORS.yellow}` }}>
                     {preparing ? '正在准备图片…' : '生成星迹并开始'} <ArrowRight size={18} strokeWidth={2.8} />
@@ -410,7 +355,7 @@ export default function CreatePage() {
                 <div className="flex min-h-[390px] flex-col items-center justify-center text-center">
                   <span className="flex h-16 w-16 items-center justify-center rounded-[1.4rem]" style={{ background: COLORS.purpleSoft }}><Route size={30} color={COLORS.purple} strokeWidth={2.4} /></span>
                   <h3 className="mt-6 text-xl font-black">先选择一幅画面</h3>
-                  <p className="mt-3 max-w-[240px] text-sm font-bold leading-6" style={{ color: COLORS.inkSoft }}>选好后，这里会出现引导强度和笔触设置。</p>
+                  <p className="mt-3 max-w-[240px] text-sm font-bold leading-6" style={{ color: COLORS.inkSoft }}>选好图片后，即可生成星迹，按完整引导逐笔绘画。</p>
                   <div className="mt-7 flex items-center gap-2 text-xs font-black" style={{ color: COLORS.purple }}><CircleDot size={15} /> 星点 <ArrowRight size={14} /> <Route size={15} /> 星迹 <ArrowRight size={14} /> <Brush size={15} /> 动笔</div>
                 </div>
               )}

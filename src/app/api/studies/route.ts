@@ -138,6 +138,7 @@ export async function GET(req: NextRequest) {
       return json({
         config: config(repo, studyId),
         report: report(repo, studyId),
+        tests: repo.all<Participant>('participant').map(person => ({ pairId: person.pairId, researchCode: person.researchCode ?? person.id, studyId: person.studyId, createdAt: person.createdAt, withdrawnAt: person.withdrawnAt })).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
         handoffs: repo.all<{ id: string; studyId: string; createdAt: string; status: string; sha256: string }>('handoff').filter(e => e.studyId === studyId).sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 10).map(({ id, createdAt, status, sha256 }) => ({ id, createdAt, status, sha256 })),
       });
     }
@@ -268,8 +269,6 @@ export async function POST(req: NextRequest) {
       access = role(req),
       p = own(req);
     if (b.action === 'enroll') {
-      if (!equal(String(b.code || ''), process.env.STUDY_ENROLLMENT_CODE))
-        return json({ error: '研究码无效或尚未配置' }, 403);
       if (p && !p.withdrawnAt)
         return json({ participant: publicParticipant(p) });
       if (
@@ -279,7 +278,7 @@ export async function POST(req: NextRequest) {
         b.adult !== true
       )
         throw new Error('请完成筛选与两项研究同意');
-      const result = enroll(repo, String(b.studyId || 'novice-pilot-v1'));
+      const result = enroll(repo, String(b.studyId || 'novice-pilot-v1'), String(b.code || ''));
       const response = json({
         participant: publicParticipant(result.participant),
       });
@@ -418,10 +417,11 @@ export async function POST(req: NextRequest) {
             .replace(/[-:]/g, '')
             .replace('.', '')
             .replace('Z', '+0800');
-          const name = `${pair.participantId}-${date}-${s.condition}.json`;
+          const name = `${pair.researchCode}-${date}-${s.condition}.json`;
           const data = JSON.stringify(
             {
               schemaVersion: PROTOCOL.schemaVersion,
+              researchCode: pair.researchCode,
               protocol: PROTOCOL,
               assignment: { pairId: pair.pairId, order: pair.order },
               enrollment: pair.enrollment,
@@ -441,7 +441,7 @@ export async function POST(req: NextRequest) {
             hash: repo.write(`exports/${id}/${s.id}/${name}`, data),
           });
         }
-        const name = `${pair.participantId}-pair.json`;
+        const name = `${pair.researchCode}-pair.json`;
         files.push({
           name,
           path: name,
@@ -462,7 +462,7 @@ export async function POST(req: NextRequest) {
       };
       repo.write(`exports/${id}/dataset.json`, JSON.stringify(output, null, 2));
       const csv = [
-        'participant,order,control_score,guided_score,difference,control_ms,guided_ms,control_status,guided_status,control_inclusion,guided_inclusion',
+        'participant,order,control_score,guided_score,difference,control_ms,guided_ms,control_status,guided_status,control_inclusion,guided_inclusion,research_code',
         ...snapshot.pairs
           .filter((p) => !p.withdrawnAt)
           .map((p) =>
@@ -481,6 +481,7 @@ export async function POST(req: NextRequest) {
               p.guided?.state ?? 'missing',
               p.control?.inclusion ?? '',
               p.guided?.inclusion ?? '',
+              p.researchCode.startsWith('-') ? "'" + p.researchCode : p.researchCode,
             ].join(','),
           ),
       ].join('\n');

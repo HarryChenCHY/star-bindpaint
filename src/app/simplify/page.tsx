@@ -263,7 +263,7 @@ export default function BudgetExperience() {
                       'star-bindpaint-source',
                       result.source,
                     );
-                    sessionStorage.setItem('star-bindpaint-roughness', '2');
+                    sessionStorage.setItem('star-bindpaint-roughness', '1');
                     sessionStorage.removeItem('star-bindpaint-free-style');
                     sessionStorage.removeItem('star-bindpaint-master');
                     router.push('/paint');

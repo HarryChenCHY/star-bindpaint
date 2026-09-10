@@ -34,8 +34,14 @@ export function config(repo: StudyRepository, id = 'novice-pilot-v1') {
   repo.put('config', id, created);
   return created;
 }
-export function enroll(repo: StudyRepository, studyId: string) {
+export function enroll(repo: StudyRepository, studyId: string, code?: string) {
   return repo.transaction(() => {
+    const researchCode = code?.normalize('NFKC').trim();
+    if (code !== undefined && (!researchCode || !/^[\p{L}\p{N}_-]{1,64}$/u.test(researchCode)))
+      throw new Error('研究码请使用 1–64 个文字、数字、下划线或短横线');
+    const codeKey = researchCode ? hash(researchCode.toLowerCase()) : null;
+    if (codeKey && (repo.get('research_code', codeKey) || repo.all<Participant>('participant').some(p => (p.researchCode ?? p.id).normalize('NFKC').toLowerCase() === researchCode?.toLowerCase())))
+      throw new Error('研究码已存在，请换一个新的研究码');
     const c = config(repo, studyId);
     if (!c.published || !c.plan || !c.material)
       throw new Error('研究尚未开放，请联系研究者');
@@ -65,6 +71,7 @@ export function enroll(repo: StudyRepository, studyId: string) {
     }
     const token = randomBytes(32).toString('hex');
     const p: Participant = {
+      ...(researchCode ? { researchCode } : {}),
       id: `${c.stage === 'pilot' ? 'T' : 'P'}${String(people.length + 1).padStart(3, '0')}`,
       pairId: randomUUID(),
       studyId,
@@ -80,6 +87,7 @@ export function enroll(repo: StudyRepository, studyId: string) {
       withdrawnAt: null,
     };
     repo.put('participant', p.pairId, p);
+    if (codeKey) repo.put('research_code', codeKey, { pairId: p.pairId });
     repo.audit('enrolled', p.pairId, {
       studyId,
       consentVersion: PROTOCOL.consentVersion,
@@ -333,6 +341,7 @@ export function report(repo: StudyRepository, studyId: string) {
     };
     return {
       participantId: p.id,
+      researchCode: p.researchCode ?? p.id,
       pairId: p.pairId,
       order: p.order,
       enrollment: {

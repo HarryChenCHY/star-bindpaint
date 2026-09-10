@@ -156,8 +156,8 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
         className="pointer-events-auto flex flex-wrap items-center justify-center gap-1 px-1.5 py-1.5 rounded-[1.35rem] bg-white max-w-[calc(100vw-0.75rem)] sm:flex-nowrap sm:gap-1.5 sm:px-2 sm:py-2 sm:rounded-[1.5rem]"
         style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A' }}
       >
-        {/* MODE SECTION — 自由模式一旦进入即锁定，其余两个模式按钮隐藏 */}
-        {(p.mode === 'free' ? MODES.filter(m => m.id === 'free') : MODES).map(m => (
+        {/* 模式入口始终可见，允许返回当前星迹。 */}
+        {MODES.map(m => (
           <ModeBtn
             key={m.id}
             icon={m.icon}
@@ -165,7 +165,6 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
             color={m.color}
             active={p.mode === m.id}
             onClick={() => {
-              if (p.mode === 'free' && m.id !== 'free') return;
               if (m.id === 'auto' && p.mode === 'follow' && p.onEnterAutoMode) {
                 p.onEnterAutoMode();
                 return;

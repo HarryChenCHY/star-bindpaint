@@ -30,7 +30,7 @@ export function pilotWorkload(c: StudyConfig, people: Participant[], sessions: S
   const rows = people.filter(p => p.studyId === c.id).map(p => {
     const tasks = sessions.filter(s => s.studyId === c.id && s.pairId === p.pairId);
     const latest = (condition: string) => tasks.filter(s => s.condition === condition).sort((a, b) => b.attempt - a.attempt)[0];
-    return { id: p.id, order: p.order, control: measure(latest('control'), !!p.withdrawnAt), guided: measure(latest('guided'), !!p.withdrawnAt) };
+    return { id: p.researchCode ?? p.id, order: p.order, control: measure(latest('control'), !!p.withdrawnAt), guided: measure(latest('guided'), !!p.withdrawnAt) };
   });
   const groups = (['control', 'guided'] as const).map(condition => {
     const tasks = rows.map(r => r[condition]).filter((s): s is NonNullable<typeof s> => s !== null && s.eligible && s.hasEnd);

@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/check-runtime.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/check-runtime.mjs",
     "build": "next build",
+    "prestart": "node scripts/check-runtime.mjs",
     "start": "next start",
     "lint": "eslint",
     "test:study": "tsx --test tests/study/*.test.ts",

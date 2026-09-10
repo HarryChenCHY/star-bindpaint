@@ -21,6 +21,7 @@ export interface StudyConfig {
   createdAt: string;
 }
 export interface Participant {
+  researchCode?: string;
   id: string;
   pairId: string;
   studyId: string;

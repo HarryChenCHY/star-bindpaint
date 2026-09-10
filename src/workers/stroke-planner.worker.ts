@@ -13,7 +13,7 @@ self.onmessage = async (e: MessageEvent) => {
       source.width,
       source.height,
       e.data.budget ?? STROKE_CONFIG.defaultBudget,
-      2,
+      STROKE_CONFIG.defaultRoughness,
       STROKE_CONFIG.studyOpacity,
       (progress) => self.postMessage({ type: 'progress', progress }),
     );

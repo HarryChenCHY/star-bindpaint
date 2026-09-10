@@ -13,12 +13,6 @@ import {
   type PrivacyPreferences,
 } from '@/lib/privacy-settings';
 
-const GUIDANCE_OPTIONS = [
-  { value: 'full' as const, name: '完整星迹', desc: '显示路径、起点和方向，适合第一次使用', color: '#69D2C2' },
-  { value: 'balanced' as const, name: '平衡星迹', desc: '保留关键星点，减少画面提示', color: '#FFD166' },
-  { value: 'light' as const, name: '轻量星迹', desc: '只在需要时提示，适合独立练习', color: '#B8ADF3' },
-];
-
 export default function SettingsPage() {
   const router = useRouter();
   const { settings, updateSettings } = useAppSettings();
@@ -68,13 +62,7 @@ export default function SettingsPage() {
 
         <section className="mt-6 rounded-[1.7rem] border-2 border-[#17233F] bg-white p-5 shadow-[6px_6px_0_#69D2C2] sm:p-7">
           <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border-2 border-[#17233F] bg-[#E4F7F2]"><Brush size={21} strokeWidth={2.8} /></span><div><p className="text-[10px] font-black tracking-[0.12em] text-[#13786B]">DRAWING PREFERENCES</p><h2 className="mt-1 text-xl font-black text-[#17233F]">默认绘画体验</h2><p className="mt-1 text-xs font-bold leading-5 text-[#65708A]">这些偏好只保存在当前浏览器，可以随时更改。</p></div></div>
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
-            {GUIDANCE_OPTIONS.map(option => (
-              <button key={option.value} type="button" onClick={() => updateSettings({ defaultGuidance: option.value })} className="rounded-2xl p-4 text-left transition-transform hover:-translate-y-0.5" style={{ border: settings.defaultGuidance === option.value ? '3px solid #17233F' : '2px solid #C8CEDA', background: settings.defaultGuidance === option.value ? option.color : '#FFFFFF', boxShadow: settings.defaultGuidance === option.value ? '4px 4px 0 #17233F' : 'none' }}>
-                <span className="text-sm font-black text-[#17233F]">{option.name}</span><p className="mt-2 text-[11px] font-bold leading-5 text-[#4D5870]">{option.desc}</p>
-              </button>
-            ))}
-          </div>
+          <p className="mt-5 text-sm font-bold">默认使用完整引导与细节更多的笔触，画板内可随时调整提示显示。</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <ToggleCard title="减少动态效果" description="减少装饰动画，保留必要的笔触演示。" checked={settings.reducedMotion} onChange={checked => updateSettings({ reducedMotion: checked })} />
             <ToggleCard title="AI 生成前再次确认" description="发送画布生成风格版本前显示用途提醒。" checked={settings.confirmBeforeAi} onChange={checked => updateSettings({ confirmBeforeAi: checked })} />

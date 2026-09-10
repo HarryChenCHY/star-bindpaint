@@ -10,7 +10,7 @@ import type { report } from '@/lib/study/server/service';
 import { GroupReport, PairReport } from '@/components/study/StudyReport';
 import ImageUploader from '@/components/ImageUploader';
 import '../../study/study.css';
-type Data = { config: StudyConfig; report: ReturnType<typeof report>; handoffs: Array<{ id: string; createdAt: string; status: string; sha256: string }> };
+type Data = { config: StudyConfig; report: ReturnType<typeof report>; tests: Array<{ pairId: string; researchCode: string; studyId: string; createdAt: string; withdrawnAt: string | null }>; handoffs: Array<{ id: string; createdAt: string; status: string; sha256: string }> };
 export default function StudyAdminPage() {
   const preparation = useRef<AbortController | null>(null);
   const [preparationStatus, setPreparationStatus] = useState('');
@@ -29,11 +29,11 @@ export default function StudyAdminPage() {
     [selected, setSelected] = useState(''),
     [exportId, setExportId] = useState('');
   const [checks, setChecks] = useState<Record<string, boolean>>({});
-  async function load() {
+  async function load(targetStudyId = studyId) {
     const d = await api<Data>(
       undefined,
       token,
-      `?action=admin&studyId=${studyId}`,
+      `?action=admin&studyId=${encodeURIComponent(targetStudyId)}`,
     );
     setData(d);
     setRubric(d.config.rubric);
@@ -142,6 +142,26 @@ export default function StudyAdminPage() {
         )}
         {data && (
           <>
+            <section className="study-card">
+              <h2>已有研究测试（{data.tests.length}）</h2>
+              <p className="study-muted">按自定义研究码管理，每份测试包含同一人的两轮绘画。这里显示全部批次，包括尚未完成的测试。</p>
+              {!data.tests.length && <p>尚未创建测试。参与者在已开放的批次输入新研究码并同意参与后，会显示在这里。</p>}
+              <div className="study-scroll"><table>
+                <thead><tr><th>研究码</th><th>批次</th><th>创建时间</th><th>操作</th></tr></thead>
+                <tbody>{data.tests.map(test => <tr key={test.pairId}>
+                  <td className="break-all">{test.researchCode}{test.withdrawnAt ? '（已撤回）' : ''}</td>
+                  <td>{test.studyId.includes('pilot') ? '预试' : '正式测试'}</td>
+                  <td>{new Date(test.createdAt).toLocaleString('zh-CN')}</td>
+                  <td><button disabled={busy} onClick={async () => {
+                    setBusy(true); setError('');
+                    try {
+                      await load(test.studyId); setStudyId(test.studyId); setSelected(test.pairId); setPrepared(null);
+                      setTimeout(() => document.getElementById('pair-detail')?.scrollIntoView({ behavior: 'smooth' }), 0);
+                    } catch (e) { setError(String(e)); } finally { setBusy(false); }
+                  }}>查看测试</button></td>
+                </tr>)}</tbody>
+              </table></div>
+            </section>
             <section className="study-card">
               <h2>材料与发布</h2>
               <p className="study-muted">当前采用算法：{STROKE_CONFIG.version} · 预算 {STROKE_CONFIG.defaultBudget} 笔</p>
@@ -357,7 +377,7 @@ export default function StudyAdminPage() {
                     {data.report.pairs.map((p) => (
                       <tr key={p.pairId}>
                         <td>
-                          {p.participantId} / {p.order}
+                          {p.researchCode} / {p.order}
                           {p.withdrawnAt && '（已撤回）'}
                         </td>
                         <td>

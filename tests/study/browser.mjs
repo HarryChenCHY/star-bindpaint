@@ -22,7 +22,6 @@ const server = spawn(
       ANALYTICS_ADMIN_TOKEN: admin,
       STUDY_RATER_1_TOKEN: r1,
       STUDY_RATER_2_TOKEN: r2,
-      STUDY_ENROLLMENT_CODE: code,
     },
   },
 );
@@ -211,13 +210,25 @@ try {
   person.on('pageerror', (e) => errors.push(e.message));
   const secondJoin = await call(context, {
     action: 'enroll',
-    code,
+    code: code + '-second',
     studyId: p.studyId,
     eligible: true,
     logs: true,
     artwork: true,
     adult: true,
   });
+  const duplicateContext = await browser.newContext();
+  const duplicatePage = await duplicateContext.newPage();
+  await duplicatePage.goto(url + '/study');
+  await duplicatePage.getByLabel('研究码', { exact: true }).fill(code);
+  for (const checkbox of await duplicatePage.getByRole('checkbox').all()) await checkbox.check();
+  await duplicatePage.getByRole('button', { name: '同意并进入' }).click();
+  await duplicatePage.getByText('研究码已存在，请换一个新的研究码', { exact: false }).waitFor();
+  await duplicateContext.close();
+  await page.getByRole('button', { name: '读取 / 刷新' }).click();
+  await page.getByRole('heading', { name: '已有研究测试（2）', exact: true }).waitFor();
+  await page.getByRole('button', { name: '查看测试', exact: true }).first().click();
+  await page.getByRole('heading', { name: code + '-second · 两次绘画对比', exact: true }).waitFor();
   const secondPerson = secondJoin.participant;
   const secondRow = db
     .prepare("select data from records where kind='participant' and id=?")
@@ -346,7 +357,7 @@ try {
   const blindData = await blind.json();
   if (blindData.artworks.some(a => 'condition' in a || 'participantId' in a || a.rating?.rater !== 'rater1')) throw new Error('Rater identity leak');
   const recoveryContext = await browser.newContext();
-  const recoveredPerson = (await call(recoveryContext, { action: 'enroll', code, studyId: p.studyId, eligible: true, logs: true, artwork: true, adult: true })).participant;
+  const recoveredPerson = (await call(recoveryContext, { action: 'enroll', code: code + '-recovery', studyId: p.studyId, eligible: true, logs: true, artwork: true, adult: true })).participant;
   const storedPerson = JSON.parse(db.prepare("select data from records where kind='participant' and id=?").get(recoveredPerson.pairId).data);
   storedPerson.practiceAt = new Date().toISOString();
   db.prepare("update records set data=? where kind='participant' and id=?").run(JSON.stringify(storedPerson), storedPerson.pairId);

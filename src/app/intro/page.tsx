@@ -1,458 +1,125 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import {
-  ArrowLeft,
-  ArrowRight,
-  BarChart3,
-  Bot,
-  BrainCircuit,
-  Brush,
-  Check,
-  CircleDot,
-  Clock3,
-  Eye,
-  FlaskConical,
-  Image as ImageIcon,
-  Layers3,
-  LineChart,
-  Moon,
-  MousePointer2,
-  Palette,
-  Play,
-  Route,
-  Sparkles,
-  Target,
-  Upload,
-  Wand2,
-} from 'lucide-react';
-
-const COLORS = {
-  ink: '#17233F',
-  inkSoft: '#536079',
-  purple: '#6558D9',
-  purpleSoft: '#ECEAFE',
-  yellow: '#FFD166',
-  mint: '#69D2C2',
-  pink: '#FF8FAB',
-  blue: '#8EC5FF',
-  paper: '#F6F7FB',
-  white: '#FFFFFF',
-};
+import Link from 'next/link';
+import { useEffect, useState, type ReactNode } from 'react';
+import { ArrowLeft, ArrowRight, BookOpen, ChevronLeft, Menu, Moon, Paintbrush, FlaskConical, Layers3, ShieldCheck } from 'lucide-react';
+import { BudgetExplorer, ExperimentExplorer, StyleExplorer } from '@/components/IntroVisuals';
+import { PROTOCOL, QUESTIONS } from '@/lib/study/protocol';
+import { STROKE_CONFIG } from '@/lib/stroke-config';
+import './intro.css';
 
 const CHAPTERS = [
-  { id: 'overview', label: '产品概述', color: COLORS.yellow },
-  { id: 'interaction', label: '核心交互', color: COLORS.mint },
-  { id: 'novice', label: '零基础专项', color: COLORS.pink },
-  { id: 'workflow', label: '使用流程', color: COLORS.blue },
-  { id: 'diffusion', label: 'Diffusion 生图', color: COLORS.yellow },
-  { id: 'llm', label: 'LLM 大模型', color: COLORS.pink },
-  { id: 'algorithm', label: '笔触算法', color: COLORS.mint },
-  { id: 'research', label: '研究框架', color: COLORS.purpleSoft },
+  ['overview', '产品全景'], ['painting', '从图片到绘画'], ['companion', '月亮伙伴与画板'],
+  ['styles', '六种大师笔触'], ['algorithm', '1000 笔算法'], ['references', '技术溯源与论文'],
+  ['experiment', '对比实验流程'], ['measurement', '测量与分析'], ['researcher', '研究工作台'], ['data', '数据保存与边界'],
 ];
-
-const FLOW_STEPS = [
-  { icon: ImageIcon, title: '选择画面', body: '选择示例作品，或上传一张真正想画的图片。', color: COLORS.yellow },
-  { icon: Layers3, title: '生成星迹', body: '系统将图像拆成由粗到细、有顺序的笔触路径。', color: COLORS.mint },
-  { icon: CircleDot, title: '找到星点', body: '月亮伙伴提示起点、方向、颜色和辅助强度。', color: COLORS.purpleSoft },
-  { icon: Brush, title: '跟随绘制', body: '用户亲手完成每一笔，也能跳过或请求更多帮助。', color: '#FFE3EC' },
-  { icon: BarChart3, title: '形成星图', body: '作品与过程数据沉淀为进步反馈和研究指标。', color: '#E5F2FF' },
-];
-
-const NOVICE_MAPPINGS = [
-  ['不知道从哪里开始', '突出唯一的下一颗星点', '降低首次落笔决策负担'],
-  ['画面看起来太复杂', '由大形到细节分层拆解', '把整体任务缩小为单笔任务'],
-  ['担心画错而停住', '提供轨迹、颜色与即时反馈', '允许试错，并让进度持续可见'],
-  ['完成一次却难以坚持', '记录星图、动笔次数与辅助变化', '把完成感连接到下一次练习'],
-];
-
-const ALGORITHM_STEPS = [
-  ['01', '图像采样', '读取参考图像的颜色、亮度与局部结构。'],
-  ['02', '多尺度规划', '按大、中、小笔刷建立由粗到细的绘制层级。'],
-  ['03', '误差区域检测', '比较目标图与虚拟画布，优先处理差异明显的区域。'],
-  ['04', '曲线笔触生成', '沿图像梯度的切线方向生成连续、平滑的曲线路径。'],
-  ['05', '有序引导输出', '保存起点、路径、颜色和宽度，转化为可交互步骤。'],
-];
-
-function scrollToSection(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+function Section({ id, number, title, subtitle, children }: { id: string; number: string; title: string; subtitle: string; children: ReactNode }) {
+  const Heading = number === '01' ? 'h1' : 'h2';
+  return <section id={id} className="intro-section"><header className="mb-8"><p className="intro-eyebrow">{number} / STARTRACE</p><Heading>{title}</Heading><p className="intro-lead">{subtitle}</p></header>{children}</section>;
 }
-
-function SectionTitle({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
-  return (
-    <div className="max-w-3xl">
-      <p className="text-xs font-black tracking-[0.18em]" style={{ color: COLORS.purple }}>{eyebrow}</p>
-      <h2 className="mt-4 text-[clamp(2.2rem,5vw,4.4rem)] font-black leading-[1.03] tracking-[-0.055em]">{title}</h2>
-      <p className="mt-6 max-w-2xl text-base font-bold leading-8" style={{ color: COLORS.inkSoft }}>{body}</p>
-    </div>
-  );
+function Flow({ items }: { items: Array<[string, string]> }) {
+  return <ol className="intro-flow">{items.map(([title, body], i) => <li key={title}><span className="intro-number">{String(i + 1).padStart(2, '0')}</span><h3>{title}</h3><p>{body}</p>{i < items.length - 1 && <ArrowRight className="intro-flow-arrow" size={20} />}</li>)}</ol>;
 }
-
-function StarTrailVisual() {
-  return (
-    <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem]" style={{ background: '#FFF9E8', border: `2px solid ${COLORS.ink}` }}>
-      <svg viewBox="0 0 600 450" className="h-full w-full" fill="none" role="img" aria-label="星点与笔触路径交互示意">
-        <rect width="600" height="450" fill="#FFF9E8" />
-        <path d="M0 329C132 287 225 352 345 307C447 269 515 290 600 251V450H0V329Z" fill="#DDF2EA" />
-        <path d="M62 120C155 58 270 82 337 145C386 192 435 171 532 107" stroke="#DED9FF" strokeWidth="34" strokeLinecap="round" />
-        <path d="M89 315C168 260 249 252 326 277C389 298 457 269 522 218" stroke="#6558D9" strokeWidth="22" strokeLinecap="round" opacity="0.13" />
-        <motion.path
-          d="M89 315C168 260 249 252 326 277C389 298 457 269 522 218"
-          stroke={COLORS.purple}
-          strokeWidth="6"
-          strokeLinecap="round"
-          strokeDasharray="12 14"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 0.8, ease: 'easeInOut' }}
-        />
-        <motion.circle
-          cx="89"
-          cy="315"
-          r="15"
-          fill={COLORS.yellow}
-          stroke={COLORS.ink}
-          strokeWidth="4"
-          animate={{ scale: [1, 1.22, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        />
-        <circle cx="522" cy="218" r="8" fill={COLORS.white} stroke={COLORS.purple} strokeWidth="4" />
-        <path d="M310 291C312 242 315 204 320 161" stroke="#4F8C68" strokeWidth="10" strokeLinecap="round" />
-        <g transform="translate(320 141)">
-          {[0, 45, 90, 135, 180, 225, 270, 315].map(angle => (
-            <ellipse key={angle} cy="-42" rx="15" ry="32" fill={COLORS.yellow} stroke={COLORS.ink} strokeWidth="3" transform={`rotate(${angle})`} />
-          ))}
-          <circle r="31" fill="#9C6137" stroke={COLORS.ink} strokeWidth="4" />
-        </g>
-      </svg>
-      <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-2xl bg-white/95 p-3" style={{ border: `1.5px solid ${COLORS.ink}` }}>
-        <span className="flex h-10 w-10 flex-none items-center justify-center rounded-xl" style={{ background: COLORS.yellow }}>
-          <Moon size={21} strokeWidth={2.6} />
-        </span>
-        <div>
-          <p className="text-[10px] font-black tracking-[0.1em]" style={{ color: COLORS.purple }}>月亮伙伴 · 下一笔</p>
-          <p className="mt-1 text-xs font-extrabold sm:text-sm">从黄色星点出发，沿紫色星迹向右画。</p>
-        </div>
-      </div>
-    </div>
-  );
+function Card({ title, children }: { title: string; children: ReactNode }) {
+  return <div className="intro-card"><h3>{title}</h3>{children}</div>;
 }
-
-function LayerVisual() {
-  const strokes = [
-    { d: 'M18 92 Q58 62 100 76 T190 60', width: 16, color: '#8EC5FF', delay: 0 },
-    { d: 'M25 50 Q62 29 99 44 T181 30', width: 11, color: '#FFD166', delay: 0.35 },
-    { d: 'M44 86 Q73 70 104 84 T166 72', width: 7, color: '#69D2C2', delay: 0.7 },
-    { d: 'M63 40 Q91 24 124 42 T173 38', width: 4, color: '#6558D9', delay: 1.05 },
-  ];
-  return (
-    <svg viewBox="0 0 210 120" className="w-full" fill="none" aria-label="由粗到细的多层笔触示意">
-      {strokes.map(stroke => (
-        <motion.path
-          key={stroke.d}
-          d={stroke.d}
-          stroke={stroke.color}
-          strokeWidth={stroke.width}
-          strokeLinecap="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          whileInView={{ pathLength: 1, opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: stroke.delay }}
-        />
-      ))}
-    </svg>
-  );
-}
-
 export default function IntroPage() {
-  const router = useRouter();
-
-  return (
-    <div className="min-h-screen overflow-x-hidden" style={{ background: COLORS.paper, color: COLORS.ink }}>
-      <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur" style={{ borderColor: '#D9DDEA' }}>
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 sm:px-8 lg:px-10">
-          <button onClick={() => router.push('/')} className="flex items-center gap-3 text-left" aria-label="返回首页">
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl" style={{ background: COLORS.yellow, border: `2px solid ${COLORS.ink}` }}>
-              <Moon size={21} strokeWidth={2.6} />
-            </span>
-            <span className="hidden sm:block">
-              <span className="block text-sm font-black">星迹智绘</span>
-              <span className="block text-[9px] font-extrabold tracking-[0.16em]" style={{ color: COLORS.inkSoft }}>PRODUCT RESEARCH</span>
-            </span>
-          </button>
-          <nav className="hidden items-center gap-1 xl:flex" aria-label="产品介绍章节">
-            {CHAPTERS.map(chapter => (
-              <button
-                key={chapter.id}
-                onClick={() => scrollToSection(chapter.id)}
-                className="rounded-full px-3 py-2 text-xs font-extrabold transition-colors hover:bg-slate-100"
-              >
-                {chapter.label}
-              </button>
-            ))}
-          </nav>
-          <button
-            onClick={() => router.push('/create')}
-            className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-black text-white"
-            style={{ background: COLORS.ink }}
-          >
-            进入应用 <ArrowRight size={16} strokeWidth={2.8} />
-          </button>
+  const [navOpen, setNavOpen] = useState(false), [active, setActive] = useState('overview');
+  useEffect(() => {
+    let pending = 0;
+    const update = () => {
+      pending = 0;
+      const current = CHAPTERS.filter(([id]) => (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity) <= 180).at(-1);
+      setActive(current?.[0] ?? 'overview');
+    };
+    const onScroll = () => { if (!pending) pending = requestAnimationFrame(update); };
+    const frame = requestAnimationFrame(() => { setNavOpen(window.innerWidth >= 1100); update(); });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => { cancelAnimationFrame(frame); cancelAnimationFrame(pending); window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); };
+  }, []);
+  return <div className={`intro-page ${navOpen ? 'nav-open' : ''}`}>
+    <header className="intro-top"><Link href="/" className="flex items-center gap-2 font-black"><ArrowLeft size={18} /><span>返回首页</span></Link><span className="flex items-center gap-2 font-black"><Moon size={20} className="text-[#6558D9]" />星迹智绘 · 产品介绍</span><span className="hidden text-xs font-bold text-[#536079] sm:block">从第一笔，到一幅自己的画</span></header>
+    {!navOpen && <button className="intro-menu" aria-expanded={false} aria-controls="intro-toc" aria-label="展开介绍目录" onClick={() => setNavOpen(true)}><Menu size={20} /><span>目录</span></button>}
+    {navOpen && <><button className="intro-scrim" aria-label="关闭介绍目录" onClick={() => setNavOpen(false)} /><aside className="intro-sidebar" id="intro-toc" aria-label="产品介绍目录"><div className="mb-5 flex items-center justify-between"><span className="flex items-center gap-2 font-black"><BookOpen size={18} />内容目录</span><button className="intro-icon" aria-label="收起介绍目录" aria-expanded={true} onClick={() => setNavOpen(false)}><ChevronLeft size={20} /></button></div><nav>{CHAPTERS.map(([id, label], i) => <a key={id} href={`#${id}`} aria-current={active === id ? 'location' : undefined} onClick={() => { setActive(id); if (window.innerWidth < 1100) setNavOpen(false); }}><span>{String(i + 1).padStart(2, '0')}</span>{label}</a>)}</nav><p className="mt-6 text-xs leading-6 text-[#536079]">目录可随时收起。每个章节都对应当前程序的功能或明确的实现边界。</p></aside></>}
+    <main className="intro-main">
+      <Section id="overview" number="01" title="把一幅画，变成眼前的下一笔。" subtitle="为零基础绘画者提供起点、路径与反馈，让不会画、不想开始、担心画不好的人，有机会完成一次属于自己的绘画。">
+        <div className="intro-grid two"><div className="intro-feature yellow"><Paintbrush size={32} /><h3>绘画体验</h3><p>从图片开始沿星迹绘画，也可以进入自由星域。完整提示帮助找到第一笔，提示卡可以收起、移动和锁定，作品保存到自己的星图。</p><div className="mt-5 flex flex-wrap gap-2"><span className="intro-pill">本地上传</span><span className="intro-pill">逐笔引导</span><span className="intro-pill">六种笔刷</span></div></div><div className="intro-feature mint"><FlaskConical size={32} /><h3>研究测试</h3><p>同一个人、同一张参考图，分别完成看图绘画和笔触引导绘画。程序贯通练习、问卷、计时、事件记录、作品评分与配对分析。</p><div className="mt-5 flex flex-wrap gap-2"><span className="intro-pill">AB / BA 顺序</span><span className="intro-pill">真实作品</span><span className="intro-pill">配对报告</span></div></div></div>
+        <div className="intro-grid three mt-5"><Card title="降低开始的负担"><p>突出下一笔的起点与方向，将一整幅画拆成可执行的小动作。</p></Card><Card title="让过程可见"><p>显示当前笔触、进度和反馈，允许在体验中调整提示和求助。</p></Card><Card title="保留完成的满足"><p>保存亲手绘制的作品，区分人工与自动帮助，回看自己的尝试。</p></Card></div>
+        <p className="intro-caption">这些是设计目标。对意愿、速度、完成度与满足感是否有效，需要真实参与者的对比数据验证。</p>
+      </Section>
+      <Section id="painting" number="02" title="选一张想画的图，直接开始。" subtitle="入口不再要求选择引导强度或颗粒度。默认完整引导、细节更多，约 1000 笔预算，按实际规划顺序绘制。">
+        <Flow items={[
+          ['选择参考', '精选临摹，或点击、拖拽上传自己的图片。'], ['准备画面', '校正尺寸，将透明区域放在白底上，统一参考与绘画坐标。'], ['生成笔触', '后台 Worker 规划整幅图的笔触，显示进度，可取消和重试。'], ['逐笔绘画', '从星形起点沿路径画向箭头，参考颜色与笔宽。'], ['保存作品', '完成后保存到星图，回看画面与本次体验记录。'],
+        ]} />
+        <div className="intro-grid two mt-6"><Card title="图片格式与尺寸"><p>支持小于 20 MB 的 JPG、PNG、WebP、GIF、BMP、AVIF 等浏览器可解码图像；每次一张。GIF 按解码后的静态画面使用。图片会按画布与规划尺寸缩放，规划不等于逐像素复制原始大图。</p></Card><Card title="自由星域"><p>自由创作不要求参考图，提供风格笔刷、颜色、粗细、橡皮擦、撤销等工具。有参考计划时，可从沿星迹切到自由绘画并切回，已有画面保留；无计划时需先选图才能获得引导。</p></Card></div>
+      </Section>
+      <Section id="companion" number="03" title="帮助放在身边，画面留给你。" subtitle="月亮伙伴承担下一步提示，底栏承担绘画操作。提示的多少、位置与展开状态可以随时调整。">
+        <div className="intro-grid three"><Card title="完整 / 适度 / 起点"><p>完整显示起点、轨迹和方向箭头；适度降低轨迹强调；起点只保留短方向提示。切换改变提示显示，不重新计算笔触序列。</p></Card><Card title="可移动的提示卡"><p>点击减号收为方圆图标，再点图标展开。解锁后拖动顶部手柄调整位置，锁定后避免误拖；位置与锁定偏好保存在当前浏览器。</p></Card><Card title="自动续画与手动体验"><p>体验模式可以让伙伴演示剩余笔触，并随时暂停。亲手绘画与自动帮助分别记录；自动推进的进度不代表用户独立完成。</p></Card></div>
+        <div className="intro-callout mt-6"><h3>作品反馈与可选 AI 功能</h3><p>星图保存作品与体验记录。文字反馈可调用已配置的语言模型服务，依据本次指标解释过程；自由绘画可请求云端图像风格化并保留原画与生成版本。这些服务依赖服务端配置与可用性，不参与本地笔触规划，也不参与实验的自动代画。没有外部服务时，不能承诺生成反馈或云端风格图。</p></div>
+      </Section>
+      <Section id="styles" number="04" title="同一条手势，六种笔触性格。" subtitle="自由笔刷保留你画出的路径，通过宽度、色彩扰动、边缘、不透明度和纹理改变落笔质感。点击卡片查看每种风格的实现与用途。">
+        <StyleExplorer />
+        <Flow items={[[ '路径重采样', '按约 4 像素间隔重新采样，并映射输入压力。'], ['形态与颜色', '计算渐细、鼓起、等宽或压感曲线，调整色相和饱和度。'], ['肌理渲染', '添加轻微路径扰动、双层厚涂、干笔缺口或周期断笔，再用曲线绘制。']]} />
+        <p className="intro-caption">大师名称是风格预设的命名。当前实现没有训练六位画家的专属模型，也不会自动理解或复制其构图与艺术语言。</p>
+      </Section>
+      <Section id="algorithm" number="05" title="每一笔，都要让整幅图更接近目标。" subtitle="当前算法以完整画面的误差为依据，在总预算内反复优化笔刷，而不是把旧算法的前 1000 笔直接截取出来。">
+        <div className="intro-callout"><p className="intro-eyebrow">当前实现 · {STROKE_CONFIG.version}</p><h3>参考图 → 误差图 → 候选笔刷 → 最优颜色 → 接受一笔 ↺</h3><p>从白色虚拟画布出发，较大笔刷先建立整体，再逐步允许更细的笔触修补细节。没有强制“先轮廓”的阶段，也不做物体语义分割。</p></div>
+        <Flow items={[
+          ['目标与误差', '1000 笔模式使用最长边 256 的分析图，比较目标与当前画布的加权 RGB 平方误差。'],
+          ['候选搜索', '更容易在误差较大处采样；每轮考察 64 个位置、方向、长度与宽度组合。'],
+          ['颜色拟合', '对笔刷覆盖的整片区域拟合颜色，考虑当前画布与混合透明度。'],
+          ['局部优化', '再做 36 次局部尝试；只有整片覆盖区误差下降才接受这一笔。'],
+          ['反馈与输出', '更新虚拟画布后再计算下一轮，保存有序路径、笔宽与颜色供引导使用。'],
+        ]} />
+        <div className="intro-grid two mt-6"><Card title="为什么前粗后细？"><p>前约 300 轮逐步收窄最大笔宽，先建立主要色彩和形状，后续以小笔修整。细节档提高细笔候选的倾向；总规划轮数不超过 {STROKE_CONFIG.maxBudget}。</p></Card><Card title="为什么不会简单保证“和原图一致”？"><p>有限笔数、缩小的分析图和胶囊形笔刷都限制表达能力。复杂文字、头发、细线和极小结构可能丢失。像素误差下降可以说明重建更接近，不直接等于精美或用户更满意。</p></Card></div>
+        <details className="intro-details"><summary>查看简化公式与笔刷模型</summary><p>误差 E = Σᵢ wᵢ ‖Tᵢ − Cᵢ‖²。T 是目标，C 是当前虚拟画布，w 对局部边缘适度加权。候选笔触的混合为 C′ᵢ = (1 − aᵢ) Cᵢ + aᵢ c。</p><p>固定笔刷覆盖后，每个颜色通道的最小二乘解为 c = clip[Σᵢ wᵢ aᵢ (Tᵢ − (1 − aᵢ) Cᵢ) / Σᵢ wᵢ aᵢ², 0, 1]。比较绘制前后的误差差值，选择收益更大的候选。</p><p>笔刷用带圆形端帽的线段近似，覆盖率由像素到线段的距离决定。体验绘制按 0.85 透明度拟合，研究画布按不透明笔刷拟合。两者的渲染口径分别匹配。</p></details>
+        <BudgetExplorer />
+      </Section>
+      <Section id="references" number="06" title="技术从哪里来，项目实现了什么。" subtitle="将论文中的启发与本项目的实际实现分别说明，便于理解算法演进与论文写作时的归因。">
+        <div className="intro-timeline">
+          <article><span>1998 · SIGGRAPH</span><h3>Aaron Hertzmann</h3><a href="https://mrl.cs.nyu.edu/publications/painterly98/" target="_blank" rel="noreferrer">Painterly Rendering with Curved Brush Strokes of Multiple Sizes ↗</a><p>多尺度笔刷从粗到细覆盖画面，在与模糊参考图有差异的位置补画，并沿图像梯度的垂直方向构造曲线路径。</p><p><strong>项目关系：</strong>旧版多尺度曲线实现参考这一思路：高斯模糊、误差区域、Sobel 梯度与曲线延伸。旧版仍保留作工程对照，当前默认采用上节的预算误差优化算法。</p></article>
+          <article><span>2019 · ICCV</span><h3>Zhewei Huang · Wen Heng · Shuchang Zhou</h3><a href="https://openaccess.thecvf.com/content_ICCV_2019/html/Huang_Learning_to_Paint_With_Model-Based_Deep_Reinforcement_Learning_ICCV_2019_paper.html" target="_blank" rel="noreferrer">Learning to Paint With Model-Based Deep Reinforcement Learning ↗</a><p>使用神经渲染器与基于模型的深度强化学习，学习笔触位置、颜色与长期绘画规划。</p><p><strong>项目关系：</strong>为有限笔触重建整幅图提供研究参照。本项目采用本地候选搜索与显式笔刷，没有训练或部署该强化学习策略。</p></article>
+          <article><span>2021 · CVPR</span><h3>Zhengxia Zou · Tianyang Shi · Shuang Qiu · Yi Yuan · Zhenwei Shi</h3><a href="https://arxiv.org/abs/2011.08114" target="_blank" rel="noreferrer">Stylized Neural Painting ↗</a><p>利用可微的绘制过程优化参数化笔触，使笔触组合逼近目标图像，并支持不同笔刷风格。</p><p><strong>项目关系：</strong>参考“优化笔触参数并用渲染结果反馈误差”的方向。当前实现以解析颜色拟合和随机局部搜索完成优化，没有接入其神经渲染器或训练权重。</p></article>
         </div>
-      </header>
-
-      <main>
-        <section className="relative mx-auto grid min-h-[82vh] w-full max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1fr_0.92fr] lg:px-10 lg:py-24">
-          <div className="pointer-events-none absolute left-[4%] top-[12%] h-2 w-2 rounded-full" style={{ background: COLORS.yellow }} />
-          <div className="pointer-events-none absolute right-[5%] top-[18%] h-3 w-3 rounded-full" style={{ background: COLORS.pink }} />
-          <motion.div initial={false} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black tracking-[0.12em]" style={{ background: COLORS.purpleSoft, color: COLORS.purple, border: `1.5px solid ${COLORS.purple}` }}>
-              <FlaskConical size={16} strokeWidth={2.5} /> 研究型交互原型
-            </div>
-            <h1 className="mt-7 max-w-3xl text-[clamp(3.2rem,7vw,6.4rem)] font-black leading-[0.94] tracking-[-0.067em]">
-              把复杂画面，
-              <br />翻译成
-              <span className="block" style={{ color: COLORS.purple }}>下一笔。</span>
-            </h1>
-            <p className="mt-8 max-w-2xl text-base font-bold leading-8 sm:text-lg" style={{ color: COLORS.inkSoft }}>
-              星迹智绘把图像笔触拆解算法转化为可理解、可跟随、可逐渐退出的绘画引导，服务于没有系统绘画经验、却想开始动笔的人。
-            </p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <button onClick={() => scrollToSection('overview')} className="inline-flex items-center gap-2 rounded-full px-6 py-4 text-base font-black text-white" style={{ background: COLORS.ink, boxShadow: `5px 5px 0 ${COLORS.yellow}` }}>
-                浏览产品全貌 <ArrowRight size={18} strokeWidth={2.8} />
-              </button>
-              <button onClick={() => scrollToSection('research')} className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-4 text-base font-black" style={{ border: `2px solid ${COLORS.ink}` }}>
-                <LineChart size={18} /> 查看研究框架
-              </button>
-            </div>
-          </motion.div>
-
-          <motion.div initial={false} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.1 }} className="relative">
-            <div className="rounded-[2rem] bg-white p-5 sm:p-7" style={{ border: `2px solid ${COLORS.ink}`, boxShadow: `9px 9px 0 ${COLORS.purple}` }}>
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs font-black tracking-[0.14em]" style={{ color: COLORS.purple }}>核心研究问题</p>
-                  <h2 className="mt-3 text-2xl font-black leading-tight tracking-[-0.04em]">拆成“下一笔”以后，<br />人会更愿意开始画吗？</h2>
-                </div>
-                <Target size={30} color={COLORS.purple} strokeWidth={2.4} />
-              </div>
-              <div className="mt-7 grid gap-3 sm:grid-cols-3">
-                {[
-                  [Clock3, '首次落笔时间', '启动阻力'],
-                  [Brush, '独立完成笔触', '入门帮助'],
-                  [BarChart3, '练习启动频次', '持续动笔'],
-                ].map(([Icon, metric, meaning]) => {
-                  const MetricIcon = Icon as typeof Clock3;
-                  return (
-                    <div key={metric as string} className="rounded-2xl p-4" style={{ background: COLORS.paper }}>
-                      <MetricIcon size={21} color={COLORS.purple} strokeWidth={2.5} />
-                      <p className="mt-5 text-sm font-black">{metric as string}</p>
-                      <p className="mt-1 text-xs font-bold" style={{ color: COLORS.inkSoft }}>{meaning as string}</p>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="mt-4 rounded-2xl px-4 py-3 text-xs font-bold leading-6" style={{ background: '#FFF5D8', color: COLORS.inkSoft }}>
-                这些是待研究验证的观察指标，不是预设的产品效果结论。
-              </div>
-            </div>
-          </motion.div>
-        </section>
-
-        <section id="overview" className="scroll-mt-20 border-y-2 px-5 py-20 sm:px-8 lg:px-10 lg:py-28" style={{ borderColor: COLORS.ink, background: COLORS.white }}>
-          <div className="mx-auto w-full max-w-7xl">
-            <SectionTitle eyebrow="01 · 产品概述" title="一套围绕“亲手画”设计的 AI 绘画系统" body="它不以一键生成成品代替绘画，而是把 AI 放在理解画面、组织步骤和反馈过程的位置，让用户始终是实际动笔的人。" />
-            <div className="mt-12 grid gap-4 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:items-stretch">
-              {[
-                [Upload, '输入', '想画的图片', '示例作品或个人上传'],
-                [BrainCircuit, '处理', '智能笔触拆解', '结构、颜色、顺序与路径'],
-                [Route, '输出', '渐进式绘画引导', '星点、星迹与月亮伙伴'],
-              ].map(([Icon, tag, title, body], index) => {
-                const CardIcon = Icon as typeof Upload;
-                return (
-                  <div key={title as string} className="contents">
-                    <motion.article whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 16 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="rounded-[1.75rem] p-6" style={{ background: [COLORS.yellow, COLORS.mint, COLORS.purpleSoft][index], border: `2px solid ${COLORS.ink}` }}>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-black tracking-[0.14em]" style={{ color: COLORS.purple }}>{tag as string}</span>
-                        <CardIcon size={25} strokeWidth={2.4} />
-                      </div>
-                      <h3 className="mt-14 text-2xl font-black tracking-[-0.04em]">{title as string}</h3>
-                      <p className="mt-3 text-sm font-bold leading-6" style={{ color: COLORS.inkSoft }}>{body as string}</p>
-                    </motion.article>
-                    {index < 2 && <ArrowRight className="mx-auto self-center" size={26} color={COLORS.purple} strokeWidth={3} />}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section id="interaction" className="scroll-mt-20 mx-auto grid w-full max-w-7xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-10 lg:py-28">
-          <StarTrailVisual />
-          <div>
-            <SectionTitle eyebrow="02 · 核心交互" title="一次只回答：下一笔怎么画？" body="系统将复杂的全局判断转化为局部行动提示。用户可以跟随，也可以跳过、降低辅助或切换到自主绘制。" />
-            <div className="mt-8 space-y-3">
-              {[
-                [CircleDot, '星点', '明确在哪里落笔'],
-                [Route, '星迹', '显示方向、长度与弧度'],
-                [Palette, '颜色提示', '减少寻找颜色的认知负担'],
-                [Moon, '月亮伙伴', '用自然语言解释当前动作'],
-              ].map(([Icon, title, body], index) => {
-                const ItemIcon = Icon as typeof CircleDot;
-                return (
-                  <div key={title as string} className="flex items-center gap-4 rounded-2xl bg-white p-4" style={{ border: '1.5px solid #D9DDEA' }}>
-                    <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl" style={{ background: [COLORS.yellow, COLORS.mint, '#FFE3EC', COLORS.purpleSoft][index] }}>
-                      <ItemIcon size={21} strokeWidth={2.5} />
-                    </span>
-                    <div>
-                      <p className="text-sm font-black">{title as string}</p>
-                      <p className="mt-1 text-xs font-bold" style={{ color: COLORS.inkSoft }}>{body as string}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section id="novice" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:px-10 lg:py-28" style={{ background: '#FFF1F5' }}>
-          <div className="mx-auto w-full max-w-7xl">
-            <SectionTitle eyebrow="03 · 零基础绘画人群专项" title="围绕真实的“动不了笔”设计" body="这里的零基础不是年龄标签，而是尚未建立绘画方法、判断标准与稳定练习习惯的状态。产品机制对应四类常见入门阻力。" />
-            <div className="mt-12 overflow-hidden rounded-[1.75rem] bg-white" style={{ border: `2px solid ${COLORS.ink}` }}>
-              <div className="hidden grid-cols-[1fr_1fr_1fr] bg-slate-100 px-6 py-4 text-xs font-black tracking-[0.12em] md:grid">
-                <span>入门阻力</span><span>产品机制</span><span>预期作用</span>
-              </div>
-              {NOVICE_MAPPINGS.map((row, index) => (
-                <motion.div key={row[0]} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: index * 0.08 }} className="grid gap-3 border-t px-5 py-5 first:border-t-0 md:grid-cols-[1fr_1fr_1fr] md:px-6" style={{ borderColor: '#D9DDEA' }}>
-                  <div className="flex items-center gap-3 font-black"><span className="flex h-7 w-7 flex-none items-center justify-center rounded-full text-xs" style={{ background: COLORS.pink }}>{index + 1}</span>{row[0]}</div>
-                  <div className="text-sm font-bold" style={{ color: COLORS.purple }}>{row[1]}</div>
-                  <div className="text-sm font-bold" style={{ color: COLORS.inkSoft }}>{row[2]}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="workflow" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:px-10 lg:py-28" style={{ background: COLORS.white }}>
-          <div className="mx-auto w-full max-w-7xl">
-            <SectionTitle eyebrow="04 · 使用流程" title="五步 AI 辅助完成绘画" body="从内容选择到作品记录，每一步都提供明确目标；AI 的辅助强度可以随熟悉程度逐渐减少。" />
-            <div className="mt-12 grid gap-4 md:grid-cols-5">
-              {FLOW_STEPS.map((step, index) => {
-                const StepIcon = step.icon;
-                return (
-                  <motion.article key={step.title} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.07 }} className="relative rounded-[1.5rem] p-5" style={{ background: step.color, border: `2px solid ${COLORS.ink}` }}>
-                    <div className="flex items-center justify-between"><span className="text-xs font-black" style={{ color: COLORS.purple }}>0{index + 1}</span><StepIcon size={23} strokeWidth={2.5} /></div>
-                    <h3 className="mt-9 text-lg font-black">{step.title}</h3>
-                    <p className="mt-3 text-sm font-bold leading-6" style={{ color: COLORS.inkSoft }}>{step.body}</p>
-                  </motion.article>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section className="px-5 py-20 text-white sm:px-8 lg:px-10 lg:py-28" style={{ background: COLORS.ink }}>
-          <div className="mx-auto w-full max-w-7xl">
-            <p className="text-xs font-black tracking-[0.18em]" style={{ color: COLORS.mint }}>05—07 · 技术协同</p>
-            <h2 className="mt-4 max-w-4xl text-[clamp(2.3rem,5vw,4.7rem)] font-black leading-[1.03] tracking-[-0.055em]">三种 AI 能力，各自解决不同问题</h2>
-            <p className="mt-6 max-w-3xl text-base font-bold leading-8 text-white/65">笔触算法是研究的核心交互变量；Diffusion 和 LLM 提供结果表现与语言反馈，不与笔触拆解混为同一个技术概念。</p>
-
-            <article id="diffusion" className="scroll-mt-24 mt-14 grid gap-8 rounded-[2rem] p-6 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center" style={{ background: '#222F4E', border: '1.5px solid rgba(255,255,255,0.2)' }}>
-              <div>
-                <div className="flex items-center gap-2 text-xs font-black tracking-[0.14em]" style={{ color: COLORS.yellow }}><Wand2 size={17} /> DIFFUSION 生图</div>
-                <h3 className="mt-4 text-3xl font-black tracking-[-0.04em]">把绘画结果转化为风格化图像</h3>
-                <p className="mt-5 text-sm font-bold leading-7 text-white/65">以用户画布和风格描述为条件生成结果图，用于完成后的视觉反馈与创作延展。它不生成星迹，也不替代用户完成核心练习过程。</p>
-                <div className="mt-6 inline-flex rounded-full px-4 py-2 text-xs font-black" style={{ background: COLORS.yellow, color: COLORS.ink }}>辅助输出模块</div>
-              </div>
-              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                <div className="rounded-2xl bg-white p-3 text-slate-900"><div className="flex aspect-square items-center justify-center rounded-xl bg-[#F1F3F7]"><Brush size={46} color={COLORS.purple} /></div><p className="mt-3 text-xs font-black">用户画布</p></div>
-                <ArrowRight color={COLORS.yellow} strokeWidth={3} />
-                <div className="rounded-2xl bg-white p-3 text-slate-900"><div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-xl" style={{ background: 'linear-gradient(135deg,#FFD166,#FF8FAB 48%,#6558D9)' }}><Sparkles size={48} color="white" /></div><p className="mt-3 text-xs font-black">风格化结果</p></div>
-              </div>
-            </article>
-
-            <article id="llm" className="scroll-mt-24 mt-5 grid gap-8 rounded-[2rem] p-6 sm:p-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center" style={{ background: '#222F4E', border: '1.5px solid rgba(255,255,255,0.2)' }}>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl p-4" style={{ background: 'rgba(255,255,255,0.08)' }}><p className="text-xs font-black" style={{ color: COLORS.mint }}>过程输入</p><div className="mt-5 space-y-2 text-xs font-bold text-white/65"><p>完成 / 跳过笔触</p><p>停顿与绘画节奏</p><p>辅助使用情况</p><p>作品结果快照</p></div></div>
-                <div className="rounded-2xl bg-white p-4 text-slate-900"><p className="text-xs font-black" style={{ color: COLORS.purple }}>语言输出</p><div className="mt-5 space-y-2 text-xs font-bold" style={{ color: COLORS.inkSoft }}><p>下一步解释</p><p>过程性鼓励</p><p>学习总结</p><p>练习建议</p></div></div>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 text-xs font-black tracking-[0.14em]" style={{ color: COLORS.pink }}><Bot size={18} /> LLM 大模型</div>
-                <h3 className="mt-4 text-3xl font-black tracking-[-0.04em]">把过程数据组织成可读反馈</h3>
-                <p className="mt-5 text-sm font-bold leading-7 text-white/65">LLM 接收结构化绘画过程与作品信息，生成自然语言引导和学习总结。行为指标本身由系统记录，模型负责解释与表达。</p>
-                <div className="mt-6 inline-flex rounded-full px-4 py-2 text-xs font-black" style={{ background: COLORS.pink, color: COLORS.ink }}>语言交互模块</div>
-              </div>
-            </article>
-
-            <article id="algorithm" className="scroll-mt-24 mt-5 rounded-[2rem] p-6 sm:p-8" style={{ background: COLORS.white, color: COLORS.ink }}>
-              <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
-                <div>
-                  <div className="flex items-center gap-2 text-xs font-black tracking-[0.14em]" style={{ color: COLORS.purple }}><BrainCircuit size={18} /> 笔触拆解算法</div>
-                  <h3 className="mt-4 text-3xl font-black tracking-[-0.04em]">从图像近似，转化为教学顺序</h3>
-                  <p className="mt-5 text-sm font-bold leading-7" style={{ color: COLORS.inkSoft }}>核心实现参考 Hertzmann 的曲线笔触绘制思想：从粗到细迭代，在高误差区域生成沿图像结构方向延伸的曲线笔触，再输出为可跟随序列。</p>
-                  <div className="mt-7 rounded-2xl p-4" style={{ background: COLORS.paper }}><LayerVisual /><p className="mt-2 text-center text-xs font-black" style={{ color: COLORS.inkSoft }}>大笔触建立结构 → 小笔触补充细节</p></div>
-                </div>
-                <div className="space-y-3">
-                  {ALGORITHM_STEPS.map((step, index) => (
-                    <motion.div key={step[0]} initial={{ opacity: 0, x: 14 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.07 }} className="grid grid-cols-[auto_1fr] gap-4 rounded-2xl p-4" style={{ background: [COLORS.yellow, '#E5F5F1', COLORS.purpleSoft, '#FFE3EC', '#E5F2FF'][index] }}>
-                      <span className="text-xs font-black" style={{ color: COLORS.purple }}>{step[0]}</span>
-                      <div><p className="text-sm font-black">{step[1]}</p><p className="mt-1 text-xs font-bold leading-5" style={{ color: COLORS.inkSoft }}>{step[2]}</p></div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-              <div className="mt-6 flex flex-wrap gap-2 text-xs font-extrabold">
-                {['多尺度笔刷', '局部误差检测', '梯度方向', 'Catmull–Rom 平滑', '颜色采样', '有序笔触队列'].map(tag => <span key={tag} className="rounded-full px-3 py-2" style={{ background: COLORS.paper }}>{tag}</span>)}
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="research" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:px-10 lg:py-28" style={{ background: COLORS.purpleSoft }}>
-          <div className="mx-auto w-full max-w-7xl">
-            <SectionTitle eyebrow="08 · 研究框架" title="产品功能最终服务于可验证的问题" body="论文关注的不是“AI 能不能生成好看的画”，而是笔触拆解被产品化以后，是否能改善零基础用户的绘画启动与持续练习行为。" />
-            <div className="mt-12 grid gap-5 lg:grid-cols-3">
-              {[
-                [FlaskConical, '核心自变量', '绘画引导方式', ['笔触拆解 + 分步星迹引导', '对照：仅提供完整参考图']],
-                [MousePointer2, '过程指标', '如何开始与完成', ['首次落笔时间、停顿时长', '完成率、跳过率、辅助使用率']],
-                [LineChart, '结果指标', '是否更愿意继续画', ['单位周期练习启动次数', '活跃天数、作品数、自我效能']],
-              ].map(([Icon, eyebrow, title, items], index) => {
-                const ResearchIcon = Icon as typeof FlaskConical;
-                return (
-                  <article key={title as string} className="rounded-[1.75rem] bg-white p-6" style={{ border: `2px solid ${COLORS.ink}`, boxShadow: `6px 6px 0 ${[COLORS.yellow, COLORS.mint, COLORS.pink][index]}` }}>
-                    <div className="flex items-center justify-between"><p className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>{eyebrow as string}</p><ResearchIcon size={24} strokeWidth={2.5} /></div>
-                    <h3 className="mt-8 text-2xl font-black">{title as string}</h3>
-                    <div className="mt-5 space-y-3">{(items as string[]).map(item => <p key={item} className="flex gap-2 text-sm font-bold leading-6" style={{ color: COLORS.inkSoft }}><Check className="mt-0.5 flex-none" size={16} color={COLORS.purple} strokeWidth={3} />{item}</p>)}</div>
-                  </article>
-                );
-              })}
-            </div>
-            <div className="mt-8 grid gap-4 rounded-[1.75rem] p-6 sm:p-8 lg:grid-cols-[auto_1fr_auto] lg:items-center" style={{ background: COLORS.ink, color: COLORS.white }}>
-              <span className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: COLORS.yellow, color: COLORS.ink }}><Eye size={27} /></span>
-              <div><p className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.mint }}>研究边界</p><p className="mt-2 text-base font-bold leading-7 text-white/70">系统记录可观察的交互与练习行为；关于“有效”的判断需由后续用户研究、量表和统计分析得出。</p></div>
-              <span className="rounded-full px-4 py-2 text-xs font-black" style={{ background: 'rgba(255,255,255,0.1)' }}>不预设结论</span>
-            </div>
-          </div>
-        </section>
-
-        <section className="px-5 py-20 sm:px-8 lg:px-10">
-          <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-8 rounded-[2.25rem] p-7 sm:p-10 lg:flex-row lg:items-center" style={{ background: COLORS.yellow, border: `2px solid ${COLORS.ink}`, boxShadow: `9px 9px 0 ${COLORS.purple}` }}>
-            <div><p className="text-xs font-black tracking-[0.14em]" style={{ color: COLORS.purple }}>STARTRACE</p><h2 className="mt-3 text-3xl font-black tracking-[-0.04em] sm:text-4xl">沿着星迹，亲手画出第一幅作品。</h2></div>
-            <div className="flex flex-wrap gap-3">
-              <button onClick={() => router.push('/')} className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3.5 text-sm font-black" style={{ border: `2px solid ${COLORS.ink}` }}><ArrowLeft size={17} /> 返回首页</button>
-              <button onClick={() => router.push('/create')} className="inline-flex items-center gap-2 rounded-full px-5 py-3.5 text-sm font-black text-white" style={{ background: COLORS.ink }}><Play size={17} fill="currentColor" /> 进入绘画应用</button>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t-2 bg-white px-5 py-8 sm:px-8 lg:px-10" style={{ borderColor: COLORS.ink }}>
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-black">星迹智绘 StarTrace · 产品与研究介绍</p>
-          <p className="text-xs font-bold" style={{ color: COLORS.inkSoft }}>智能笔触拆解 · 渐进式绘画引导 · 行为研究原型</p>
-        </div>
-      </footer>
-    </div>
-  );
+        <div className="intro-callout"><h3>本项目的工程组合</h3><p>固定预算、显式胶囊笔刷、加权误差、颜色最小二乘、候选局部搜索、浏览器 Worker 与逐笔交互共同构成当前流程。六种自由笔刷另用程序化风格参数渲染。应将这些表述为本项目实现与参考启发，不把整套算法声称为某篇论文的原样复现。</p></div>
+      </Section>
+      <Section id="experiment" number="07" title="同一个人，两种绘画方式。" subtitle="核心问题：笔触引导是否有助于零基础用户更愿意画、减少开始与停顿的负担、提高完成度，并增加满足感？">
+        <ExperimentExplorer />
+        <div className="intro-grid two mt-6"><Card title="顺序 AB"><p className="intro-order">看图绘画 A → 休息 → 笔触引导 B</p><p>先独立尝试，再使用引导。</p></Card><Card title="顺序 BA"><p className="intro-order">笔触引导 B → 休息 → 看图绘画 A</p><p>先体验引导，再独立尝试。</p></Card></div>
+        <p className="intro-caption">程序以随机区组分配 AB / BA，研究者不逐人指定顺序。顺序平衡有助于检查练习和疲劳影响，但同图重复仍可能存在学习迁移，解释结果时需要保留这一限制。</p>
+        <Flow items={[
+          ['进入与同意', '在已开放批次输入唯一研究码，完成成年与零基础筛选、行为记录和作品保存同意。'],
+          ['统一练习', '先熟悉共同画布，练习约 90 秒；练习不作为正式两轮结果。'],
+          ['第一轮任务', '2 项前测 → 最多 12 分钟绘画 → 4 项后测，保存真实画布。'],
+          ['休息与第二轮', '至少休息 2 分钟，切换另一条件，使用同一参考图与相同限时。'],
+          ['访谈与评分', '回答 3 个访谈问题；两位评分者独立评分，再形成配对报告。'],
+        ]} />
+        <div className="intro-callout mt-6"><p>全程通常约 40 分钟。参与者可提前结束或撤回。预试容量 6 人；正式阶段目标为 {PROTOCOL.targetPairs} 对有效配对，最多 {PROTOCOL.maxParticipants} 人。正式发布前仍需完成真实预试、材料复核与阻断问题处理。</p></div>
+      </Section>
+      <Section id="measurement" number="08" title="记录过程，也认真定义“完成”。" subtitle="两种条件使用相同的计时与事件口径。用主观问卷、行为数据和独立评分互相补充，不从单个进度条推断效果。">
+        <div className="intro-table"><table><thead><tr><th>想了解什么</th><th>程序如何记录</th><th>解释时的边界</th></tr></thead><tbody>
+          <tr><td>是否愿意继续画</td><td>每轮前后意愿与担忧，后测再记录满足和信心；1–7 分，可拒答。</td><td>主观自报，拒答保存为空值，不填零。</td></tr>
+          <tr><td>开始与任务用时</td><td>任务开始、首次落笔、结束时间和超时状态。</td><td>用时更短可能是提前放弃；需结合完成度，不能单独当作速度提升。</td></tr>
+          <tr><td>停顿与操作负担</td><td>超过 5 秒的停留、暂停、页面隐藏、撤销、有效落笔与取消。</td><td>停留不等于“不想画”，也可能是在看图或思考。</td></tr>
+          <tr><td>作品完成度</td><td>10 项评分，每项 0 / 1 / 2，两位评分者独立评分后汇总。</td><td>评分清单需适配材料；指导推进不等于作品完成。</td></tr>
+          <tr><td>达标提交时间</td><td>完成度达到 80 分且关键项满足时，结合提交时间计算。</td><td>未达标或不符合提交条件时为空，不能当作零秒。</td></tr>
+          <tr><td>引导怎样被使用</td><td>推进、跳过、返回与匹配等事件单独记录。</td><td>仅 B 条件有引导，不将这一指标直接与 A 做同义比较。</td></tr>
+        </tbody></table></div>
+        <details className="intro-details"><summary>查看程序中的 4 项简短问卷</summary><ol className="list-decimal space-y-3 pl-5">{QUESTIONS.map(q => <li key={q.id}>{q.text}</li>)}</ol><p>每轮前测使用前两题；后测包含全部四题。访谈补充“哪种方式更容易开始”“最想停下的时刻”和“哪幅更像自己画的”。</p></details>
+        <div className="intro-grid two"><Card title="个人报告"><p>并排展示 A / B 的真实作品、用时、停留、评分与问卷。显示缺轮、排除、技术故障等状态，支持追溯原始尝试。</p></Card><Card title="配对汇总"><p>完成度与意愿采用预设双侧精确符号检验，并对两项检验进行 Holm 校正；均值差等用于描述。预试复盘展示中位数、有效样本数、超时和顺序分布，不能代替正式效果验证。</p></Card></div>
+      </Section>
+      <Section id="researcher" number="09" title="研究者能看到每一份测试。" subtitle="研究码是一份两轮测试的名称。工作台汇总所有批次中的已有记录，包括尚未开始绘画、未完成、已完成和已撤回的记录。">
+        <Flow items={[[ '准备材料', '生成并检查参考图、完整笔触计划、10 项评分规则与关键项。'], ['审核发布', '审核后开放批次；有人入组后，材料和协议不能原地改写。'], ['查看测试', '按研究码查看配对作品与状态，管理质量标记、评分和纳入原因。'], ['预试复盘', '核对六人完成与双人评分、设备负担、问题处理及材料哈希绑定的复核。'], ['导出交接', '输出个人 JSON、汇总 JSON / CSV、可视化报告与材料协议交接包。']]} />
+        <div className="intro-grid two mt-6"><Card title="研究码如何工作"><p>参与者自定义 1–64 个文字、数字、下划线或短横线。规范全半角、去首尾空白并忽略大小写判重；重复就提示更换。一个码关联同一参与者的两轮记录，旧记录保留原匿名编号。</p></Card><Card title="评分与技术重测"><p>两位评分者使用独立入口，查看打乱顺序的匿名作品，不显示实验条件。评分修改保留修订原因；技术故障重测关联原尝试，原记录不会被覆盖成“成功结果”。</p></Card></div>
+        <div className="intro-callout mt-6"><h3>版本交接包保存什么？</h3><p>共同材料、完整笔触计划、问卷、访谈、评分规则和协议参数。包内区分草稿、已发布预试与正式配置，记录实际材料算法版本和哈希。导出交接包不会自动发布研究，也不包含参与者作品与口令。</p></div>
+      </Section>
+      <Section id="data" number="10" title="每份结果，都有来处。" subtitle="研究记录保存在服务端，实际画作与操作摘要分开管理。软件提供可靠的流程，研究结论仍来自真实参与者。">
+        <div className="intro-grid three"><Card title="测量与保存"><Layers3 size={26} className="mb-3 text-[#6558D9]" /><p>行为事件按序号增量保存，去重重放；绘画期间定期保存检查点，结束时保存真实 PNG 和哈希。研究操作摘要不包含完整触点轨迹。</p></Card><Card title="离线与恢复"><ShieldCheck size={26} className="mb-3 text-[#6558D9]" /><p>浏览器本地缓存未上传内容，网络恢复后补传；提供保存失败重试。活动页面保护降低多标签误操作风险，技术故障保留原尝试和恢复记录。</p></Card><Card title="导出与备份"><BookOpen size={26} className="mb-3 text-[#6558D9]" /><p>每轮文件按“研究码-时间-条件.json”命名，保留配对文件与汇总清单。服务端备份涵盖数据库、作品、原始记录和交接包，支持完整性校验。</p></Card></div>
+        <div className="intro-callout mt-6"><h3>同意、撤回与保存期限</h3><p>研究参与需明确同意行为摘要与作品保存；界面说明默认保留 {PROTOCOL.retentionDays} 天，实际清理由研究者落实。参与者可凭当前浏览器研究凭证申请撤回；后台清理在线记录和报告，已有离线副本由研究者处理。体验中的可选云端功能与本地绘画具有不同的数据流。</p></div>
+        <p className="intro-caption">本文对应当前软件功能。算法示例、六种笔刷样例与条件示意都不是用户实验结果；没有在介绍页填入模拟的效果提升百分比。</p>
+      </Section>
+      <footer className="intro-footer">星迹智绘 · 从第一笔开始理解自己的绘画过程。<Link href="/">返回首页 ↑</Link></footer>
+    </main>
+  </div>;
 }

@@ -14,7 +14,18 @@ export async function api<T = Record<string, unknown>>(
     ...(body ? { body: JSON.stringify(body) } : {}),
     cache: 'no-store',
   });
-  const result = await response.json();
+  if (!response.headers.get('content-type')?.includes('application/json')) {
+    throw new Error(`研究服务暂时不可用（HTTP ${response.status}），请稍后重试或联系研究者检查服务。`);
+  }
+  let result;
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error('研究服务返回的数据不完整，请重试或联系研究者。');
+  }
+  if (!result || typeof result !== 'object') {
+    throw new Error('研究服务返回的数据格式异常，请联系研究者。');
+  }
   if (!response.ok) throw new Error(result.error || '请求失败');
   return result;
 }

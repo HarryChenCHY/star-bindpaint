@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, CircleDot, ImagePlus, Layers3, Moon, Route, Sparkles } from 'lucide-react';
+import { ChevronLeft, CircleDot, ImagePlus, Layers3, Route, Sparkles } from 'lucide-react';
 import PaintCanvas, { PaintMode } from '@/components/PaintCanvas';
 import PaintBottomBar from '@/components/PaintBottomBar';
 import MoonCompanion, { CompanionState } from '@/components/MoonCompanion';
@@ -20,6 +20,7 @@ import StickerItem, { PlacedSticker } from '@/components/StickerItem';
 import TracingItem, { TracingRef } from '@/components/TracingItem';
 import { imageSourceFromImage, GuidanceLevel, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
 import { preparePainting } from '@/lib/painting-client';
+import FloatingCompanion from '@/components/FloatingCompanion';
 import { GuideSystem } from '@/lib/guide-system';
 import { uploadAndSaveToGallery } from '@/lib/gallery-store';
 import { getTracker, resetTracker } from '@/lib/painting-tracker';
@@ -184,7 +185,7 @@ export default function PaintPage() {
     // 检查是否是自由创作模式（无需源图片）
     const freeStyleId = sessionStorage.getItem('star-bindpaint-free-style');
     if (freeStyleId) {
-      const savedGuidance = (sessionStorage.getItem('startrace-guidance-level') || 'full') as GuidanceLevel;
+      const savedGuidance = 'full' as GuidanceLevel;
       const style = MASTER_STYLES.find(s => s.id === freeStyleId) || MASTER_STYLES[1]; // 默认梵高
       setSelectedStyle(style);
       setMode('free');
@@ -212,8 +213,8 @@ export default function PaintPage() {
     const dataUrl = sessionStorage.getItem('star-bindpaint-source');
     if (!dataUrl) { router.push('/create'); return; }
 
-    const savedRoughness = parseInt(sessionStorage.getItem('star-bindpaint-roughness') || '2');
-    const savedGuidance = (sessionStorage.getItem('startrace-guidance-level') || 'full') as GuidanceLevel;
+    const savedRoughness = 1;
+    const savedGuidance = 'full' as GuidanceLevel;
     setGuidanceLevel(savedGuidance);
 
     let cancelled = false;
@@ -1196,49 +1197,8 @@ export default function PaintPage() {
 
       </div>
 
-      {/* 自由星域：月亮伙伴与主题步骤使用同一套世界观反馈 */}
-      {mode === 'free' ? (
-        <div
-          className="fixed z-30 flex flex-col gap-2 pointer-events-none"
-          style={{
-            top: 'clamp(64px, 10vw, 80px)',
-            right: 'clamp(8px, 2vw, 14px)',
-            width: promptCardCollapsed ? 52 : 'clamp(190px, 28vw, 238px)',
-          }}
-        >
-          {promptCardCollapsed ? (
-            <motion.button
-              type="button"
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileTap={{ scale: 0.92 }}
-              transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-              className="pointer-events-auto flex items-center justify-center rounded-full bg-white"
-              style={{
-                width: 52,
-                height: 52,
-                border: '2px solid #1A1A1A',
-                boxShadow: '4px 4px 0 #1A1A1A',
-              }}
-              onClick={() => setPromptCardCollapsed(false)}
-              aria-label="展开月亮伙伴"
-              title="展开月亮伙伴"
-            >
-              <Moon size={25} color="#17233F" strokeWidth={2.6} />
-            </motion.button>
-          ) : (
-            <>
-              <motion.div
-                initial={{ opacity: 0, x: 16, y: -8 }}
-                animate={{ opacity: 1, x: 0, y: 0 }}
-                transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-                className="rounded-[1.3rem] bg-white pointer-events-auto"
-                style={{
-                  border: '2px solid #17233F',
-                  boxShadow: '5px 5px 0 #6558D9',
-                  padding: '0.72rem',
-                }}
-              >
+      <FloatingCompanion collapsed={promptCardCollapsed} onCollapse={setPromptCardCollapsed}>
+        {mode === 'free' ? <>
                 <MoonCompanion state={spriteState} message={spriteMessage} compact />
                 <div className="my-3 h-px" style={{ background: '#D9DDEA' }} />
                 <div className="flex items-center justify-between rounded-xl px-3 py-2" style={{ background: '#F6F7FB' }}>
@@ -1248,9 +1208,6 @@ export default function PaintPage() {
                   </div>
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: '#FFD166', border: '1.5px solid #17233F' }}><Sparkles size={18} color="#17233F" /></span>
                 </div>
-                <button type="button" onClick={() => setPromptCardCollapsed(true)} className="mt-3 w-full text-center text-[10px] font-black" style={{ color: '#8E98AD' }}>收起月亮伙伴</button>
-              </motion.div>
-
               {freeTheme && !showFreeThemes && (
                 <div className="pointer-events-auto min-w-0">
                   <ThemeStepGuide
@@ -1270,36 +1227,7 @@ export default function PaintPage() {
                   />
                 </div>
               )}
-            </>
-          )}
-        </div>
-      ) : (
-        <div
-          className="fixed z-30 flex flex-col gap-3 pointer-events-none"
-          style={{
-            top: 'clamp(64px, 10vw, 80px)',
-            right: 'clamp(8px, 2vw, 16px)',
-            width: promptCardCollapsed ? 52 : 'clamp(190px, 28vw, 248px)',
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, x: 20, y: -10 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-            className="rounded-[1.4rem] bg-white pointer-events-auto"
-            style={{
-              border: '2px solid #17233F',
-              boxShadow: '5px 5px 0 #6558D9',
-              minHeight: promptCardCollapsed ? 52 : undefined,
-              padding: promptCardCollapsed ? 0 : '0.75rem',
-            }}
-          >
-            {promptCardCollapsed ? (
-              <button type="button" onClick={() => setPromptCardCollapsed(false)} className="flex h-[52px] w-[52px] items-center justify-center" aria-label="展开月亮伙伴">
-                <Moon size={25} color="#17233F" strokeWidth={2.6} />
-              </button>
-            ) : (
-              <div>
+        </> : <div>
                 <MoonCompanion state={spriteState} message={spriteMessage} compact />
                 <div className="my-3 h-px" style={{ background: '#D9DDEA' }} />
                 <div className="flex items-center justify-between gap-3">
@@ -1336,12 +1264,8 @@ export default function PaintPage() {
                     </button>
                   ))}
                 </div>
-                <button type="button" onClick={() => setPromptCardCollapsed(true)} className="mt-3 w-full text-center text-[10px] font-black" style={{ color: '#8E98AD' }}>收起月亮伙伴</button>
-              </div>
-            )}
-          </motion.div>
-        </div>
-      )}
+        </div>}
+      </FloatingCompanion>
 
       {/* ═══ SD 渲染结果 ═══ */}
       <AnimatePresence>
@@ -1489,8 +1413,13 @@ export default function PaintPage() {
         mode={mode}
         onModeChange={(m) => {
           if (mode === m) return;
-          if (mode === 'free') return;
-          if (m === 'free' && sourceImage) return;
+          if (m !== 'free' && strokes.length === 0) {
+            router.push('/create');
+            return;
+          }
+          if (mode === 'auto') handlePauseAuto();
+          setEraserMode(false);
+          setSprayMode(false);
           if (m === 'auto' && mode === 'follow') {
             handleEnterAutoMode();
             return;
@@ -1499,6 +1428,9 @@ export default function PaintPage() {
             handlePauseAuto();
             return;
           }
+
+          if (m === 'auto') setAutoStartIdx(guideRef.current.getState().currentIndex);
+          if (m === 'free') setBrushWidth(6);
 
           setMode(m);
           getTracker().setMode(m, guideSubMode);

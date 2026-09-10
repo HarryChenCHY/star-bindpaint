@@ -70,7 +70,7 @@ export function PairReport({
   ];
   return (
     <section className="study-card">
-      <h2>{pair.participantId} · 两次绘画对比</h2>
+      <h2 id="pair-detail">{pair.researchCode} · 两次绘画对比</h2>
       <p className="study-muted">
         顺序 {pair.order}
         。作品完成度待两位评分者提交后更新。停留仅表示操作间隔。
@@ -230,7 +230,7 @@ export function GroupReport({ data }: { data: Report }) {
         {plotted.map((p) => (
           <g key={p.pairId}>
             <title>
-              {p.participantId}: A {p.control!.metrics.completion} → B{' '}
+              {p.researchCode}: A {p.control!.metrics.completion} → B{' '}
               {p.guided!.metrics.completion}
             </title>
             <line

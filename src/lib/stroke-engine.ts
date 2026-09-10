@@ -66,7 +66,7 @@ export function imageSourceFromImage(img: HTMLImageElement, maxSize = 512): Imag
 export async function decomposeImage(
   src: ImageSource, canvasW: number, canvasH: number, opts: DecomposeOptions = {},
 ): Promise<StrokeDrawData[]> {
-  const strokes = await planBudgetStrokes(src, canvasW, canvasH, opts.maxStrokes ?? STROKE_CONFIG.defaultBudget, opts.roughness, STROKE_CONFIG.experienceOpacity, opts.onProgress);
+  const strokes = await planBudgetStrokes(src, canvasW, canvasH, opts.maxStrokes ?? STROKE_CONFIG.defaultBudget, opts.roughness ?? STROKE_CONFIG.defaultRoughness, STROKE_CONFIG.experienceOpacity, opts.onProgress);
   if (opts.palette && opts.palette !== 'original') applyPaletteShift(strokes, opts.palette);
   return strokes;
 }
@@ -492,7 +492,7 @@ export function drawStroke(ctx: CanvasRenderingContext2D, stroke: StrokeDrawData
 }
 
 /**
- * 绘制引导线（紫色虚线 + 绿色起点 + 红色终点）
+ * 绘制引导线（紫色虚线、星形起点和沿末段方向的终点箭头）
  */
 export type GuidanceLevel = 'full' | 'balanced' | 'light';
 
@@ -574,7 +574,15 @@ export function drawGuideStroke(
     ctx.strokeStyle = '#6558D9';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.arc(last.x, last.y, 5, 0, Math.PI * 2);
+    const previous = [...pts].reverse().find(p => Math.hypot(last.x - p.x, last.y - p.y) > 0.01) || start;
+    const angle = Math.atan2(last.y - previous.y, last.x - previous.x);
+    ctx.translate(last.x, last.y);
+    ctx.rotate(angle);
+    ctx.moveTo(7, 0);
+    ctx.lineTo(-6, -6);
+    ctx.lineTo(-3, 0);
+    ctx.lineTo(-6, 6);
+    ctx.closePath();
     ctx.fill();
     ctx.stroke();
   }
