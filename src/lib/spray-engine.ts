@@ -5,6 +5,7 @@
  * 区别于 DrawingEngine 的连续笔触管线，喷雾是离散的点散布。
  */
 
+import { resolveBrushColor, rgbToHsv, hsvToRgb } from './brush-color';
 import { MasterStyleProfile } from './style-transfer';
 
 /**
@@ -53,10 +54,8 @@ export function renderSprayDot(
  * 对颜色做 hue 抖动（只改 hue，不改饱和度和亮度）
  */
 function jitterHue(color: [number, number, number], jitterDeg: number, userSat?: number, userVal?: number): [number, number, number] {
-  const [h, s, v] = rgbToHsv(color[0], color[1], color[2]);
-  const newS = userSat !== undefined ? s * userSat : s;
-  const newV = userVal !== undefined ? v * userVal : v;
-  const newH = (h + ((Math.random() - 0.5) * 2 * jitterDeg) / 360 + 1) % 1;
+  const [h, newS, newV] = rgbToHsv(...resolveBrushColor(color, userSat, userVal));
+  const newH = (h + ((Math.random() - 0.5) * 2 * Math.min(2, jitterDeg)) / 360 + 1) % 1;
   return hsvToRgb(newH, newS, newV);
 }
 
@@ -68,43 +67,4 @@ function gaussianRandom(): number {
   while (u === 0) u = Math.random();
   while (v === 0) v = Math.random();
   return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v) * 0.35;
-}
-
-// ── HSV ↔ RGB ──────────────────────────────────────────────────────
-
-function rgbToHsv(r: number, g: number, b: number): [number, number, number] {
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const d = max - min;
-  const v = max;
-  const s = max === 0 ? 0 : d / max;
-
-  let h = 0;
-  if (d !== 0) {
-    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-    else if (max === g) h = ((b - r) / d + 2) / 6;
-    else h = ((r - g) / d + 4) / 6;
-  }
-
-  return [h, s, v];
-}
-
-function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
-  const i = Math.floor(h * 6);
-  const f = h * 6 - i;
-  const p = v * (1 - s);
-  const q = v * (1 - f * s);
-  const t = v * (1 - (1 - f) * s);
-
-  let r: number, g: number, b: number;
-  switch (i % 6) {
-    case 0: r = v; g = t; b = p; break;
-    case 1: r = q; g = v; b = p; break;
-    case 2: r = p; g = v; b = t; break;
-    case 3: r = p; g = q; b = v; break;
-    case 4: r = t; g = p; b = v; break;
-    default: r = v; g = p; b = q; break;
-  }
-
-  return [r, g, b];
 }

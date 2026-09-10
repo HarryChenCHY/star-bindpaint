@@ -65,7 +65,6 @@ export default function SettingsPage() {
           <p className="mt-5 text-sm font-bold">默认使用完整引导与细节更多的笔触，画板内可随时调整提示显示。</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <ToggleCard title="减少动态效果" description="减少装饰动画，保留必要的笔触演示。" checked={settings.reducedMotion} onChange={checked => updateSettings({ reducedMotion: checked })} />
-            <ToggleCard title="AI 生成前再次确认" description="发送画布生成风格版本前显示用途提醒。" checked={settings.confirmBeforeAi} onChange={checked => updateSettings({ confirmBeforeAi: checked })} />
           </div>
         </section>
 

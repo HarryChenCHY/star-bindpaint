@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { DrawingEngine, matchScore } from '@/lib/drawing-engine';
+import { resolveBrushColor, FREE_BRUSH_OPACITY } from '@/lib/brush-color';
 import { drawStroke, drawGuideStroke, GuidanceLevel, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
 import { MasterStyleProfile, stylizeStroke, drawStylizedStroke } from '@/lib/style-transfer';
 import { renderSprayDot } from '@/lib/spray-engine';
@@ -282,9 +283,8 @@ export default function PaintCanvas({
       engine.setColor('rgba(255,255,255,1)');
       engine.setWidth(Math.max(12, (brushWidth || 4) * 3));
     } else if (mode === 'free') {
-      const [r, g, b] = freeColor || [0.2, 0.2, 0.2];
-      const s = (freeSat ?? 1) * (freeVal ?? 1);
-      engine.setColor(`rgba(${Math.round(r * s * 255)},${Math.round(g * s * 255)},${Math.round(b * s * 255)},0.85)`);
+      const [r, g, b] = resolveBrushColor(freeColor || [0.2, 0.2, 0.2], freeSat, freeVal);
+      engine.setColor(`rgba(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)},${FREE_BRUSH_OPACITY})`);
       engine.setWidth(brushWidth || 4);
     } else {
       if (brushColor) engine.setColor(brushColor);

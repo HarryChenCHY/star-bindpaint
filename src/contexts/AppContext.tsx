@@ -7,7 +7,6 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 export interface AppSettings {
   reducedMotion: boolean;
   defaultGuidance: 'full' | 'balanced' | 'light';
-  confirmBeforeAi: boolean;
 }
 
 interface AppContextValue {
@@ -19,7 +18,6 @@ interface AppContextValue {
 const DEFAULT_SETTINGS: AppSettings = {
   reducedMotion: false,
   defaultGuidance: 'full',
-  confirmBeforeAi: true,
 };
 
 const STORAGE_KEY = 'startrace-interface-settings-v1';

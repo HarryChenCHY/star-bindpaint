@@ -19,6 +19,7 @@ import {
   Eraser,
   SprayCan,
 } from 'lucide-react';
+import { resolveBrushColor, brushColorCss } from '@/lib/brush-color';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
 
 type PaintMode = 'follow' | 'auto' | 'free';
@@ -58,8 +59,6 @@ interface Props {
   onFreeSatChange?: (s: number) => void;
   freeVal?: number;
   onFreeValChange?: (v: number) => void;
-  onSDRender?: () => void;
-  sdRendering?: boolean;
   // free mode edit tools
   eraserMode?: boolean;
   onToggleEraser?: () => void;
@@ -182,7 +181,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
             <ToolBtn
               icon={<Wand2 size={18} strokeWidth={2.5} />}
               label="星光画笔"
-              value={String(p.brushWidth)}
+              value={String(Math.round(p.brushWidth))}
               isOpen={open === 'brush'}
               onClick={() => toggle('brush')}
               popover={<BrushPopover width={p.brushWidth} onChange={p.onBrushWidthChange} />}
@@ -269,7 +268,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
             <ToolBtn
               icon={<Wand2 size={18} strokeWidth={2.5} />}
               label="星光画笔"
-              value={String(p.brushWidth)}
+              value={String(Math.round(p.brushWidth))}
               isOpen={open === 'brush'}
               onClick={() => {
                 if (eraserMode && onToggleEraser) onToggleEraser();
@@ -283,9 +282,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
                   <div
                     className="w-5 h-5 rounded-full"
                     style={{
-                      background: `rgb(${Math.round(p.freeColor[0] * 255)},${Math.round(
-                        p.freeColor[1] * 255
-                      )},${Math.round(p.freeColor[2] * 255)})`,
+                      background: brushColorCss(p.freeColor, freeSat, freeVal),
                       border: '2px solid #1A1A1A',
                     }}
                   />
@@ -340,17 +337,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
                 iconColor={sprayMode ? '#FFFFFF' : undefined}
               />
             )}
-            {p.onSDRender && (
-              <DirectBtn
-                icon={<Wand2 size={17} strokeWidth={2.5} />}
-                label="AI 星光变换"
-                onClick={p.onSDRender}
-                disabled={p.sdRendering}
-                fillBg="#7A51EC"
-                iconColor="#FFFFFF"
-                showLabel
-              />
-            )}
+
           </>
         )}
 
@@ -664,7 +651,7 @@ function BrushPopover({ width, onChange }: { width: number; onChange: (w: number
     <div style={{ width: 224 }}>
       <div className="flex items-center justify-between mb-3">
         <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#888' }}>大小</span>
-        <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1A1A1A' }}>{width}</span>
+        <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1A1A1A' }}>{Math.round(width)}</span>
       </div>
       <input
         type="range"
@@ -962,9 +949,7 @@ function ColorPopover({
   val?: number;
   onValChange?: (v: number) => void;
 }) {
-  const shadeR = Math.round(value[0] * sat * val * 255);
-  const shadeG = Math.round(value[1] * sat * val * 255);
-  const shadeB = Math.round(value[2] * sat * val * 255);
+  const [shadeR, shadeG, shadeB] = resolveBrushColor(value, sat, val).map(c => Math.round(c * 255));
 
   return (
     <div style={{ width: 260 }}>
@@ -997,6 +982,8 @@ function ColorPopover({
           {/* 实时预览色块 */}
           <div className="flex items-center gap-3 mb-4">
             <div
+              role="img"
+              aria-label="预览画笔颜色"
               className="rounded-xl flex-shrink-0"
               style={{
                 width: 44,

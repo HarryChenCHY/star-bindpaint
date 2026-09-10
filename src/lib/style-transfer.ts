@@ -7,6 +7,7 @@
  */
 
 import { Vec2 } from './stroke-engine';
+import { resolveBrushColor, rgbToHsv, hsvToRgb, FREE_BRUSH_OPACITY } from './brush-color';
 
 // ── 类型 ────────────────────────────────────────────────────────────
 
@@ -47,9 +48,9 @@ export const MASTER_STYLES: MasterStyleProfile[] = [
     widthCurve: 'taper',
     widthBase: 6,
     widthVariation: 0.5,
-    colorJitter: 8,
-    saturationBoost: 0.05,
-    opacity: 0.8,
+    colorJitter: 2,
+    saturationBoost: 0,
+    opacity: FREE_BRUSH_OPACITY,
     roughness: 0.1,
     strokeSplit: 3,
     texture: 'smooth',
@@ -59,13 +60,13 @@ export const MASTER_STYLES: MasterStyleProfile[] = [
     name: '梵高',
     nameEn: 'Van Gogh',
     color: '#F9B801',
-    description: '旋转厚涂，大胆色彩，充满能量',
+    description: '鼓起厚涂，保留主色，充满能量',
     widthCurve: 'bulge',
     widthBase: 8,
     widthVariation: 0.7,
-    colorJitter: 15,
-    saturationBoost: 0.2,
-    opacity: 0.9,
+    colorJitter: 2,
+    saturationBoost: 0,
+    opacity: FREE_BRUSH_OPACITY,
     roughness: 0.3,
     strokeSplit: 1,
     texture: 'thick',
@@ -75,13 +76,13 @@ export const MASTER_STYLES: MasterStyleProfile[] = [
     name: '高更',
     nameEn: 'Gauguin',
     color: '#F302C9',
-    description: '大色块平涂，饱和鲜艳，原始力量',
+    description: '大色块平涂，保留选定颜色',
     widthCurve: 'uniform',
     widthBase: 10,
     widthVariation: 0.15,
-    colorJitter: 5,
-    saturationBoost: 0.3,
-    opacity: 0.92,
+    colorJitter: 2,
+    saturationBoost: 0,
+    opacity: FREE_BRUSH_OPACITY,
     roughness: 0.05,
     strokeSplit: 1,
     texture: 'smooth',
@@ -91,13 +92,13 @@ export const MASTER_STYLES: MasterStyleProfile[] = [
     name: '伦勃朗',
     nameEn: 'Rembrandt',
     color: '#8B6914',
-    description: '明暗对比强烈的干笔触，沉稳深邃',
+    description: '压感干笔触，断续肌理，沉稳有力',
     widthCurve: 'pressure',
     widthBase: 5,
     widthVariation: 0.6,
-    colorJitter: 3,
-    saturationBoost: -0.1,
-    opacity: 0.85,
+    colorJitter: 2,
+    saturationBoost: 0,
+    opacity: FREE_BRUSH_OPACITY,
     roughness: 0.4,
     strokeSplit: 1,
     texture: 'dry',
@@ -107,13 +108,13 @@ export const MASTER_STYLES: MasterStyleProfile[] = [
     name: '毕加索',
     nameEn: 'Picasso',
     color: '#7A51EC',
-    description: '几何断笔，大胆变色，解构重组',
+    description: '断续笔迹，保留主色，节奏鲜明',
     widthCurve: 'uniform',
     widthBase: 5,
     widthVariation: 0.3,
-    colorJitter: 20,
-    saturationBoost: 0.15,
-    opacity: 0.88,
+    colorJitter: 2,
+    saturationBoost: 0,
+    opacity: FREE_BRUSH_OPACITY,
     roughness: 0.2,
     strokeSplit: 2,
     texture: 'broken',
@@ -123,13 +124,13 @@ export const MASTER_STYLES: MasterStyleProfile[] = [
     name: '萨金特',
     nameEn: 'Sargent',
     color: '#7DC353',
-    description: '流畅渐细水彩笔触，轻盈透明',
+    description: '流畅渐细笔触，轻盈收笔',
     widthCurve: 'taper',
     widthBase: 7,
     widthVariation: 0.6,
-    colorJitter: 6,
-    saturationBoost: 0.0,
-    opacity: 0.7,
+    colorJitter: 2,
+    saturationBoost: 0,
+    opacity: FREE_BRUSH_OPACITY,
     roughness: 0.05,
     strokeSplit: 1,
     texture: 'smooth',
@@ -365,31 +366,12 @@ function jitterColor(
   userSat?: number,
   userVal?: number
 ): [number, number, number] {
-  // 每 3-5 个点才抖动一次（避免太碎）
-  const jitterFreq = 4;
-  const seed = Math.floor(pointIndex / jitterFreq);
-
-  // 简易伪随机
-  const rand1 = Math.sin(seed * 12.9898 + 78.233) * 43758.5453 % 1;
-  const rand2 = Math.sin(seed * 4.898 + 7.23) * 23421.631 % 1;
-
-  // RGB → HSV
-  let [h, s, v] = rgbToHsv(baseColor[0], baseColor[1], baseColor[2]);
-
-  // hue 抖动
-  h += (rand1 - 0.5) * 2 * style.colorJitter / 360;
-  if (h < 0) h += 1;
-  if (h > 1) h -= 1;
-
-  // 饱和度增强 + 用户饱和度调节
-  s = Math.max(0, Math.min(1, s + style.saturationBoost + (rand2 - 0.5) * 0.05));
-  if (userSat !== undefined) s = s * userSat;
-
-  // 用户亮度调节
-  if (userVal !== undefined) v = v * userVal;
-
-  // HSV → RGB
-  return hsvToRgb(h, s, v);
+  const seed = Math.floor(pointIndex / 4);
+  const noise = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+  const rand = noise - Math.floor(noise);
+  const [h, saturation, brightness] = rgbToHsv(...resolveBrushColor(baseColor, userSat, userVal));
+  // 保留轻微肌理变化，不让风格改变用户选定的主色。
+  return hsvToRgb(h + (rand - 0.5) * 2 * Math.min(2, style.colorJitter) / 360, saturation, brightness);
 }
 
 /** 边缘粗糙 */
@@ -406,43 +388,4 @@ function applyRoughness(points: Vec2[], roughness: number): Vec2[] {
       y: pt.y + noise2,
     };
   });
-}
-
-// ── 颜色空间转换 ─────────────────────────────────────────────────────
-
-function rgbToHsv(r: number, g: number, b: number): [number, number, number] {
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const d = max - min;
-  const v = max;
-  const s = max === 0 ? 0 : d / max;
-
-  let h = 0;
-  if (d !== 0) {
-    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-    else if (max === g) h = ((b - r) / d + 2) / 6;
-    else h = ((r - g) / d + 4) / 6;
-  }
-
-  return [h, s, v];
-}
-
-function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
-  const i = Math.floor(h * 6);
-  const f = h * 6 - i;
-  const p = v * (1 - s);
-  const q = v * (1 - f * s);
-  const t = v * (1 - (1 - f) * s);
-
-  let r: number, g: number, b: number;
-  switch (i % 6) {
-    case 0: r = v; g = t; b = p; break;
-    case 1: r = q; g = v; b = p; break;
-    case 2: r = p; g = v; b = t; break;
-    case 3: r = p; g = q; b = v; break;
-    case 4: r = t; g = p; b = v; break;
-    default: r = v; g = p; b = q; break;
-  }
-
-  return [r, g, b];
 }

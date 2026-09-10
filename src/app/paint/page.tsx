@@ -2,7 +2,7 @@
 
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,25 +12,20 @@ import PaintBottomBar from '@/components/PaintBottomBar';
 import MoonCompanion, { CompanionState } from '@/components/MoonCompanion';
 import ProgressRing from '@/components/ProgressRing';
 import VisualSchedule from '@/components/VisualSchedule';
-import FreeModeThemes, { FreeTheme, ThemeStepGuide } from '@/components/FreeModeThemes';
-import SDRenderResult from '@/components/SDRenderResult';
-import SDRenderLoading from '@/components/SDRenderLoading';
 import StickerPanel, { StickerDef } from '@/components/StickerPanel';
 import StickerItem, { PlacedSticker } from '@/components/StickerItem';
 import TracingItem, { TracingRef } from '@/components/TracingItem';
 import { imageSourceFromImage, GuidanceLevel, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
 import { preparePainting } from '@/lib/painting-client';
 import FloatingCompanion from '@/components/FloatingCompanion';
+import ReferencePreview from '@/components/ReferencePreview';
 import { GuideSystem } from '@/lib/guide-system';
 import { uploadAndSaveToGallery } from '@/lib/gallery-store';
 import { getTracker, resetTracker } from '@/lib/painting-tracker';
-import { generateSDRenderCommentary } from '@/lib/feedback-engine';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
-import { createThemeTracingRef, THEME_TRACING_SCENES } from '@/lib/tracing-scenes';
 import { drawStickerOnCanvas, loadStickerDimensions } from '@/lib/sticker-utils';
 import { recordPracticeCompletion, recordPracticeStart } from '@/lib/practice-store';
 import { getResearchEnvelope, loadPrivacyPreferences } from '@/lib/privacy-settings';
-import { useAppSettings } from '@/contexts/AppContext';
 
 function sessionResearchPayload(tracker: ReturnType<typeof getTracker>) {
   const envelope = getResearchEnvelope();
@@ -50,7 +45,6 @@ export default function PaintPage() {
   const [planningAttempt, setPlanningAttempt] = useState(0);
   const planningController = useRef<AbortController | null>(null);
   const router = useRouter();
-  const { settings } = useAppSettings();
   const [mode, setMode] = useState<PaintMode>('follow');
   const [guideSubMode, setGuideSubMode] = useState<'assist' | 'real'>('real');
   const [guidanceLevel, setGuidanceLevel] = useState<GuidanceLevel>('full');
@@ -74,9 +68,6 @@ export default function PaintPage() {
   const [showCompletion, setShowCompletion] = useState(false);
   const [savedDataUrl, setSavedDataUrl] = useState<string>('');
 
-  const [freeTheme, setFreeTheme] = useState<FreeTheme | null>(null);
-  const [freeThemeStep, setFreeThemeStep] = useState(0);
-  const [showFreeThemes, setShowFreeThemes] = useState(true); // 自由模式初始显示主题选择
   const [userStrokeCount, setUserStrokeCount] = useState(0);
   const [promptCardCollapsed, setPromptCardCollapsed] = useState(false);
 
@@ -108,33 +99,16 @@ export default function PaintPage() {
   const [difficultyLevel, setDifficultyLevel] = useState<'sticker' | 'tracing' | 'free'>('free');
   const [showPanel, setShowPanel] = useState(true);
   const [panelCollapsed, setPanelCollapsed] = useState(false);
-  const [stickerGuideVisible, setStickerGuideVisible] = useState(false);
   const [placedStickers, setPlacedStickers] = useState<PlacedSticker[]>([]);
   const [tracingRefs, setTracingRefs] = useState<TracingRef[]>([]);
   const stickerIdRef = useRef(0);
 
-  // SD 渲染
-  const [sdRendering, setSdRendering] = useState(false);
-  const [sdResult, setSdResult] = useState<{ original: string; rendered: string; duration: number } | null>(null);
-  const [sdError, setSdError] = useState<string | null>(null);
-  const [sdElapsed, setSdElapsed] = useState(0);
-  const [sdCommentary, setSdCommentary] = useState<string[]>([]);
-  const sdStartTimeRef = useRef(0);
-  const sdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const analyticsSentRef = useRef(false); // 防止同一次 session 重复上报
   const autoTrackedIndexRef = useRef(0);
   const trackerInitializedRef = useRef(false);
   const abandonmentTimerRef = useRef<number | null>(null);
 
-  type BackTarget = 'themes' | 'create';
-  const [leaveConfirm, setLeaveConfirm] = useState<{ target: BackTarget } | null>(null);
-
-  // 组件卸载时清理 SD 计时器
-  useEffect(() => {
-    return () => {
-      if (sdTimerRef.current) clearInterval(sdTimerRef.current);
-    };
-  }, []);
+  const [leaveConfirm, setLeaveConfirm] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (abandonmentTimerRef.current !== null) {
@@ -197,7 +171,6 @@ export default function PaintPage() {
       const diff = (sessionStorage.getItem('star-bindpaint-difficulty') as 'sticker' | 'tracing' | 'free') || 'free';
       setDifficultyLevel(diff);
       setShowPanel(diff === 'sticker');
-      setShowFreeThemes(true);
 
       const tracker = getTracker();
       tracker.setDifficulty(diff);
@@ -305,6 +278,7 @@ export default function PaintPage() {
   useEffect(() => {
     const guide = guideRef.current;
     guide.setMode(guideSubMode);
+    if (mode === 'free') setSpriteMessage('直接在画布上落笔，自由选择颜色和笔刷风格。');
 
     const unsubscribe = guide.subscribe((state) => {
       // 批量绘制期间不更新引导线（防止闪烁）
@@ -620,96 +594,6 @@ export default function PaintPage() {
     router.push('/gallery');
   };
 
-  // ── AI 星光变换（风格化渲染）──
-  const handleSDRender = async () => {
-    if (settings.confirmBeforeAi && sessionStorage.getItem('startrace-ai-transfer-confirmed') !== 'true') {
-      const confirmed = window.confirm('AI 星光变换需要把当前画布临时发送给图像生成服务，仅用于本次生成。是否继续？');
-      if (!confirmed) return;
-      sessionStorage.setItem('startrace-ai-transfer-confirmed', 'true');
-    }
-    const paintCanvas = (window as unknown as Record<string, { getBaseCanvas: () => HTMLCanvasElement | null }>).__paintCanvas;
-    if (!paintCanvas) return;
-    const canvas = paintCanvas.getBaseCanvas();
-    if (!canvas) return;
-
-    const dataUrl = canvas.toDataURL('image/png');
-    const styleId = selectedStyle?.id || 'vangogh';
-    const themePrompt = freeTheme?.sdPrompt || '';
-
-    setSdResult(null);
-    setSdError(null);
-
-    const tracker = getTracker();
-    tracker.finishSession(dataUrl);
-    if (!analyticsSentRef.current) {
-      const payload = sessionResearchPayload(tracker);
-      if (payload) {
-        analyticsSentRef.current = true;
-        sendResearchRecord(payload);
-      }
-    }
-
-    // 生成轮播文案
-    const commentary = generateSDRenderCommentary({
-      masterId: styleId,
-      colorDistribution: tracker.getColorDistribution(),
-      strokeRhythm: tracker.getStrokeRhythm(),
-      durationMinutes: tracker.getDurationMinutes(),
-      totalStrokes: tracker.getSession().completedStrokes,
-      freeThemeSteps: freeTheme?.steps?.map(s => s.hint),
-    });
-    setSdCommentary(commentary);
-
-    // 启动假进度计时（200ms 刷新）
-    sdStartTimeRef.current = Date.now();
-    setSdElapsed(0);
-    sdTimerRef.current = setInterval(() => {
-      setSdElapsed(Date.now() - sdStartTimeRef.current);
-    }, 200);
-
-    setSdRendering(true);
-    setSpriteMessage('月亮伙伴正在生成风格化结果…');
-    setSpriteState('thinking');
-
-    try {
-      const res = await fetch('/api/sd-render', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: dataUrl, style: styleId, mode: 'stylization', themePrompt }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || '渲染失败');
-      }
-
-      const data = await res.json();
-      setSdResult({ original: dataUrl, rendered: data.imageBase64, duration: data.duration });
-      setSpriteMessage('AI 风格化结果已经生成，看看星光变换前后的差别。');
-      setSpriteState('cheering');
-
-      const envelope = getResearchEnvelope();
-      if (envelope) {
-        sendResearchRecord({
-          ...envelope,
-          recordType: 'render',
-          sessionId: tracker.getSession().id,
-          renderedAt: new Date().toISOString(),
-          durationMs: Number(data.duration) || null,
-        });
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : '未知错误';
-      setSdError(message);
-      setSpriteMessage(`渲染失败：${message}`);
-      setSpriteState('idle');
-    } finally {
-      if (sdTimerRef.current) clearInterval(sdTimerRef.current);
-      sdTimerRef.current = null;
-      setSdRendering(false);
-    }
-  };
-
   const hasPaintingProgress = useCallback(() => {
     if (mode === 'free') {
       return placedStickers.length > 0 || canUndo;
@@ -723,214 +607,27 @@ export default function PaintPage() {
     return false;
   }, [mode, placedStickers.length, canUndo, progress, userStrokeCount]);
 
-  const clearFreeCanvas = useCallback(() => {
-    const paintCanvas = (window as unknown as Record<string, { clearAll?: () => void }>).__paintCanvas;
-    paintCanvas?.clearAll?.();
-    setPlacedStickers([]);
-    setTracingRefs([]);
-    setUserStrokeCount(0);
-    setCanUndo(false);
-    setShowPanel(difficultyLevel === 'sticker');
-    setStickerGuideVisible(false);
-    setEraserMode(false);
-    setSprayMode(false);
-  }, [difficultyLevel]);
-
-  const goBackToThemePicker = useCallback(() => {
-    clearFreeCanvas();
-    setFreeTheme(null);
-    setFreeThemeStep(0);
-    setShowFreeThemes(true);
-    setStickerGuideVisible(false);
-    setSpriteState('guiding');
-    setSpriteMessage('选择一个主题，月亮伙伴会提供绘画步骤。');
-  }, [clearFreeCanvas]);
-
-  const executeBack = useCallback((target: BackTarget) => {
-    if (target === 'themes') {
-      goBackToThemePicker();
-    } else {
-      router.push('/create');
-    }
+  const executeBack = useCallback(() => {
+    router.push('/create');
     setLeaveConfirm(null);
-  }, [goBackToThemePicker, router]);
+  }, [router]);
 
-  const requestBack = useCallback((target: BackTarget) => {
+  const requestBack = useCallback(() => {
     if (hasPaintingProgress()) {
-      setLeaveConfirm({ target });
+      setLeaveConfirm(true);
     } else {
-      executeBack(target);
+      executeBack();
     }
   }, [hasPaintingProgress, executeBack]);
 
   const handleBack = useCallback(() => {
-    if (sdRendering) return;
-    if (sdResult) {
-      setSdResult(null);
-      return;
-    }
     if (showCompletion) return;
 
-    if (mode === 'free') {
-      if (!showFreeThemes) {
-        requestBack('themes');
-      } else {
-        requestBack('create');
-      }
-    } else {
-      requestBack('create');
-    }
-  }, [
-    sdRendering,
-    sdResult,
-    showCompletion,
-    mode,
-    showFreeThemes,
-    requestBack,
-  ]);
+    requestBack();
+  }, [showCompletion, requestBack]);
 
-  const backLabel = useMemo(() => {
-    if (mode === 'free') {
-      if (!showFreeThemes) return '换主题';
-      return '选画';
-    }
-    return '返回';
-  }, [mode, showFreeThemes]);
-
-  const showThemeTracingScene =
-    mode === 'free' &&
-    !!freeTheme &&
-    !showFreeThemes &&
-    (
-      difficultyLevel === 'tracing' ||
-      (difficultyLevel === 'sticker' && stickerGuideVisible)
-    );
-
-  /** 底栏高度：贴纸栏 fixed 贴在此之上，画板保持全高 */
+  const backLabel = '返回';
   const paintBarBottom = 'calc(5rem + env(safe-area-inset-bottom, 0px))';
-
-  const applyFreeTheme = (theme: FreeTheme | null) => {
-    setFreeTheme(theme);
-    setFreeThemeStep(0);
-    setShowFreeThemes(false);
-    setPlacedStickers([]);
-    setStickerGuideVisible(false);
-    if (theme && difficultyLevel === 'tracing') {
-      const scene = createThemeTracingRef(theme.id, canvasSize.w, canvasSize.h);
-      setTracingRefs(scene ? [scene] : []);
-      setShowPanel(false);
-      setSpriteMessage(theme.steps[0]?.hint || '跟着虚线描一描吧~');
-    } else if (theme && difficultyLevel === 'sticker') {
-      setTracingRefs([]);
-      setShowPanel(true);
-      setSpriteMessage(theme.steps[0]?.hint || '开始画吧~');
-    } else {
-      setTracingRefs([]);
-      setShowPanel(difficultyLevel === 'sticker');
-      setSpriteMessage('跟着心画吧~');
-    }
-    if (theme) getTracker().setThemeId(theme.id);
-  };
-
-  // 描画临摹：主题选定后确保场景图加载（canvas 尺寸就绪后补一次）
-  useEffect(() => {
-    if (mode !== 'free' || difficultyLevel !== 'tracing' || !freeTheme || showFreeThemes) return;
-    const scene = createThemeTracingRef(freeTheme.id, canvasSize.w, canvasSize.h);
-    if (!scene) return;
-    setTracingRefs(prev => {
-      const existing = prev.find(r => r.id === 'theme-scene');
-      if (existing?.src === scene.src) {
-        return prev.map(r => r.id === 'theme-scene' ? { ...r, ...scene, visible: r.visible } : r);
-      }
-      return [scene];
-    });
-  }, [mode, difficultyLevel, freeTheme, showFreeThemes, canvasSize.w, canvasSize.h]);
-
-  const compressImage = (dataUrl: string, maxSize = 400, quality = 0.6): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const img = new window.Image();
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          let w = img.naturalWidth, h = img.naturalHeight;
-          if (Math.max(w, h) > maxSize) {
-            const scale = maxSize / Math.max(w, h);
-            w = Math.round(w * scale);
-            h = Math.round(h * scale);
-          }
-          canvas.width = w;
-          canvas.height = h;
-          canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-          const result = canvas.toDataURL('image/jpeg', quality);
-          resolve(result);
-        } catch (err) {
-          reject(err);
-        }
-      };
-      img.onerror = () => reject(new Error('图片加载失败'));
-      img.src = dataUrl;
-    });
-  };
-
-  const tracingReferenceVisible =
-    tracingRefs.find(r => r.id === 'theme-scene')?.visible ?? true;
-
-  const handleToggleTracingReference = useCallback(() => {
-    if (!freeTheme) return;
-    const sceneRef = tracingRefs.find(r => r.id === 'theme-scene');
-    const currentlyVisible = sceneRef?.visible ?? true;
-    if (sceneRef) {
-      setTracingRefs(prev => prev.map(r =>
-        r.id === 'theme-scene' ? { ...r, visible: !currentlyVisible } : r
-      ));
-    } else {
-      const scene = createThemeTracingRef(freeTheme.id, canvasSize.w, canvasSize.h);
-      if (scene) setTracingRefs([{ ...scene, visible: !currentlyVisible }]);
-    }
-  }, [freeTheme, tracingRefs, canvasSize.w, canvasSize.h]);
-
-  const handleSDSave = async (imageBase64: string) => {
-    try {
-      const compressed = await compressImage(imageBase64);
-      const session = getTracker().getSession();
-      const privacy = loadPrivacyPreferences();
-      const practiceDetails = {
-        userStrokeCount: Math.max(session.completedStrokes, userStrokeCount),
-        guidanceLevel,
-        durationMs: session.startTime > 0 ? Math.max(0, (session.endTime || Date.now()) - session.startTime) : 0,
-      };
-      // 保存 AI 生成图
-      const renderedItem = await uploadAndSaveToGallery(
-        compressed,
-        `AI 风格版 ${new Date().toLocaleDateString('zh-CN')}`,
-        Math.max(session.completedStrokes, userStrokeCount),
-        'free',
-        practiceDetails,
-        privacy.artworkCloudUpload,
-        privacy.participantId,
-      );
-      recordSavedPractice(renderedItem.id);
-      // 同时保存原画
-      if (sdResult?.original) {
-        const originalCompressed = await compressImage(sdResult.original);
-        await uploadAndSaveToGallery(
-          originalCompressed,
-          `原画 ${new Date().toLocaleDateString('zh-CN')}`,
-          Math.max(session.completedStrokes, userStrokeCount),
-          'free',
-          practiceDetails,
-          privacy.artworkCloudUpload,
-          privacy.participantId,
-        );
-      }
-      setSpriteMessage('原画和 AI 风格版都已放进星图。');
-      setSpriteState('cheering');
-    } catch (err) {
-      console.error('[SD Save] 失败:', err);
-      setSpriteMessage(`保存失败: ${err instanceof Error ? err.message : '未知错误'}`);
-    }
-    setSdResult(null);
-  };
 
   const currentStep = Math.min(strokes.length, Math.round(progress * strokes.length) + (progress < 1 ? 1 : 0));
   const phaseLabel = progress < 0.25 ? '建立大形' : progress < 0.65 ? '组织结构' : progress < 0.95 ? '补充细节' : '完成作品';
@@ -1041,19 +738,9 @@ export default function PaintPage() {
         <div className="flex-1 flex items-center justify-center p-2 sm:p-3 relative min-w-0 min-h-0"
           style={{
             background: '#FAFAFA',
-            pointerEvents: (sdRendering || sdResult || showCompletion) ? 'none' : 'auto',
+            pointerEvents: showCompletion ? 'none' : 'auto',
             paddingBottom: paintBarBottom,
           }}>
-
-          {/* 自由模式主题选择 */}
-          {mode === 'free' && showFreeThemes && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center" style={{ background: 'rgba(250,250,250,0.95)' }}>
-              <FreeModeThemes
-                onSelect={(theme) => applyFreeTheme(theme)}
-                onSkip={() => applyFreeTheme(null)}
-              />
-            </div>
-          )}
 
           <div className="w-full h-full flex items-center justify-center min-h-0 min-w-0">
           <PaintCanvas
@@ -1083,18 +770,6 @@ export default function PaintPage() {
             onAutoProgress={handleAutoProgress}
             onAutoComplete={handleAutoComplete}
             sourceImage={sourceImage}
-            tracingSceneSrc={
-              showThemeTracingScene
-                ? THEME_TRACING_SCENES[freeTheme!.id] ?? null
-                : null
-            }
-            tracingSceneVisible={
-              showThemeTracingScene
-                ? difficultyLevel === 'tracing'
-                  ? (tracingRefs.find(r => r.id === 'theme-scene')?.visible ?? true)
-                  : true
-                : false
-            }
           >
             {/* 贴纸/描画 React overlay — 画布内部 */}
             {mode === 'free' && (difficultyLevel === 'sticker' || difficultyLevel === 'tracing') && (
@@ -1153,10 +828,9 @@ export default function PaintPage() {
 
           {/* 贴纸栏：fixed 紧贴底栏上方，画板尺寸不变 */}
           <AnimatePresence>
-            {mode === 'free' && !showFreeThemes && difficultyLevel === 'sticker' && showPanel && !panelCollapsed && (
+            {mode === 'free' && difficultyLevel === 'sticker' && showPanel && !panelCollapsed && (
               <StickerPanel
                 mode="sticker"
-                themeId={freeTheme?.id}
                 hasTracing={false}
                 onCollapse={() => { setPanelCollapsed(true); setShowPanel(false); }}
                 persistent
@@ -1198,6 +872,7 @@ export default function PaintPage() {
       </div>
 
       <FloatingCompanion collapsed={promptCardCollapsed} onCollapse={setPromptCardCollapsed}>
+        {sourceImage && <ReferencePreview src={sourceImage.src} />}
         {mode === 'free' ? <>
                 <MoonCompanion state={spriteState} message={spriteMessage} compact />
                 <div className="my-3 h-px" style={{ background: '#D9DDEA' }} />
@@ -1208,25 +883,6 @@ export default function PaintPage() {
                   </div>
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: '#FFD166', border: '1.5px solid #17233F' }}><Sparkles size={18} color="#17233F" /></span>
                 </div>
-              {freeTheme && !showFreeThemes && (
-                <div className="pointer-events-auto min-w-0">
-                  <ThemeStepGuide
-                    theme={freeTheme}
-                    currentStep={freeThemeStep}
-                    compact
-                    onNextStep={() => {
-                      if (freeThemeStep < freeTheme.steps.length - 1) {
-                        const next = freeThemeStep + 1;
-                        setFreeThemeStep(next);
-                        setSpriteMessage(freeTheme.steps[next].hint);
-                      } else {
-                        // 最后一步「画好了」→ 进入 AI 星光变换
-                        handleSDRender();
-                      }
-                    }}
-                  />
-                </div>
-              )}
         </> : <div>
                 <MoonCompanion state={spriteState} message={spriteMessage} compact />
                 <div className="my-3 h-px" style={{ background: '#D9DDEA' }} />
@@ -1267,50 +923,7 @@ export default function PaintPage() {
         </div>}
       </FloatingCompanion>
 
-      {/* ═══ SD 渲染结果 ═══ */}
       <AnimatePresence>
-        {sdRendering && (
-          <SDRenderLoading
-              styleName={selectedStyle?.name || '梵高'}
-              progress={sdElapsed > 0 ? Math.min(sdElapsed / 20000 * 0.98, 0.98) : 0}
-              commentaryMessages={sdCommentary}
-            />
-        )}
-        {sdResult && (
-          <SDRenderResult
-            originalImage={sdResult.original}
-            renderedImage={sdResult.rendered}
-            style={selectedStyle?.name || '梵高'}
-            duration={sdResult.duration}
-            onClose={() => setSdResult(null)}
-            onSave={handleSDSave}
-            onFinish={async () => {
-              try {
-                const compressed = await compressImage(sdResult.rendered);
-                const session = getTracker().getSession();
-                const privacy = loadPrivacyPreferences();
-                const galleryItem = await uploadAndSaveToGallery(
-                  compressed,
-                  `AI 风格版 ${new Date().toLocaleDateString('zh-CN')}`,
-                  Math.max(session.completedStrokes, userStrokeCount),
-                  'free',
-                  {
-                    userStrokeCount: Math.max(session.completedStrokes, userStrokeCount),
-                    guidanceLevel,
-                    durationMs: session.startTime > 0 ? Math.max(0, (session.endTime || Date.now()) - session.startTime) : 0,
-                  },
-                  privacy.artworkCloudUpload,
-                  privacy.participantId,
-                );
-                recordSavedPractice(galleryItem.id);
-              } catch (err) {
-                console.error('[SD Finish] AI 图保存失败:', err);
-              }
-              setSdResult(null);
-              handleExport();
-            }}
-          />
-        )}
         {leaveConfirm && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -1328,7 +941,7 @@ export default function PaintPage() {
             >
               <div className="mb-3" style={{ fontSize: 42, lineHeight: 1 }}>🎨</div>
               <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1A1A1A' }}>
-                {leaveConfirm.target === 'themes' ? '换主题？' : '离开画板？'}
+                离开画板？
               </h3>
               <p className="mt-3" style={{ fontSize: '0.86rem', fontWeight: 700, color: '#666', lineHeight: 1.6 }}>
                 当前画的内容不会保存
@@ -1349,7 +962,7 @@ export default function PaintPage() {
                   继续画
                 </button>
                 <button
-                  onClick={() => executeBack(leaveConfirm.target)}
+                  onClick={() => executeBack()}
                   className="flex-1 rounded-full font-bold text-sm"
                   style={{
                     background: '#7A51EC',
@@ -1360,49 +973,9 @@ export default function PaintPage() {
                     padding: '0.85em 1.2em',
                   }}
                 >
-                  {leaveConfirm.target === 'themes' ? '换主题' : '离开'}
+                  离开
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-        {sdError && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
-            style={{ background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(8px)', pointerEvents: 'auto' }}
-          >
-            <motion.div
-              initial={{ scale: 0.92, y: 18 }}
-              animate={{ scale: 1, y: 0 }}
-              transition={{ type: 'spring', damping: 20 }}
-              className="w-full max-w-sm rounded-[2rem] bg-white p-6 text-center"
-              style={{ border: '2px solid #1A1A1A', boxShadow: '8px 8px 0 #1A1A1A' }}
-            >
-              <div className="mb-3" style={{ fontSize: 42, lineHeight: 1 }}>🪄</div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1A1A1A' }}>AI 星光变换失败</h3>
-              <p className="mt-3" style={{ fontSize: '0.86rem', fontWeight: 700, color: '#666', lineHeight: 1.6 }}>
-                {sdError}
-              </p>
-              <p className="mt-2" style={{ fontSize: '0.75rem', fontWeight: 600, color: '#999', lineHeight: 1.5 }}>
-                图像生成服务暂时不可用，请稍后重试。
-              </p>
-              <button
-                onClick={() => setSdError(null)}
-                className="mt-5 w-full rounded-full font-bold text-sm"
-                style={{
-                  background: '#7A51EC',
-                  color: 'white',
-                  border: '2px solid #1A1A1A',
-                  boxShadow: '3px 3px 0 #1A1A1A',
-                  cursor: 'pointer',
-                  padding: '0.85em 1.2em',
-                }}
-              >
-                回到画板检查
-              </button>
             </motion.div>
           </motion.div>
         )}
@@ -1462,8 +1035,6 @@ export default function PaintPage() {
         onFreeSatChange={setFreeSat}
         freeVal={freeVal}
         onFreeValChange={setFreeVal}
-        onSDRender={handleSDRender}
-        sdRendering={sdRendering}
         eraserMode={eraserMode}
         onToggleEraser={() => {
           setEraserMode(prev => !prev);
@@ -1473,23 +1044,6 @@ export default function PaintPage() {
         onToggleSpray={handleToggleSpray}
         canUndo={canUndo}
         onUndo={handleUndo}
-        showStickerGuide={
-          mode === 'free' &&
-          difficultyLevel === 'sticker' &&
-          !showFreeThemes &&
-          !!freeTheme &&
-          !!THEME_TRACING_SCENES[freeTheme.id]
-        }
-        stickerGuideVisible={stickerGuideVisible}
-        onToggleStickerGuide={() => setStickerGuideVisible(v => !v)}
-        showTracingReference={
-          mode === 'free' &&
-          difficultyLevel === 'tracing' &&
-          !showFreeThemes &&
-          !!freeTheme
-        }
-        tracingReferenceVisible={tracingReferenceVisible}
-        onToggleTracingReference={handleToggleTracingReference}
       />
 
       {/* ═══ 作品完成弹窗 ═══ */}
