@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.env*
+data
+test-results
+playwright-report
+论文
+conversation-export.json

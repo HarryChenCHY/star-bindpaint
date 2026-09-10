@@ -206,6 +206,11 @@ export default function CreatePage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden pb-28" style={{ background: COLORS.paper, color: COLORS.ink }}>
+      <div className="flex flex-wrap items-center justify-center gap-3 border-b border-[#17233F] bg-[#ECEAFE] px-5 py-3 text-sm">
+        <span>想用 200 笔以内完成一张简化画？</span>
+        <button onClick={() => router.push('/simplify')} className="rounded-xl border-2 border-[#17233F] bg-white px-3 py-2 font-bold">轮廓 → 大色块 → 小色块</button>
+        <button onClick={() => router.push('/study')} className="font-bold underline">参与绘画测试</button>
+      </div>
       <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur" style={{ borderColor: '#D9DDEA' }}>
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-10">
           <button onClick={() => router.push('/')} className="flex items-center gap-2 text-sm font-black">

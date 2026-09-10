@@ -24,7 +24,7 @@ export default function GlobalDock() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  if (pathname?.startsWith('/paint')) return null;
+  if (['/paint', '/study', '/simplify', '/rater', '/admin/studies'].some(prefix => pathname?.startsWith(prefix))) return null;
 
   const iconSize = isMobile ? 18 : 22;
   const items = [

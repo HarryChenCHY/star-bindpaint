@@ -94,6 +94,9 @@ export default function HomePage() {
         </button>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          <button onClick={() => router.push('/study')} className="rounded-full border-2 border-[#17233F] bg-[#ECEAFE] px-3 py-2.5 text-sm font-extrabold">
+            参与测试
+          </button>
           <button
             onClick={() => router.push('/intro')}
             className="hidden rounded-full px-4 py-2.5 text-sm font-extrabold md:inline-flex"
