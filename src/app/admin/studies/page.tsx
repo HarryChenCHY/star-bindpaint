@@ -81,6 +81,7 @@ export default function StudyAdminPage() {
         <nav className="study-row mb-6">
           <Link href="/study">← 测试入口</Link>
           <Link href="/rater">匿名评分工作台</Link>
+          <Link href="/admin/studies/materials">P6 材料质量检查</Link>
           <Link href="/admin/analytics">体验统计</Link>
         </nav>
         <h1>研究工作台</h1>
