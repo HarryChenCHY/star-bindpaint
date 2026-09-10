@@ -59,9 +59,9 @@ const GUIDANCE_OPTIONS: Array<{
 ];
 
 const BRUSH_OPTIONS = [
-  { value: 1, title: '细节更多', body: '更多小笔触，适合慢慢完成' },
+  { value: 1, title: '细节更多', body: '1000 笔预算内，偏向细笔修整' },
   { value: 2, title: '均衡笔触', body: '结构和细节比较平衡' },
-  { value: 3, title: '大笔概括', body: '更少、更大的笔触，较快完成' },
+  { value: 3, title: '大笔概括', body: '1000 笔预算内，偏向较大笔刷' },
 ];
 
 function cacheImage(img: HTMLImageElement) {
@@ -207,8 +207,8 @@ export default function CreatePage() {
   return (
     <div className="min-h-screen overflow-x-hidden pb-28" style={{ background: COLORS.paper, color: COLORS.ink }}>
       <div className="flex flex-wrap items-center justify-center gap-3 border-b border-[#17233F] bg-[#ECEAFE] px-5 py-3 text-sm">
-        <span>想用 200 笔以内完成一张简化画？</span>
-        <button onClick={() => router.push('/simplify')} className="rounded-xl border-2 border-[#17233F] bg-white px-3 py-2 font-bold">轮廓 → 大色块 → 小色块</button>
+        <span>已支持 1000 笔预算，按笔触序列引导绘画</span>
+        <button onClick={() => router.push('/simplify')} className="rounded-xl border-2 border-[#17233F] bg-white px-3 py-2 font-bold">预览笔触效果</button>
         <button onClick={() => router.push('/study')} className="font-bold underline">参与绘画测试</button>
       </div>
       <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur" style={{ borderColor: '#D9DDEA' }}>
@@ -401,7 +401,7 @@ export default function CreatePage() {
                     })}
                   </div>
 
-                  <p className="mt-5 text-xs font-bold leading-6" style={{ color: COLORS.inkSoft }}>准备好后，系统会把参考图由大到小拆解成笔触，并逐笔提示起点、方向与颜色。</p>
+                  <p className="mt-5 text-xs font-bold leading-6" style={{ color: COLORS.inkSoft }}>准备好后，系统会在 1000 笔以内分配笔触，保留整体色彩和主要形状，并逐笔提示起点、方向与颜色。</p>
                   <button onClick={handleStartGuided} disabled={preparing} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-base font-black text-white disabled:cursor-wait disabled:opacity-50" style={{ background: COLORS.ink, boxShadow: `4px 4px 0 ${COLORS.yellow}` }}>
                     {preparing ? '正在准备图片…' : '生成星迹并开始'} <ArrowRight size={18} strokeWidth={2.8} />
                   </button>

@@ -1,0 +1,38 @@
+{
+  "exportedAt": "2026-09-10T07:31:50.605Z",
+  "planHash": "1cf222686e3aa4640e93f4549a2f6518b9504dbea8dd306d48ac910cb4bf4d08",
+  "participants": [],
+  "complete": 0,
+  "rated": 0,
+  "target": 6,
+  "issues": [
+    {
+      "id": "66c1f38f-e355-425d-a695-95d847dc505f",
+      "studyId": "novice-pilot-v1",
+      "planHash": "1cf222686e3aa4640e93f4549a2f6518b9504dbea8dd306d48ac910cb4bf4d08",
+      "title": "synthetic pilot test issue",
+      "severity": "blocking",
+      "status": "resolved",
+      "resolution": "synthetic fix verified",
+      "revision": 2,
+      "createdAt": "2026-09-10T07:31:50.311Z",
+      "updatedAt": "2026-09-10T07:31:50.378Z"
+    }
+  ],
+  "review": {
+    "id": "novice-pilot-v1",
+    "revision": 1,
+    "planHash": "1cf222686e3aa4640e93f4549a2f6518b9504dbea8dd306d48ac910cb4bf4d08",
+    "checks": {
+      "device": true,
+      "workload": true,
+      "rating": true,
+      "storage": true
+    },
+    "note": "synthetic checks only; not a real pilot",
+    "updatedAt": "2026-09-10T07:31:50.562Z"
+  },
+  "reviewCurrent": true,
+  "blocking": 0,
+  "ready": false
+}

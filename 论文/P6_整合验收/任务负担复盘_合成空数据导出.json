@@ -1,0 +1,121 @@
+{
+  "exportedAt": "2026-09-10T07:45:18.279Z",
+  "planHash": "1cf222686e3aa4640e93f4549a2f6518b9504dbea8dd306d48ac910cb4bf4d08",
+  "participants": [],
+  "complete": 0,
+  "rated": 0,
+  "target": 6,
+  "issues": [
+    {
+      "id": "f9a5276e-6c97-4a17-81dd-f83d2306aaa2",
+      "studyId": "novice-pilot-v1",
+      "planHash": "1cf222686e3aa4640e93f4549a2f6518b9504dbea8dd306d48ac910cb4bf4d08",
+      "title": "synthetic pilot test issue",
+      "severity": "blocking",
+      "status": "resolved",
+      "resolution": "synthetic fix verified",
+      "revision": 2,
+      "createdAt": "2026-09-10T07:45:17.948Z",
+      "updatedAt": "2026-09-10T07:45:18.016Z"
+    }
+  ],
+  "review": {
+    "id": "novice-pilot-v1",
+    "revision": 1,
+    "planHash": "1cf222686e3aa4640e93f4549a2f6518b9504dbea8dd306d48ac910cb4bf4d08",
+    "checks": {
+      "device": true,
+      "workload": true,
+      "rating": true,
+      "storage": true
+    },
+    "note": "synthetic checks only; not a real pilot",
+    "updatedAt": "2026-09-10T07:45:18.199Z"
+  },
+  "reviewCurrent": true,
+  "blocking": 0,
+  "exports": [],
+  "workload": {
+    "version": "pilot-workload-1",
+    "planVersion": "residual-capsule-2-detail-opaque",
+    "planHash": "1cf222686e3aa4640e93f4549a2f6518b9504dbea8dd306d48ac910cb4bf4d08",
+    "plannedStrokes": 988,
+    "timeLimitMs": 720000,
+    "rows": [],
+    "groups": [
+      {
+        "condition": "control",
+        "n": 0,
+        "timeouts": 0,
+        "elapsedMs": {
+          "n": 0,
+          "median": null
+        },
+        "validStrokes": {
+          "n": 0,
+          "median": null
+        },
+        "idleCount": {
+          "n": 0,
+          "median": null
+        },
+        "completion": {
+          "n": 0,
+          "median": null
+        },
+        "qualifiedTimeMs": {
+          "n": 0,
+          "median": null
+        },
+        "guidanceRatio": {
+          "n": 0,
+          "median": null
+        }
+      },
+      {
+        "condition": "guided",
+        "n": 0,
+        "timeouts": 0,
+        "elapsedMs": {
+          "n": 0,
+          "median": null
+        },
+        "validStrokes": {
+          "n": 0,
+          "median": null
+        },
+        "idleCount": {
+          "n": 0,
+          "median": null
+        },
+        "completion": {
+          "n": 0,
+          "median": null
+        },
+        "qualifiedTimeMs": {
+          "n": 0,
+          "median": null
+        },
+        "guidanceRatio": {
+          "n": 0,
+          "median": null
+        }
+      }
+    ],
+    "pairedElapsedDifferenceMs": {
+      "n": 0,
+      "median": null
+    },
+    "orderCounts": {
+      "AB": 0,
+      "BA": 0
+    },
+    "notes": [
+      "仅汇总每个条件的最新尝试；未结束、技术故障、撤回、排除或缺少结束事件的记录不进入组汇总。",
+      "用时是任务持续时间，不是达标速度；指导推进包含跳过，不等于真实绘画完成度。",
+      "中位数旁的 n 是该指标有效人数；零与缺失分开，未齐双人评分的完成度为空。",
+      "预试样本只用于检查任务负担，不据此自动判断算法有效或自动修改实验时限。"
+    ]
+  },
+  "ready": false
+}

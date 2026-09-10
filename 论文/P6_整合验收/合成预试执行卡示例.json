@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-09-10T07:25:07.938Z",
+  "studyId": "novice-pilot-v1",
+  "stage": "pilot",
+  "published": false,
+  "materialReviewed": true,
+  "algorithmVersion": "residual-capsule-2-detail-opaque",
+  "planHash": "1cf222686e3aa4640e93f4549a2f6518b9504dbea8dd306d48ac910cb4bf4d08",
+  "materialHash": "19359bc2c39b253e915367dbea0aa152053ab4235179acd308273f2d3083da36",
+  "plannedStrokes": 988,
+  "timeLimitMs": 720000,
+  "rubric": [
+    "盆栽主体可辨认",
+    "花盆外形完整",
+    "盆口有所呈现",
+    "主茎连接花盆与叶片",
+    "左侧叶片有所呈现",
+    "右侧叶片有所呈现",
+    "顶部叶片有所呈现",
+    "叶片绿色区域",
+    "花盆暖色区域",
+    "桌面与主体位置关系"
+  ],
+  "instructions": [
+    "同一参与者使用同一材料，遵循系统 AB/BA 分配",
+    "完成统一练习、两轮前后测、休息和访谈",
+    "两位评分者独立评分后核对报告",
+    "记录真实预试问题；执行卡不代表已完成预试"
+  ]
+}

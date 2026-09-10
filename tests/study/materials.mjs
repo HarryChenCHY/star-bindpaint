@@ -55,9 +55,9 @@ try {
     await card.screenshot({ path: join(dir, fixture + '.png') });
   }
   const plant = page.locator('[data-material-id="plant"]');
-  await plant.getByRole('button', { name: '仅轮廓' }).click();
+  await plant.getByRole('button', { name: '前 50 笔' }).click();
   const count = await plant.getByLabel('预览笔数').inputValue();
-  if (+count !== report.results[0].checks.counts.outline)
+  if (+count !== Math.min(50, report.results[0].checks.total))
     throw new Error('Stage preview mismatch');
   await page.setViewportSize({ width: 390, height: 844 });
   if (

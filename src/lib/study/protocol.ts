@@ -1,3 +1,4 @@
+import { STROKE_CONFIG } from '../stroke-config';
 export const PROTOCOL = {
   version: 'novice-paired-1.0',
   appVersion: '0.2.0-study-preview',
@@ -11,8 +12,8 @@ export const PROTOCOL = {
   practiceMs: 90_000,
   idleThresholdMs: 5_000,
   validLengthRatio: 0.005,
-  maxStrokes: 200,
-  targetStrokes: 180,
+  maxStrokes: STROKE_CONFIG.maxBudget,
+  targetStrokes: STROKE_CONFIG.defaultBudget,
   targetPairs: 24,
   maxParticipants: 30,
   qualificationScore: 80,
@@ -23,7 +24,7 @@ export const PROTOCOL = {
 } as const;
 
 export type Condition = 'control' | 'guided';
-export type Phase = 'outline' | 'large_color' | 'small_color';
+export type Phase = 'outline' | 'large_color' | 'small_color' | 'paint';
 export type EndReason =
   | 'submitted'
   | 'timeout'
@@ -58,6 +59,7 @@ export interface StrokePlan {
   };
 }
 export const PHASE_LABEL: Record<Phase, string> = {
+  paint: '笔触绘画',
   outline: '轮廓',
   large_color: '大色块',
   small_color: '小色块',

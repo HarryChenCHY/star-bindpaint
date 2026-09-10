@@ -18,7 +18,8 @@ import SDRenderLoading from '@/components/SDRenderLoading';
 import StickerPanel, { StickerDef } from '@/components/StickerPanel';
 import StickerItem, { PlacedSticker } from '@/components/StickerItem';
 import TracingItem, { TracingRef } from '@/components/TracingItem';
-import { decomposeImage, imageSourceFromImage, GuidanceLevel, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
+import { imageSourceFromImage, GuidanceLevel, StrokeDrawData, Vec2 } from '@/lib/stroke-engine';
+import { preparePainting } from '@/lib/painting-client';
 import { GuideSystem } from '@/lib/guide-system';
 import { uploadAndSaveToGallery } from '@/lib/gallery-store';
 import { getTracker, resetTracker } from '@/lib/painting-tracker';
@@ -45,6 +46,8 @@ function sendResearchRecord(payload: Record<string, unknown>, keepalive = false)
 }
 
 export default function PaintPage() {
+  const [planningAttempt, setPlanningAttempt] = useState(0);
+  const planningController = useRef<AbortController | null>(null);
   const router = useRouter();
   const { settings } = useAppSettings();
   const [mode, setMode] = useState<PaintMode>('follow');
@@ -214,6 +217,9 @@ export default function PaintPage() {
     setGuidanceLevel(savedGuidance);
 
     let cancelled = false;
+    const controller = new AbortController();
+    planningController.current = controller;
+    setLoadError('');
     const fail = (message: string) => {
       if (cancelled) return;
       setLoadError(message);
@@ -242,11 +248,14 @@ export default function PaintPage() {
       try {
         const imgSrc = imageSourceFromImage(img, 512);
         setLoadingMsg('正在分析画面结构与笔触方向…');
-        const result = await decomposeImage(imgSrc, cw, ch, {
+        const result = await preparePainting(imgSrc, cw, ch, {
           roughness: savedRoughness,
           lloydIter: 12,
           palette: 'original',
-        });
+          onProgress: ({ completed, total, strokes }) => {
+            if (!cancelled) setLoadingMsg(`画面优化 ${Math.round(completed / total * 100)}% · 已规划 ${strokes} 笔`);
+          },
+        }, controller.signal);
         if (cancelled) return;
         if (!result.length) {
           fail('这张图片没有可跟随的笔触，请选择主体更清晰、颜色对比更明显的图片。');
@@ -274,22 +283,23 @@ export default function PaintPage() {
         guideRef.current.loadStrokes(result);
         const state = guideRef.current.getState();
         setCurrentGuideStroke(state.currentStroke);
+        if (state.currentStroke) setBrushWidth(state.currentStroke.width);
         setSpriteState('guiding');
         setSpriteMessage(`已经生成 ${result.length} 条星迹，从黄色星点开始。`);
         setLoading(false);
       } catch (err) {
-        console.error(err);
-        fail('星迹生成失败，请返回重新选择图片。');
+        if (!cancelled) fail(controller.signal.aborted ? '已取消规划' : err instanceof Error ? err.message : '星迹生成失败，请重试。');
       }
     };
     img.onerror = () => fail('参考图无法读取，请返回重新选择图片。');
     img.src = dataUrl;
     return () => {
       cancelled = true;
+      controller.abort();
       img.onload = null;
       img.onerror = null;
     };
-  }, [router]);
+  }, [router, planningAttempt]);
 
   useEffect(() => {
     const guide = guideRef.current;
@@ -299,6 +309,7 @@ export default function PaintPage() {
       // 批量绘制期间不更新引导线（防止闪烁）
       if (!batchingRef.current) {
         setCurrentGuideStroke(state.currentStroke);
+        if (state.currentStroke) setBrushWidth(state.currentStroke.width);
       }
       const prog = state.totalStrokes > 0 ? state.currentIndex / state.totalStrokes : 0;
       setProgress(prog);
@@ -941,6 +952,7 @@ export default function PaintPage() {
         {loadError ? (
           <div className="px-5 text-center" role="alert">
             <p className="max-w-sm text-sm font-bold leading-6 text-[#536079]">{loadError}</p>
+            <button onClick={() => setPlanningAttempt(n => n + 1)} className="m-2 rounded-full bg-[#6558D9] px-6 py-3 text-sm font-black text-white">重新生成</button>
             <button onClick={() => router.push('/create')} className="mt-5 rounded-full bg-[#17233F] px-6 py-3 text-sm font-black text-white">
               返回选择图片
             </button>
@@ -956,6 +968,7 @@ export default function PaintPage() {
             <p style={{ fontSize: '0.85rem', color: '#888888', fontWeight: 700 }}>
               {loadingMsg || '正在准备第一颗星点…'}
             </p>
+            <button onClick={() => planningController.current?.abort()} className="rounded-full border-2 border-[#17233F] px-6 py-3 text-sm font-bold">取消规划</button>
           </>
         )}
       </div>

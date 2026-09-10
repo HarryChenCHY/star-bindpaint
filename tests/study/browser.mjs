@@ -52,16 +52,60 @@ try {
   await page.getByLabel('研究者口令').fill(admin);
   await page.getByRole('button', { name: '读取 / 刷新' }).click();
   await page.getByRole('button', { name: '准备盆栽候选图' }).click();
-  await page.getByText('两条件共用的简化图').waitFor({ timeout: 30000 });
+  await page.getByText('两条件共用的参考图').waitFor({ timeout: 30000 });
   await page.screenshot({ path: dir + '/admin-material.png', fullPage: true });
   await page.getByRole('checkbox').first().check();
   await page.getByRole('button', { name: '保存材料与计划' }).click();
+  await page.getByText('该材料使用当前算法。', { exact: true }).waitFor();
+  const executionCard = page.waitForEvent('download');
+  await page.getByRole('button', { name: '下载预试执行卡' }).click();
+  await (await executionCard).saveAs(join(dir, 'execution-card.json'));
+  const handoffDownloadEvent = page.waitForEvent('download');
+  await page.getByRole('button', { name: '保存并下载版本交接包' }).click();
+  const handoffDownload = await handoffDownloadEvent;
+  const handoffId = handoffDownload.suggestedFilename().replace('研究版本交接-', '').replace('.json', '');
+  await handoffDownload.saveAs(join(dir, 'handoff.json'));
+  const handoff = JSON.parse(readFileSync(join(dir, 'handoff.json'), 'utf8'));
+  if (handoff.status !== 'draft' || handoff.study.published || !handoff.material.plan.strokes.length) throw new Error('Handoff changed publication or omitted material');
+  if (!readFileSync(join(dir, 'handoffs', `${handoffId}.json`)).equals(readFileSync(join(dir, 'handoff.json')))) throw new Error('Handoff bytes mismatch');
+  if ((await page.request.get(url + '/api/studies?action=handoffDownload&id=' + handoffId)).status() !== 403) throw new Error('Handoff access failure');
   await page.getByRole('button', { name: '发布此研究批次' }).click();
   await page
     .getByText(
       '当前状态：已开放入组，材料冻结。入组后不能修改本批次材料和协议。',
     )
     .waitFor();
+  const pilot = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await pilot.goto(url + '/admin/studies/pilot');
+  if ((await pilot.request.get(url + '/api/studies?action=pilot')).status() !== 403) throw new Error('Pilot privacy failure');
+  await pilot.getByLabel('研究者口令').fill(admin);
+  await pilot.getByRole('button', { name: '读取 / 刷新' }).click();
+  await pilot.getByRole('heading', { name: '预试进度', exact: true }).waitFor();
+  await pilot.getByLabel('问题描述', { exact: true }).fill('synthetic pilot test issue');
+  await pilot.getByRole('button', { name: '记录问题', exact: true }).click();
+  await pilot.getByRole('heading', { name: 'synthetic pilot test issue' }).waitFor();
+  await pilot.getByLabel('修复与复验说明').fill('synthetic fix verified');
+  await pilot.getByRole('button', { name: '保存说明并解决' }).click();
+  await pilot.getByText('阻断 · 已解决 · 修订 2', { exact: true }).waitFor();
+  for (const box of await pilot.getByRole('checkbox').all()) await box.check();
+  await pilot.getByLabel('实际复核说明', { exact: true }).fill('synthetic checks only; not a real pilot');
+  await pilot.getByRole('button', { name: '保存实际复核', exact: true }).click();
+  const pilotDownload = pilot.waitForEvent('download');
+  await pilot.getByRole('button', { name: '下载预试执行记录 JSON' }).click();
+  await (await pilotDownload).saveAs(join(dir, 'pilot-execution.json'));
+  const pilotReport = JSON.parse(readFileSync(join(dir, 'pilot-execution.json'), 'utf8'));
+  if (pilotReport.ready || pilotReport.complete !== 0 || pilotReport.issues[0].status !== 'resolved') throw new Error('Pilot gate/state mismatch');
+  if (pilotReport.workload.groups.some(g => g.elapsedMs.median !== null)) throw new Error('Empty pilot falsely reports durations');
+  const savedReviewEvent = pilot.waitForEvent('download');
+  await pilot.getByRole('button', { name: '保存复盘到后端并下载' }).click();
+  const savedReview = await savedReviewEvent;
+  const savedId = savedReview.suggestedFilename().replace('预试复盘-', '').replace('.json', '');
+  await savedReview.saveAs(join(dir, 'pilot-saved-review.json'));
+  if (!readFileSync(join(dir, 'pilot-reviews', `${savedId}.json`)).equals(readFileSync(join(dir, 'pilot-saved-review.json')))) throw new Error('Pilot stored/downloaded report mismatch');
+  if ((await pilot.request.get(url + '/api/studies?action=pilotDownload&id=' + savedId)).status() !== 403) throw new Error('Pilot download privacy failure');
+  if (await pilot.evaluate(() => document.documentElement.scrollWidth > innerWidth)) throw new Error('Pilot mobile overflow');
+  await pilot.screenshot({ path: join(dir, 'pilot-mobile.png'), fullPage: true });
+  await pilot.close();
   const call = async (ctx, body, token = '') => {
     const response = await ctx.request.post(url + '/api/studies', {
       data: body,
@@ -86,6 +130,7 @@ try {
   await person.getByRole('button', { name: '完成并提交' }).waitFor();
   // Fast-forward only the isolated synthetic fixture's practice timestamp and browser clock.
   const db = new DatabaseSync(join(dir, 'study.sqlite'));
+  db.exec('PRAGMA busy_timeout=5000');
   const record = db
     .prepare("select id,data from records where kind='participant'")
     .get();
@@ -131,6 +176,7 @@ try {
       .waitFor({ timeout: 15000 });
     await questionnaire();
     if (period === 1) {
+      await person.getByRole('heading', { name: '轮间休息', exact: true }).waitFor();
       const srow = db
         .prepare("select id,data from records where kind='session'")
         .all()
@@ -214,6 +260,8 @@ try {
       .waitFor({ timeout: 15000 });
     await questionnaire();
     if (period === 1) {
+      // Wait for the post questionnaire to persist before changing synthetic time.
+      await person.getByRole('heading', { name: '轮间休息', exact: true }).waitFor();
       const srow = db
         .prepare("select id,data from records where kind='session'")
         .all()
@@ -315,6 +363,24 @@ try {
   await call(recoveryContext, { action: 'retest', sessionId: interrupted.id, reason: 'synthetic refresh fixture' }, admin);
   const attempts = db.prepare("select data from records where kind='session'").all().map(r => JSON.parse(r.data)).filter(s => s.pairId === recoveredPerson.pairId);
   if (attempts.length !== 2 || !attempts.some(s => s.supersedes === interrupted.id) || !attempts.some(s => s.id === interrupted.id && s.inclusion === 'exclude')) throw new Error('Retest lineage lost');
+  await page.goto(url + '/admin/studies/pilot');
+  await page.getByLabel('研究者口令').fill(admin);
+  await page.getByRole('button', { name: '读取 / 刷新' }).click();
+  await page.getByRole('heading', { name: '任务负担复盘', exact: true }).waitFor();
+  const workloadResponse = await page.request.get(url + '/api/studies?action=pilot', { headers: { Authorization: 'Bearer ' + admin } });
+  const workload = (await workloadResponse.json()).workload;
+  if (workload.pairedElapsedDifferenceMs.n !== 2) throw new Error('Pilot paired workload mismatch');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('details summary').first().click();
+  if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)) throw new Error('Workload mobile overflow');
+  await page.screenshot({ path: join(dir, 'pilot-workload-mobile.png'), fullPage: true });
+  const withdrawn = JSON.parse(db.prepare("select data from records where kind='participant' and id=?").get(recoveredPerson.pairId).data);
+  withdrawn.withdrawnAt = new Date().toISOString();
+  db.prepare("update records set data=? where kind='participant' and id=?").run(JSON.stringify(withdrawn), withdrawn.pairId);
+  await call(context, { action: 'purge_withdrawal', pairId: withdrawn.pairId }, admin);
+  const removed = await page.request.get(url + '/api/studies?action=pilotDownload&id=' + savedId, { headers: { Authorization: 'Bearer ' + admin } });
+  if (removed.status() !== 404) throw new Error('Withdrawal retained pilot report');
+  await call(context, { action: 'pilotExport' }, admin);
   for (const route of [
     '/',
     '/create',

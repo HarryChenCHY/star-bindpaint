@@ -1,13 +1,10 @@
+import { planBudgetStrokes } from './budget-strokes';
+import { STROKE_CONFIG, type PlanningProgress } from './stroke-config';
+
 /**
- * stroke-engine.ts — Hertzmann 1998 油画笔触规划算法
- *
- * 基于论文：Aaron Hertzmann, "Painterly Rendering with Curved Brush Strokes
- * of Multiple Sizes", SIGGRAPH 1998
- *
- * 算法思路：多层从粗到细，每层找误差大的区域画曲线笔触。
- * 完全独立实现，不依赖任何第三方代码。
- *
- * 纯 CPU / JavaScript，无需 GPU，浏览器内 ~1-3s 完成。
+ * Budgeted painterly strokes: default 1000 actions, immediate full-footprint
+ * residual feedback. Legacy Hertzmann-inspired implementation below is kept
+ * only for comparison; it is not a reproduction of the original paper.
  */
 
 // ── 类型定义 ────────────────────────────────────────────────────────────
@@ -27,6 +24,8 @@ export interface StrokeDrawData {
 }
 
 export interface DecomposeOptions {
+  onProgress?: (progress: PlanningProgress) => void;
+  maxStrokes?: number; // 默认 1000；从预算内重新优化完整画面
   roughness?: number;   // 1-4, 控制笔刷层数和大小
   lloydIter?: number;   // 保留接口兼容（本算法不使用）
   pixelStep?: number;   // 路径插值步长
@@ -62,9 +61,18 @@ export function imageSourceFromImage(img: HTMLImageElement, maxSize = 512): Imag
 // ── 主入口 ──────────────────────────────────────────────────────────────
 
 /**
- * 将图像拆解为油画笔触序列（Hertzmann 1998 多层绘画算法）
+ * 在固定预算内重新规划完整画面的笔触序列
  */
 export async function decomposeImage(
+  src: ImageSource, canvasW: number, canvasH: number, opts: DecomposeOptions = {},
+): Promise<StrokeDrawData[]> {
+  const strokes = await planBudgetStrokes(src, canvasW, canvasH, opts.maxStrokes ?? STROKE_CONFIG.defaultBudget, opts.roughness, STROKE_CONFIG.experienceOpacity, opts.onProgress);
+  if (opts.palette && opts.palette !== 'original') applyPaletteShift(strokes, opts.palette);
+  return strokes;
+}
+
+/** 旧算法，仅供工程对比；不用于新的引导序列。 */
+export async function decomposeImageLegacy(
   src: ImageSource,
   canvasW: number,
   canvasH: number,

@@ -1,7 +1,8 @@
 'use client';
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { STROKE_CONFIG } from '@/lib/stroke-config';
 import { api, preparePlan } from '@/lib/study/client';
 import { PROTOCOL, RUBRIC, type StrokePlan } from '@/lib/study/protocol';
 import type { StudyConfig } from '@/lib/study/types';
@@ -9,8 +10,11 @@ import type { report } from '@/lib/study/server/service';
 import { GroupReport, PairReport } from '@/components/study/StudyReport';
 import ImageUploader from '@/components/ImageUploader';
 import '../../study/study.css';
-type Data = { config: StudyConfig; report: ReturnType<typeof report> };
+type Data = { config: StudyConfig; report: ReturnType<typeof report>; handoffs: Array<{ id: string; createdAt: string; status: string; sha256: string }> };
 export default function StudyAdminPage() {
+  const preparation = useRef<AbortController | null>(null);
+  const [preparationStatus, setPreparationStatus] = useState('');
+  useEffect(() => () => preparation.current?.abort(), []);
   const [token, setToken] = useState(''),
     [studyId, setStudyId] = useState('novice-pilot-v1'),
     [data, setData] = useState<Data | null>(null);
@@ -47,15 +51,24 @@ export default function StudyAdminPage() {
     }
   }
   async function prepare(url: string) {
+    preparation.current?.abort();
+    const controller = new AbortController();
+    preparation.current = controller;
     setBusy(true);
     setError('');
+    setPrepared(null);
+    setPreparationStatus('正在读取图片…');
     try {
-      setPrepared(await preparePlan(url));
+      const result = await preparePlan(url, controller.signal, p => {
+        setPreparationStatus(`画面优化 ${Math.round(p.completed / p.total * 100)}% · 已规划 ${p.strokes} 笔`);
+      });
+      if (controller.signal.aborted) return;
+      setPrepared(result);
       setReviewed(false);
     } catch (e) {
-      setError(String(e));
+      if (preparation.current === controller) setError(String(e));
     } finally {
-      setBusy(false);
+      if (preparation.current === controller) { setBusy(false); setPreparationStatus(''); }
     }
   }
   async function download(format: string) {
@@ -75,6 +88,13 @@ export default function StudyAdminPage() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   const pair = data?.report.pairs.find((p) => p.pairId === selected);
+  async function downloadHandoff(id: string) {
+    const response = await fetch(`/api/studies?action=handoffDownload&id=${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!response.ok) throw new Error('交接包下载或完整性校验失败，请刷新后重试');
+    const url = URL.createObjectURL(await response.blob());
+    const a = document.createElement('a'); a.href = url; a.download = `研究版本交接-${id}.json`; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
   return (
     <div className="study-shell">
       <div className="study-wrap">
@@ -82,11 +102,12 @@ export default function StudyAdminPage() {
           <Link href="/study">← 测试入口</Link>
           <Link href="/rater">匿名评分工作台</Link>
           <Link href="/admin/studies/materials">P6 材料质量检查</Link>
+          <Link href="/admin/studies/pilot">六人预试看板</Link>
           <Link href="/admin/analytics">体验统计</Link>
         </nav>
         <h1>研究工作台</h1>
         <p className="study-muted">
-          协议 {PROTOCOL.version} · 每轮 12 分钟 · 简化画 ≤ 200 笔 ·
+          协议 {PROTOCOL.version} · 每轮 12 分钟 · 原图笔触预算 ≤ 1000 笔 ·
           预试与正式研究独立保存
         </p>
         <section className="study-card study-row">
@@ -123,6 +144,24 @@ export default function StudyAdminPage() {
           <>
             <section className="study-card">
               <h2>材料与发布</h2>
+              <p className="study-muted">当前采用算法：{STROKE_CONFIG.version} · 预算 {STROKE_CONFIG.defaultBudget} 笔</p>
+              {data.config.plan && <div className="my-3 rounded-xl border p-3">
+                <p>已存材料版本：{data.config.plan.version} · {data.config.plan.strokes.length} 笔</p>
+                <p>{data.config.plan.version === `${STROKE_CONFIG.version}-opaque` ? '该材料使用当前算法。' : '这是历史材料；若要使用新算法，请在尚未入组的批次重新生成并审核。'}</p>
+                <p className="break-all study-muted">计划哈希：{data.config.planHash}</p>
+                <button onClick={() => {
+                  const card = { generatedAt: new Date().toISOString(), studyId, stage: data.config.stage,
+                    published: data.config.published, materialReviewed: data.config.materialReviewed,
+                    algorithmVersion: data.config.plan!.version, planHash: data.config.planHash,
+                    materialHash: data.config.materialHash, plannedStrokes: data.config.plan!.strokes.length,
+                    timeLimitMs: PROTOCOL.timeLimitMs, rubric: data.config.rubric,
+                    instructions: ['同一参与者使用同一材料，遵循系统 AB/BA 分配', '完成统一练习、两轮前后测、休息和访谈', '两位评分者独立评分后核对报告', '记录真实预试问题；执行卡不代表已完成预试'] };
+                  const url = URL.createObjectURL(new Blob([JSON.stringify(card, null, 2)], { type: 'application/json' }));
+                  const a = document.createElement('a'); a.href = url; a.download = `${studyId}-预试执行卡.json`; a.click();
+                  setTimeout(() => URL.revokeObjectURL(url), 1000);
+                }}>下载预试执行卡</button>
+              </div>}
+              {preparationStatus && <div role="status" className="study-row my-3"><p>{preparationStatus}</p><button onClick={() => preparation.current?.abort()}>取消规划</button></div>}
               <p>
                 当前状态：
                 {data.config.published ? '已开放入组，材料冻结' : '未发布'}
@@ -165,9 +204,10 @@ export default function StudyAdminPage() {
               )}
               {prepared && (
                 <div className="my-5">
+                  <p className="mb-3">绘画负担核对：{prepared.plan.strokes.length} 笔 / {PROTOCOL.timeLimitMs / 60000} 分钟。若跟完全部指导，平均每笔仅有 {(PROTOCOL.timeLimitMs / 1000 / Math.max(1, prepared.plan.strokes.length)).toFixed(2)} 秒（包括观察、换色和操作）。这是任务算术，不是完成能力的预测；请据真实预试决定材料是否适用。</p>
                   <div className="study-grid">
                     <div>
-                      <h3 className="font-bold">两条件共用的简化图</h3>
+                      <h3 className="font-bold">两条件共用的参考图</h3>
                       <img
                         src={prepared.material}
                         alt="待审核任务图"
@@ -207,10 +247,10 @@ export default function StudyAdminPage() {
                   </div>
                   <p>
                     最终 {prepared.plan.strokes.length} 笔：
-                    {['outline', 'large_color', 'small_color']
+                    {['outline', 'large_color', 'small_color', 'paint']
                       .map(
                         (phase, i) =>
-                          `${['轮廓', '大色块', '小色块'][i]} ${prepared.plan.strokes.filter((s) => s.phase === phase).length}`,
+                          `${['轮廓', '大色块', '小色块', '顺序笔触'][i]} ${prepared.plan.strokes.filter((s) => s.phase === phase).length}`,
                       )
                       .join(' / ')}
                   </p>
@@ -419,6 +459,19 @@ export default function StudyAdminPage() {
                 </section>
               </>
             )}
+            <section className="study-card">
+              <h2>研究版本与材料交接</h2>
+              <p>保存当前材料原图、完整笔触计划、问卷、评分规则与能力配置。交接包不含参与者记录和口令，不替代数据备份，也不会自动发布研究。</p>
+              <button disabled={busy || !data.config.plan || !data.config.material} onClick={() => void run(async () => {
+                const item = await api<{ id: string }>({ action: 'handoffExport', studyId }, token);
+                await load(); await downloadHandoff(item.id);
+              })}>保存并下载版本交接包</button>
+              {data.handoffs.map(item => <div className="my-3 rounded-xl border p-3" key={item.id}>
+                <p>{item.status === 'draft' ? '草稿（不能作为正式冻结证明）' : item.status === 'published-pilot' ? '已发布预试配置' : '已发布正式配置'} · {item.createdAt}</p>
+                <p className="break-all study-muted">文件 SHA-256：{item.sha256}</p>
+                <button disabled={busy} onClick={() => void run(() => downloadHandoff(item.id))}>重新下载交接包</button>
+              </div>)}
+            </section>
             <section className="study-card">
               <h2>冻结分析快照与导出</h2>
               <p>

@@ -36,8 +36,6 @@ async function digest(plan: StrokePlan) {
 function PlanPreview({ plan }: { plan: StrokePlan }) {
   const [count, setCount] = useState(plan.strokes.length);
   const selected = plan.strokes.slice(0, count);
-  const outlines = plan.strokes.filter((s) => s.phase === 'outline').length;
-  const large = plan.strokes.filter((s) => s.phase === 'large_color').length;
   return (
     <div>
       <svg
@@ -74,8 +72,8 @@ function PlanPreview({ plan }: { plan: StrokePlan }) {
         />
       </label>
       <div className="study-row">
-        <button onClick={() => setCount(outlines)}>仅轮廓</button>
-        <button onClick={() => setCount(outlines + large)}>加大色块</button>
+        <button onClick={() => setCount(Math.min(50, plan.strokes.length))}>前 50 笔</button>
+        <button onClick={() => setCount(Math.min(100, plan.strokes.length))}>前 100 笔</button>
         <button onClick={() => setCount(plan.strokes.length)}>完整计划</button>
       </div>
     </div>
@@ -102,10 +100,10 @@ function MaterialCard({
           />
           {result?.material && (
             <>
-              <p className="mt-3">两条件共用的简化目标</p>
+              <p className="mt-3">两条件共用的参考原图</p>
               <img
                 src={result.material}
-                alt="简化后目标"
+                alt="参考原图"
                 className="mx-auto max-h-52 border bg-white"
               />
             </>
@@ -123,7 +121,7 @@ function MaterialCard({
         <>
           <p>
             {result.checks
-              ? `${result.checks.passed && result.deterministic ? '工程检查通过' : '发现问题'} · ${result.checks.total} 笔 · 轮廓 ${result.checks.counts.outline} / 大色块 ${result.checks.counts.large_color} / 小色块 ${result.checks.counts.small_color}`
+              ? `${result.checks.passed && result.deterministic ? '工程检查通过' : '发现问题'} · ${result.checks.total} 笔 · 轮廓 ${result.checks.counts.outline} / 大色块 ${result.checks.counts.large_color} / 小色块 ${result.checks.counts.small_color} / 顺序笔触 ${result.checks.counts.paint}`
               : '未生成计划'}{' '}
             · {result.elapsedMs.toFixed(0)} ms
           </p>

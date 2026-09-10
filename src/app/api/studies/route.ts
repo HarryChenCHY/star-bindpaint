@@ -13,6 +13,8 @@ import {
 } from '@/lib/study/server/service';
 import { PROTOCOL, type StrokePlan } from '@/lib/study/protocol';
 import type { Participant, Session } from '@/lib/study/types';
+import { createHandoff } from '@/lib/study/server/handoff';
+import { pilotSnapshot, savePilotIssue, savePilotReview } from '@/lib/study/server/pilot';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 const cookieName = 'startrace-study';
@@ -66,7 +68,7 @@ function png(value: unknown) {
 }
 function validatePlan(value: unknown): asserts value is StrokePlan {
   const p = value as StrokePlan,
-    phases = ['outline', 'large_color', 'small_color'];
+    phases = ['outline', 'large_color', 'small_color', 'paint'];
   if (
     !p ||
     !Number.isInteger(p.width) ||
@@ -77,7 +79,7 @@ function validatePlan(value: unknown): asserts value is StrokePlan {
     p.height > 1024 ||
     !Array.isArray(p.strokes) ||
     p.strokes.length < 1 ||
-    p.strokes.length > 200 ||
+    p.strokes.length > PROTOCOL.maxStrokes ||
     new Set(p.strokes.map((s) => s.id)).size !== p.strokes.length
   )
     throw new Error('计划笔数或尺寸无效');
@@ -136,7 +138,26 @@ export async function GET(req: NextRequest) {
       return json({
         config: config(repo, studyId),
         report: report(repo, studyId),
+        handoffs: repo.all<{ id: string; studyId: string; createdAt: string; status: string; sha256: string }>('handoff').filter(e => e.studyId === studyId).sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 10).map(({ id, createdAt, status, sha256 }) => ({ id, createdAt, status, sha256 })),
       });
+    }
+    if (action === 'pilot') {
+      if (access !== 'admin') return json({ error: '需要研究者权限' }, 403);
+      return json(pilotSnapshot(repo));
+    }
+    if (action === 'pilotDownload') {
+      if (access !== 'admin') return json({ error: '需要研究者权限' }, 403);
+      const item = repo.get<{ path: string }>('pilot_export', req.nextUrl.searchParams.get('id') || '');
+      if (!item) return json({ error: '复盘报告不存在' }, 404);
+      return new NextResponse(new Uint8Array(repo.read(item.path)), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+    }
+    if (action === 'handoffDownload') {
+      if (access !== 'admin') return json({ error: '需要研究者权限' }, 403);
+      const item = repo.get<{ path: string; sha256: string }>('handoff', req.nextUrl.searchParams.get('id') || '');
+      if (!item) return json({ error: '交接包不存在' }, 404);
+      const bytes = repo.read(item.path);
+      if (hash(bytes) !== item.sha256) return json({ error: '交接包完整性校验失败' }, 409);
+      return new NextResponse(new Uint8Array(bytes), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Content-SHA256': item.sha256 } });
     }
     if (action === 'ratings') {
       if (!access.startsWith('rater'))
@@ -292,6 +313,10 @@ export async function POST(req: NextRequest) {
         repo.delete('export', item.id);
       }
       person.interview = null;
+      for (const item of repo.all<{ id: string; studyId: string; path: string }>('pilot_export').filter(e => e.studyId === person.studyId)) {
+        repo.remove(item.path);
+        repo.delete('pilot_export', item.id);
+      }
       repo.put('participant', person.pairId, person);
       repo.audit('withdrawal_purged', person.pairId, {
         offlineBackupsRequireReview: true,
@@ -301,6 +326,23 @@ export async function POST(req: NextRequest) {
         message:
           '已删除在线作品、会话及关联批次导出；请按备份清单处理离线副本。',
       });
+    }
+    if (b.action === 'handoffExport') {
+      if (access !== 'admin') return json({ error: '需要研究者权限' }, 403);
+      return json(createHandoff(repo, String(b.studyId)));
+    }
+    if (b.action === 'pilotExport') {
+      if (access !== 'admin') return json({ error: '需要研究者权限' }, 403);
+      const id = randomUUID(), path = `pilot-reviews/${id}.json`;
+      const snapshot = { exportedAt: new Date().toISOString(), ...pilotSnapshot(repo) };
+      const sha256 = repo.write(path, JSON.stringify(snapshot, null, 2));
+      repo.put('pilot_export', id, { id, studyId: 'novice-pilot-v1', path, sha256, createdAt: snapshot.exportedAt });
+      repo.audit('pilot_export', 'novice-pilot-v1', { id, sha256 });
+      return json({ id, sha256 });
+    }
+    if (b.action === 'pilotIssue' || b.action === 'pilotReview') {
+      if (access !== 'admin') return json({ error: '需要研究者权限' }, 403);
+      return json(b.action === 'pilotIssue' ? savePilotIssue(repo, b) : savePilotReview(repo, b));
     }
     if (b.action === 'configure' || b.action === 'publish') {
       if (access !== 'admin') return json({ error: '需要研究者权限' }, 403);
@@ -337,6 +379,7 @@ export async function POST(req: NextRequest) {
           if (!c.materialReviewed || !c.plan || !c.material)
             throw new Error('请先审核材料、计划和评分清单');
           if (c.stage === 'formal') {
+            if (!pilotSnapshot(repo).ready) throw new Error('请先完成预试看板：6 人完整流程与双人评分、实际复核，以及阻断问题修复');
             const required = [
               'pilotReviewed',
               'backupRestored',

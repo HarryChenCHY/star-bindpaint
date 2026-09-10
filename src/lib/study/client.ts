@@ -1,4 +1,5 @@
 import type { StrokePlan, StudyEvent } from './protocol';
+import { STROKE_CONFIG, type PlanningProgress } from '../stroke-config';
 export async function api<T = Record<string, unknown>>(
   body?: unknown,
   token = '',
@@ -20,6 +21,7 @@ export async function api<T = Record<string, unknown>>(
 export async function preparePlan(
   url: string,
   signal?: AbortSignal,
+  onProgress?: (progress: PlanningProgress) => void,
 ): Promise<{ plan: StrokePlan; material: string }> {
   const img = new Image();
   img.src = url;
@@ -52,6 +54,7 @@ export async function preparePlan(
       reject(new Error('规划器运行失败，请重试'));
     };
     worker.onmessage = (e) => {
+      if (e.data.type === 'progress') { onProgress?.(e.data.progress); return; }
       stop();
       if (!e.data.ok) return reject(new Error(e.data.error));
       ctx.putImageData(
@@ -67,7 +70,7 @@ export async function preparePlan(
     };
     worker.postMessage({
       source: { width: source.width, height: source.height, data: source.data },
-      budget: 180,
+      budget: STROKE_CONFIG.defaultBudget,
     });
   });
 }

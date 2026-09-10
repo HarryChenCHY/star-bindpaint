@@ -52,7 +52,7 @@ test('plan audit detects final action and ordering errors without granting human
   ];
   assert.ok(inspectPlan(long).issues.some((v) => v.includes('过长')));
   const over = plan();
-  over.strokes = Array.from({ length: 201 }, (_, i) => ({
+  over.strokes = Array.from({ length: 1001 }, (_, i) => ({
     ...over.strokes[0],
     id: String(i),
   }));

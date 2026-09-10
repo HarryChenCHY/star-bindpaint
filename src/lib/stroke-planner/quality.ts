@@ -1,13 +1,15 @@
 import type { Phase, StrokePlan } from '../study/protocol';
+import { STROKE_CONFIG } from '../stroke-config';
 
 export function inspectPlan(plan: StrokePlan) {
   const issues: string[] = [];
   const counts: Record<Phase, number> = {
+    paint: 0,
     outline: 0,
     large_color: 0,
     small_color: 0,
   };
-  const phases: Phase[] = ['outline', 'large_color', 'small_color'];
+  const phases: Phase[] = ['outline', 'large_color', 'small_color', 'paint'];
   if (
     !Number.isInteger(plan.width) ||
     !Number.isInteger(plan.height) ||
@@ -15,8 +17,8 @@ export function inspectPlan(plan: StrokePlan) {
     plan.height < 4
   )
     issues.push('画布尺寸无效');
-  if (!plan.strokes.length || plan.strokes.length > 200)
-    issues.push('最终笔数不在 1—200 范围');
+  if (!plan.strokes.length || plan.strokes.length > STROKE_CONFIG.maxBudget)
+    issues.push('最终笔数不在 1—1000 范围');
   if (new Set(plan.strokes.map((s) => s.id)).size !== plan.strokes.length)
     issues.push('笔触编号重复');
   let phase = 0,
