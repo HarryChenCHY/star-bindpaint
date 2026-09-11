@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
-import { getRepository, hash } from '@/lib/study/server/repository';
+import { getRepository, hash, StudyStorageUnavailableError } from '@/lib/study/server/repository';
 import {
   config,
   enroll,
@@ -249,6 +249,8 @@ export async function GET(req: NextRequest) {
       report: pairReport,
     });
   } catch (e) {
+    if (e instanceof StudyStorageUnavailableError)
+      return json({ error: e.message, code: 'STUDY_UNAVAILABLE' }, 503);
     return json({ error: e instanceof Error ? e.message : '读取失败' }, 400);
   }
 }
@@ -698,6 +700,8 @@ export async function POST(req: NextRequest) {
       throw new Error('未知研究操作');
     });
   } catch (e) {
+    if (e instanceof StudyStorageUnavailableError)
+      return json({ error: e.message, code: 'STUDY_UNAVAILABLE' }, 503);
     return json(
       { error: e instanceof Error ? e.message : '保存失败，请重试' },
       400,

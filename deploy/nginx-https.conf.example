@@ -1,0 +1,24 @@
+# Install only after ICP approval and a certificate have been verified.
+server {
+    listen 80;
+    server_name startracepaint.com www.startracepaint.com;
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name startracepaint.com www.startracepaint.com;
+    ssl_certificate /etc/nginx/ssl/startracepaint.com.fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/startracepaint.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    client_max_body_size 12m;
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;
+        proxy_buffering off;
+    }
+}

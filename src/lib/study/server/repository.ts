@@ -98,10 +98,20 @@ export class StudyRepository {
   }
 }
 let repository: StudyRepository | null = null;
+export class StudyStorageUnavailableError extends Error {
+  constructor(cause?: unknown) {
+    super('测试服务暂时不可用，请稍后重试或联系研究者。', { cause });
+    this.name = 'StudyStorageUnavailableError';
+  }
+}
 export function getRepository() {
   if (process.env.NODE_ENV === 'production' && !process.env.STUDY_DATA_DIR)
-    throw new Error('正式部署必须配置持久磁盘 STUDY_DATA_DIR');
-  return (repository ??= new StudyRepository(
-    process.env.STUDY_DATA_DIR || path.join(process.cwd(), 'data/studies'),
-  ));
+    throw new StudyStorageUnavailableError();
+  try {
+    return (repository ??= new StudyRepository(
+      process.env.STUDY_DATA_DIR || path.join(process.cwd(), 'data/studies'),
+    ));
+  } catch (cause) {
+    throw new StudyStorageUnavailableError(cause);
+  }
 }

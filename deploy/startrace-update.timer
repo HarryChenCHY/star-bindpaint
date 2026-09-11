@@ -1,0 +1,10 @@
+[Unit]
+Description=Check StarTrace main every minute
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=60s
+Unit=startrace-update.service
+
+[Install]
+WantedBy=timers.target

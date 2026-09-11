@@ -1,0 +1,11 @@
+[Unit]
+Description=Check main and deploy StarTrace
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/startrace-deploy
+TimeoutStartSec=3600
+Nice=10
+UMask=0077

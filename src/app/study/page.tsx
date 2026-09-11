@@ -103,7 +103,7 @@ export default function StudyPage() {
   useEffect(() => {
     void api<View>()
       .then(setView)
-      .catch((e) => setError(String(e)));
+      .catch((e) => setError(e instanceof Error ? e.message : '测试服务暂时不可用，请稍后重试。'));
     const timer = setInterval(() => setClock(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -114,7 +114,7 @@ export default function StudyPage() {
       await fn();
       await reload();
     } catch (e) {
-      setError(String(e));
+      setError(e instanceof Error ? e.message : '操作未完成，请稍后重试。');
     } finally {
       setBusy(false);
     }
@@ -153,7 +153,7 @@ export default function StudyPage() {
         {!view && !error && <p>正在读取研究状态…</p>}
         {!view && error && (
           <button className="primary" disabled={busy} onClick={() => void run(async () => {})}>
-            {busy ? '正在重试…' : '重新读取研究状态'}
+            {busy ? '正在重试…' : '重试'}
           </button>
         )}
         {view && !p && (
