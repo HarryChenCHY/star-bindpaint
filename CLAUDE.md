@@ -2,6 +2,15 @@
 
 > 项目级协作上下文。每次新对话先读取本文件。
 
+## 2026-09-11 腾讯云 CVM 部署
+
+- 用户已授权整个前后端部署腾讯云和本地 Git 推送后自动更新。新目标为 CVM `1.13.169.247`（TencentOS 3.3），SSH 主机 ED25519 指纹 `SHA256:9L3VtBtAue5eeFcFPVWTo80GHXlu3nnjVPI+iux+OQY` 已通过控制台核验。
+- `startrace.service` 使用 Podman 运行 Next.js 页面和 API；绑定 `127.0.0.1:3000`。`startrace-update.timer` 每分钟检查 GitHub main 并执行 `/usr/local/sbin/startrace-deploy`，先测试、构建、隔离健康检查，再停写备份和切换。失败保留或恢复上一镜像。
+- 正式数据 `/srv/startrace/studies`，应用内 `STUDY_DATA_DIR=/app/data/studies`；旧版统计和云作品保存使用 `STARTRACE_OBJECT_DATA_DIR=/app/data/studies/objects`，无需 OSS。口令只在服务器 `/etc/startrace.env`，禁止输出其内容。更新前备份在 `/srv/startrace/backups`，目前是同盘备份。
+- 部署脚本、服务单元和域名模板见 `deploy/`；服务器安装的管理脚本或单元修改后需维护者同步安装。main 的应用提交会自动更新，研究数据与材料不会随 Git 复制。
+- 备案仍在审核。当前通过 SSH 隧道 `ssh -N -L 3010:127.0.0.1:3000 root@1.13.169.247` 在 `http://localhost:3010` 预览云端。待实际备案号与证书确认后再启用域名 HTTPS；旧 CloudBase 默认地址仍指向旧服务，不自动切换，不删除旧环境。
+- 云端新研究库没有自动发布材料或正式研究；真人预试与材料审核仍由研究者执行。完整运维与回滚说明见 `deploy/README.md`。
+
 ## 2026-09-10 研究版改造
 
 - 用户已审核实施计划并授权“开始按计划步骤改造”；按 `论文/星迹智绘_程序改造实施计划_待审核.md` 的 P0—P7 推进，阶段交付用于预览，常规实施不重复询问授权。

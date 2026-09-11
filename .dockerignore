@@ -7,3 +7,11 @@ test-results
 playwright-report
 论文
 conversation-export.json
+docs
+deploy
+.codebuddy
+CLAUDE.md
+README.md
+**/._*
+**/.DS_Store
+*.tsbuildinfo
