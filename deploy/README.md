@@ -1,6 +1,6 @@
 # 腾讯云部署
 
-前端页面和 `/api` 后端由同一 Next.js 容器提供，运行于 CVM。研究 SQLite、作品、问卷与导出保存在 `/srv/startrace/studies`，与应用镜像独立。现有可选 OSS 接口未配置，不作为这次研究存储使用；研究材料和真人数据不随 Git 发布。
+前端页面和 `/api` 后端由同一 Next.js 容器提供，运行于 CVM。研究 SQLite、作品、问卷与导出保存在 `/srv/startrace/studies`，与应用镜像独立。旧版统计及可选云作品保存通过 `STARTRACE_OBJECT_DATA_DIR=/app/data/studies/objects` 使用同一腾讯云磁盘，不需要 OSS 账号；作品以带签名的有效期链接访问，统计后台仍需口令。研究材料和真人数据不随 Git 发布。
 
 ## 自动更新
 

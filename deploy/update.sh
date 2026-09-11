@@ -7,7 +7,7 @@ base=/srv/startrace
 repo=$base/repository.git
 mkdir -p "$base/releases" "$base/backups"
 if [[ ! -d "$repo" ]]; then
-  git clone --bare https://github.com/HarryChenCHY/star-bindpaint.git "$repo"
+  git clone --depth=1 --branch=main --bare https://github.com/HarryChenCHY/star-bindpaint.git "$repo"
 fi
 git --git-dir="$repo" fetch --depth=1 origin main
 sha=$(git --git-dir="$repo" rev-parse FETCH_HEAD)

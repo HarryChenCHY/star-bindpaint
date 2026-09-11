@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { localObjectsEnabled, listLocalObjects, readLocalObject } from '@/lib/server-object-store';
 
 type RawSession = Record<string, unknown>;
 
@@ -99,7 +100,7 @@ export async function GET(req: NextRequest) {
   const accessKeyId = process.env.OSS_ACCESS_KEY_ID;
   const accessKeySecret = process.env.OSS_ACCESS_KEY_SECRET;
 
-  if (!bucket || !accessKeyId || !accessKeySecret) {
+  if (!localObjectsEnabled() && (!bucket || !accessKeyId || !accessKeySecret)) {
     return NextResponse.json({ error: '研究数据存储尚未配置' }, { status: 503 });
   }
 
@@ -112,13 +113,13 @@ export async function GET(req: NextRequest) {
   const prefix = `sessions/${requestedDate}/`;
 
   try {
-    const fileList = (await listOssObjects(bucket, region, accessKeyId, accessKeySecret, prefix))
+    const fileList = (await (localObjectsEnabled() ? listLocalObjects(prefix) : listOssObjects(bucket!, region, accessKeyId!, accessKeySecret!, prefix)))
       .filter(key => key.endsWith('.json') && !key.endsWith('-render.json'));
     const rawSessions: RawSession[] = [];
 
     for (const key of fileList) {
       try {
-        const json = await getOssObject(bucket, region, accessKeyId, accessKeySecret, key);
+        const json = localObjectsEnabled() ? (await readLocalObject(key)).toString('utf8') : await getOssObject(bucket!, region, accessKeyId!, accessKeySecret!, key);
         const parsed = JSON.parse(json) as RawSession;
         if (parsed.recordType !== 'render') rawSessions.push(parsed);
       } catch {

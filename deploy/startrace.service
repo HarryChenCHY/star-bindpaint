@@ -7,7 +7,7 @@ RequiresMountsFor=/srv/startrace/studies
 [Service]
 Type=simple
 ExecStartPre=/usr/bin/test -d /srv/startrace/studies
-ExecStart=/usr/bin/podman run --rm --name startrace --pull=never --env-file /etc/startrace.env --env NODE_ENV=production --env STUDY_DATA_DIR=/app/data/studies --publish 127.0.0.1:3000:3000 --volume /srv/startrace/studies:/app/data/studies:Z localhost/startrace:current
+ExecStart=/usr/bin/podman run --rm --name startrace --pull=never --env-file /etc/startrace.env --env NODE_ENV=production --env STUDY_DATA_DIR=/app/data/studies --env STARTRACE_OBJECT_DATA_DIR=/app/data/studies/objects --publish 127.0.0.1:3000:3000 --volume /srv/startrace/studies:/app/data/studies:Z localhost/startrace:current
 ExecStop=/usr/bin/podman stop --time 30 startrace
 Restart=on-failure
 RestartSec=5

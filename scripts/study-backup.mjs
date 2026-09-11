@@ -32,7 +32,7 @@ try {
 } finally {
   db.close();
 }
-for (const folder of ['artworks', 'raw', 'exports', 'pilot-reviews', 'handoffs'])
+for (const folder of ['artworks', 'raw', 'exports', 'pilot-reviews', 'handoffs', 'objects'])
   if (existsSync(join(source, folder)))
     cpSync(join(source, folder), join(destination, folder), {
       recursive: true,

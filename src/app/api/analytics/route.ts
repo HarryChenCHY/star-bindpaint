@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { localObjectsEnabled, putLocalObject, listLocalObjects, deleteLocalObject } from '@/lib/server-object-store';
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -91,11 +92,12 @@ export async function POST(req: NextRequest) {
     if (!record) return NextResponse.json({ error: '缺少有效的研究授权或匿名编号' }, { status: 403 });
 
     const storage = getStorageConfig();
-    if (!storage) return NextResponse.json({ ok: true, stored: false });
+    if (!storage && !localObjectsEnabled()) return NextResponse.json({ ok: true, stored: false });
     const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
     const suffix = record.recordType === 'render' ? '-render' : '';
     const path = `sessions/${date}/${record.participantId}/${record.sessionId}${suffix}.json`;
-    await putObject(storage, path, JSON.stringify(record), 'application/json');
+    if (localObjectsEnabled()) await putLocalObject(path, JSON.stringify(record));
+    else await putObject(storage!, path, JSON.stringify(record), 'application/json');
     return NextResponse.json({ ok: true, stored: true });
   } catch (error) {
     console.error('[/api/analytics] request failed:', error instanceof Error ? error.name : 'unknown');
@@ -115,11 +117,15 @@ export async function DELETE(req: NextRequest) {
     if (!participantId || body.confirm !== true) return NextResponse.json({ error: '删除请求无效' }, { status: 400 });
 
     const storage = getStorageConfig();
-    if (!storage) return NextResponse.json({ ok: true, deleted: 0, storageConfigured: false });
-    const sessionKeys = (await listObjects(storage, 'sessions/')).filter(key => key.includes(`/${participantId}/`));
-    const galleryKeys = await listObjects(storage, `gallery/${participantId}/`);
+    if (!storage && !localObjectsEnabled()) return NextResponse.json({ ok: true, deleted: 0, storageConfigured: false });
+    const list = (prefix: string) => localObjectsEnabled() ? listLocalObjects(prefix) : listObjects(storage!, prefix);
+    const sessionKeys = (await list('sessions/')).filter(key => key.includes(`/${participantId}/`));
+    const galleryKeys = await list(`gallery/${participantId}/`);
     const keys = [...sessionKeys, ...galleryKeys];
-    for (const key of keys) await deleteObject(storage, key);
+    for (const key of keys) {
+      if (localObjectsEnabled()) await deleteLocalObject(key);
+      else await deleteObject(storage!, key);
+    }
     return NextResponse.json({ ok: true, deleted: keys.length });
   } catch (error) {
     console.error('[/api/analytics] deletion failed:', error instanceof Error ? error.name : 'unknown');

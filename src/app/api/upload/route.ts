@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { localObjectsEnabled, putLocalObject, localObjectUrl, readLocalObject, validObjectSignature } from '@/lib/server-object-store';
 
 const MAX_IMAGE_BYTES = 6 * 1024 * 1024;
 const MAX_BODY_BYTES = 8_500_000;
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
     const region = process.env.OSS_REGION || 'oss-cn-shanghai';
     const accessKeyId = process.env.OSS_ACCESS_KEY_ID;
     const accessKeySecret = process.env.OSS_ACCESS_KEY_SECRET;
-    if (!bucket || !accessKeyId || !accessKeySecret) return NextResponse.json({ fallback: true });
+    if (!localObjectsEnabled() && (!bucket || !accessKeyId || !accessKeySecret)) return NextResponse.json({ fallback: true });
 
     const participantId = typeof body.participantId === 'string' && PARTICIPANT_PATTERN.test(body.participantId)
       ? body.participantId
@@ -38,8 +39,13 @@ export async function POST(req: NextRequest) {
     const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
     const fileId = crypto.randomBytes(12).toString('hex');
     const path = `gallery/${participantId}/${date}/${fileId}.${extension}`;
+    if (localObjectsEnabled()) {
+      const url = localObjectUrl(path);
+      await putLocalObject(path, buffer);
+      return NextResponse.json({ url, path });
+    }
     const dateHeader = new Date().toUTCString();
-    const signature = crypto.createHmac('sha1', accessKeySecret)
+    const signature = crypto.createHmac('sha1', accessKeySecret!)
       .update(`PUT\n\n${contentType}\n${dateHeader}\n/${bucket}/${path}`)
       .digest('base64');
     const endpoint = `https://${bucket}.${region}.aliyuncs.com/${path}`;
@@ -60,13 +66,27 @@ export async function POST(req: NextRequest) {
     }
 
     const expires = Math.floor(Date.now() / 1000) + 30 * 24 * 3600;
-    const signed = crypto.createHmac('sha1', accessKeySecret)
+    const signed = crypto.createHmac('sha1', accessKeySecret!)
       .update(`GET\n\n\n${expires}\n/${bucket}/${path}`)
       .digest('base64');
-    const url = `${endpoint}?OSSAccessKeyId=${encodeURIComponent(accessKeyId)}&Expires=${expires}&Signature=${encodeURIComponent(signed)}`;
+    const url = `${endpoint}?OSSAccessKeyId=${encodeURIComponent(accessKeyId!)}&Expires=${expires}&Signature=${encodeURIComponent(signed)}`;
     return NextResponse.json({ url, path });
   } catch (error) {
     console.error('[/api/upload] request failed:', error instanceof Error ? error.name : 'unknown');
     return NextResponse.json({ error: '作品保存服务暂不可用' }, { status: 500 });
+  }
+}
+
+export async function GET(req: NextRequest) {
+  const query = req.nextUrl.searchParams;
+  try {
+    const key = query.get('key') || '';
+    if (!localObjectsEnabled() || !validObjectSignature(key, Number(query.get('expires')), query.get('signature') || ''))
+      return NextResponse.json({ error: '作品链接无效或已过期' }, { status: 403 });
+    const data = await readLocalObject(key);
+    const type = key.endsWith('.png') ? 'image/png' : key.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
+    return new NextResponse(new Uint8Array(data), { headers: { 'Content-Type': type, 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' } });
+  } catch {
+    return NextResponse.json({ error: '作品暂不可用' }, { status: 404 });
   }
 }
