@@ -7,10 +7,19 @@ base=/srv/startrace
 repo=$base/repository.git
 mkdir -p "$base/releases" "$base/backups"
 if [[ ! -d "$repo" ]]; then
-  git clone --depth=1 --branch=main --bare https://github.com/HarryChenCHY/star-bindpaint.git "$repo"
+  git init --bare "$repo"
+  git --git-dir="$repo" remote add origin https://github.com/HarryChenCHY/star-bindpaint.git
 fi
-git --git-dir="$repo" fetch --depth=1 origin main
-sha=$(git --git-dir="$repo" rev-parse FETCH_HEAD)
+source_mode=git
+if timeout 45 git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=20 --git-dir="$repo" fetch --depth=1 origin main; then
+  sha=$(git --git-dir="$repo" rev-parse FETCH_HEAD)
+else
+  # GitHub's official API and archive endpoint use a separate network route.
+  source_mode=archive
+  sha=$(curl --fail --silent --show-error --connect-timeout 8 --max-time 20 \
+    https://api.github.com/repos/HarryChenCHY/star-bindpaint/git/ref/heads/main \
+    | python3 -c 'import json,sys; print(json.load(sys.stdin)["object"]["sha"])')
+fi
 [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
 if [[ -f "$base/deployed-commit" ]] && [[ "$(<"$base/deployed-commit")" == "$sha" ]]; then exit 0; fi
 if [[ -f "$base/failed-commit" ]] && [[ "$(<"$base/failed-commit")" == "$sha" ]]; then
@@ -18,7 +27,13 @@ if [[ -f "$base/failed-commit" ]] && [[ "$(<"$base/failed-commit")" == "$sha" ]]
   exit 0
 fi
 release=$(mktemp -d "$base/releases/$sha.XXXXXX")
-git --git-dir="$repo" archive "$sha" | tar -x -C "$release"
+if [[ "$source_mode" == git ]]; then
+  git --git-dir="$repo" archive "$sha" | tar -x -C "$release"
+else
+  curl --fail --silent --show-error --connect-timeout 8 --max-time 180 --retry 2 \
+    "https://codeload.github.com/HarryChenCHY/star-bindpaint/tar.gz/$sha" \
+    | tar -xz --strip-components=1 -C "$release"
+fi
 image=localhost/startrace:$sha
 if ! podman build --format docker --memory=1400m --memory-swap=3g --pull-never -t "$image" "$release"; then
   printf '%s\n' "$sha" > "$base/failed-commit"

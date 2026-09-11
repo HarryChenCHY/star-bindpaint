@@ -19,6 +19,8 @@ curl --fail http://127.0.0.1:3000/api/studies
 
 ## 数据和回滚
 
+Git 下载超时后，部署脚本改用 GitHub 官方 API 查询 main 的完整提交号，并从官方 codeload 下载该提交的源码。两条网络路径都失败时保留正在运行的版本，下一轮再次检查。公开 API 有调用限额，限流期间同样等待后续重试，不绕过版本校验。
+
 更新前自动停写并备份到 `/srv/startrace/backups`，仅限 root 访问。这是同盘备份，不能抵御整盘丢失；后续可启用腾讯云快照或 COS 异地备份（需单独配置资源）。备份与构建缓存暂不自动删除，应监控磁盘并按研究保留期管理。
 
 紧急停止自动更新：`systemctl stop startrace-update.timer`。`previous-image` 保存上一镜像 ID，人工核对后可将该镜像重新标记为 `localhost/startrace:current` 并重启 `startrace.service`。旧镜像不自动删除。
