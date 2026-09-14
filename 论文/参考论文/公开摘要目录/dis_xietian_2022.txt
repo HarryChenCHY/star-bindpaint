@@ -1,0 +1,125 @@
+来源：https://www.daelab.cn/dis_xietian_2022/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+跨VR多设备应用的用户体验一致性研究 —— 以VR严肃游戏《镜头语言虚拟实验》为例
+A study on the consistency of UX in multi-device applications including VR:
+take a VR serious game " Virtual Experiment of Film Language " as an example
+谢　天
+关 键 词:
+一致性，多设备，虚拟现实，用户体验，交互设计
+Keywords:
+Consistency, Multi-device, Virtual Reality, User Experience, Interaction Design
+摘 要
+随着信息技术的深入发展，个人电脑、智能手机、VR头显等智能设备在现代社会的普及率越来越高，与这些智能设备的互动交流成为人们日常生活中必不可少的环节。许多人会使用多种设备来完成同一项任务，这种行为给多设备应用设计带来了一定的挑战。设计师须根据智能设备的差异，让应用在不同设备上仍然提供合适且一致的用户体验。然而，现有针对多设备用户体验的研究缺乏比较公认的一致性设计方法。此外，现有研究大多集中在如何保持移动端和PC端应用之间的一致性。随着VR技术的快速发展，VR已在不少领域得到了广泛的应用。而基于VR端的应用设计方式与传统的基于2D屏幕端的设计有很大不同，如何保持VR端和其他设备端的一致性是一个亟待解决的问题。
+本文在对前人关于多设备应用体验一致性的理论调研之后，提出了一套针对多设备设计情境的一致性目标框架。该框架主要包含了“语义一致性”、“句法一致性”、“感知一致性”和“词法一致性”这四个层次。基于此目标框架，提出了一套用于指导多设备一致性设计实践的设计流程以及对应的设计方法。具体的设计方法主要包括“基于约束的设计”和“基于关键变量的设计”。
+基于该设计方法，以多设备用户体验一致性为目标，针对严肃游戏《镜头语言虚拟实验》开展了设计实践。设计并开发了该严肃游戏VR端、PC端和移动端的原型。基于一致性目标框架，阐述了各一致性层次下的设计思考，并详细讨论了本案例中针对VR特性所进行的交互优化。最后，通过实验开展了针对该严肃游戏的多设备体验一致性评估。该实验招募了20名参与者来体验《镜头语言虚拟实验》的VR、PC和移动端版本。实验结果表明，《镜头语言虚拟实验》的多设备体验一致性符合预期要求。该实验结果进一步证明了本文提出的一致性目标框架和设计方法的有效性。该目标框架和设计方法可帮助设计师开展以多设备一致性为目标的应用设计实践，提高可用性和用户的使用体验。
+Abstract
+With the development of information technology, smart devices such as personal computers, smartphones and VR headsets are becoming more and more popular in modern society, and interactive communication with these smart devices has become an essential part of people’s daily life. Many people will use multiple devices to accomplish a same task, and this behavior brings certain challenges to multi-device application design. Designers need to make applications that provide an appropriate and consistent user experience across devices in response to the characteristics of these devices. However, existing research on multi-device user experience lacks a generally accepted approach to consistent design. In addition, most of the existing research has focused on how to maintain consistency between mobile and PC. With the rapid development of VR technology, VR has been widely used in many fields. The design approach for VR applications is very different from the traditional 2D screen-based design, thus how to maintain the consistency between VR and other devices is an urgent problem to be solved.
+In this paper, after investigating the theories of consistency of multi-device application experience, we propose a set of consistency target framework for multi-device design contexts. The framework mainly contains four levels: “semantic consistency”, “syntactic consistency”, “perceptual consistency” and “lexical consistency”. Based on this framework, a design process and the corresponding design methods are proposed to guide the multi-device consistency design practice. The specific design methods include “constraint-based design” and “highway-based design”.
+Based on this design process, the design practice is carried out for the serious game “Virtual Experiment of Film Language” with the goal of consistent user experience on multiple devices. We designed and developed prototypes of VR, PC and mobile versions of this serious game. Based on the consistency target framework, the design consideration under each consistency level is elaborated, and the interaction optimization for VR in this case is discussed in detail. Finally, a multi-device consistency evaluation for this serious game was conducted through an experiment. The experiment recruited 20 participants to experience the VR, PC and mobile versions of “Virtual Experiment of Film Language”. The experimental results show that the consistency of the multi-device experience of this serious game meets the expected requirements. The results of this experiment further demonstrate the effectiveness of the consistency target framework and the design process proposed in this paper. This target framework and design process can help designers to design application that target multi-device consistency and improve usability and user experience.
+目 录 · Contents
+第1章 引言
+1.1 研究背景
+1.2 研究问题与目标
+1.3 研究内容
+1.4 研究方法与技术路线
+1.5 研究意义
+1.6 本文结构
+第2章 文献综述
+2.1 虚拟现实与严肃游戏
+2.2 一致性
+2.3 多设备应用设计与一致性
+2.3.1 多设备应用设计的现状
+2.3.2 多设备应用设计下一致性的重要性
+2.3.3 多设备应用设计一致性的相关理论与实践
+2.3.4 多设备应用一致性的评价方法
+2.4 本章小结
+第3章 一致性设计框架与方法
+3.1 理论基础
+3.1.1 一致性分层的理论基础
+3.1.2 CUID设计流程和基于约束的设计
+3.2 多设备一致性目标框架
+3.2.1 一致性各个层次的内容发展
+3.2.2 四个一致性层级的顺序
+3.3 保持多设备体验一致性的设计方法
+3.3.1 设计流程
+3.3.2 基于约束的设计
+3.3.3 不同设备（含VR）自身的约束
+3.3.4 各个设备（含VR）的界面控制方法
+3.4 本章小结
+第4章 一致性设计实践
+4.1 案例分析
+4.1.1 跨PC和VR端的游戏
+4.1.2 对于现有的严肃游戏的用户访谈
+4.2 设计背景
+4.2.1 案例概述
+4.2.2 流程介绍
+4.2.3 产品功能
+4.3 设计概览
+4.3.1 PC端
+4.3.2 VR端
+4.3.3 移动端
+4.3.4 总结
+4.4 一致性梳理
+4.4.1 语义一致性
+4.4.2 句法一致性
+4.4.3 感知一致性
+4.4.4 词法一致性
+4.5 对于VR版的设计优化
+4.5.1 VR设计的一般原则
+4.5.2 近场交互与手势交互
+4.5.3 VR点击流程
+4.5.4 针对VR射线的优化
+4.5.5 射线光标的远近缩放
+4.5.6 UI控件的点击反馈
+4.5.7 VR下的帮助
+4.5.8 VR相机界面的稳定
+4.6 设计总结
+4.7 本章小结
+第5章 设计验证与评价
+5.1 开发实现
+5.1.1 工具选择
+5.1.2 整体结构
+5.1.3 功能点介绍
+5.2 实验方案设计
+5.2.1 实验流程介绍
+5.2.2 实验流程说明
+5.3 实验结果分析
+5.3.1 SUS量表结果分析
+5.3.2 UEQ量表结果分析
+5.3.3 跨平台可用性量表结果分析
+5.3.4 一致性问卷结果分析
+5.3.5 行为记录和访谈结果分析
+5.3.6 结论
+5.4 本章小结
+第6章 总结与展望
+6.1 研究成果总结
+6.2 后续展望
+参考文献
+附录A SUS量表
+附录B 短UEQ量表
+附录C 跨平台可用性量表
+附录D 一致性问卷
+附录E 访谈大纲
+致谢
+个人简历、在读期间发表的学术成果
+部 分 插 图 · Figures
+dis_xietian_2022_01
+dis_xietian_2022_02
+dis_xietian_2022_03
+dis_xietian_2022_04
+dis_xietian_2022_05
+dis_xietian_2022_06
+dis_xietian_2022_07
+dis_xietian_2022_08
+dis_xietian_2022_09
+dis_xietian_2022_10
+dis_xietian_2022_11
+dis_xietian_2022_12
+dis_xietian_2022_13
+dis_xietian_2022_14
+dis_xietian_2022_15
+dis_xietian_2022_16
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

@@ -1,0 +1,127 @@
+来源：https://www.daelab.cn/dis_lilinjian_2023/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+基于视觉注意机制的战斗机下视显示界面布局设计研究
+Research on Aircraft Head Down Display Interface Layout Design Based on Visual
+Attention Mechanism
+李林键
+关 键 词:
+战斗机显示系统，下视显示界面，视觉注意机制，界面布局
+Keywords:
+Aircraft Display System，Head Down Display Interface，Visual Attention
+Mechanism, Interface Layout
+摘 要
+在航空技术推动下，战斗机作战性能不断提升，使得未来天空战场态势变得愈加复杂。回顾历代战斗机下视显示界面发展，从最早的机械仪表到现代的电子显示器，一体式大屏幕显示已成为未来发展趋势。随着战斗机性能提高，飞行员面临的信息量也在急剧增加，其中70%的信息来源于视觉。因此，基于视觉注意机制探索下视显示界面交互布局设计以增强飞行员信息获取能力具有实际意义。
+视觉注意机制是指视觉在处理信息时，通过选择性地集中注意力，将有限的认知资源分配到感兴趣的区域，以提高信息处理效率和准确性。视觉注意机制具备主动性、被动性、选择性和分配性特点，以及基于空间、特征和客体的视觉认知形式。界面布局是指将待布置信息按设计目标置于界面内，在一定约束条件下使得各信息之间互不干扰。下视显示界面主要分为导航区域集成显控信息和任务显示区域两部分，运用不同空间配置显示操作信息。
+本研究基于以上视觉注意机制特性，提出了四个战斗机下视显示界面布局设计原则：唯一性、特异性、客体性和稳健性。唯一性原则要求保证初始状态、视觉关注重点、功能显示状态和特征形式的唯一性；特异性原则强调在特殊情境下显示信息与唯一性区分，有效利用视觉被动性吸引注意力，并适当运用提示信息提前告知变化；客体性原则要求与飞行环境相匹配，以任务为导向，熟悉操作后允许飞行员自主设定界面布局形式；稳健性原则需要在紧急状态下能准确传达信息，使用备份信息降低错误率，并根据需求以合适的方式呈现信息。这四个原则在应用时并不是独立存在的，而是相辅相成的。
+为了验证这些设计原则有效性，本研究系统梳理了界面显示信息和飞行任务，并提取了显示信息的优先级。战斗机不同经典飞行阶段的信息显示优先级不同，可以通过界面布局来强调和表现侧重点。因此，本研究基于起飞、巡航、作战和山地巡航阶段的飞行任务对界面进行了布局设计。然后，基于二自由度平台、 HTC Vive Pro VR 头戴式显示设备和莱仕达双翼 PXN-2119 飞行摇杆搭建了4DVR飞行模拟系统，并使用跨平台引擎Unity开发。在模拟飞行系统中，战斗机首先起飞，离地一定高度后依次到达巡航目标点，完成巡航任务。随后，在空中遭遇敌机，进入战斗模式。作为巡航目的的战机，并未携带攻击性武器，需要进入山地，利用山地余波干扰敌机雷达，躲避追踪。
+本研究通过两个实验对设计原则进行验证。实验一旨在研究下视显示界面布局设计和视觉注意关联性，验证设计原则能提升信息获取效率。实验设定为战斗机在飞行过程中出现发动机异常，需要显示发动机异常信息。通过对60名被试进行实验，获得了反应时间和正确率的定量数据。对数据进行T检验分析可得，两组反应时间存在显著差异，正确率并不显著，运用特异性原则的界面信息获取效率更高。
+实验二基于前文的界面布局和4DVR飞行模拟系统进行实验，目的是验证基于设计原则进行界面布局能有效把控信息获取效率。告警作为特殊情境，既能展示经典界面布局，又要合理呈现告警信息，适合用来探索信息获取效率。实验运用任务绩效测量法和主观评价测量法，辅以半结构访谈进行评估。对23名被试进行实验，操作界面任务时，会自动记录数据。完成后，被试填写量表，接受采访。实验分两组进行对比，数据采集和分析方式与实验一相同。实验数据分析可得出第一组全局示警和局部提示具备显著性差异，而第二组细节注意和弹窗注意不具备显著性。量表结果显示，运用细节注意比弹窗注意认知负荷小。使用全局示警，被试对任务满意度高，但经常使用，会增加认知负荷。局部提示适用于不需要立即处理的提示类信息。访谈结果表明信息提示也要提出解决方案，并在解决后给予反馈。
+综上所述，本研究通过两个实验验证了基于视觉注意机制的战斗机下视显示界面设计原则能有效把控信息获取效率。然后根据本研究提出的设计原则和实验结果分析，从概念设计角度设计战斗机下视显示界面布局，并搭载到4DVR飞行模拟系统上。从视觉注意机制层面设计战斗机下视显示界面布局，能对未来战斗机座舱下视界面设计提供一定程度有意义的启示。
+Abstract
+Driven by advances in aviation technology, the operational performance of fighter aircraft is constantly improving, making the future aerial battlefield increasingly complex. Looking back at the development of head down display interfaces in fighter aircraft, from the earliest mechanical instruments to modern electronic displays, integrated large-screen displays have become the trend for future development. As the performance of fighter aircraft improves, the amount of information pilots face is rapidly increasing, with 70% of the information coming from visual sources. Therefore, it is of practical significance to explore the interaction layout design of head down display interfaces based on visual attention mechanisms to enhance pilots’ information acquisition capabilities.
+Visual attention mechanisms refer to the selective concentration of attention in visual information processing, allocating limited cognitive resources to areas of interest to improve information processing efficiency and accuracy. Visual attention mechanisms possess characteristics of initiative, passivity, selectivity, and allocative, as well as visual cognition forms based on space, features, and objects. Interface layout refers to placing the information to be arranged within the interface according to design goals, ensuring that the information does not interfere with each other under certain constraints. The head down display interface is mainly divided into two parts: the navigation area integrated with display control information and the task display area, displaying operational information using different spatial configurations.
+Based on the characteristics of the aforementioned visual attention mechanisms, this study proposes four design principles for fighter aircraft head-down display interface layout: uniqueness, specificity, objectivity, and robustness. The principle of uniqueness requires ensuring the uniqueness of the initial state, visual attention focus, functional display state, and feature form; the principle of specificity emphasizes displaying information distinct from uniqueness in special situations, effectively utilizing visual passivity to attract attention and appropriately using prompting information to inform changes in advance; the principle of objectivity requires matching with the aircraft environment, being task-oriented, and allowing pilots to autonomously set the interface layout form after familiar operation; the principle of robustness requires accurately conveying information in emergency situations, using backup information to reduce error rates, and presenting information in an appropriate manner according to needs. These four principles are not independent but complementary in application.
+To verify the effectiveness of these design principles, this study systematically sorted out the interface display information and aircraft tasks and extracted the priority of the display information. The information display priorities of different classic aircraft stages of fighter aircraft vary, and the emphasis can be emphasized and expressed through interface layout. Therefore, this study conducted layout design for the interface based on aircraft tasks in the takeoff, cruise, combat, and mountain cruise stages. Then, a 4DVR aircraft simulation system was built using a two degree of freedom platform, HTC Vive Pro VR head mounted display device, and Lesida dual wing PXN-2119 aircraft joystick, and developed using the cross platform engine Unity. In the aircraft simulation system, the fighter aircraft takes off, reaches a certain height above the ground, and sequentially reaches the cruise target points, completing the cruise task. Subsequently, enemy aircraft are encountered in the air, entering combat mode. As a cruise oriented fighter, it does not carry offensive weapons and needs to enter the mountains, using mountain residual waves to interfere with enemy aircraft radar and evade pursuit.
+This study conducted two experiments to verify the design principles. Experiment 1 aimed to investigate the correlation between head down display interface layout design and visual attention, verifying that the design principles can improve information acquisition efficiency. The experimental setting was that the fighter aircraft experienced engine abnormalities during aircraft, requiring the display of engine abnormality information. Through experiments with 60 subjects, quantitative data on reaction time and accuracy were obtained. T-test analysis of the data showed that there were significant differences in reaction time between the two groups, but not in accuracy, and the interface with the specificity principle had higher information acquisition efficiency.
+Experiment 2 was based on the previous interface layout and 4DVR aircraft simulation system, aiming to verify that the interface layout based on design principles can effectively control information acquisition efficiency. Alarms, as special situations, can both display the classic interface layout and reasonably present alarm information, making them suitable for exploring information acquisition efficiency. The experiment used task performance measurement and subjective evaluation measurement methods, supplemented by semi-structured interviews for evaluation. 23 subjects were tested, and data were automatically recorded when operating the interface task. After completion, the subjects filled out questionnaires and participated in interviews. The experiment was conducted in two groups for comparison, with data collection and analysis methods similar to Experiment 1. The experimental data analysis showed that the first group had significant differences in global warning and local prompt, while the second group did not have significant differences in detail attention and pop up attention. The questionnaire results showed that using detail attention had a smaller cognitive load than pop up attention. Using global warning, subjects were more satisfied with the task, but frequent use would increase cognitive load. Local prompts are suitable for prompt-type information that does not need to be processed immediately. The interview results indicated that information prompts should also propose solutions and provide feedback after resolution.
+In summary, this study verified through two experiments that the design principles of fighter aircraft head-down display interfaces based on visual attention mechanisms can effectively control information acquisition efficiency. Then, based on the design principles and experimental results proposed in this study, the layout of the fighter aircraft’s downward display interface was designed from a conceptual design perspective and loaded onto a 4DVR aircraft simulation system. Designing the layout of the fighter aircraft head down display interface from the perspective of visual attention mechanisms can provide meaningful insights for the future design of fighter aircraft cockpit head down interfaces.
+目 录 · Contents
+第1章 引言
+1.1 研究对象与背景
+1.1.1 研究对象
+1.1.2 研究背景
+1.2 国内外研究现状
+1.2.1 战斗机下视显示界面发展综述
+1.2.2 下视显示界面等显示系统设计研究综述
+1.2.3 基于视觉注意机制的显示系统设计研究
+1.3 目前战斗机显示界面存在的问题
+1.4 研究目的和内容
+1.5 研究方法
+1.6 研究路线和结构安排
+1.6.1 研究路线
+1.6.2 论文结构安排
+第2章 战斗机下视显示界面设计与视觉注意机制基础理论概述
+2.1 下视显示界面系统概述
+2.1.1 下视显示技术和界面发展概述
+2.1.2 下视显示屏幕一体化发展趋势
+2.1.3 战斗机下视显示界面设计现状分析
+2.2 视觉特性研究
+2.2.1 人类视觉系统
+2.2.2 与下视显示界面相关的视觉特性
+2.3 战斗机下视显示界面的视觉注意机制运用研究
+2.3.1 视觉注意机制概述
+2.3.2 下视显示界面的视觉注意机制运用
+2.4 本章小结
+第3章 基于视觉注意机制的下视显示界面布局设计原则
+3.1 战斗机下视显示界面的视觉注意特性
+3.1.1 界面交互的视觉注意特性
+3.1.2 视觉注意的认知形式
+3.2 战斗机界面布局的必要性和结构研究
+3.2.1 下视显示界面布局设计必要性
+3.2.2 战斗机交互界面布局结构
+3.3 战斗机下显示界面布局设计原则
+3.3.1 唯一性
+3.3.2 特异性
+3.3.3 客体性
+3.3.4 稳健性
+3.3.5 设计原则应用
+3.4 本章小结
+第4 章战斗机下视显示界面布局设计应用
+4.1 战斗机显示信息和飞行任务分析
+4.1.1 战斗机显示信息
+4.1.2 飞行任务分析
+4.2 战斗机下视显示界面布局设计
+4.3 4DVR 战斗机模拟飞行系统
+4.3.1 开发工具
+4.3.2 场景设计和战斗机建模呈现
+4.3.3 虚拟仿真流程设计
+4.3.4 硬件输入系统和飞行交互实现
+4.3.5 针对虚拟仿真场景的优化
+4.4 本章小结
+第5章 战斗机下视显示界面布局实验研究
+5.1 实验一：基于视觉注意机制设计界面布局实验
+5.1.1 实验目的
+5.1.2 实验假设
+5.1.3 实验材料
+5.1.4 实验实施
+5.1.5 实验数据分析
+5.1.6 结论与讨论
+5.2 实验二：基于4DVR 战斗机模拟飞行平台的界面布局实验
+5.2.1 实验目的
+5.2.2 实验假设
+5.2.3 实验设计
+5.2.4 实验实施
+5.2.5 实验数据分析
+5.2.6 实验结果讨论
+5.2.7 实验结论
+5.3 下视显示界面概念设计方案
+5.4 本章小结
+第6章 结论与展望
+6.1 研究成果结论
+6.2 研究展望
+参考文献
+附录A NASA-TLX 量表
+附录B 访谈大纲
+附录C 毕业展览
+致谢
+个人简历、在读期间发表的学术成果
+部 分 插 图 · Figures
+dis_lilinjian_2023_01
+dis_lilinjian_2023_02
+dis_lilinjian_2023_03
+dis_lilinjian_2023_04
+dis_lilinjian_2023_05
+dis_lilinjian_2023_06
+dis_lilinjian_2023_07
+dis_lilinjian_2023_08
+dis_lilinjian_2023_09
+dis_lilinjian_2023_10
+dis_lilinjian_2023_11
+dis_lilinjian_2023_12
+dis_lilinjian_2023_13
+dis_lilinjian_2023_14
+dis_lilinjian_2023_15
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

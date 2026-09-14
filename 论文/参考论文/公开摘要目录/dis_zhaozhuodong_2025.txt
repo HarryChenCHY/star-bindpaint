@@ -1,0 +1,143 @@
+来源：https://www.daelab.cn/dis_zhaozhuodong_2025/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+同地VR中面向联合行动的虚拟移动设计研究
+Research on Virtual Locomotion Design Targeting Joint Action in Co-Located Collaborative Virtual Reality
+赵茁栋
+关 键 词:
+同地VR，虚拟移动，空间失同步，联合行动，沉浸式协作
+Keywords:
+Co-located VR, Virtual Locomotion, Spatial Desynchronization，Joint Action, Immersive Collaboration
+摘 要
+随着硬件与网络技术的进步，虚拟现实（VR）技术的应用不断从单个用户的沉浸体验逐步拓展到多个用户之间的协作与交互。多人VR在教育、医疗、工业、娱乐等诸多领域展现了显著的应用价值。而近年来，同地VR（Co-located VR）又成为多人VR领域当中备受关注的新兴主题之一。同地VR使得多个用户能够在同一个物理空间中共同体验一个虚拟环境，从而能够显著增强VR用户的社交临场感和彼此感知，是一种具有巨大应用潜力的多人VR类型。
+然而，目前同地VR的应用却由于虚拟移动技术的局限始终受到物理环境的约束，并面临空间失同步（Spatial Desynchronization）效应的挑战：空间失同步指的是同地VR用户的物理真身在现实环境中的相对位置与朝向，与其虚拟化身在VR环境中的相对位置与朝向不一致的现象。这会显著影响用户在VR中对彼此位置的感知与判断，从而损害用户体验，甚至产生碰撞等安全性问题。现有的同地VR虚拟移动方案为了应对物理约束，规避空间失同步，往往使得群组结构难以灵活地动态调整，从而造成多人协作模式单一，未能充分挖掘同地VR在多人协作场景中的应用潜力。
+现有的许多研究已经在交互设计、用户体验和计算机算法等领域对同地VR及其虚拟移动技术展开了探索，但鲜有研究关注如何在同地VR中支持联合行动的开展——尽管联合行动对人类协作行为或社会性集体行为至关重要。现有研究主要集中于如何避免虚拟移动过程中引发的碰撞，而对于如何有效支持虚拟移动过程中联合行动的开展以及如何应对空间失同步效应的发生，仍缺乏针对性的研究。
+因此，本研究旨在为同地VR中的联合行动提出一套虚拟移动系统的设计框架，并根据该策略开发适用于同地VR协作场景的虚拟移动方案。为此，本研究首先基于联合行动的相关理论，分析并构建了面向联合行动的群组移动行为的发展流程与行为模式，从中提炼出支持联合行动开展的虚拟移动核心功能。同时，通过对同地VR环境设计的研究和用户调研，明确了同地VR环境下，虚拟移动系统的设计要素与用户体验目标，并将两者有机整合形成完整的设计框架，并提出了一套以“空间重校准”机制为核心的空间失同步应对方案。最终基于这一设计框架完成了交互原型的设计、开发以及后续的用户测试。
+通过对交互原型的测试，研究验证了所提出设计框架在支持同地VR中联合行动方面的有效性，证实了该系统在同地VR环境中的良好的可用性和易用性。最后，本研究总结梳理了该设计框架在未来可行且有价值的优化方向，为进一步提升同地VR系统的功能丰富度和用户体验提供了理论依据和实践建议。
+本研究为同地VR中面向联合行动的虚拟移动系统设计提供了创新的理论研究视角和实用的设计框架，为同地VR技术在各行业中的应用的发展提供了有价值的参考。
+Abstract
+With advancements in hardware and network technology, the application of Virtual Reality (VR) has gradually expanded from individual immersive experiences to collaborative interactions among multiple users. Multi-user VR has shown significant application value in various fields, such as education, healthcare, industry, and entertainment. In recent years, Co-located VR has become one of the emerging and highly focused topics within the multi-user VR domain. Co-located VR enables multiple users to experience a virtual environment together within the same physical space, significantly enhancing social presence and mutual perception among VR users, making it a highly promising multi-user VR type with great potential.
+However, the current application of Co-located VR remains constrained by the limitations of Virtual Locomotion Techniques, which are inherently bound by physical space and often lead to Spatial Desynchronization. Spatial Desynchronization refers to the inconsistency between the relative position and orientation of a user’s physical body in the real environment and that of their virtual avatar in the VR environment. This phenomenon can significantly affect users’ perception and spatial awareness of one another in VR, thereby impairing user experience and even causing safety concerns such as collisions. To cope with physical constraints and mitigate spatial desynchronization, existing Virtual Locomotion solutions for Co-located VR often sacrifice flexibility and adaptability in group structure, resulting in rigid collaborative modes and hindering the full potential of Co-located VR in multi-user collaboration scenarios.
+While many studies have investigated Co-located VR and Virtual Locomotion Techniques across areas such as interaction design, user experience, and algorithm development, few have addressed how to effectively support Joint Action in Co-located VR—despite Joint Action being fundamental to human collaboration and social collective behavior. Existing research has primarily focused on collision avoidance during virtual locomotion, with limited attention given to how Virtual Locomotion can facilitate Joint Action and how to address the challenges posed by Spatial Desynchronization.
+Therefore, this study aims to propose a design framework for a Virtual Locomotion system that supports Joint Action in Co-located VR, and to develop a corresponding locomotion solution tailored to collaborative scenarios. To this end, the study first analyzes and constructs the developmental process and behavioral patterns of group movement behavior associated with Joint Action, drawing from relevant theoretical foundations, in order to identify the core functionalities needed to support Joint Action. Furthermore, by investigating the environmental design of Co-located VR and conducting user studies, the research clarifies both the design elements and user experience goals of the Virtual Locomotion system. These insights are synthesized into a comprehensive design framework, which includes a coping strategy for Spatial Desynchronization centered on the mechanism of spatial recalibration. Based on this framework, an interactive prototype was designed, implemented, and subsequently evaluated through user testing.
+The user testing of the interactive prototype verified the effectiveness of the proposed design strategy in supporting Joint Action within Co-located VR, confirming the system’s good usability and ease of use in Co-located VR environments. Finally, this study summarizes potential future optimization directions for the design strategy, providing theoretical foundations and practical suggestions to further enhance the functionality and user experience of Co-located VR systems.
+This research provides an innovative theoretical perspective and practical design strategy for Virtual Locomotion system design for Joint Action in Co-located VR, offering valuable references for the development of Co-located VR technology applications across various industries.
+目 录 · Contents
+第1章 绪论
+1.1 研究背景
+1.1.1 同地协作虚拟环境的应用前景
+1.1.2 同地VR技术的发展与局限
+1.1.3 VR中的虚拟移动技术研究
+1.2 研究问题与意义
+1.2.1 研究问题
+1.2.2 研究意义
+1.3 研究内容与方法
+1.3.1 研究内容
+1.3.2 研究方法
+1.4 研究创新点
+1.5 研究框架
+第2章 研究综述
+2.1 VR虚拟移动技术研究
+2.1.1 虚拟移动技术的分类框架
+2.1.2 传送与真身行走的优缺点分析
+2.1.4 多人VR中的虚拟移动体验优化
+2.2 联合行动理论研究
+2.2.1 联合行动的概念与内涵
+2.2.2 联合行动的产生机制与认知框架
+2.2.3 多人移动中的联合行动——群组动态研究
+2.3 同地协作VR应用设计研究
+2.3.1 同地协作VR中的联合行动
+2.3.2 同地VR环境的设计
+2.3.3 同地VR协作中的用户表征
+2.3.4 同地VR协作中的人际交互
+2.4 现有研究存在的局限
+第3章 多人移动中的联合行动模式分析
+3.1 面向联合行动的移动行为定义
+3.2 面向联合行动的移动中的群组动态
+3.2.1 群组动态范式
+3.2.2 基础协调行为
+3.3 群组动态中协调行为的发展流程
+3.3.1 群组形成
+3.3.2 冲突出现
+3.3.3 任务执行
+3.3.4 群组分离
+3.4 面向联合行动的多人移动功能流程框架
+第4章 同地VR活动区域设计要素提取
+4.1 虚拟环境活动区域表征模型
+4.1.1 IIVC模型的基本结构
+4.1.2 IIVC模型中的交互操作符
+4.2 同地VR中的用户体验设计
+4.2.1 空间失同步的诱因与影响
+4.2.2 同地VR中的碰撞规避设计
+4.2.3 同地VR中的空间失同步防控设计
+4.3 用户需求调研
+4.3.2 关于同地VR体验用户的调研
+4.4 同地VR活动区域设计要素框架
+4.4.1 功能模块
+4.4.2 设计构成
+4.4.3 设计预期
+第5章 面向联合行动的虚拟移动系统设计框架
+5.1 设计框架概述
+5.2 系统关键特性
+5.2.1 工作空间不唯一且可变
+5.2.2 工作空间隔离并置
+5.3 工作坊实施过程与数据收集
+5.3.1 工作坊准备与组织
+5.3.2 工作坊实施流程
+5.3.3 数据收集与分析方法
+5.4 用户偏好分析与总结
+5.4.1 游戏类型偏好分析
+5.4.2 干预性模块偏好分析
+5.5 本章小结
+第6章 面向联合行动的虚拟移动系统设计与实现
+6.1 设计流程与设计内容
+6.2 所设计系统的活动区域功能
+6.2.1 舞台
+6.2.2 传输机
+6.2.3 工作空间
+6.2.4 功能梳理与操作流程
+6.3 所设计系统的交互设计思路
+6.3.1 VR中的交互组件分类与布局
+6.3.2 整体视听风格的确定
+6.4 所设计系统的技术实现
+6.4.1 系统技术架构
+6.4.2 同地用户联机的网络框架实现
+6.4.3 软硬件界面布局
+6.4.4 IIVC组件的实现
+6.4.5 空间重校准与避撞机制开发实现
+第7章 面向联合行动的虚拟移动系统的用户测试
+7.1 测试目的与方法
+7.1.1 测试目的
+7.1.2 测试内容与评估方法
+7.1.3 测试场景与任务
+7.2 测试实施
+7.2.1 实验A
+7.2.2 实验B
+第8章 总结与展望
+8.1 研究成果总结
+8.2 局限与未来展望
+参考文献
+附录A 专家访谈大纲
+附录B 用户调研问卷
+附录C 核心功能代码
+附录D 用户测试与访谈材料
+致谢
+个人简历、在读期间发表的学术成果
+部 分 插 图 · Figures
+Dis_Zhaozhuodong_2025_01
+Dis_Zhaozhuodong_2025_02
+Dis_Zhaozhuodong_2025_03
+Dis_Zhaozhuodong_2025_04
+Dis_Zhaozhuodong_2025_05
+Dis_Zhaozhuodong_2025_06
+Dis_Zhaozhuodong_2025_07
+Dis_Zhaozhuodong_2025_08
+Dis_Zhaozhuodong_2025_09
+Dis_Zhaozhuodong_2025_10
+Dis_Zhaozhuodong_2025_11
+Dis_Zhaozhuodong_2025_12
+Dis_Zhaozhuodong_2025_13
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）
+All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

@@ -1,0 +1,151 @@
+来源：https://www.daelab.cn/dis_jianwen_2025/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+癌症患儿健康干预严肃游戏设计研究
+——以白血病患儿的饮食健康管理严肃游戏为例
+Research on Serious Game Design for Health Intervention in Pediatric Cancer Patients
+— A Case Study of Dietary Health Management Serious Game for Pediatric Leukemia Patients
+简雯
+关 键 词:
+白血病患儿，严肃游戏，健康干预，认知负荷，交互设计
+Keywords:
+Pediatric Leukemia, Serious Games, Health Intervention, Cognitive Load, Interaction Design
+摘 要
+白血病是一种在儿童群体中发病率较高的癌症，由于对应的治疗周期长、副作用显著，采取生活方式干预措施对患儿的健康进行管理，对于降低与治疗相关的慢性病风险、提高治疗效果有着重要意义。然而，目前临床使用的干预方式缺乏对于白血病患儿群体的针对性，干预效果不佳。而严肃游戏作为一种干预方式，其有效性已经在健康干预领域得到验证。
+由于治疗环境、治疗手段等因素的影响，白血病患儿在认知、心理特征上与健康儿童存在差异。因此，本文通过分析白血病患儿及其照护者的需求痛点，并充分考虑用户特征，研究并设计了一款面向白血病患儿的饮食管理严肃游戏，旨在通过有针对性的干预方式，提高实际干预效果和用户体验。
+本研究首先通过对相关文献的调研和与专家、用户进行深度访谈，总结了患儿及其照护者的干预需求，初步构建了严肃游戏干预机制框架与干预内容，并对白血病患儿与健康儿童相比存在的认知能力弱势进行了总结。接着，在充分考虑患儿认知负荷过载问题的基础上，本研究筛选出与患儿认知缺陷高度相关，且未面向患儿进行过针对性研究的设计要素进行实验设计，测量了核心设计要素的适宜水平，并提出适用于患儿的严肃游戏设计基本要素框架和交互设计原则。最后，本研究通过参与式工作坊对目标用户对于严肃游戏类型和干预模块的偏好进行收集总结，在此基础上设计和开发了面向白血病患儿的饮食管理严肃游戏原型。同时，本研究还通过定量定性的研究方法对设计方案进行了评估，以验证其有效性。
+实验结果表明，该严肃游戏原型在认知负荷水平和短期有效性上，与传统干预方式相比，存在显著优势。研究中构建的干预框架与提炼的设计原则，对于面向癌症患儿及幸存者的健康干预严肃游戏设计，具有一定的参考意义。
+Abstract
+Leukemia is a cancer with a high incidence rate among children. Due to the long treatment period and significant side effects, implementing lifestyle interventions to manage the health of pediatric leukemia patients is crucial for reducing the risk of chronic diseases associated with treatment and enhancing therapeutic outcomes. However, current clinical interventions lack targeted approaches for leukemia patients, leading to suboptimal effectiveness. Serious games, as an intervention tool, have been proven effective in the field of health intervention.
+Leukemia patients exhibit cognitive and psychological differences from healthy children due to factors such as the treatment environment and medical procedures. Therefore, this study analyzes the pain points in the needs of pediatric leukemia patients and their caregivers, and, taking into account user characteristics, designs a serious game aimed at dietary management for pediatric leukemia patients. The goal is to improve the effectiveness of interventions and enhance user experience through targeted approaches.
+This research first summarizes the intervention needs of patients and caregivers through a review of relevant literature and in-depth interviews with experts and users. A preliminary framework for serious game interventions and content is constructed, and the cognitive deficits of pediatric leukemia patients, compared to healthy children, are highlighted. Based on an understanding of cognitive overload in these patients, the study identifies design elements highly relevant to their cognitive impairments that have not been previously studied in this context. An experimental design was conducted to measure the optimal level of core design elements, and a framework for the fundamental design elements of serious games, as well as interaction design principles suitable for this user group, was proposed.
+Finally, the research collects and summarizes user preferences regarding serious game types and intervention modules through participatory workshops. Based on this, a prototype for a serious game focused on dietary management for pediatric leukemia patients was designed and developed. Additionally, the design was evaluated using both quantitative and qualitative research methods to verify its effectiveness.
+Experimental results indicate that the serious game prototype significantly outperforms traditional interventions in terms of cognitive load and short-term effectiveness. The intervention framework and design principles developed in this study provide valuable insights for the design of health intervention serious games for pediatric cancer patients and survivors.
+目 录 · Contents
+第1章 绪论
+1.1 课题背景
+1.1.1 白血病的发展趋势及健康干预的必要性
+1.1.2 健康干预严肃游戏的发展现状
+1.2 研究目的
+1.3 研究问题
+1.4 研究方法与框架
+1.4.1 研究方法
+1.4.2 研究框架
+1.5 研究意义与创新点
+第2章 癌症患儿健康干预与严肃游戏相关理论与研究
+2.1 癌症患儿健康干预综述
+2.1.1 健康干预定义
+2.1.2 面向癌症患儿的健康干预
+2.1.3 数字化健康干预的核心构成要素
+2.1.4 健康干预评价方法
+2.2 严肃游戏应用综述
+2.2.1 严肃游戏概念、分类及核心策略
+2.2.2 严肃游戏在癌症患儿健康干预领域的应用
+2.3 本章小结
+第3章 用户研究与初步方案构建
+3.1 用户研究
+3.1.1 研究目的与研究方法
+3.1.2 专家访谈结果分析
+3.1.3 用户访谈结果分析
+3.1.4 用户研究结果小结
+3.2 用户特征总结
+3.2.1 用户特征深化
+3.2.2 用户特征对严肃游戏设计的影响
+3.3 初步方案内容构建
+3.3.1 干预内容现存问题和机会点总结
+3.3.2 干预内容确定
+3.4 初步方案机制构建
+3.4.1 干预机制现存问题和机会点总结
+3.4.2 严肃游戏干预机制框架确定
+3.5 本章小结
+第4章 前测实验：认知能力边界测量与设计原则提炼
+4.1 实验设计与方法
+4.1.1 严肃游戏设计基本要素框架构建
+4.1.2 关键设计要素筛选及对应实验方案设计
+4.2 实验实施与数据分析
+4.2.1 实验材料及实验流程
+4.2.2 被试用户招募
+4.2.3 数据分析与结果讨论
+4.3 设计原则总结
+4.4 本章小结
+第5章 参与式设计工作坊
+5.1 参与式设计工作坊背景与目标
+5.2 工作坊实施前的设计准备：游戏类型与干预模块的选择
+5.2.1 游戏类型的选择与限制
+5.2.2 干预性模块转化
+5.3 工作坊实施过程与数据收集
+5.3.1 工作坊准备与组织
+5.3.2 工作坊实施流程
+5.3.3 数据收集与分析方法
+5.4 用户偏好分析与总结
+5.4.1 游戏类型偏好分析
+5.4.2 干预性模块偏好分析
+5.5 本章小结
+第6章 癌症患儿饮食管理严肃游戏设计实践
+6.1 严肃游戏设计方案构成
+6.2 严肃游戏类型设计
+6.3 严肃游戏内容设计
+6.3.1 游戏背景设计
+6.3.2 知识传递类干预内容设计
+6.3.3 技能掌握类干预内容设计
+6.3.4 行为实施类干预内容设计
+6.4 严肃游戏机制设计
+6.4.1 关卡机制设计
+6.4.2 任务机制设计
+6.4.3 奖励机制设计
+6.5 使用流程与信息架构
+6.5.1 使用流程
+6.5.2 信息架构
+6.6 关键模块设计
+6.6.1 玩家个人信息录入与账号管理
+6.6.2 游戏主界面与关卡选择
+6.6.3 大富翁游戏核心流程
+6.6.4 每日任务领取与执行
+6.6.5 玩家游戏数据展示与奖励转化
+6.7 患儿特征、游戏核心内容与饮食管理任务关联关系
+6.8 本章小结
+第7章 设计评估与验证
+7.1 实验介绍
+7.1.1 实验目的
+7.1.2 实验设计
+7.1.3 评估方法
+7.2 实验实施
+7.2.1 实验材料准备与被试者招募
+7.2.2 实验流程
+7.3 实验结果
+7.3.1 问答测试结果
+7.3.2 量表结果
+7.3.3 行为观察和用户访谈结果
+7.4 分析与结论
+7.4.1 实验结果分析
+7.4.2 实验结果讨论
+7.5 本章小结
+第8章 总结与展望
+8.1 研究总结
+8.2 未来展望
+参考文献
+附录A 用户访谈提纲
+附录B 量表与问答测试内容
+附录C 严肃游戏实验材料开发代码
+附录D 毕业展览
+致谢
+个人简历、在读期间发表的学术成果
+部 分 插 图 · Figures
+Dis_Jianwen_2025_01
+Dis_Jianwen_2025_02
+Dis_Jianwen_2025_03
+Dis_Jianwen_2025_04
+Dis_Jianwen_2025_05
+Dis_Jianwen_2025_06
+Dis_Jianwen_2025_07
+Dis_Jianwen_2025_08
+Dis_Jianwen_2025_09
+Dis_Jianwen_2025_10
+Dis_Jianwen_2025_11
+Dis_Jianwen_2025_12
+Dis_Jianwen_2025_13
+Dis_Jianwen_2025_14
+Dis_Jianwen_2025_15
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

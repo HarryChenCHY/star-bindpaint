@@ -1,0 +1,80 @@
+来源：https://www.daelab.cn/dis_nicolos_2023/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+Supporting Chinese as a foreign language learning through contextual flashcards in augmented reality​
+用于对外汉语学习的AR情景抽认卡设计研究
+Nicolò（尼克）
+Keywords:
+Mandarin Learning, Contextual Learning, Digital Flashcards, Augmented Reality, Image Recognition
+关 键 词:
+普通话学习，情境学习，数字抽认卡，增强现实，图像识别
+Abstract
+Although the popularity of Mandarin Chinese has recently increased,this language is considered challenging to learn for foreigners, requiring the memorization of a large quantity of vocabulary to get a basic proficiency. Rote-repetition methods are practical but are often considered a motive-killing activity by learners. Research has shown that contextual learning and personal experiences can significantly support the learning journey, and technologies such as Augmented Reality can potentially impact the Chinese learning experience. The study investigates how to support learners through context-aware Augmented Reality, sustain their study engagement, and help memorization through personal memories associations. I conducted a literature review on motivation, rote repetition, context, and personal experiences to understand their impact on language learning. A questionnaire was administered to foreign Chinese language learners to gather information on their vocabulary acquisition methods and investigate their habits of flashcard creation. The results supported the development of a mobile application that uses Augmented Reality and image recognition to acquire vocabulary and create flashcards from the surrounding environment. I validated the system through an individual heuristic evaluation, a usability test with experts, and a usability test with Chinese language learners. Besides correcting usability issues, the study’s goal was to assess if the system would have provided a satisfactory experience to support learning and motivation. The study employed semi-structured interviews and was integrated with two questionnaires: the AttrakDiff, measuring hedonic and pragmatic qualities, and the Intrinsic Motivation Inventory, measuring motivation. Findings reveal an overall high degree of satisfaction, with margins for further improvements. Results suggest that the solution can support the engagement and interest of the learner with the use of augmented frames and contextual photographic flashcards.
+摘 要
+最近，中文学习越来越受欢迎，但对于外国人来说，这门语言被认为具有挑战性，因为需要他们记忆大量的词汇才能达到基本的熟练程度。死记硬背的方法尽管有用，但对外国学习者来说，这种方法有损语言学习动机。研究表明，情境学习法和个人经验可以极大地帮助语言学习，而增强现实等技术可能会对语言学习体验产生一些影响。该研究，探讨了如何帮助外国学习者通过情景感知增强现实技术，来保持他们的中文学习参与感，并通过个人记忆关联来帮助语言记忆。通过对学习动机、死记硬背法、情景法和个人经验进行文献学习，我了解到以上几个因素对语言学习的影响。与此同时，通过对中文学习者进行问卷调查，我收集到了他们掌握词汇的方法，其中，了解到他们使用抽认卡学习的习惯。基于该研究，我开发了一款运用增强现实技术和图像识别技术的移动程序，该程序可以从学习者的周遭环境中抓取词汇并创建抽认卡。随后，我通过运用个体启发式评估、专家可用性测试和汉语学习者可用性测试的方法，对移动软件进行了相关测试。除了要提高软件的可用性外，本研究的目的是评估我的设计系统是否能够为中文学习者提供令人满意的学习体验。对此，我采用了半结构化访谈法，并结合了两种问卷评估法: AttrakDiff（测量享乐和实用品质）和内在动机量表（测量动机）。评估显示，学习者对上述设计系统的总体满意度较高，但仍有待优化之处。最终研究结果表明，运用增强现实技术与情景图片抽认卡的设计解决方案，能促进中文学习者的参与感和兴趣。
+目 录 · Contents
+CHAPTER 1 INTRODUCTION
+CHAPTER 2 LITERATURE REVIEW
+2.1 Motivation and Foreign Language Acquisition
+2.2 Rote memorization in Language Learning
+2.3 Memories and Context in Language Learning
+2.4 Digital Tools for Chinese Language Learners
+2.5 Contextual Technologies in Language Learning
+2.6 Capturing surroundings
+2.7 Interfacing AI to the User
+2.8 The Mobile AR Experience
+2.9 Review Conclusions
+CHAPTER 3 METHODOLOGY
+3.1 Introduction to Methodology
+3.2 Research Design
+3.3 Data Collection
+3.3.1 Preliminary Survey
+3.3.2 Heuristic Evaluation
+3.3.3 Usability Testing with Experts
+3.3.4 Usability Testing with Chinese Learners
+3.4 Data Analysis
+3.5 Concluding Summary
+CHAPTER 4 RESULTS
+4.1 Results of the Survey
+4.2 Results of the Heuristic Evaluation
+4.3 Results of the Usability Testing with Experts
+4.4 Results of the Usability Testing with Chinese Learners
+CHAPTER 5 DISCUSSION AND INTERPRETATION
+CHAPTER 6 DESIGN AND DEVELOPMENT
+6.1 The Language Learner
+6.2 Defining the Experience
+6.3 Experience Design and Prototype Development
+6.4 Design Reflections
+CHAPTER 7 CONCLUSIONS AND LIMITATIONS
+7.1 Conclusions
+7.2 Limitations
+BIBLIOGRAPHY
+APPENDIX A QUESTIONNAIRE
+APPENDIX B ATTRAK-DIFF QUESTIONNAIRE
+APPENDIX C INTRINSIC MOTIVATION INVENTORY
+APPENDIX D SURVEY NETWORK GRAPH
+APPENDIX E LEARNERS’ INTERVIEW FINDINGS
+ACKNOWLEDGEMENT
+BIOGRAPHICAL NOTES AND ACADEMIC
+ACHIEVEMENTS DURING THE PROGRAM
+部 分 插 图 · Figures
+dis_nicolos_2023_01
+dis_nicolos_2023_02
+dis_nicolos_2023_03
+dis_nicolos_2023_04
+dis_nicolos_2023_05
+dis_nicolos_2023_06
+dis_nicolos_2023_07
+dis_nicolos_2023_08
+dis_nicolos_2023_09
+dis_nicolos_2023_10
+dis_nicolos_2023_11
+dis_nicolos_2023_12
+dis_nicolos_2023_13
+dis_nicolos_2023_14
+dis_nicolos_2023_15
+dis_nicolos_2023_16
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）
+All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

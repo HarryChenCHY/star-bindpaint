@@ -1,0 +1,103 @@
+来源：https://www.daelab.cn/dis_chenxinghui_2024/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+游戏化虚拟展馆体验设计研究
+Research on the Experience Design of Gamified Virtual Exhibition
+陈星珲
+关 键 词:
+虚拟展馆，游戏化，体验设计
+Keywords:
+virtual exhibitions, gamification, experience design
+摘 要
+在当代社会，数字技术迅猛发展并广泛应用，特别是互联网的普及，为人们随时随地获取信息提供了便捷。虚拟展馆作为一种创新的数字化展览形式，逐渐受到广泛关注。随着社交媒体、在线学习等趋势的加速发展，以及全球疫情对传统展览活动的冲击，虚拟展馆成为连接公共服务组织、企业与用户的重要渠道。
+另一方面，在体验经济迅猛发展的背景下，体验在价值创造中的重要性日益凸显。为此，本研究立足于“四维体验”的理论框架，认为虚拟展馆不仅要展示内容，更要创造独特的、吸引人的体验。本研究聚焦于如何运用游戏化设计策略，增强虚拟展馆的吸引力。
+游戏化设计，是将游戏元素融入非游戏环境以改善用户体验、激发用户兴趣和提升参与度的手段，已经在教育、健康管理、市场营销等领域展现出巨大潜力。本研究结合了四维体验理论的四个维度——审美、娱乐、教育和遁世体验，以及游戏化理论和游戏设计方法，创新性地提出了针对虚拟展馆的核心设计要素的策略。这些策略将MDA游戏设计框架和游戏虚构概念融入到展馆的展品、环境、中介物和展馆活动这四个设计要素中，最终为用户传达四维体验视角下，具有吸引力的体验。
+基于这些设计策略，本研究设计并开发了一个以航天为主题的虚拟展馆，并总结形成了一套完整的虚拟展馆游戏化设计流程。随后，以这一航天虚拟展馆为原型进行了用户测试，结合四维体验和用户体验量表，从四个体验维度对其进行了全面评估。测试结果表明，游戏化设计策略在航天虚拟展馆中的应用提升了体验的吸引力，验证了本研究的理论价值和实践意义。
+Abstract
+In contemporary society, the proliferation of digital technologies, particularly the internet, has facilitated instant information access. As an innovative exhibition format, virtual exhibitions have garnered increasing attention. Given trends in social media, online learning, and the impact of the pandemic on traditional exhibitions, virtual exhibitions have emerged as a crucial link between public service organizations, businesses, and users.
+Furthermore, against the backdrop of the rapid development of the experience economy, the importance of experiences in value creation has become increasingly prominent. Therefore, grounded in the theoretical framework of the experience economy, this study argues that virtual exhibitions should not only showcase content but also create unique and engaging experiences. This research focuses on how to utilize gamification design strategies to enhance the attractiveness of virtual exhibitions.
+Gamification, the integration of game elements into non-gaming environments, has shown immense potential in areas like education, health management, and marketing. By combining the dimensions of the experience economy – aesthetic, entertainment, educational, and escapist – with gamification theory and methods, this study innovatively proposes design strategies for virtual exhibitions. These strategies integrate MDA game design principles and fictional concepts into exhibits, environments, mediators, and exhibition activities, delivering captivating experiences.
+Based on these design strategies, this study designed and developed a virtual exhibition themed on aerospace and summarized a complete set of gamification design processes for virtual exhibitions. Subsequently, a user test was conducted using this aerospace virtual exhibition prototype, comprehensively assessing it from the four dimensions of the experience economy using a user experience scale. The test results indicate that the application of gamification design strategies in the aerospace virtual exhibition enhances the attractiveness of the experience, validating the theoretical value and practical significance of this research.
+目 录 · Contents
+第1章 引言
+1.1 研究背景
+1.2 研究问题与意义
+1.3 研究方法
+1.4 论文框架
+第2章 虚拟展馆的相关研究概述
+2.1 虚拟展馆的定义
+2.2 虚拟展馆的起源
+2.3 虚拟展馆的学术研究
+2.3.1 虚拟展馆的技术研究
+2.3.2 虚拟展馆的体验研究
+2.4 本章小结
+第3章 游戏化虚拟展馆体验设计策略
+3.1理论基础
+3.1.1 四维体验理论
+3.1.2 游戏化理论
+3.1.3 虚拟展馆体验设计切入点
+3.2 设计策略
+3.2.1 基于展品的设计策略
+3.2.2 基于中介物的设计策略
+3.2.3 基于环境的设计策略
+3.2.4 基于展馆活动的设计策略
+3.2.5 设计策略总结
+3.3 设计案例分析
+3.3.1 上海科技馆的《消失的科博士》
+3.3.2 上海天文馆的《星火之旅》
+3.4 本章小结
+第4章 游戏化虚拟展馆体验设计实践
+4.1 实践背景
+4.2 设计策略的应用
+4.2.1 展品信息筛选整理
+4.2.2 展馆的游戏虚构设计
+4.2.3 展馆的游戏机制设计
+4.2.4 展馆的中介物设计
+4.3 技术路线
+4.3.1 概念设计与资产制作
+4.3.2 引擎内实现
+4.4 最终效果
+4.5 本章小结
+第5章 游戏化虚拟展馆体验设计的用户测试
+5.1 测试介绍
+5.1.1 测试目的
+5.1.2 测试方法
+5.1.3 测试流程
+5.2 测试结果
+5.2.1 用户体验量表结果
+5.2.2 四维体验量表结果
+5.2.3 观察与访谈结果
+5.3 分析与总结
+5.3.1 测试结果分析
+5.3.2 设计经验总结
+5.4 本章小结
+第6章 总结与展望
+6.1 研究成果总结
+6.2 未来展望
+参考文献
+附录A 四维体验量表
+附录B 用户体验量表（UEQ）
+附录C 访谈大纲
+设计文本
+致谢
+个人简历、在读期间发表的学术成果
+部 分 插 图 · Figures
+dis_chenxinghui_2024_01
+dis_chenxinghui_2024_02
+dis_chenxinghui_2024_03
+dis_chenxinghui_2024_04
+dis_chenxinghui_2024_05
+dis_chenxinghui_2024_06
+dis_chenxinghui_2024_07
+dis_chenxinghui_2024_08
+dis_chenxinghui_2024_09
+dis_chenxinghui_2024_10
+dis_chenxinghui_2024_11
+dis_chenxinghui_2024_12
+dis_chenxinghui_2024_13
+dis_chenxinghui_2024_14
+dis_chenxinghui_2024_15
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）
+All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

@@ -1,0 +1,132 @@
+来源：https://www.daelab.cn/dis_zhoujingyu_2025/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+鸟瞰视角VR游戏交互界面设计研究
+——以RTT游戏为例
+Research on Interaction Interface Design for Bird's-Eye View VR Games, Taking RTT Games as an Example
+周静娱
+关 键 词:
+虚拟现实，交互界面，鸟瞰视角，交互设计
+Keywords:
+Virtual Reality, Interaction Interface, Bird's-eye View, Interaction Design
+摘 要
+VR游戏体验比较强调“临场感”和“沉浸感”等感受，在这种倾向下，鸟瞰视角在VR游戏中的应用潜力被极大忽视了。同时，由于鸟瞰视角下的VR交互方式未得到充分的研究的实践，很可能阻碍了鸟瞰视角这一在传统游戏平台上应用广泛的游戏视角在VR媒介中的发展演变。本研究尝试从VR鸟瞰视角下的游戏交互界面入手，探究这一视角在VR中的利用可能性。
+本研究聚焦于鸟瞰视角VR游戏交互界面设计，采用文献研究法梳理相关理论框架。通过对VR交互界面和鸟瞰视角VR交互技术的深度探讨，提炼出关键评价维度与设计依据，形成一套理论基础，并据此提出了适用于该领域的设计原则，即即直接动作优先的原则；符合本体经验的原则；识别而非记忆的原则；以及保持逻辑一致的原则。
+随后，研究者将这些原则应用于实践，选择RTT游戏类型作为研究对象，通过对现有游戏案例的分析，提炼出鸟瞰视角VR游戏的典型交互行为，并基于设计原则创建了一款新的VR交互界面设计，并完成原型开发。此外，研究者还将原有案例游戏的交互界面迁移到VR平台作为对照，为后续对比实验提供材料。整个设计与开发过程详实记录，以为同行提供参考。为了验证新设计原则的有效性，研究设计了一套严谨的实验流程，通过组内实验对比了基于新原则设计的VR交互界面与移植传统Gamepad界面在VR环境中的表现。实验采用了混合方法研究，结合量化数据与质性分析，深入探讨设计原则在实际效果中的作用。
+根据实验结果，应用本研究所提出鸟瞰视角VR游戏交互界面设计原则，可以设计出较传统的游戏控制器更适应VR媒介的RTT游戏交互方式，进而证明，通过优化交互方式，鸟瞰视角在VR环境中的应用潜力可以充分发挥。最后，通过对实验结果的综合分析，研究总结了所提设计原则的实用价值与本研究潜在改进空间，如将坐姿体验纳入研究和引入手势交互等。
+Abstract
+VR gaming experiences emphasize sensations such as “presence” and “immersion,” which has led to the significant underutilization of the bird’s-eye view in VR games. Additionally, due to the lack of thorough research and practical exploration into VR interaction methods from a bird’s-eye perspective, this widely used viewpoint in traditional gaming platforms has been hindered in its evolution within the VR medium. This study aims to explore the potential applications of the bird’s-eye view in VR by focusing on game interaction interface design.
+This research centers on the interaction interface design for bird’s-eye view VR games. Using a literature review approach, it organizes relevant theoretical frameworks. Through an in-depth discussion of VR interaction interfaces and bird’s-eye view VR interaction technologies, key evaluation dimensions and design criteria are distilled, forming a solid theoretical foundation. Based on this, four design principles are proposed: prioritizing direct actions, adhering to embodied experience, favoring recognition over recall, and maintaining logical consistency.
+Subsequently, these principles were applied in practice, with the RTT (Real-Time Tactics) game genre chosen as the research subject. By analyzing existing game cases, typical interaction behaviors in bird’s-eye view VR games were identified. A new VR interaction interface was designed based on the proposed principles, and a prototype was developed. Furthermore, the original case game’s interaction interface was migrated to the VR platform as a control for subsequent comparative experiments, providing material for reference. The entire design and development process was meticulously documented to serve as a guide for peers. To validate the effectiveness of the newly proposed design principles, a rigorous experimental procedure was designed. Within-group experiments compared the performance of the VR interaction interface designed according to the new principles with that of traditional Gamepad interfaces transplanted into the VR environment. A mixed-methods approach combining quantitative data and qualitative analysis was employed to thoroughly investigate the practical impact of the design principles.
+According to the experimental results, applying the bird’s-eye view VR game interaction interface design principles proposed in this study can yield RTT game interaction methods better suited to the VR medium than traditional game controllers. This demonstrates that by optimizing interaction methods, the application potential of the bird’s-eye view in VR environments can be fully realized. Finally, through comprehensive analysis of the experimental results, the study concludes the practical value of the proposed design principles and identifies potential areas for improvement, such as incorporating seated experiences into research and introducing gesture-based interactions.
+目 录 · Contents
+第1章 引言
+1.1 研究背景
+1.2 国内外研究现状
+1.2.1 微型世界（WIM）类VR鸟瞰视角
+1.2.2 巨人体验（Giant）类VR鸟瞰视角
+1.2.3 第三人称视角类VR鸟瞰视角
+1.2.4 VR交互界面的研究现状
+1.2.5 鸟瞰视角VR游戏的产品研究
+1.2.6 国内外研究现状总结
+1.3 研究的目的与意义
+1.4 研究问题与内容
+1.5 研究方法
+1.6 研究框架
+第2章 鸟瞰视角VR游戏交互界面设计原则
+2.1 VR游戏交互界面设计相关理论
+2.1.1 应用于交互界面设计的用户体验理论
+2.1.2 应用于交互界面设计的具身认知理论
+2.1.3 VR交互界面设计相关理论
+2.2 设计原则推导
+2.3 设计原则
+2.3.1 直接动作优先
+2.3.2 符合本体经验
+2.3.3 识别而非记忆
+2.3.4 保持逻辑一致
+2.4 本章小结
+第3章 实验材料交互界面设计与开发
+3.1 实验材料设计的目的和意义
+3.2 设计背景
+3.2.1 案例选择
+3.3 设计流程
+3.3.1 交互行为梳理
+3.3.2 对照组实验材料控制方案提取
+3.3.3 控制方案设计
+3.4 功能实现
+3.4.1 开发工具
+3.4.2 游戏架构
+3.4.3 白盒场景搭建
+3.4.4 VR交互界面设计与开发
+3.4.5 对照组实验材料交互界面开发
+3.5 设计总结
+3.6 本章小结
+第4章 预实验及鸟瞰视角VR交互界面设计迭代
+4.1 预实验介绍
+4.1.1 预实验目的
+4.1.2 预实验设计
+4.1.3 测量工具
+4.2 预实验材料
+4.2.1 体验流程
+4.2.2 交互控制方案
+4.2.3 教学与引导
+4.3 预实验实施
+4.3.1 预实验环境
+4.3.2 被试信息
+4.3.3 预实验流程
+4.4 结果分析
+4.4.1 访谈结果
+4.4.2 问卷和量表结果
+4.4.3 结果分析
+4.5 专家访谈
+4.5.1 专家访谈目的
+4.5.2 专家访谈过程
+4.5.3 专家访谈结果
+4.5.4 设计迭代
+4.6 本章小结
+第5章 鸟瞰视角VR游戏交互界面实验研究
+5.1 实验介绍
+5.1.1 实验目的
+5.1.2 实验设计
+5.1.3 测量工具
+5.2 实验材料
+5.3 实验实施
+5.3.1 实验环境
+5.3.2 被试信息
+5.3.3 实验流程
+5.4 实验结果
+5.4.1 问卷和量表结果
+5.4.2 访谈结果
+5.4.3 行为记录结果
+5.5 分析与结论
+5.5.1 实验结果分析
+5.5.2 实验结论
+5.6 本章小结
+第6章 结论与展望
+6.1 研究成果总结
+6.2 研究局限与后续展望
+参考文献
+附录A 用户体验量表
+附录B 访谈大纲
+附录C 毕业展览图片
+致谢
+个人简历、在读期间发表的学术成果
+部 分 插 图 · Figures
+Dis_Zhoujingyu_2025_01
+Dis_Zhoujingyu_2025_02
+Dis_Zhoujingyu_2025_03
+Dis_Zhoujingyu_2025_04
+Dis_Zhoujingyu_2025_05
+Dis_Zhoujingyu_2025_06
+Dis_Zhoujingyu_2025_07
+Dis_Zhoujingyu_2025_08
+Dis_Zhoujingyu_2025_09
+Dis_Zhoujingyu_2025_10
+Dis_Zhoujingyu_2025_11
+Dis_Zhoujingyu_2025_12
+Dis_Zhoujingyu_2025_13
+Dis_Zhoujingyu_2025_14
+Dis_Zhoujingyu_2025_15
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

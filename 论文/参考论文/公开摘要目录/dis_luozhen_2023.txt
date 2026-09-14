@@ -1,0 +1,119 @@
+来源：https://www.daelab.cn/dis_luozhen_2023/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+服务于第二语言文化认知的VR教育游戏设计研究——以对外汉语教育游戏为例
+Research on the Design of VR Educational Games Serving Second Language Cultural Cognition: A Case Study of Chinese as a Foreign Language Educational Game
+罗珍
+关 键 词:
+VR汉语教育游戏，VR教育游戏，汉语文化教学
+Keywords:
+VR Chinese-learning game, VR educational game, Chinese culture learning
+摘 要
+随着国际交流的日益频繁，学习外语的价值越来越明显，而汉语正成为越来越多的人的首选语言。虚拟现实技术具有创造完全沉浸式环境的能力，而游戏可以创造出富有文化和社会价值的虚拟世界，这给外语学习和文化体验带来了新的生机。国内外许多学者针对VR技术与汉语教育的结合开展研究，为设计更好的VR汉语游戏提出宝贵建议，但囿于游戏开发难度大成本高而停留在理论层面；市面上也有许多VR游戏可以用于帮助成人初学者进行汉语学习、体验中国传统文化，但鲜有适合更高水平的汉语学习者的VR汉语教育游戏，学术上的研究也有待进一步探索。因此，研究服务于文化认知的VR汉语教育游戏的设计是具有理论价值和社会意义的。本文以成人中高级汉语学习者为主要目标用户，按设计思维的五个步骤逐步研究了服务于文化认知的VR汉语教育游戏的设计方法：
+（1）理论研究：本文从学术文献、现有游戏应用和网络资源三个方面，例举了国内外虚拟现实游戏应用于汉语学习的发展现状和局限性，然后基于教育游戏设计和汉语文化教学的相关理论研究，梳理了VR汉语教育游戏的教学流程。
+（2）用户研究：本文通过问卷调研、用户访谈和用户评论反馈方式，收集了用户对VR汉语教育游戏的需求和期待，绘制了主次用户的人物画像，总结了目标用户的核心需求，为之后VR汉语教育游戏的设计开发建立基础。
+（3）设计实践：根据用户需求和研究现状，本文定义了游戏在汉语教学和游戏体验方面的目标，创新提出了游戏设计策略，制作出了游戏原型。即本文设计开发了一款针对成人中高级汉语学习者，以文化体验为主，语言技能学习为辅的VR汉语教育游戏。在游戏教学方面，学习者通过师生联机对话、在游戏教学模块的帮助下完成主线剧情任务来体验文化、学习操练汉语知识；在游戏体验方面，本文根据VR设备特点和游戏主题来营造画面氛围、创建游戏场景和角色，并以简洁清晰的界面布局和交互方式来降低学习者认知负荷，力图在优化游戏体验的同时保证教学效果。
+（4）测试评估：游戏原型制作完成后，本文邀请了若干用户进行了一系列的评估试验，验证了本文提出的游戏设计策略在实际应用上的可行性。
+本次研究的创新点在于通过大量的理论研究，结合成人中高级汉语学习者和汉语教师的真实需求，提出了服务于文化认知的VR汉语教育游戏的设计策略，拓展了外语学习游戏的品类，为未来汉语教育研究提供新的思路。
+Abstract
+As international exchanges become more frequent, the value of learning a foreign language is becoming increasingly apparent, and Chinese is becoming the language of choice for an increasing number of people. Virtual reality technology has the ability to create fully immersive environments, and games are believed to have the potential to create virtual worlds rich in cultural and social values, which brings new life to foreign language learning and cultural experiences. Many scholars at home and abroad have conducted research on the combination of VR technology and Chinese language education, and made valuable suggestions for designing better VR Chinese games, but they are limited to the theoretical level due to the difficulty and high cost of game development; there are also many VR games that can be used to help adult beginners learn Chinese and experience traditional Chinese culture. But there are few VR Chinese educational games suitable for higher level of Chinese learners, and academic research also needs to be further explored. Therefore, it is of theoretical value and social significance to study the design of VR Chinese educational games that serve cultural awareness.
+This paper takes adult intermediate and advanced Chinese learners as the main target users, and investigates the design methods of VR Chinese educational games serving cultural cognition step by step according to the five steps of design thinking.
+(1) Theoretical research: This paper cites the development status and limitations of domestic and foreign virtual reality games applied to Chinese language learning from three aspects: academic literature, existing games and online resources, and then organizes the teaching process of VR Chinese language educational games based on theoretical research related to educational game design and Chinese culture teaching.
+(2) User research: Through questionnaire research, user interviews and user feedback, we collected users’ needs and expectations of VR Chinese educational games, drew out the personas of main and secondary users, and summarized the core needs of target users to establish the foundation for the design and development of VR Chinese educational games.
+(3) Design practice: Based on the users’ needs in terms of Chinese learning and game experience, this paper defines the goals of the game in terms of teaching and experience, proposes an innovative overall game design strategy, and puts it into practice by creating a game prototype. In other words, this paper designs and develops a VR Chinese educational game for adult intermediate and advanced Chinese learners, which focuses on cultural experience and is complemented by language skill learning. In terms of game teaching, learners can experience Chinese culture and learn language skills through online dialogues with teachers, as well as completing the main plot tasks with the help of the game teaching module, while learners can also choose to complete side quests to add fun to the game. In terms of game experience, this paper creates the atmosphere, game scenes and characters according to the characteristics of VR devices and game themes, and reduces the cognitive load of learners with simple and clear interface layout and interaction methods, in an attempt to optimize the game experience and ensure the teaching effect at the same time.
+(4) Testing and evaluation: After completing the game prototype, several users were invited to conduct a series of evaluation tests. Their feedback verified that the design strategy of the VR Chinese educational game serving cultural cognition is feasible in practical application.
+The innovation of this study is that through extensive theoretical research and combining the real needs of adult intermediate and advanced Chinese learners and Chinese teachers, the design strategy of VR Chinese educational games serving cultural cognition is proposed, which expands the categories of foreign language learning games and provides new ideas for future Chinese education research.
+目 录 · Contents
+第1章 绪论
+1.1 课题研究背景
+1.2 研究现状
+1.2.1 VR技术应用于第二语言教育的研究现状
+1.2.2 教育游戏应用于第二语言文化认知研究现状
+1.2.3 国内外VR汉语教育游戏的实践现状
+1.2.4 国内外VR汉语教育游戏设计案例分析
+1.2.5 国内外VR汉语教育游戏的研究现状总结
+1.3 研究目的意义及方法
+1.3.1 研究目的
+1.3.2 研究意义
+1.3.3 研究方法
+1.4 论文框架
+第2章 VR汉语教育游戏相关研究基础
+2.1 相关概念的定义
+2.1.1 VR技术的定义
+2.1.2 教育游戏的定义
+2.1.3 对外汉语文化教学
+2.2 相关理论研究
+2.2.1 教育游戏设计相关研究与理论
+2.2.2 汉语文化教学相关研究与理论
+2.3 汉语教育游戏教学流程
+2.4 本章小结
+第3章 服务于文化认知的VR汉语教育游戏的用户研究
+3.1 调研目的及方法
+3.2 调研结果分析
+3.2.1 问卷调研与结果分析
+3.2.2 用户访谈与结果分析
+3.2.3 现有VR汉语教育游戏用户反馈与结果分析
+3.3 需求总结和用户画像绘制
+3.3.1 用户需求分析总结
+3.3.2 用户画像绘制
+3.4 本章小结
+第4章 服务于文化认知的VR汉语教育游戏的设计实践
+4.1 游戏建构与教学应用
+4.1.1 游戏的定位与职能取向
+4.1.2 游戏中教师的定位与角色转换
+4.1.3 游戏与教学内容平衡
+4.2 游戏教学和体验目标
+4.3 游戏设计策略
+4.3.1 游戏教学方面
+4.3.2 游戏体验方面
+4.4 游戏设计框架
+4.5 游戏核心设计
+4.5.1 游戏故事情境
+4.5.2 游戏任务脚本设计
+4.5.3 游戏关卡设计
+4.5.3 游戏反馈机制
+4.6 游戏开发制作
+4.6.1 虚拟场景开发的平台与关键技术
+4.6.2 游戏交互设计与实现
+4.6.3 游戏视觉设计与实现
+4.6.4 游戏音效设计与实现
+4.7 本章小结
+第5章 VR汉语教育游戏的测试与评估
+5.1 用户测试
+5.1.1 用户测试的目的和方法
+5.1.2 用户测试结果
+5.1.3 设计迭代
+5.2 《遇偶》游戏评估
+5.2.1 游戏学习效果评估
+5.2.2 用户体验评估
+5.2.3 师生访谈分析
+5.2.4 评估结果与讨论
+5.3 本章小结
+第6章 结论与展望
+6.1 研究结论总结
+6.2 不足之处与研究展望
+参考文献
+附录A VR汉语教育游戏需求状况调查问卷
+附录B 用户需求访谈大纲
+附录C 用户体验访谈大纲
+附录D 文化认知测验
+附录E 游戏任务脚本
+附录F 设计文本
+致谢
+个人简历、在读期间发表的学术成果
+部 分 插 图 · Figures
+dis_luozhen_2023_01
+dis_luozhen_2023_02
+dis_luozhen_2023_03
+dis_luozhen_2023_04
+dis_luozhen_2023_05
+dis_luozhen_2023_06
+dis_luozhen_2023_07
+dis_luozhen_2023_08
+dis_luozhen_2023_09
+dis_luozhen_2023_10
+dis_luozhen_2023_11
+dis_luozhen_2023_12
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

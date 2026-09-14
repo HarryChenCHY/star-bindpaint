@@ -1,0 +1,105 @@
+来源：https://www.daelab.cn/dis_maria_2025/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+Designing a serious game to investigate
+the effects of time perception on decision-making processes
+以研究时间感知如何影响决策过程为目的的严肃游戏设计
+Buerger Maria Emilie
+关 键 词:
+时间感知，决策，游戏设计，增强现实
+Keywords:
+time perception, decision-making, game design, augmented reality
+摘 要
+时间是有关人类存在最基本的、却最无形的一个概念。虽然通常被描述为对间隔和持续长度的测量，但时间也是一种极具主观性的体验，深受个人感知过程的影响。除了作为认知现象之外，时间更与社会生态结构、经济结构等宏观系统紧密相连，这种多维一体的关联性使得人类在历史长河中形成了具有显著文化差异的时间感知方式。在此语境下，两种主要的时间感知模式分别是“线性模式”和“循环模式”。线性时间感知模式将时间视为一个按顺序向前推进的进程，事件按从过去到现在再到未来的时序发生；与之相对应，循环时间感知模式体现了对时间周期性的理解，事件如同四季更迭、潮汐涨落般呈现循环往复的韵律。
+本文旨在探索这两种时间感知模式的影响是否可能被观察和测量，将严肃游戏作为研究工具以检视时间感知与个体决策行为之间的关联性。出于这一目的，本研究将实体游戏与数字元素（包含增强现实层）相结合构建了一个多模态的体验，使参与者能够认知并深入反思“线性时间观”与“循环时间观”的哲学内涵。该游戏不仅是一个实验平台，也是一种数据采集方法：通过对游戏行为与决策模式的分析，本研究旨在揭示时间感知对人类行为与认知的塑造作用。研究结果为理解时间感知对思维过程与行为方式的深刻影响提供了洞见，也为深入理解在这一核心维度的人类经验做出了贡献。
+Abstract
+Time is a fundamental and intangible part of human existence. It is commonly described as a measurement of intervals and durations. However, time is also a deeply subjective experience that is shaped by individual perception processes. Beyond being a cognitive phenomenon, time is closely connected to broader systems that encompass ecological and economic structures of society. This integrated linkage has led to varying perceptions of time throughout history that significantly differ across cultural settings. Two essential modes of time perception in this context are the linear and circular perception mode. Linear time perception views time as a sequence that is forward-moving. Events take place in a chronological order and unfold from past to present and into the future. In contrast, circular time perception represents a cyclical understanding of time. Events are experienced as a recurring rhythm, such as the changing of seasons and tides during the year.
+This thesis explores whether the effects associated with the two time perception modes can be observed and measured. The study examines the relationship between time perception and individual decision-making, employing a serious game as an investigative tool. For this purpose, physical gameplay is combined with digital elements, including an augmented reality layer. In this way, the game creates a multimodal experience that allows participants to understand and reflect on linear and circular time perspectives. The game functions not only as an experimental platform but also as a data collection method. Through the analysis of gameplay and decision-making patterns, this research aims to highlight the influence of time perception on human behavior and cognition. The findings provide insights into the profound impact that time perception has on thought processes and actions, contributing to a deeper understanding of this essential aspect of human experience.
+目 录 · Contents
+Chapter 1 Introduction
+1.1 Research Objective
+1.1.1 Research Question
+1.1.2 Relevance
+1.1.3 Scope
+1.2 Methodology
+Chapter 2 Literature Review
+2.1 The Concept of Time
+2.1.1 Human Perception of Time
+2.1.2 Historical Context of Time Perception
+2.1.3 Time Perception based on dual Dimensions
+2.1.4 Linear and Circular Time Perception
+2.1.5 Parameters of Linear and Circular Time Perception
+2.1.6 Case Studies on the Effect of Time Perception
+2.1.7 Summary
+2.2 The Medium of Games
+2.2.1 The Nature of Play
+2.2.2 The Medium of Serious Games
+2.2.3 Case Studies on Serious Games
+2.2.4 The Medium of Board Games
+2.2.5 Case Studies on Board Games
+2.2.6 Components of Game Mechanics
+2.3 Augmented Reality Technology
+2.3.1 Case Studies on Augmented Reality Applications
+2.4 Summary
+Chapter 3 Design
+3.1 Time Perception Survey
+3.1.1 Data Analysis
+3.1.2 Summary
+3.2 Game Concept
+3.2.1 Game Board Design
+3.2.2 Parameter Selection
+3.2.3 6-Dimension Profile
+3.3 Game Mechanics
+3.3.1 Time Perception Assessment
+3.3.2 Movement
+3.3.3 Actions
+3.3.4 Reflection
+3.3.5 Scoring
+3.4 App Design
+3.4.1 App Development
+3.4.2 Marker Technology
+3.5 Physical Prototypes
+3.7 Iterations
+3.8 Manufacturing
+3.9 Summary
+Chapter 4 Experiment
+4.1 Aim
+4.1.1 Participants
+4.1.2 Procedure
+4.2 Research Hypotheses
+4.3 Experiment Execution
+4.4 Experiment Results
+4.4.1 Verification of Hypotheses
+4.5 Post-Game Survey
+4.6 Human Factor Experiment
+4.7 Expert Interviews
+4.8 Discussion
+Chapter 5 Conclusion and Outlook
+5.1 Answering the Research Question
+5.2 Contribution to the Research Field
+5.3 Possible Fields of Application
+5.4 Limitations
+5.5 Future Research Directions
+5.6 Conclusion
+Bibliography
+Figure References
+Appendices
+Acknowledgement
+Biographical Notes and Academic Achievements during the Program
+部 分 插 图 · Figures
+Dis_Maria_2025_01
+Dis_Maria_2025_02
+Dis_Maria_2025_03
+Dis_Maria_2025_04
+Dis_Maria_2025_05
+Dis_Maria_2025_06
+Dis_Maria_2025_07
+Dis_Maria_2025_08
+Dis_Maria_2025_09
+Dis_Maria_2025_10
+Dis_Maria_2025_11
+Dis_Maria_2025_12
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）
+All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

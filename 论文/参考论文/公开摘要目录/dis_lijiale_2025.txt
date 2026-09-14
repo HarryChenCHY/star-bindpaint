@@ -1,0 +1,136 @@
+来源：https://www.daelab.cn/dis_lijiale_2025/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+基于生成式智能体的焦虑缓释严肃游戏设计研究
+Generative Agents Based Serious Game for Anxiety Relief Design Research
+李佳乐
+关 键 词:
+严肃游戏设计，人智交互，生成式智能体，焦虑缓释应用
+Keywords:
+Serious Game Design, Human-AI Interaction, Generative Agents, Application for Anxiety Relief
+摘 要
+普遍存在的大学生群体焦虑情绪，是当下急需解决的社会问题。在人机交互的研究领域中，正在快速发展的严肃游戏设计，被认为是一种有效的焦虑情绪缓释手段。其娱乐性与功能性相结合的属性，十分契合大学生群体对于焦虑情绪缓释的实际需求。
+本研究聚焦于焦虑缓释严肃游戏中的认知行为疗法游戏，通过整理现有研究理论和设计实例，发现了生成式智能体技术对于认知行为疗法游戏的设计机会。在既有的疗法游戏化策略基础上，本研究利用了生成式智能体的自由交互、动态行为规划、自适应状态迭代等能力，对游戏交互玩法进行创新，并完成了相关游戏叙事、场景、交互界面等体验要素设计。在实际开发过程中，本研究基于设计目标，解决了相关的智能体技术问题，完成了智能体系统的实现以及严肃游戏开发工作，产出了完整可用的应用。
+为验证本研究所产出的严肃游戏应用的有效性，及其设计策略的合理性，本研究与同济大学心理健康中心进行合作，招募并筛选了50位在校大学生进行现场用户实验，经过与使用传统交互模式的严肃游戏进行组间对比分析，相关数理统计结论证实了本游戏应用可以有效地缓释大学生焦虑情绪，且基于智能体的游戏角色交互模块是影响本游戏最终焦虑情绪缓释效果的重要因素。
+综上所述，本研究围绕焦虑情绪缓释严肃游戏的设计任务、对现有理论和设计实例进行整理和分析，形成具体设计策略，并在此基础上完成了完整的设计实践工作。最终经过用户实验论证了本研究进行过程中所依托的相关设计策略的合理性，以及所产出应用的实际价值。为人机交互学科下的人智交互、严肃游戏设计相关研究领域贡献经过验证的设计方法和实例参考，并为当下大学生焦虑缓释需求提供了一个切实有效的应用服务。
+Abstract
+In recent years, anxiety among college students has become an urgent social issue that needs to be addressed. In the field of human-computer interaction research, serious game design is rapidly emerging as an effective means of alleviating anxiety. Its combination of entertainment and functionality aligns well with the needs of college students for anxiety relief.
+This study focuses on the cognitive-behavioral therapy (CBT) game design. By analyzing existing theories and design examples, the study identified opportunities in the use of Generative Agents technology for CBT game design. Building upon established therapeutic gaming strategies, this research leveraged the capabilities of Generative Agents such as free interaction, dynamic behavior planning, and adaptive state iteration to innovate gameplay interactions. The study also completed the design of related game narratives, scenes, interaction interfaces, and other experiential elements. During the development process, based on design objectives, the research resolved relevant technical issues, developed the corresponding Generative Agents system, and deliver a fully functional game application.
+To verify the effectiveness of the serious game and the rationality of its design strategy, cooperation was conducted with the Tongji University. Mental Health Center, 50 college students were recruited and screened for on-site user experiments. After conducting group comparisons with traditional interaction mode, statistical analyses confirmed that the game application could effectively alleviate anxiety among college students, and that the interactive module of the Generative Agent based game character played a significant role in the final anxiety relief effect of the game.
+In summary, this study addresses the design task of CBT games, through user experimentation, the study validated the rationality of the design strategies discussed during the process and the practical value of the application produced. This contributes verified design methods to the fields of Human-AI Interaction and Serious Game Design within human-computer interaction research.
+目 录 · Contents
+第1章 引言
+1.1 选题背景
+1.1.1 大学生焦虑情绪
+1.1.2 面向焦虑缓释的严肃游戏
+1.2 选题依据
+1.2.1 以NPC作为CBT游戏优化切入点的依据
+1.2.2 生成式智能体对于NPC交互优化的设计机会
+1.3 国内外研究现状
+1.3.1 焦虑缓释严肃游戏
+1.3.2 焦虑缓释疗法
+1.3.3 游戏内NPC
+1.3.4 生成式智能体
+1.4 研究目的、研究问题和研究意义
+1.4.1 研究目的
+1.4.2 研究问题
+1.4.3 研究意义
+1.5 研究方法和创新
+1.5.1 研究方法
+1.5.2 创新点
+1.6 研究内容和论文框架
+第2章 设计策略
+2.1 现有设计理论及实例分析
+2.1.1 CBT游戏
+2.1.2 生成式智能体
+2.2 目标用户研究
+2.2.1 问卷调查
+2.2.2 深入访谈
+2.3 设计策略阐述
+2.3.1 基于生成式智能体的互助玩法策略
+2.3.2 策略可行性分析
+2.4 专家访谈
+第3章 CBT游戏设计
+3.1 游戏流程设计
+3.1.1 NPC焦虑状态观察
+3.1.2 信念输出及讨论
+3.1.3 互动结果及行为反馈
+3.2 游戏叙事设计
+3.2.1.游戏场景设计
+3.2.2.角色设计
+3.3 游戏玩法设计
+3.3.1 自由对话互动玩法
+3.3.2 饮品匹配及明信片收集玩法
+3.4 游戏美术设计
+3.4.1 游戏美术风格
+3.4.2 游戏交互界面设计
+第4章 智能体系统实现
+4.1 NPC交互模块构建
+4.1.1 智能体响应时延问题
+4.1.2 双模型推理架构
+4.1.3 NPC交互模块评估
+4.2 NPC行为模块构建
+4.2.1 约定行为空间中的动态生成
+4.2.2 行为展现形式
+4.2.3 行动模块评估
+4.3 NPC成长模块构建
+4.3.1 持久化NPC状态迭代
+4.3.2 成长模块评估
+第5章 应用开发及迭代
+5.1 应用开发
+5.1.1 客户端开发
+5.1.2 服务端工程
+5.2 形成性实验
+5.2.1 实验目的
+5.2.2 实验设计
+5.2.3 实验环境及参与者
+5.2.4 实验结果
+5.3 游戏应用迭代
+5.3.1 游戏体验流程调整
+5.3.2 小循环间的过渡玩法
+5.3.3 游戏交互调整
+第6章 用户实验
+6.1 实验目的
+6.2 实验设计
+6.2.1 实验设计方法
+6.2.2 实验测量方法
+6.2.3 实验记录方法
+6.2.4 实验流程
+6.2.5 参与者
+6.3 实施过程
+6.3.1 实验环境
+6.3.2 实验材料
+6.4 实验结果
+6.4.1 焦虑缓释效果
+6.4.2 用户参与度
+6.5 问卷及访谈结果
+6.5.1 问卷结果
+6.5.2 访谈结果
+6.6 实验结果的分析与讨论
+6.6.1 结果汇总
+6.6.2 结果讨论
+第7章 结论与展望
+7.1 结论
+7.2 局限性与展望
+7.2.1 研究局限性
+7.2.2 未来研究方向
+参考文献
+附录A 相关量表及问卷
+附录B 核心代码
+致谢
+个人简历、在读期间发表的学术成果
+部 分 插 图 · Figures
+Dis_Lijiale_2025_01
+Dis_Lijiale_2025_02
+Dis_Lijiale_2025_03
+Dis_Lijiale_2025_04
+Dis_Lijiale_2025_05
+Dis_Lijiale_2025_06
+Dis_Lijiale_2025_07
+Dis_Lijiale_2025_08
+Dis_Lijiale_2025_09
+Dis_Lijiale_2025_10
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）
+All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

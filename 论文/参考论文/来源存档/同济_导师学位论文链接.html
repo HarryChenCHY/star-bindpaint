@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                <title>欢迎访问同济大学导师主页</title>
+    <link rel="stylesheet" href="/inc/css/reset.css">
+    <link rel="stylesheet" href="/inc/css/style.css">
+    <link rel="stylesheet" href="/inc/css/common.css">
+    <link rel="stylesheet" href="/inc/layer/layui.css" media="all">
+    <script src="https://kyimg.360eol.com/jquery-2.1.4.min.js" type="text/javascript"></script>
+    <script src="/inc/layer/layui.js"></script>
+    <!--sync.js-->
+    <script src="/inc/js/webuploader/webuploader.js" type="text/javascript"></script>
+    <script type="text/javascript" src="https://image.360eol.com/common/js/device.js"></script>
+    <script>
+        // console.log(location.href);
+        var currentHref = location.href;
+        if(DeviceType()){
+            var mobileHref = currentHref.replaceAll(location.host,location.host+"/mobile");
+            location.href = mobileHref;
+        }
+    </script>
+
+    <style>
+        img{
+            cursor: pointer;
+        }
+        #bdshare_weixin_qrcode_dialog {
+                height: 308px! important;
+        }
+        .info2 img{max-width: 100%}
+        .line-info{float:left;padding-right:30px; position: relative;height:28px;}
+        .deleteinfo{position: absolute;right:0;top:0; width: 20px; height: 20px;}
+    </style>
+</head>
+<body class="teachers">
+<script src="/inc/js/head.js"></script>
+<script src="https://image.360eol.com/common/js/tongji_daoshiku.js"></script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?ad5d6a7f3c52816bf7232f85c4cfb933";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<style>
+</style>
+<div class="teacher-head bgColor login-top">
+
+    <div class="wrap">
+              <a href="/" style="float:left;color:white" target="_blank">
+           <img src="http://kyimg.360eol.com/kaoyan/aa28bebd82724a4089490a325e506269.jpg?imageView2/1/w/50/h/50/q/80" class="logo fn-left" alt="">
+
+同济大学
+              </a>
+
+      <div class="line fn-left"></div>
+
+        <div class="head-title fn-left" style="font-family: fantasy;">
+        	导师风采
+            
+		</div>
+
+			<div class="fn-right">
+				<!--<a href="" class="create">创建我的个人主页</a>-->
+				<a class="btn" href="http://tongji.teacher.360eol.com/login">导师登录</a>
+			</div>
+         <div class="head-search fn-right fontColor"  >
+             <input type="text" id="top-search-value" style="font-size: 18px;" placeholder="请输入关键词搜索">
+             <span class="icon-shlg_1 fn-left" id="top-search"></span>
+         </div>
+    </div>
+</div>
+    <div class="teacher-bg" style="background:url(http://kyimg.360eol.com/kaoyan/a6618360a64d4fc6af6ed1a8d54d0741.jpg) center top no-repeat;background-attachment: fixed"></div>
+
+    <div class="teacher-main">
+        <ul class="teac-menu" id="teac-menu">
+            <li data-id=""><a class="bgColor" href="javascript:void(0)">首页</a></li>
+            <li data-id="TDZS"><a class="" href="javascript:void(0)">团队展示</a></li>
+            <li data-id="XMQK">
+                <a class="" href="javascript:void(0)" style="position: relative">
+                            项目情况
+                </a>
+
+            </li>
+                <li id="zs_stu" data-id="ZSXX"><a class="" href="javascript:void(0)" data-attr="ZSXX" >招生信息</a></li>
+
+            <li data-id="KYXM"><a class="" href="javascript:void(0)">实验室概况</a></li>
+            <li data-id="YJCG"><a class="" href="javascript:void(0)">学术论文</a></li>
+                 <li data-id="custom_26445"><a class="" href="javascript:void(0)">获奖荣誉</a></li>
+                 <li data-id="custom_26446"><a class="" href="javascript:void(0)">创作成果</a></li>
+        </ul>
+        <div class="clearfix">
+            <div class="teac-leftcon">
+                <div class="teac-bk boderTopColor">
+                    <div class="phototu">
+
+                            <img src="http://kyimg.360eol.com/kaoyan/yzteacher/8954da0c9f4340808ba5cee540ba0248.jpg?imageView2/1/w/680/h/852/q/80" onerror="src='/inc/images/header.png'">
+
+
+                    </div>
+                    <div class="photoname" id="teacherName">柳喆俊</div>
+
+                    <div class="photoname" style="font-size: 9px">浏览量：3023&nbsp;&nbsp;&nbsp;转发量：17</div>
+                    <div class="wholike">
+
+                    </div>
+
+
+                </div>
+                    <div class="teac-bk-img" href="#mybkyx" style="margin-top: 21px;">
+                        <img src="/inc/images/shlg_sch17.png" alt="">
+                    </div>
+                <div class="teac-bk boderTopColor">
+                    <div class="teac-hbt">
+                        <p class="hbt1 fontColor">个人信息</p>
+                                <p class="hbt2">Personal Information</p>
+                    </div>
+                    <ul class="info1">
+                        <li><span class="cw" id="technicalTitle">副教授</span></li>
+                        <li class="mentorType">导师类别：硕士生导师</li>
+                            <li  >性别：
+                                    男
+                            </li>
+                           <li  >学历：博士研究生</li>
+                           <li  >学位：博士</li>
+                        <!--  <li>学历：博士研究生毕业</li>-->
+                        <!--<li>学位：博士学位</li>-->
+                        <!--<li>在职信息：在职</li>-->
+                        <!--<li>所在单位：电子机械系</li>-->
+                        <!--<li>学科：机械制造及其自动化</li>-->
+                        <!--<li>办公地点：新科技楼A307</li>-->
+                    </ul>
+                </div>
+                <div class="teac-bk boderTopColor" id="LXFS">
+                    <div class="teac-hbt">
+                        <p class="hbt1 fontColor">联系方式</p>
+                        <p class="hbt2">Contact Information</p>
+                    </div>
+                    <ul class="info1">
+                        <!--<li>邮编 : 200093</li>-->
+                        <!--<li>通讯/办公地址 : 上海市军工路516号</li>-->
+
+                        <li id="collegeName">所属院系：设计创意学院</li>
+                        <li id="relationCollege" style="display: none">关联学科学院：<span id="relationCollegeText"></span></li>
+                        <li id="specialtyName">所属专业：
+                              设计
+                                    &nbsp;、
+                              机械
+                        <li >
+                        邮箱 : 43679229@qq.com
+                       </li>
+                        <li >
+                        工作电话 : 021-65983432
+                        </li>
+                    </ul>
+                </div>
+              <!--<div class="teac-bk boderTopColor">
+                     <div class="xxpictu"><img src="/inc/images/teachcode.png"></div> 
+              </div>-->
+            </div>
+            <div class="teac-rightcon">
+            
+                <div class="teac-bkcon">
+                    <div class="teac-bk boderTopColor" id="GRJJ">
+                        <div class="teac-hbt">
+                            <p class="hbt1 fontColor">个人简介</p>
+                                <p class="hbt2">Personal Profile</p>
+
+                        </div>
+                        <div class="info2">
+                            <p>柳喆俊（Aaron Leo）现任<a href="http://tjdi.tongji.edu.cn/">同济大学设计创意学院</a>副教授、硕士生导师、数字媒体设计师，并任<a href="http://www.aboutleo.cn/research/daelab/">数字动画与数字娱乐实验室</a>以及<a href="http://www.aboutleo.cn/research/isllab/">沉浸式体感仿真实验室</a>的创办人与负责人，<a href="http://www.aboutleo.cn/teaching/">教学</a>、<a href="http://www.aboutleo.cn/research/">科研</a>与<a href="http://www.aboutleo.cn/creations/">创作</a>主要涉及<a href="http://www.aboutleo.cn/creations/animation/">三维动画</a>、<a href="http://www.aboutleo.cn/creations/application/">三维交互软件设计</a>、<a href="http://www.aboutleo.cn/creations/game/">游戏设计</a>、<a href="http://www.aboutleo.cn/creations/xr/">虚拟现实</a>与<a href="http://www.aboutleo.cn/creations/simulation">虚拟仿真</a>等领域，带领学生完成的数字媒体类作品曾在国内外竞赛中屡获奖项。</p><p>如需了解更多信息，请访问柳喆俊的个人网站：<a href="http://www.aboutleo.cn" target="_blank"><font color="#008080"><u>www.aboutleo.cn</u></font></a>&nbsp;以及数字动画与数字娱乐实验室网站：<a href="http://www.daelab.cn" target="_blank"><font color="#008080"><u>www.daelab.cn</u></font></a></p><p><br></p><iframe width="100%" height="450" src="//player.bilibili.com/player.html?aid=603514420&amp;bvid=BV1pB4y177b6&amp;cid=849197325&amp;page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe><p><br></p><p>2019&nbsp;~&nbsp;至今，任同济大学设计创意学院副教授，创办并负责“数字动画与数字娱乐实验室”与“沉浸式体感仿真实验室”。</p><p>2013&nbsp;~&nbsp;至今，任设计学专业（MA）、工程专业（ME）及艺术设计专业（MFA）硕士生导师。</p><p>2015&nbsp;~&nbsp;2018，任同济大学艺术与传媒学院副教授、院长助理及动画专业负责人。</p><p>2011&nbsp;~&nbsp;2018，创办艺术与传媒学院“非平面影像实验室”并担任负责人。</p><p>2005&nbsp;~&nbsp;2015，就职于同济大学艺术与传媒学院动画专业，任动画专业讲师。</p><p>2004&nbsp;~&nbsp;2005，实习、工作于育碧电脑软件有限公司上海工作室。</p><p><br></p>
+                        </div>
+                    </div>
+                    <div class="teac-bk boderTopColor tab" id="YJFX">
+                        <ul class="tabmenu2">
+                            <li class="bgColor"><span class="bt1  fontColor">研究方向</span><span class="bt2">Research Directions</span></li>
+                            <!--  <li><span class="bt1  fontColor">社会兼职</span><span class="bt2">Social Affiliations</span></li>-->
+                        </ul>
+                        <div class="tabmain2">
+                            <div class="tab-article" id="researchDirection">
+                                游戏与严肃游戏,交互设计,拓展现实：VR/AR/MR,数字动画
+                            </div>
+                            <div class="tab-article">
+                                2. 机电结构优化与控制 研究内容：在对机电结构进行分析和优化的基础上，运用控制理论进行结构参数的调整，使结构性能满足设计要求。1. 仿生结构材料拓扑优化设计, 仿生机械设计 研究内容：以仿生结构为研究对象，运用连续体结构拓扑优化设计理论和方法，对多相仿生结构(机构)材料进行2. 机电结构优化与控制 研究内容：在对机电结构进行分析和优化的基础上，运用控制理论进行结构参数的调整，使结构性能满足设计要求。1. 仿生结构材料拓扑优化设计, 仿生机械设计 研究内容：以仿生结构为研究对象，运用连续体结构拓扑优化设计理论和方法，对多相仿生结构(机构)材料进行整体布局设计。 整体布局设计。 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="teac-bkcon" id="TDZS">
+                    <div class="teac-bk noborder">
+                        <div class="btwz">
+                            <i class="bgColor"></i><span class="fontColor">团队展示</span>    
+                        </div>
+                        <div class="info2">
+                          <section><p style="text-align: center;"><font face="黑体" size="5"><b>在读研究生</b></font></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/b197c0af957e41dda6ac3f5a18493892.jpg" alt="Photo_Student_LiuYiChi"></p><h1 style="text-align: center;">刘一驰</h1><h1 style="text-align: center;">媒体与传达方向工程硕士生</h1><h1 style="text-align: center;"><span style="float: none;">研究方向：</span><span style="text-align: left; float: none;">技术美术/交互叙事</span><br></h1><p style="text-align: center; "><span style="float: none;"><br></span></p><h1 style="text-align: center;"><img src="http://kyimg.360eol.com/kaoyan/yzteacher/8fa1fa7bd3a54ec0924e6dbc9252afaf.jpg" alt="Photo_Student_LinYouXiang"></h1><section><div><div><div><h1 style="text-align: center;">林尤翔</h1></div></div><div><div><h1 style="text-align: center;">媒体与传达方向工程硕士生</h1></div></div><div><h1 style="text-align: center;"><span style="float: none;">研究方向：</span><span style="text-align: left; float: none;">游戏设计/数字媒体艺术</span><br></h1></div><p style="text-align: center; "><span style="float: none;"><br></span></p><div><div><h1 style="text-align: center;"><img src="http://kyimg.360eol.com/kaoyan/yzteacher/0ea6b6733e0e430790549a99af07e030.jpg" alt="Photo_Student_HuRunKai"></h1></div></div></div><div><div><h1 style="text-align: center;">户润恺</h1></div><div><h1 style="text-align: center;"><span style="text-align: left; float: none;">交互设计方向工程硕士生</span></h1></div><div><h1 style="text-align: center;"><span style="float: none;">研究方向：</span><span style="text-align: left; float: none;">虚拟现实/游戏设计</span><br></h1></div><p style="text-align: center; "><span style="float: none;"><br></span></p><div><div><h1 style="text-align: center;"><img src="http://kyimg.360eol.com/kaoyan/yzteacher/25acd26224a6489eaa01218e8bb57d3c.jpg" alt="Photo_Student_SuYuXian"></h1></div></div></div><div><div><h1 style="text-align: center;"></h1><h1 style="text-align: center; ">苏昱衔</h1><h1 style="text-align: center;">交互设计方向工程硕士生</h1><h1 style="text-align: center;">研究方向：交互设计/游戏设计</h1><p><br></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/b7b989a3e68540069017c1cfcc9bfb00.jpg" alt="Photo_Student_Ezechiel" class=""></p><h1 style="text-align: center;"></h1><h1 style="text-align: center; ">Ezéchiel · 凤翔</h1><h1 style="text-align: center; "><span style="float: none;">媒体与传达方向工程硕士生</span></h1><p><span style="float: none;"></span></p><h1 style="text-align: center; ">研究方向：游戏设计/影音设计</h1><p><span style="float: none;"><br></span></p><p style="text-align: center; "><span style="float: none;"><img src="http://kyimg.360eol.com/kaoyan/yzteacher/2ba1e67419354974a4e7ed93510823d7.jpg" alt="Photo_Student_LiZuoJiaSheng" class=""></span></p><p style="text-align: center; "><span style="float: none;"></span></p><h1 style="text-align: center; ">李左嘉晟</h1><h1 style="text-align: center; ">交互设计方向工程硕士生</h1><h1 style="text-align: center; ">技术策划/交互设计</h1><p style="text-align: center; "><span style="float: none;"><br></span></p><p style="text-align: center; "><span style="float: none;"><img src="http://kyimg.360eol.com/kaoyan/yzteacher/6ddd22c9c804492f906011ec7042c411.jpg" alt="Photo_Student_ZhangZiBo"></span></p><p style="text-align: center; "><span style="float: none;"></span></p><h1 style="text-align: center; ">张梓博</h1><p style="text-align: center; "><span style="float: none;"></span></p><h1 style="text-align: center; ">交互设计方向工程硕士生</h1><p style="text-align: center; "><span style="float: none;"></span></p><h1 style="text-align: center; ">研究方向：交互设计/严肃游戏</h1><p><br></p><p align="center" style="text-align: center;"><img src="http://kyimg.360eol.com/kaoyan/yzteacher/c30afeb51a7a487abc11eb38affda5a9.jpg" alt="Photo_Student_ChenZiYuan" class=""></p><h1 style="text-align: center; ">陈子元</h1><h1 style="text-align: center; ">交互设计方向工程硕士生</h1><h1 style="text-align: center; ">研究方向：交互设计/游戏设计</h1><p><br></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/36d3fea75bf04c14820645547b859021.jpg" alt="Photo_Student_LiuWenYi" class=""></p><h1 style="text-align: center; ">刘文艺</h1><h1 style="text-align: center; ">媒体与传达方向工程硕士生</h1><h1 style="text-align: center; ">研究方向：程序化生成/游戏场景设计</h1><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/1e9c6020910e45de894b233a423f37c4.jpg" alt="Photo_Student_ZhouYuFei"></p><h1 style="text-align: center; ">周与非</h1><h1 style="text-align: center; ">媒体与传达方向工程硕士生</h1><h1 style="text-align: center; ">研究方向：严肃游戏/体验设计</h1><p><br></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/b8a37dfdc4124d2c8a339f36fd1510f6.jpg" alt="Photo_Student_LuXu" class=""></p><h1 style="text-align: center;">卢旭</h1></div><div><div><h1 style="text-align: center;">交互设计方向工程硕士生</h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">研究方向：非对称VR/游戏体验设计</span><br></h1></div></div><p style="text-align: center; "><br></p><p style="text-align: center; "><br></p></div></section><section><p style="text-align: center; "><font face="黑体" size="5"><b style="">已毕业研究生</b></font></p><section><div><h1 style="text-align: center;"><img src="http://kyimg.360eol.com/kaoyan/yzteacher/d5eacc7f481c407c99511b4cff1d2bbf.jpg" alt="Photo_Student_ZhaoZhuoDong"></h1><h1 style="text-align: center;">赵茁栋</h1><h1 style="text-align: center;">交互设计方向工程硕士生</h1><h1></h1><h1 style="text-align: center; ">研究方向：技术美术/交互设计</h1><h1 style="text-align: center; "><span style="text-align: left; float: none;">学位论文&nbsp;(<a href="http://www.daelab.cn/dis_zhaozhuodong_2025/" target="_blank">Link</a></span><span style="text-align: left; float: none;">)</span></h1><p><span style="text-align: left; float: none;"><br></span></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/fd7525c2e36446cda70596fc7da2ecd9.jpg" alt="Photo_Student_LiJiaLe"></p><h1 style="text-align: center;">李佳乐</h1><h1 style="text-align: center;">交互设计方向工程硕士生</h1><h1 style="text-align: center;">研究方向：游戏策划/交互设计</h1><h1 style="text-align: center;"><span style="text-align: left; float: none;">学位论文&nbsp;(<a href="http://www.daelab.cn/dis_lijiale_2025/" target="_blank">Link</a></span><span style="text-align: left; float: none;">)</span></h1><p style="text-align: center; "><br></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/a976edcb02b4400dafef65d4e78056e3.jpg" alt="Photo_Student_JianWen"></p><h1 style="text-align: center;">简雯</h1><h1 style="text-align: center;">交互设计方向工程硕士生</h1><h1 style="text-align: center; ">研究方向：严肃游戏/交互设计</h1><h1 style="text-align: center; "><span style="text-align: left; float: none;">学位论文&nbsp;(<a href="http://www.daelab.cn/dis_jianwen_2025/" target="_blank">Link</a></span><span style="text-align: left; float: none;">)</span></h1><p style="text-align: center; "><br></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/23d5036b66a14864a23f5037c291d598.jpg" alt="Photo_Student_Maria"></p><h1 style="text-align: center;">Maria Buerger · 马礼雅</h1><h1 style="text-align: center;">媒体与传达方向双学位硕士生</h1><h1 style="text-align: center; ">研究方向：严肃游戏/体验设计</h1><h1 style="text-align: center; "><span style="text-align: left; float: none;">学位论文&nbsp;(<a href="http://www.daelab.cn/dis_maria_2025/" target="_blank">Link</a></span><span style="text-align: left; float: none;">)</span></h1><p style="text-align: center; "><br></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/3ef5dac844db4137a64a353fa732812b.jpg" alt="Photo_Student_ZhouJingYu"></p><p style="text-align: center; ">周静娱</p><h1 style="text-align: center; ">交互设计方向工程硕士生</h1><h1 style="text-align: center; ">研究方向：VR/交互设计</h1><h1 style="text-align: center; "><span style="text-align: left; float: none;">学位论文&nbsp;(<a href="http://www.daelab.cn/dis_zhoujingyu_2025/" target="_blank">Link</a></span><span style="text-align: left; float: none;">)</span></h1></div><p style="text-align: center; "><br></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/2a942293598f41eab608578389d2b8d5.jpg" alt="Photo_Student_ChenXingHui"></p><h1 style="text-align: center; ">陈星珲</h1><h1 style="text-align: center; "><span style="float: none;">媒体与传达方向工程硕士生</span></h1><p><span style="float: none;"></span></p><h1 style="text-align: center; ">研究方向：多人交互/体验设计/渲染技术</h1><h1 style="text-align: center; "><span style="text-align: left; float: none;">学位论文&nbsp;(<a href="http://www.daelab.cn/dis_chenxinghui_2024/" target="_blank">Link</a></span><span style="text-align: left; float: none;">)</span></h1><p><span style="float: none;"><br></span></p><p style="text-align: center; "><span style="float: none;"><img src="http://kyimg.360eol.com/kaoyan/yzteacher/93af80a233ec4066986f45957219b5be.jpg" alt="Photo_Student_ZhangMuCai"></span></p><div><div><div><h1 style="text-align: center;">张慕财</h1></div></div><div><div><h1 style="text-align: center;">交互设计方向工程硕士生</h1></div></div><div><h1 style="text-align: center;">研究方向：VR/游戏交互设计</h1><h1 style="text-align: center;"><span style="text-align: left; float: none;">学位论文&nbsp;(</span><span style="text-align: left; float: none;"><a href="http://www.daelab.cn/dis_zhangmucai_2024/" target="_blank">Link</a></span><span style="text-align: left; float: none;">)</span></h1></div><p style="text-align: center;"><br></p><p style="text-align: center;"><img src="http://kyimg.360eol.com/kaoyan/yzteacher/639df9e8fbe84a829d049aedfc3892c4.jpg" alt="Photo_Student_GuKeYi"></p></div></section><section><div><h1 style="text-align: center; "></h1><h1 style="text-align: center; "><span style="float: none;">古坷懿</span></h1></div><p><span style="float: none;"></span></p><h1 style="text-align: center; ">媒体与传达方向工程硕士生</h1><p><span style="float: none;"></span></p><h1 style="text-align: center; ">研究方向：严肃游戏 / 动画</h1><h1 style="text-align: center; ">学位论文&nbsp;(<a href="http://www.daelab.cn/dis_gukeyi_2024/" target="_blank">Link</a>)</h1><div><p style="text-align: center;"><br></p><p style="text-align: center;"><img src="http://kyimg.360eol.com/kaoyan/yzteacher/6b22fc2748534c7e8bed12e098fb15ec.jpg" alt="Photo_Student_HeEnTang"></p></div></section><section><div><div><div><h1 style="text-align: center;">贺蒽堂</h1></div></div><div><div><h1 style="text-align: center;">交互设计方向工程硕士</h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">研究方向：交互叙事/游戏策划</span><br></h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">&nbsp;</span><span style="float: none;">学位论文</span><span style="float: none;">&nbsp;(</span><a href="http://www.daelab.cn/dis_heentang_2023/"><u><em>Link</em></u></a><span style="float: none;">)</span></h1></div></div></div><div><div><p style="text-align: center; "><br></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/b4fd11ba51e44635b6becbdecc3026f0.jpg" alt="Photo_Student_LuoZhen"></p></div><div><div><h1 style="text-align: center;">罗珍</h1></div></div><div><div><h1 style="text-align: center;">媒体与传达方向工程硕士</h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">研究方向：VR教育游戏/三维视觉设计</span><br></h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">&nbsp;</span><span style="float: none;">学位论文&nbsp;</span><span style="float: none;">(</span><a href="http://www.daelab.cn/dis_luozhen_2023/"><u><em>Link</em></u></a><span style="float: none;">)</span></h1></div></div></div><div><div><p><br></p></div><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/c0d2587d538b42b4bc49d206611efc95.jpg" alt="Photo_Student_LiLinJian"></p><div><div><h1 style="text-align: center;">李林键</h1></div></div><div><div><h1 style="text-align: center;">交互设计方向工程硕士</h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">研究方向：体验设计/智能座舱/虚拟交互</span><br></h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">&nbsp;</span><span style="float: none;">学位论文&nbsp;</span><span style="float: none;">(</span><a href="http://www.daelab.cn/dis_lilinjian_2023/"><u><em>Link</em></u></a><span style="float: none;">)</span></h1></div></div></div><div><div><p><br></p></div><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/aa082575ee524f18a1b794b3bc9130b7.jpg" alt="Photo_Student_Nicolos" class=""></p><div><div><h1 style="text-align: center;">Nicolo' Azzolin · 尼克​</h1></div></div><div><div><h1 style="text-align: center;">交互设计方向双学位硕士</h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">研究方向：AR/交互设计</span><br></h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">学位论文&nbsp;</span><span style="float: none;">(</span><a href="http://www.daelab.cn/dis_nicolos_2023/"><u><em>Link</em></u></a><span style="float: none;">)</span></h1></div></div></div><div><div><p><br></p></div><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/f61ae904294c48b785be88a71b128001.jpg" alt="Photo_Student_GuoQin" class=""></p><div><div><h1 style="text-align: center;">郭钦</h1></div></div><div><div><h1 style="text-align: center;">交互媒体方向艺术硕士</h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">研究方向：技术美术/游戏开发</span><br></h1></div></div><div><h1 style="text-align: center;"><span style="float: none;">学位论文&nbsp;</span><span style="float: none;">(</span><a href="http://www.daelab.cn/dis_guoqin_2021/"><u><em>Link</em></u></a><span style="float: none;">)</span></h1></div></div><div><div><p style="text-align: center; "><br></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/53458681b7a14da4beba3a2dd5882e1d.jpg" alt="Photo_Student_YuGuoDong"></p></div><div><div><h1 style="text-align: center;">余国东</h1></div></div><div><div><h1 style="text-align: center;">影视动画方向艺术硕士</h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">研究方向：影视编剧/动画导演</span><br></h1></div></div><div><div><h1 style="text-align: center;"><span style="float: none;">&nbsp;</span><span style="float: none;">学位论文&nbsp;</span><span style="float: none;">(</span><a href="http://www.daelab.cn/dis_yuguodong_2022/"><u><em>Link</em></u></a><span style="float: none;">)</span></h1></div></div></div></section><section><p><br></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/f555359181494b38a633977fc822096c.jpg" alt="Photo_Student_XieTian"></p><div><div><h1 style="text-align: center;">谢天</h1></div></div><div><div><h1 style="text-align: center;">交互设计方向工程硕士</h1></div></div><div><h1 style="text-align: center;"><span style="float: none;">研究方向：游戏开发/引擎开发</span><br></h1></div><div><h1 style="text-align: center;"><span style="float: none;">学位论文&nbsp;</span><span style="float: none;">(</span><a href="http://www.daelab.cn/dis_xietian_2022/"><u><em>Link</em></u></a><span style="float: none;">)</span></h1></div></section></section></section><p><br></p>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="teac-bkcon" id="XMQK">
+                    <div class="teac-bk noborder">
+                        <div class="btwz">
+                            <i class="bgColor"></i><span class="fontColor">项目情况</span>    
+                        </div>
+                        <div class="info2">
+                             <p>2020年，<span style="float: none;">负责建设的《镜头语言虚拟实验》项目获评“国家级虚拟仿真实验教学一流课程”。</span></p><p>2019年，<span style="float: none;">负责虚拟仿真实验教学项目《镜头语言虚拟实验》建设，获评“上海市级虚拟仿真实验教学项目”。</span></p><p><span style="float: none;">2019年，</span><span style="float: none;">负责科研项目“基于程控座椅的沉浸式飞行模拟系统设计”。</span></p><p>2019年，<span style="float: none;">负责科研项目“基于程控座椅的沉浸式战舰驾驶模拟系统设计”。</span></p><p>2019年，<span style="float: none;">负责科研项目“YH、TY卫星运行状态实时可视化系统设计”。</span></p><p><span style="float: none;">2019年，</span><span style="float: none;">负责科研项目“用于航天运载服务推广的交互系统修改”。</span></p><p>2019年，<span style="float: none;">负责科研项目“用于展示的台风可视化VR系统设计”。</span></p><p>2018年，<span style="float: none;">负责（第三负责人）教改项目“同济大学精品系列通识选修课程建设”，与生命科学与技术学院共建《生命的艺术》通识选修课。</span></p><p>2018年，<span style="float: none;">负责科研项目“用于航天运载服务推广的交互系统设计”。</span></p><p><span style="float: none;">2017年，</span><span style="float: none;">负责科研子项目“海底飞行节点地震仪工作原理演示动画设计”。</span></p><p>2017年，<span style="float: none;">负责科研子项目“国家海底科学观测网阐释动画设计”。</span></p><p><span style="float: none;">2017年，</span><span style="float: none;">负责科研项目“FY-4卫星运行状态实时演示系统设计”。</span></p><p>2016年，<span style="float: none;">负责同济大学教改项目“新进教师教学技能提升训练研究”。</span></p><p><span style="float: none;">2016年，</span><span style="float: none;">负责科研项目“卫星虚拟展示系统设计”。</span></p><p><span style="float: none;">2016年，</span><span style="float: none;">负责科研项目“卫星运动虚拟仿真系统设计”。</span></p><p><span style="float: none;">2016年，</span><span style="float: none;">负责中央高校基本科研项目“数字动画技术辅助阐释科研方案的创作研究”。</span></p><p><span style="float: none;">2016年，</span><span style="float: none;">负责上海市学校艺术科研青年项目“数字动画促进艺术生理解抽象概念的教学实效研究——以三维动画教学为例”。</span></p><p><span style="float: none;">2015年，</span><span style="float: none;">负责科研项目“虚拟球幕影像与航天动画创作研究”。</span></p><p>2015年，<span style="float: none;">参与同济大学教改重点项目“中国台湾地区高校通识教育研究及经验借鉴”。</span></p><p><span style="float: none;">2014年，</span><span style="float: none;">负责“安悦节能技术有限公司技术咨询”项目。</span></p><p><span style="float: none;">2013年，</span><span style="float: none;">负责“4D数字媒体作品创作实践”教改项目。</span></p><p><span style="float: none;">2011年，</span><span style="float: none;">参与同济大学“全英语课程包建设”与“高级双语教学团队建设”项目。</span></p><p><span style="float: none;">2009年，</span><span style="float: none;">负责同济大学文科课题“数字媒体艺术教育方法初探：三维艺术教育方法研究”。</span></p><p><span style="float: none;">2007年，</span><span style="float: none;">参与“动画专业特色专业建设”项目。</span></p><p><span style="float: none;">2007年，</span><span style="float: none;">参与“新媒体艺术人才培养模式研究”项目。</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="teac-bkcon" id="ZSXX">
+                    <a class="mybaokao bgColor" href="#mybkyx">报考意向</a>
+                    <div class="teac-bk noborder">
+                        <div class="btwz">
+                            <i class="bgColor"></i><span class="fontColor">招生信息
+                            </span>
+                        </div>
+                        
+                        <div class="info3 zhaoshengxx">
+                            <div class="xyname">设计创意学院</div>
+                            <div class="xystu">
+                                <div class="xian"></div>
+                                <div class="xystuleibie">硕士研究生</div>
+                            </div>
+                            <ul class="xybiao clearfix">
+                                <li>序号</li>
+                                <li>专业</li>
+                                    <li>招生人数</li>
+
+                                <li>年份</li>
+                            </ul>
+                            <div class="xybiao titlebt" data-type="xwm">
+                                
+                                <a href="javascript:void(0);"  specialtyId=5816>
+                                    <dl class="clearfix" data-id="">
+                                        <dd>1</dd>
+                                        <dd>艺术设计</dd>
+                                                   <dd>&nbsp;</dd>
+
+                                        <dd>2023</dd>
+                                    </dl>
+                                </a>
+                                <a href="javascript:void(0);"  specialtyId=5817>
+                                    <dl class="clearfix" data-id="">
+                                        <dd>2</dd>
+                                        <dd>机械</dd>
+                                                   <dd>&nbsp;</dd>
+
+                                        <dd>2023</dd>
+                                    </dl>
+                                </a>
+                                
+                            </div>
+                        </div>
+                        <div class="info2">
+                                    
+                        </div>
+                        
+                    </div>
+                    <div class="teac-bk noborder" id="mybkyx">
+                        <div class="btwz">
+                            <i class="bgColor"></i><span class="fontColor">报考意向</span>    
+                        </div>
+                        <div class="info3 flex-info">
+                            <div class="zlitem clearfix">
+                                <span class="s1">姓名:</span>
+                                <div class="input-area"><input type="text" placeholder="请输入真实姓名" id="name"></div>
+                            </div>
+                            <div class="zlitem clearfix">
+                                <span class="s1">手机号码：</span>
+                                <div class="input-area"><input type="text" placeholder="请输入手机号码" id="phone" type="tel"></div>
+                            </div>
+                            <div class="zlitem clearfix">
+                                <span class="s1">邮箱：</span>
+                                <div class="input-area"><input type="text" placeholder="请输入邮箱" id="email" type="email"></div>
+                            </div>
+                            <div class="zlitem clearfix">
+                                <span class="s1">毕业院校：</span>
+                                <div class="input-area"><input style="cursor:pointer" class="school" readonly type="text" placeholder="请选择" id="graduateSchoolId"></div>
+                            </div>
+                            <div class="zlitem clearfix">
+                                <span class="s1">所学专业：</span>
+                                <div class="input-area"><input style="cursor:pointer" class="zhuanye" readonly type="text" placeholder="请选择" id="specialtyId"></div>
+                            </div>
+                            <div class="zlitem clearfix">
+                                <span class="s1">报考类型：</span>
+                                <div class="input-area clearfix">
+                                          <div class="fn-left sex-item on" id="doc_type"><input type="radio" name="signUpType" value="2" title="博士" class="signUpType" checked><em class="boderTopColor"></em>博士</div>
+                                          <div class="fn-left sex-item" id="doc_type"><input type="radio" name="signUpType" value="1" title="硕士" class="signUpType"><em></em>硕士</div>
+
+                              </div>
+                            </div>
+                                <div class="zlitem clearfix" style="display: none">
+
+                                <span class="s1">报考年份：</span>
+                                <div class="input-area">
+                                    <select id="bmType" name="bmType">
+                                        <option value="2026">2026</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="zlitem clearfix line">
+                                <span class="s1">个人简历<span style="color: red">*</span>：</span>
+                                <input type="hidden" id="resumeUrl">
+                                <input type="hidden" id="resumeName">
+                                <p class="upLoadImg uploadExtro fl fn-left" data-type="resume" style="    margin-right: 10px;">
+                                <i>上传附件</i>
+                               </p>
+                                <div id="resumeDiv" style="float:left;display: none">
+                                    <div class="line-info" data-type="resume">
+                                        <em class="showResumeName"></em>
+                                        <a class="deleteinfo" style=""><img src="/inc/images/close-box.png" alt=""></a>
+                                    </div>
+                                </div>
+                                <em class="fn-left" style="    padding-left: 10px;">
+                                    支持扩展名：.rar .zip .doc .docx .pdf .jpg .png .jpeg
+                                </em>
+                                <div class="upfile clearfix"></div>
+                            </div>
+                            <div class="zlitem clearfix line">
+                                <span class="s1">成绩单<span style="color: red">*</span>：</span>
+                                <input type="hidden" id="reportCardUrl">
+                                <input type="hidden" id="reportCardName">
+                                <p class="upLoadImg uploadExtro fl fn-left" data-type="reportCard" style="  margin-right: 10px;">
+                                <i>上传附件</i>
+                                </p>
+                                <div id="showReportCardDiv" style="float:left;display: none">
+                                    <div class="line-info" data-type="reportCard">
+                                        <em class="showReportCardName"></em>
+                                        <a class="deleteinfo" style=""><img src="/inc/images/close-box.png" alt=""></a>
+                                    </div>
+                                </div>
+
+                                <em class="fn-left" style="    padding-left: 10px;">
+                                    支持扩展名：.rar .zip .doc .docx .pdf .jpg .png .jpeg
+                                </em>
+                                <div class="upfile clearfix"></div>
+                            </div>
+                            <div class="zlitem clearfix line">
+                                <span class="s1">其他材料：</span>
+                                <input type="hidden" id="otherUrl">
+                                <input type="hidden" id="otherName">
+                                <p class="upLoadImg uploadExtro fl fn-left" data-type="other" style="margin-right: 10px;">
+                                    <i>上传附件</i>
+                                </p>
+                                <div id="showOtherDiv" style="float:left;display: none">
+                                    <div class="line-info" data-type="other">
+                                        <em class="showOtherName"></em>
+                                        <a class="deleteinfo" style=""><img src="/inc/images/close-box.png" alt=""></a>
+                                    </div>
+                                </div>
+                                <em class="fn-left" style="    padding-left: 10px;">
+                                    支持扩展名：.rar .zip .doc .docx .pdf .jpg .png .jpeg
+                                </em>
+                                <div class="upfile clearfix"></div>
+                            </div>
+                            <div class="zlitem clearfix line">
+                                <span class="s1">备注：</span>
+                                <div class="bzsm">
+                                <textarea name="" cols="" rows="" id="remark"></textarea>
+                                </div>
+                            </div>
+                            <div class="zlitem clearfix line">
+                                <a class="saveinfo bgColor btn1">提交</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+
+                <div class="teac-bkcon" id="KYXM">
+                    <div class="teac-bk noborder">
+                        <div class="btwz">
+                            <i class="bgColor"></i><span class="fontColor">实验室概况</span>    
+                        </div>
+                        <div class="info2">
+                            <p style="text-align: center; "><b><font face="黑体" size="5">数字动画与数字娱乐实验室</font></b></p><p>　　为因应当今数字内容产业日新月异的发展，2019年本人调任至同济大学设计创意学院后负责创办并运营“数字动画与数字娱乐实验室”。实验室致力于研究数字媒体技术在影视、娱乐、设计、教育、科研等各个领域的应用，强调理论与实践并重、艺术与科技交融，努力培养学生融会贯通地运用先进理念与前沿技术创造性地解决真实问题的能力。<br>　　实验室为师生提供了一流的环境与软硬件设施，支持师生进行包括CG艺术、动画、游戏、虚拟现实、增强现实在内的各类学习、研究与创作。</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/811ae2e461a34a8f9870b5d0a6698d62.jpg" alt="DAELab01"></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/f49dea5a14d04293a4d73e5d0d0d1062.jpg" alt="DAELab02"></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/3042a969cba64fd6af2ced78e790da38.jpg" alt="DAELab03"></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/7887246b290946f7ade03c76aa899e56.jpg" alt="DAELab04"></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/b5fc2b94fc09459e9946ea404b37f815.jpg" alt="DAELab05"></p><p style="text-align: center; "><img src="http://kyimg.360eol.com/kaoyan/yzteacher/b99da36e75374841af752d7d4e4fac3e.jpg" alt="DAELab06"></p><p style="text-align: center; "><br></p><p style="text-align: center; "><b><font face="黑体" size="5">沉浸式体感仿真实验室</font></b></p><p style="text-align: left;">　　沉浸式体感仿真实验室（设计创意学院分部）是由同济大学设计创意学院、上海航天信息研究所与拓普虚拟现实技术研究院（江苏）有限公司共同出资、出力，由本人于2019年创办并负责管理的联合实验室。实验室聚焦于虚拟现实等数字媒体技术与程控运动座椅的结合，探索上述技术在娱乐、航天、军事、工业、教育等领域的运用与创新，形成学术价值与社会价值兼备的研究成果。</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/35275331e54e44d88f9a7edad745f792.jpg" alt="ISL_01"></p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/cb79875f07bd4fa1a0d48fc9a80eefbc.jpg" alt="ISL_02"></p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/2132113088624e70bc6f17bfa817015c.jpg" alt="ISL_03"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="teac-bkcon" id="YJCG">
+                    <div class="teac-bk noborder">
+                        <div class="btwz">
+                            <i class="bgColor"></i><span class="fontColor">学术论文</span>    
+                        </div>
+                        <div class="info2">
+                         <p>2022年，《A&nbsp;Comparison&nbsp;of&nbsp;Immersive&nbsp;and&nbsp;Non-Immersive&nbsp;VR&nbsp;for&nbsp;the&nbsp;Education&nbsp;of&nbsp;Filmmaking》发表于《International&nbsp;Journal&nbsp;of&nbsp;Human–Computer&nbsp;Interaction》（第一，SCI检索）</p><p>2022年，《Research&nbsp;on&nbsp;the&nbsp;Design&nbsp;of&nbsp;In-Cockpit&nbsp;Display&nbsp;Interface&nbsp;for&nbsp;Fighter&nbsp;Aircraft&nbsp;Based&nbsp;on&nbsp;Visual&nbsp;Attention&nbsp;Mechanism》发表于《Human&nbsp;Interface&nbsp;and&nbsp;the&nbsp;Management&nbsp;of&nbsp;Information》（通讯作者，EI检索）</p><p>2022年，《Status&nbsp;and&nbsp;Trend:&nbsp;The&nbsp;Application&nbsp;of&nbsp;Educational&nbsp;VR&nbsp;Games&nbsp;in&nbsp;Teaching&nbsp;Chinese&nbsp;as&nbsp;a&nbsp;Foreign&nbsp;Language》发表于《Cross-Cultural&nbsp;Design》（通讯作者，EI检索）</p><p>2021年，《Research&nbsp;on&nbsp;Perceptual&nbsp;Cues&nbsp;of&nbsp;Interactive&nbsp;Narrative&nbsp;in&nbsp;Virtual&nbsp;Reality》发表于《Human&nbsp;Interface&nbsp;and&nbsp;the&nbsp;Management&nbsp;of&nbsp;Information》（通讯作者，EI检索）</p><p>2021年，《Consistency&nbsp;in&nbsp;Multi-device&nbsp;Service&nbsp;including&nbsp;VR&nbsp;:&nbsp;A&nbsp;Case&nbsp;Study》发表于《Virtual,&nbsp;Augmented&nbsp;and&nbsp;Mixed&nbsp;Reality》（通讯作者，EI检索）</p><p>2020年，《Research&nbsp;on&nbsp;a&nbsp;Washout&nbsp;Algorithm&nbsp;for&nbsp;2-DOF&nbsp;Motion&nbsp;Platforms》发表于《Virtual,&nbsp;Augmented&nbsp;and&nbsp;Mixed&nbsp;Reality》（第一作者，EI检索）</p><p>2020年，《Using&nbsp;Guided&nbsp;Cognitive&nbsp;Illusions&nbsp;to&nbsp;Compensate&nbsp;for&nbsp;the&nbsp;Motion&nbsp;Limits&nbsp;of&nbsp;4D&nbsp;Seats》发表于《Engineering&nbsp;Psychology&nbsp;and&nbsp;Cognitive&nbsp;Ergonomics》（第一作者，EI检索）</p><p>2019年，《A&nbsp;VRLE&nbsp;Design&nbsp;Scheme&nbsp;for&nbsp;the&nbsp;Learning&nbsp;of&nbsp;Film&nbsp;Making》发表于《Learning&nbsp;and&nbsp;Collaboration&nbsp;Technologies》（通讯作者，EI&nbsp;检索）</p><p>2019年，《Virtual&nbsp;Dome&nbsp;System&nbsp;using&nbsp;HMDs:&nbsp;An&nbsp;Alternative&nbsp;to&nbsp;the&nbsp;Expensive&nbsp;and&nbsp;Less&nbsp;Available&nbsp;Physical&nbsp;Domes》发表于《Virtual,&nbsp;Augmented&nbsp;and&nbsp;Mixed&nbsp;Reality》（通讯作者，EI&nbsp;检索）</p><p>2018年，《Does&nbsp;the&nbsp;Quality&nbsp;of&nbsp;Digital&nbsp;Teaching&nbsp;Materials&nbsp;Matter?&nbsp; A&nbsp;Comparative&nbsp;Study&nbsp;of&nbsp;Art&nbsp;Students’&nbsp;Classroom Behavior&nbsp;and Learning&nbsp;Outcomes》发表于《International&nbsp;Conference&nbsp;on&nbsp;Learning&nbsp;and&nbsp;Collaboration&nbsp;Technologies》。（第一作者，EI&nbsp;检索）</p><p>2018年，《A&nbsp;novel&nbsp;way&nbsp;of&nbsp;estimating&nbsp;a&nbsp;user’s&nbsp;focus&nbsp;of&nbsp;attention&nbsp;in&nbsp;a&nbsp;virtual&nbsp;environment》发表于《International&nbsp;Conference&nbsp;on&nbsp;Virtual,&nbsp;Augmented&nbsp;and&nbsp;Mixed&nbsp;Reality》。（通讯作者，EI&nbsp;检索）</p><p>2016年，《Advances&nbsp;and&nbsp;Tendencies:&nbsp;A&nbsp;Review&nbsp;of&nbsp;Recent&nbsp;Studies&nbsp;on&nbsp;Virtual&nbsp;Reality&nbsp;for&nbsp;Pain&nbsp;Management》发表于《Virtual,&nbsp;Augmented&nbsp;and&nbsp;Mixed&nbsp;Reality》。（第一作者，EI&nbsp;检索）</p><p>2016年，《Virtual&nbsp;Reality&nbsp;Technology&nbsp;for&nbsp;Pain&nbsp;Management》发表于《Design&nbsp;Around&nbsp;People》。（第一作者，EI&nbsp;检索）</p><p>2015年，《StringWeaver&nbsp;Research&nbsp;on&nbsp;a&nbsp;Framework&nbsp;with&nbsp;an&nbsp;Alterable&nbsp;Physical&nbsp;Interface&nbsp;for&nbsp;Generative&nbsp;Art》发表于《Human-Computer&nbsp;Interaction:&nbsp;Interaction&nbsp;Technologies》。（通讯作者，EI&nbsp;检索）</p><p>2015年，《A&nbsp;Fast&nbsp;Scheme&nbsp;for&nbsp;Projective&nbsp;Geometric&nbsp;Correction&nbsp;and&nbsp;Edge&nbsp;Blending&nbsp;Based&nbsp;on&nbsp;HDR&nbsp;images》发表于《东华大学学报（英文版）》。（第一作者，EI&nbsp;检索）</p><p>2014年，《The&nbsp;study&nbsp;of&nbsp;interactive&nbsp;design&nbsp;in&nbsp;service&nbsp;systems&nbsp;for&nbsp;community&nbsp;self-help&nbsp;charitable&nbsp;facilities》发表于Proceedings&nbsp;of&nbsp;Human-Computer&nbsp;Interaction&nbsp;International&nbsp;Conference&nbsp;2014（通讯作者，EI检索）</p><p>2014年，《立体环幕影像低成本解决之道—基于HLSL后处理技术的三通道立体投影方法研究》发表于《科技传播》杂志。（第一作者）</p><p>2014年，《基于纹理渲染与纹理映射的实时球幕图像生成方法》发表于《艺术与设计》杂志。（唯一作者）</p><p>2013年，《Teaching&nbsp;Art&nbsp;Students&nbsp;in&nbsp;English&nbsp;in&nbsp;China:&nbsp;A&nbsp;Challenging&nbsp;Task&nbsp;and&nbsp;a&nbsp;Rewarding&nbsp;Undertaking》发表于《Proceedings&nbsp;of&nbsp;the&nbsp;First&nbsp;International&nbsp;Symposium&nbsp;on&nbsp;Pedagogical&nbsp;Research》。（唯一作者）</p><p>2012年，《非平面影像表现形态与创作手法浅析》发表于《万物的传媒主义——第五届全国新媒体艺术系主任（院长）论坛论文集》。（唯一作者）</p><p>2009年，《感觉、知觉与互动媒体艺术创作》转载于《自主创新与持续增长——第十一届中国科协年会论文集》。（唯一作者）</p><p>2009年，《感觉、知觉与互动媒体艺术创作》发表于《兼容·和而不同——第四届全国新媒体艺术系主任（院长）论坛论文集》。（唯一作者）</p><p>2009年，《浅析教学现场录像在电子艺术教学中的应用》发表于《艺术与设计》杂志。（唯一作者）</p><p>2008年，《高校电脑艺术专业人才培养模式浅析》发表于《新媒体·新观念·新生活——2008全国新媒体艺术系主任（院长）论坛论文集》。（唯一作者）</p><p>2007年，《高动态范围光照贴图在虚拟现实中的应用》发表于《艺术与设计》杂志。（唯一作者）</p><p><br></p>
+                        </div>
+                    </div>
+                </div>
+                             <div class="teac-bkcon" id="custom26445">
+                                 <div class="teac-bk noborder">
+                                     <div class="btwz">
+                                         <i class="bgColor"></i><span class="fontColor">获奖荣誉</span>
+                                     </div>
+                                     <div class="info2">
+                                         <p>2021</p><p>指导本科生张逸泽、高玮隆、张樱曼、顾天润、王清云等完成沉浸式VR游戏《次要任务》获第二届中国大学生创意节二等奖。（链接）</p><p>Secondary&nbsp;Mission,&nbsp;an&nbsp;immersive&nbsp;VR&nbsp;game&nbsp;created&nbsp;by&nbsp;Yize&nbsp;Zhang,&nbsp;Weilong&nbsp;Gao,&nbsp;Yinman&nbsp;Zhang,&nbsp;Tianrun&nbsp;Gu&nbsp;and&nbsp;Qingyun&nbsp;Wang&nbsp;won&nbsp;the&nbsp;2nd&nbsp;prize&nbsp;of&nbsp;the&nbsp;2nd&nbsp;China&nbsp;Creativity&nbsp;Festival&nbsp;of&nbsp;College&nbsp;Students.（Link）</p><p>2020</p><p>指导本科生郭钦完成的毕业作品三维动画短片《星·尘》获第八届全国高校数字艺术设计大赛全国总决赛一等奖、第五届“汇创青春”上海大学生文化创意作品大赛一等奖、首届大学生创意节全国总决赛二等奖；郭钦完成的虚拟现实应用《印刷博物馆》首届大学生创意节全国总决赛一等奖；指导本科生余国东完成的毕业作品三维动画短片《冬》获第五届“汇创青春”上海大学生文化创意作品大赛一等奖。</p><p>The&nbsp;3D&nbsp;animated&nbsp;film&nbsp;Star&nbsp;Dust&nbsp;created&nbsp;by&nbsp;Qin&nbsp;Guo&nbsp;won&nbsp;the&nbsp;1st&nbsp;prizes&nbsp;of&nbsp;the&nbsp;8th&nbsp;national&nbsp;digital&nbsp;art&nbsp;competition&nbsp;for&nbsp;university&nbsp;students,&nbsp;the&nbsp;5th&nbsp;Hui&nbsp;Chuang&nbsp;Qing&nbsp;Chun&nbsp;competition&nbsp;of&nbsp;innovative&nbsp;creations&nbsp;by&nbsp;university&nbsp;students&nbsp;and&nbsp;the&nbsp;2nd&nbsp;prize&nbsp;of&nbsp;the&nbsp;first&nbsp;creativity&nbsp;festival&nbsp;of&nbsp;college&nbsp;students.&nbsp;His&nbsp;VR&nbsp;creation&nbsp;Museum&nbsp;of&nbsp;the&nbsp;History&nbsp;of&nbsp;Printing&nbsp;won&nbsp;the&nbsp;1st&nbsp;prize&nbsp;of&nbsp;the&nbsp;first&nbsp;creativity&nbsp;festival&nbsp;of&nbsp;college&nbsp;students.&nbsp;The&nbsp;3D&nbsp;animated&nbsp;film&nbsp;Winter&nbsp;created&nbsp;by&nbsp;Guodong&nbsp;Yu&nbsp;won&nbsp;the&nbsp;1st&nbsp;prize&nbsp;of&nbsp;the&nbsp;5th&nbsp;Hui&nbsp;Chuang&nbsp;Qing&nbsp;Chun&nbsp;competition&nbsp;of&nbsp;innovative&nbsp;creations&nbsp;by&nbsp;university&nbsp;students.</p><p>2020</p><p>指导本科生李一诺、罗宋完成的游戏作品《Inside》及高玮隆完成的MG动画短片《Coffe》分获第五届“汇创青春”上海大学生文化创意作品大赛二等奖和三等奖。（链接）</p><p>Inside,&nbsp;a&nbsp;game&nbsp;created&nbsp;by&nbsp;Yinuo&nbsp;Li&nbsp;and&nbsp;Song&nbsp;Luo,&nbsp;and&nbsp;Coffee,&nbsp;an&nbsp;MG&nbsp;animation&nbsp;created&nbsp;by&nbsp;Weilong&nbsp;Gao&nbsp;won&nbsp;respectively&nbsp;the&nbsp;2nd&nbsp;prize&nbsp;and&nbsp;the&nbsp;3rd&nbsp;prize&nbsp;of&nbsp;the&nbsp;5th&nbsp;Hui&nbsp;Chuang&nbsp;Qing&nbsp;Chun&nbsp;competition&nbsp;of&nbsp;innovative&nbsp;creations&nbsp;by&nbsp;university&nbsp;students.（Link）</p><p>2020</p><p>指导本科生余国东完成的毕业作品三维动画短片《冬》获英国Beeston&nbsp;Film&nbsp;Festival动画单元最高奖项。（链接）</p><p>The&nbsp;3D&nbsp;animated&nbsp;film&nbsp;Winter&nbsp;created&nbsp;by&nbsp;Guodong&nbsp;Yu&nbsp;won&nbsp;the&nbsp;final&nbsp;award&nbsp;in&nbsp;the&nbsp;animation&nbsp;category&nbsp;of&nbsp;the&nbsp;Beeton&nbsp;International&nbsp;Film&nbsp;Festival&nbsp;in&nbsp;UK.（Link）</p><p>2019</p><p>指导本科生郑涵韵、尤皓、陈梦阳、刘家林完成VR作品《炼星灯》，指导本科生姜进盛、罗昊亮、杨晟玮完成VR作品《叁叁零》，分获第三届中国大学生VR/AR开发大赛最佳玩法设计奖与最佳游戏奖。（链接）</p><p>Supervised&nbsp;undergraduate&nbsp;students&nbsp;Hanyun&nbsp;Zheng,&nbsp;Hao&nbsp;You,&nbsp;Mengyang&nbsp;Chen&nbsp;and&nbsp;Jialin&nbsp;Liu&nbsp;to&nbsp;create&nbsp;a&nbsp;VR&nbsp;app&nbsp;Your&nbsp;Firework,&nbsp;and&nbsp;Jinsheng&nbsp;Jiang,&nbsp;Haoliang&nbsp;Luo&nbsp;and&nbsp;Shengwei&nbsp;Yang&nbsp;to&nbsp;create&nbsp;a&nbsp;VR&nbsp;app&nbsp;330,&nbsp;which&nbsp;respectively&nbsp;won&nbsp;the&nbsp;award&nbsp;of&nbsp;the&nbsp;best&nbsp;gameplay&nbsp;design&nbsp;and&nbsp;the&nbsp;award&nbsp;for&nbsp;the&nbsp;best&nbsp;game&nbsp;of&nbsp;the&nbsp;3rd&nbsp;national&nbsp;contest&nbsp;of&nbsp;VR/AR&nbsp;development&nbsp;for&nbsp;university&nbsp;students.（Link）</p><p>2019</p><p>指导余国东、郭钦本科毕业作品三维动画短片《冬》、《星·尘》，获腾讯新闻全国高校短视频大赛动画单元金银奖等奖项。（链接）</p><p>Supervised&nbsp;Guodong&nbsp;Yu&nbsp;and&nbsp;Qin&nbsp;Guo&nbsp;to&nbsp;create&nbsp;animated&nbsp;short&nbsp;films&nbsp;Winter&nbsp;and&nbsp;Star&nbsp;Dust,&nbsp;their&nbsp;undergraduate&nbsp;graduation&nbsp;projects,&nbsp;and&nbsp;won&nbsp;the&nbsp;gold&nbsp;award&nbsp;and&nbsp;the&nbsp;silver&nbsp;award&nbsp;of&nbsp;the&nbsp;national&nbsp;animation&nbsp;competition&nbsp;for&nbsp;university&nbsp;Students&nbsp;by&nbsp;Tencent&nbsp;news.（Link）</p><p>2019</p><p>指导学生郑涵韵、郭钦完成三维动画《趣味连锁装置》以及虚拟现实应用《印刷博物馆》，分获第四届“汇创青春”上海大学生文化创意作品一等奖与三等奖。</p><p>Supervised&nbsp;Hanyun&nbsp;Zheng&nbsp;to&nbsp;create&nbsp;a&nbsp;short&nbsp;animated&nbsp;film&nbsp;Chained&nbsp;Reaction&nbsp;and&nbsp;Qin&nbsp;Guo&nbsp;to&nbsp;create&nbsp;a&nbsp;VR&nbsp;application&nbsp;Museum&nbsp;of&nbsp;the&nbsp;History&nbsp;of&nbsp;Printing”,&nbsp;which&nbsp;won&nbsp;the&nbsp;4th&nbsp;Hui&nbsp;Chuang&nbsp;Qing&nbsp;Chun&nbsp;competition&nbsp;of&nbsp;innovative&nbsp;creations&nbsp;by&nbsp;university&nbsp;students.</p><p>2018</p><p>指导硕士研究生厉嘉臣与本科生郭钦、余国东、张子安等完成艺术展演《创世之光：VR艺术工作坊》，赴上海展览馆、上海展览中心等多地展出，得到了包括央视在内的多家国内外媒体报道，并获教育部主办的第五届全国大艺展艺术工作坊一等奖，以及上海市艺术工作坊“优秀项目奖”。（链接）</p><p>Supervised&nbsp;and&nbsp;worked&nbsp;with&nbsp;Jiachen&nbsp;Li,&nbsp;Qin&nbsp;Guo,&nbsp;Guodong&nbsp;Yu,&nbsp;Zian&nbsp;Zhang&nbsp;et&nbsp;al.&nbsp;to&nbsp;organize&nbsp;the&nbsp;exhibit&nbsp;The&nbsp;Light&nbsp;of&nbsp;Creation:&nbsp;a&nbsp;Workshop&nbsp;of&nbsp;VR&nbsp;Art.&nbsp;It&nbsp;participated&nbsp;the&nbsp;exhibitions&nbsp;held&nbsp;in&nbsp;Shanghai&nbsp;exhibition&nbsp;center,&nbsp;was&nbsp;reported&nbsp;by&nbsp;many&nbsp;media&nbsp;including&nbsp;CCTV,&nbsp;and&nbsp;won&nbsp;the&nbsp;1st&nbsp;prize&nbsp;of&nbsp;the&nbsp;5th&nbsp;national&nbsp;exhibition&nbsp;of&nbsp;art&nbsp;workshops&nbsp;from&nbsp;universities&nbsp;granted&nbsp;by&nbsp;the&nbsp;Ministry&nbsp;of&nbsp;Education&nbsp;of&nbsp;China.（Link）</p><p>2018</p><p>指导硕士研究生厉嘉臣完成增强现实游戏《Wars&nbsp;of&nbsp;Stone》，获第二届全国大学生VR/AR开发大赛“最佳AR游戏奖”和“华为杯MVP最具价值奖”。</p><p>Supervised&nbsp;MFA&nbsp;student&nbsp;Jiachen&nbsp;Li&nbsp;to&nbsp;create&nbsp;Wars&nbsp;of&nbsp;Stone,&nbsp;an&nbsp;AR&nbsp;game,&nbsp;and&nbsp;won&nbsp;the&nbsp;Award&nbsp;for&nbsp;Best&nbsp;AR&nbsp;Game&nbsp;and&nbsp;the&nbsp;Award&nbsp;of&nbsp;Most&nbsp;Valuable&nbsp;Product&nbsp;of&nbsp;the&nbsp;2nd&nbsp;National&nbsp;Contest&nbsp;of&nbsp;VR/AR&nbsp;Development&nbsp;for&nbsp;University&nbsp;Students.</p><p>2018</p><p>指导本科生张子安、余国东、张凡、何纯、夏祎、涂孟琪、钱红吉等完成VR作品《VR电影训练营》，并获第一届全国大学生VR/AR开发大赛“最佳非游戏奖”、“最佳影视奖”，以及第三届汇创青春上海大学生文化创意作品大赛一等奖。（链接）</p><p>Supervised&nbsp;Zian&nbsp;Zhang,&nbsp;Guodong&nbsp;Yu,&nbsp;Fan&nbsp;Zhang,&nbsp;Chun&nbsp;He,&nbsp;Yi&nbsp;Xia,&nbsp;Mengqi&nbsp;Tu,&nbsp;Hongji&nbsp;Qian&nbsp;et&nbsp;al.&nbsp;to&nbsp;create&nbsp;VR&nbsp;Film&nbsp;School,&nbsp;a&nbsp;VR&nbsp;application&nbsp;and&nbsp;won&nbsp;the&nbsp;Award&nbsp;for&nbsp;Best&nbsp;Non-game&nbsp;Production&nbsp;and&nbsp;the&nbsp;Award&nbsp;for&nbsp;Best&nbsp;Moving&nbsp;Pictures&nbsp;in&nbsp;the&nbsp;1st&nbsp;National&nbsp;Contest&nbsp;of&nbsp;VR/AR&nbsp;Development&nbsp;for&nbsp;University&nbsp;Students.&nbsp;It&nbsp;also&nbsp;won&nbsp;the&nbsp;1st&nbsp;prize&nbsp;of&nbsp;the&nbsp;3rd&nbsp;Hui&nbsp;Chuang&nbsp;Qing&nbsp;Chun&nbsp;competition&nbsp;of&nbsp;innovative&nbsp;creations&nbsp;by&nbsp;university&nbsp;students.（Link）</p><p>2017</p><p>指导本科生郭钦、余国东、张子安、何纯、杨巍鸿、张凡等完成VR作品《虚境艺廊》，并获第一届全国大学生VR/AR开发大赛“最佳画面奖”。（链接）</p><p>Supervised&nbsp;Qin&nbsp;Guo,&nbsp;Guodong&nbsp;Yu,&nbsp;Zian&nbsp;Zhang,&nbsp;Chun&nbsp;He,&nbsp;Weihong&nbsp;Yang,&nbsp;Fan&nbsp;Zhang&nbsp;et&nbsp;al.&nbsp;to&nbsp;create&nbsp;VR&nbsp;Art&nbsp;Gallery&nbsp;and&nbsp;won&nbsp;the&nbsp;Award&nbsp;for&nbsp;Best&nbsp;Visual&nbsp;Quality&nbsp;in&nbsp;the&nbsp;1st&nbsp;National&nbsp;Contest&nbsp;of&nbsp;VR/AR&nbsp;Development&nbsp;for&nbsp;University&nbsp;Students.（Link）</p><p>2017</p><p>指导本科生周浩然完成毕业作品《Harry》，并获第六届国际大学生微电影盛典一等奖、第一V视频大赛年度最佳作品奖、第八届中国国际新媒体短片节最佳大学生动画短片奖、第三届汇创青春上海大学生文化创意作品大赛一等奖、第十六届北京电影学院国际学生影视作品展中国优秀学生作品奖、第12届中国（北京）国际大学生动画节最佳动画视觉风格奖，并入围中国西安第六届国际原创动漫大赛、第六届中国独立动画电影论坛竞赛单元、2017杭州短片嘉年华金荷奖、第四届重庆青年电影展短片竞赛单元最佳动画片、首届全国动漫美术作品展览等。（链接）</p><p>Supervised&nbsp;undergraduate&nbsp;student&nbsp;Haoran&nbsp;Zhou&nbsp;to&nbsp;create&nbsp;Harry,&nbsp;an&nbsp;animated&nbsp;short&nbsp;film&nbsp;as&nbsp;his&nbsp;graduation&nbsp;project,&nbsp;and&nbsp;won&nbsp;many&nbsp;awards,&nbsp;including&nbsp;the&nbsp;1st&nbsp;prize&nbsp;of&nbsp;6th&nbsp;International&nbsp;Film&nbsp;Festival&nbsp;of&nbsp;University&nbsp;Students,&nbsp;the&nbsp;Award&nbsp;for&nbsp;the&nbsp;Best&nbsp;Annual&nbsp;Work&nbsp;of&nbsp;the&nbsp;1st&nbsp;V-video&nbsp;contest,&nbsp;the&nbsp;Award&nbsp;for&nbsp;Best&nbsp;Student’s&nbsp;Animation&nbsp;of&nbsp;the&nbsp;8th&nbsp;China&nbsp;International&nbsp;New&nbsp;Media&nbsp;Short&nbsp;Film&nbsp;Festival,&nbsp;the&nbsp;1st&nbsp;prize&nbsp;of&nbsp;the&nbsp;3rd&nbsp;Hui&nbsp;Chuang&nbsp;Qing&nbsp;Chun&nbsp;competition&nbsp;of&nbsp;innovative&nbsp;creations&nbsp;by&nbsp;university&nbsp;students&nbsp;and&nbsp;etc.（Link）</p><p>2017</p><p>指导本科生厉嘉臣完成毕业作品《S.M.H.》，并获第三届汇创青春上海大学生文化创意作品大赛一等奖、全国大学生网络文化节动漫大赛一等奖、第五届中国国际动漫创意产业交易会优秀学生动画金奖、第一V视频大赛优秀微视频奖、第二届两岸青年短片大赛优秀奖，并入围首届韩城金帧国际短片电影节、第八届中国国际新媒体短片节、上海国际电影节金爵奖、重庆青年电影展最佳动画片、第十届厦门国际动漫节“金海豚”动漫作品大赛、“新光奖”中国西安第六届国际原创动漫大赛等。（链接）</p><p>Supervised&nbsp;undergraduate&nbsp;student&nbsp;JiaChen&nbsp;Li&nbsp;to&nbsp;create&nbsp;S.M.H.,&nbsp;an&nbsp;animated&nbsp;short&nbsp;film&nbsp;as&nbsp;his&nbsp;graduation&nbsp;project,&nbsp;and&nbsp;won&nbsp;many&nbsp;awards,&nbsp;including&nbsp;the&nbsp;1st&nbsp;prize&nbsp;of&nbsp;the&nbsp;3rd&nbsp;Hui&nbsp;Chuang&nbsp;Qing&nbsp;Chun&nbsp;competition&nbsp;of&nbsp;innovative&nbsp;creations&nbsp;by&nbsp;university&nbsp;students,&nbsp;the&nbsp;Award&nbsp;for&nbsp;Excellent&nbsp;Works&nbsp;of&nbsp;the&nbsp;1st&nbsp;V-video&nbsp;contest,&nbsp;the&nbsp;Award&nbsp;for&nbsp;Excellent&nbsp;Works&nbsp;of&nbsp;the&nbsp;2nd&nbsp;short&nbsp;film&nbsp;contest&nbsp;for&nbsp;students&nbsp;in&nbsp;Taiwan&nbsp;and&nbsp;mainland&nbsp;China&nbsp;and&nbsp;etc.（Link）</p><p>2016</p><p>指导本科生冯胜、唐宇翔、周浩然完成上海市大学生创新项目《4D影视作品中座椅运动与观众体验的关系研究》。（链接）</p><p>Supervised&nbsp;Sheng&nbsp;Fen,&nbsp;Yuxiang&nbsp;Tang&nbsp;and&nbsp;Haoran&nbsp;Zhou&nbsp;to&nbsp;accomplish&nbsp;A&nbsp;Study&nbsp;on&nbsp;the&nbsp;Relationship&nbsp;between&nbsp;4D&nbsp;Chair’s&nbsp;Motion&nbsp;and&nbsp;Audience&nbsp;Experience,&nbsp;a&nbsp;Shanghai&nbsp;university&nbsp;students’&nbsp;innovative&nbsp;research&nbsp;project.（Link）</p><p>2015</p><p>参与并指导本科生共同创作交互装置作品《千人千面》，获上海国际科学与艺术展“最佳创意奖”。（链接）</p><p>Supervised&nbsp;and&nbsp;worked&nbsp;with&nbsp;a&nbsp;team&nbsp;of&nbsp;undergraduate&nbsp;students&nbsp;and&nbsp;created&nbsp;A&nbsp;Thousand&nbsp;Faces,&nbsp;an&nbsp;interactive&nbsp;installation&nbsp;and&nbsp;won&nbsp;the&nbsp;Best&nbsp;Creativity&nbsp;Award&nbsp;of&nbsp;the&nbsp;2015&nbsp;Shanghai&nbsp;International&nbsp;Exhibition&nbsp;of&nbsp;Art&nbsp;and&nbsp;Science.（Link）</p><p>2014</p><p>指导本科生团队创作球幕动画《噩梦》、《山居》等，其中《噩梦》获德国耶拿国际球幕电影节最佳情绪表现奖。（链接）</p><p>Supervised&nbsp;a&nbsp;team&nbsp;of&nbsp;undergraduate&nbsp;students&nbsp;to&nbsp;create&nbsp;animated&nbsp;dome&nbsp;films&nbsp;Nightmare&nbsp;and&nbsp;Chinese&nbsp;Idyll.&nbsp;The&nbsp;former&nbsp;won&nbsp;the&nbsp;Emphasis&nbsp;on&nbsp;Emotion&nbsp;Award&nbsp;of&nbsp;the&nbsp;Jena&nbsp;International&nbsp;Full&nbsp;Dome&nbsp;Festival.（Link）</p><p>2014</p><p>指导本科生团队创作交互舞蹈作品《幻影钢甲》，并获理光超短焦投影机创意应用征集大赛专业组一等奖。（链接）</p><p>Supervised&nbsp;a&nbsp;team&nbsp;of&nbsp;undergraduate&nbsp;students&nbsp;to&nbsp;create&nbsp;Illusionary&nbsp;Armour,&nbsp;an&nbsp;interactive&nbsp;performance,&nbsp;and&nbsp;won&nbsp;the&nbsp;1st&nbsp;Prize&nbsp;of&nbsp;the&nbsp;Ricoh&nbsp;National&nbsp;Competition&nbsp;of&nbsp;Short-throw&nbsp;Projector’s&nbsp;Innovative&nbsp;Applications,&nbsp;professional&nbsp;group.（Link）</p><p>2010</p><p>指导学生金云水完成毕设动画《寄居蟹》，并获2011（第十一届）四川电视节“金熊猫”奖国际动画作品最佳国产学生作品奖、北京大学生电影节第十二届大学生原创短片大赛动画短片单元“最佳视觉效果奖”、第五届中国国际动漫节优秀动画作品奖、第四届中国学院奖数字绘画大赛最佳作品二等奖、第四届中国学院奖动画作品三等奖、第十届北京电影学院动画学院奖优秀学生作业奖、入围第二届金鹏奖动画单元。（链接）</p><p>Supervised&nbsp;Yunshui&nbsp;Jin’s&nbsp;graduation&nbsp;project&nbsp;Hermit&nbsp;Crab,&nbsp;an&nbsp;animated&nbsp;short&nbsp;film&nbsp;and&nbsp;won&nbsp;a&nbsp;lot&nbsp;of&nbsp;awards,&nbsp;including&nbsp;Award&nbsp;for&nbsp;Best&nbsp;Student’s&nbsp;Animation&nbsp;of&nbsp;Golden&nbsp;Panda&nbsp;TV&nbsp;festival&nbsp;in&nbsp;Sichuan&nbsp;Province,&nbsp;Award&nbsp;for&nbsp;Best&nbsp;Visual&nbsp;Effects&nbsp;of&nbsp;Beijing&nbsp;University&nbsp;Students’&nbsp;Film&nbsp;Festival,&nbsp;3rd&nbsp;Prize&nbsp;of&nbsp;China&nbsp;Academy&nbsp;Awards&nbsp;for&nbsp;Animations&nbsp;and&nbsp;etc.（Link）</p><p>2009</p><p>指导学生田恬、金云水、林毓鹏创作体感交互游戏作品《年》，获2009年大学生文科计算机设计大赛一等奖。（链接）</p><p>Supervised&nbsp;Tian&nbsp;Tian,&nbsp;Yunshui&nbsp;Jin&nbsp;and&nbsp;Yupeng&nbsp;Lin&nbsp;to&nbsp;create&nbsp;a&nbsp;WIImote-based&nbsp;3D&nbsp;game&nbsp;Nian,&nbsp;and&nbsp;won&nbsp;the&nbsp;1st&nbsp;prize&nbsp;of&nbsp;the&nbsp;2009’s&nbsp;National&nbsp;Digital&nbsp;Design&nbsp;Competition&nbsp;for&nbsp;University&nbsp;Students.（Link）</p><p>　折叠&nbsp;·&nbsp;Collapse</p><p>2017</p><p>负责指导本科生郭钦完成VR作品《异星黄昏》、余国东完成VR作品《Watch》、杨巍鸿完成VR作品《寻龙探秘》、周浩然完成三维静帧作品《一米阳光》，获第二届汇创青春上海大学生文化创意作品大赛二等奖3项、三等奖1项。（链接1，链接2）</p><p>Supervised&nbsp;Qin&nbsp;Guo&nbsp;to&nbsp;create&nbsp;Dawn&nbsp;on&nbsp;an&nbsp;Alien&nbsp;Planet,&nbsp;Guodong&nbsp;Yu,&nbsp;Watch,&nbsp;Weihong&nbsp;Yang,&nbsp;Seeking&nbsp;Dragon&nbsp;(all&nbsp;VR&nbsp;projects)&nbsp;and&nbsp;Haoran&nbsp;Zhou,&nbsp;light&nbsp;in&nbsp;a&nbsp;room&nbsp;(still&nbsp;image).&nbsp;They&nbsp;won&nbsp;three&nbsp;2nd&nbsp;prizes&nbsp;and&nbsp;one&nbsp;3rd&nbsp;prize&nbsp;of&nbsp;the&nbsp;2nd&nbsp;Hui&nbsp;Chuang&nbsp;Qing&nbsp;Chun&nbsp;competition&nbsp;of&nbsp;innovative&nbsp;creations&nbsp;by&nbsp;university&nbsp;students.（Link1，Link2）</p><p>2016</p><p>指导硕士研究生李靖怡、宁苗苗创作交互作品《老人·家—老年公寓定制迅游3D交互设计》，获第二届全国文化创意大赛三等奖。（链接）</p><p>Supervised&nbsp;Jingyi&nbsp;Li&nbsp;and&nbsp;Miaomiao&nbsp;Ning,&nbsp;both&nbsp;MA&nbsp;students,&nbsp;to&nbsp;design&nbsp;Home&nbsp;for&nbsp;the&nbsp;Elderly:&nbsp;An&nbsp;Apartment&nbsp;Customization&nbsp;Tool&nbsp;for&nbsp;the&nbsp;Aged&nbsp;People&nbsp;and&nbsp;won&nbsp;the&nbsp;3rd&nbsp;prize&nbsp;of&nbsp;the&nbsp;2nd&nbsp;National&nbsp;Award&nbsp;for&nbsp;Cultural&nbsp;and&nbsp;Creative&nbsp;Products.（Link）</p><p>2016</p><p>指导本科生周浩然、唐宇翔、杨晶等完成球幕动画短片《Samsara》，并获第十届耶拿国际球幕电影节最终入围奖、第二届汇创青春上海大学生文化创意作品大赛三等奖。（链接）</p><p>Supervised&nbsp;undergraduate&nbsp;students&nbsp;Haoran&nbsp;Zhou,&nbsp;Yuxiang&nbsp;Tang,&nbsp;Jing&nbsp;Yang&nbsp;and&nbsp;et&nbsp;al.&nbsp;to&nbsp;create&nbsp;Samsara,&nbsp;an&nbsp;animated&nbsp;dome&nbsp;film.&nbsp;It&nbsp;was&nbsp;honored&nbsp;as&nbsp;the&nbsp;final&nbsp;entry&nbsp;into&nbsp;the&nbsp;10th&nbsp;Jena&nbsp;International&nbsp;Full&nbsp;Dome&nbsp;Festival&nbsp;and&nbsp;won&nbsp;the&nbsp;3rd&nbsp;prize&nbsp;of&nbsp;the&nbsp;2nd&nbsp;Hui&nbsp;Chuang&nbsp;Qing&nbsp;Chun&nbsp;competition&nbsp;of&nbsp;innovative&nbsp;creations&nbsp;by&nbsp;university&nbsp;students&nbsp;organized&nbsp;by&nbsp;Shanghai&nbsp;government.（Link）</p><p>2015</p><p>指导本科生彭梓琪完成毕业作品《寻》、周晓慧完成毕业作品《减肥瑜伽》，获第新西部全国大学生影像节三等奖、17届全国设计大师奖优秀奖。（链接）</p><p>Supervised&nbsp;undergraduate&nbsp;student&nbsp;Ziqi&nbsp;Peng&nbsp;to&nbsp;create&nbsp;the&nbsp;animated&nbsp;short&nbsp;films&nbsp;Pursuit,&nbsp;and&nbsp;Xiaohui&nbsp;Zhou,&nbsp;Weight&nbsp;Losing&nbsp;Yoga.&nbsp;Both&nbsp;won&nbsp;the&nbsp;the&nbsp;3rd&nbsp;prize&nbsp;of&nbsp;XinXiBu&nbsp;National&nbsp;Film&nbsp;Festival&nbsp;and&nbsp;excellent&nbsp;entries&nbsp;of&nbsp;the&nbsp;17th&nbsp;National&nbsp;Awards&nbsp;of&nbsp;the&nbsp;Design&nbsp;Masters.（Link）</p><p>2015</p><p>指导本科廖婷雯完成毕业作品《门里门外》，并获同济大学优秀毕业设计奖、2015中国大学生原创动漫大赛动画类作品三等奖。（链接）</p><p>Supervised&nbsp;Tingwen&nbsp;Liao&nbsp;to&nbsp;create&nbsp;her&nbsp;graduation&nbsp;project&nbsp;Little&nbsp;Girl&nbsp;Tina,&nbsp;an&nbsp;animated&nbsp;short&nbsp;film&nbsp;and&nbsp;won&nbsp;the&nbsp;3rd&nbsp;prize&nbsp;of&nbsp;2015&nbsp;National&nbsp;Awards&nbsp;for&nbsp;University&nbsp;Students'&nbsp;Original&nbsp;Comics&nbsp;and&nbsp;Animations&nbsp;and&nbsp;the&nbsp;award&nbsp;for&nbsp;Excellent&nbsp;Graduation&nbsp;Thesis&nbsp;/&nbsp;Design&nbsp;in&nbsp;Tongji&nbsp;University.（Link）</p><p>2013</p><p>指导SITP创新项目“非平面影像艺术表现手段与创作规律研究”，主要研究三维扫描技术、异形表面投影技术与体感交互技术结合用于数字媒体创作的途径。（链接）</p><p>Supervised&nbsp;undergraduate&nbsp;students'&nbsp;innovative&nbsp;research&nbsp;project&nbsp;Exploration&nbsp;of&nbsp;the&nbsp;Art&nbsp;and&nbsp;Technology&nbsp;of&nbsp;Non-planar&nbsp;Projection.&nbsp;The&nbsp;main&nbsp;purpose&nbsp;was&nbsp;to&nbsp;integrate&nbsp;3D&nbsp;scan,&nbsp;projection&nbsp;mapping&nbsp;and&nbsp;interactive&nbsp;technology&nbsp;for&nbsp;digital&nbsp;media&nbsp;creation.（Link）</p><p>2013</p><p>指导本科生邢骁男完成毕业设计《No&nbsp;Brand》，并获第十六届全国设计“大师奖”金奖、白金创意全国大学生平面设计大赛动画组银奖。（链接）</p><p>Supervised&nbsp;Xiaonan&nbsp;Xing's&nbsp;graduation&nbsp;project&nbsp;No&nbsp;Brand,&nbsp;which&nbsp;won&nbsp;the&nbsp;Gold&nbsp;Prize&nbsp;of&nbsp;the&nbsp;16th&nbsp;National&nbsp;Design&nbsp;Master&nbsp;Award&nbsp;and&nbsp;the&nbsp;Silver&nbsp;Prize&nbsp;of&nbsp;the&nbsp;Platinum&nbsp;National&nbsp;Graphic&nbsp;Design&nbsp;Competition&nbsp;in&nbsp;the&nbsp;animation&nbsp;group.（Link）</p><p>2013</p><p>指导本科生曹祯迪完成毕业设计《次世代游戏制作》，并获同济大学优秀毕业设计奖。（链接）</p><p>Supervised&nbsp;Zhendi&nbsp;Cao's&nbsp;graduation&nbsp;project&nbsp;Nextgen&nbsp;Game&nbsp;Development,&nbsp;which&nbsp;won&nbsp;the&nbsp;award&nbsp;for&nbsp;Excellent&nbsp;Graduation&nbsp;Thesis&nbsp;/&nbsp;Design&nbsp;in&nbsp;Tongji&nbsp;University.（Link）</p><p>2012</p><p>指导大学生创新项目“低成本三维模型获取方法比较”，主要研究、比较各种三维扫描技术的异同与适用性。（链接）</p><p>Supervised&nbsp;undergraduate&nbsp;students'&nbsp;innovative&nbsp;research&nbsp;project&nbsp;A&nbsp;Comparison&nbsp;on&nbsp;the&nbsp;Low-cost&nbsp;Methods&nbsp;to&nbsp;Obtain&nbsp;3D&nbsp;Geometric&nbsp;Data&nbsp;from&nbsp;Real&nbsp;World&nbsp;Objects,&nbsp;whose&nbsp;main&nbsp;target&nbsp;was&nbsp;to&nbsp;study&nbsp;and&nbsp;compare&nbsp;a&nbsp;variety&nbsp;of&nbsp;3D&nbsp;scanning&nbsp;techniques&nbsp;to&nbsp;understand&nbsp;their&nbsp;differences,&nbsp;advantages&nbsp;and&nbsp;most&nbsp;suitable&nbsp;scenarios.（Link）</p><p>2012</p><p>指导大学生创新项目“以次世代游戏开发技术挖掘经典游戏潜在价值的探索”，主要研究以UDK为代表的次世代游戏引擎改造经典二维游戏的方法与实际效果。（链接）</p><p>Supervised&nbsp;undergraduate&nbsp;students'&nbsp;innovative&nbsp;research&nbsp;project&nbsp;Exploiting&nbsp;Values&nbsp;of&nbsp;Classic&nbsp;Games&nbsp;with&nbsp;the&nbsp;Next-gen&nbsp;Game&nbsp;Technologies,&nbsp;whose&nbsp;main&nbsp;task&nbsp;was&nbsp;to&nbsp;remake&nbsp;a&nbsp;classic&nbsp;2D&nbsp;games&nbsp;with&nbsp;latest&nbsp;technologies&nbsp;and&nbsp;to&nbsp;draw&nbsp;conclusions&nbsp;on&nbsp;its&nbsp;effectiveness&nbsp;and&nbsp;methodology.（Link）</p><p>2011</p><p>指导学生杨倩参与Autodesk&nbsp;2011&nbsp;IIKO角色设计大赛，作品入选Top10并获赴港交流机会</p><p>Supervised&nbsp;Qian&nbsp;Yang's&nbsp;digital&nbsp;sculpture&nbsp;artwork,&nbsp;which&nbsp;entered&nbsp;the&nbsp;top&nbsp;10&nbsp;list&nbsp;of&nbsp;the&nbsp;2011&nbsp;International&nbsp;IIKO&nbsp;Competition&nbsp;organized&nbsp;by&nbsp;Autodesk.&nbsp;As&nbsp;a&nbsp;reward,&nbsp;she&nbsp;was&nbsp;granted&nbsp;an&nbsp;opportunity&nbsp;to&nbsp;learn&nbsp;and&nbsp;cooperate&nbsp;with&nbsp;international&nbsp;3D&nbsp;artists&nbsp;in&nbsp;Hong&nbsp;Kong.</p><p>2011</p><p>指导学生喻金山、赵天翊、陈慕明创作三维游戏《伐木机·击杀！》，获2011年大学生文科计算机设计大赛优胜奖、第二届大学生绿色游戏动漫设计大赛三等奖。（链接）</p><p>Supervised&nbsp;Jinshan&nbsp;Yu,&nbsp;Tianyi&nbsp;Zhao&nbsp;and&nbsp;Muming&nbsp;Chen&nbsp;to&nbsp;create&nbsp;a&nbsp;3D&nbsp;game&nbsp;Fight&nbsp;Wood&nbsp;Cutters&nbsp;and&nbsp;won&nbsp;the&nbsp;honorable&nbsp;mention&nbsp;of&nbsp;2011's&nbsp;National&nbsp;Digital&nbsp;Design&nbsp;Competition&nbsp;for&nbsp;University&nbsp;Students,&nbsp;3rd&nbsp;prize&nbsp;of&nbsp;National&nbsp;Green&nbsp;Game&nbsp;and&nbsp;Animation&nbsp;Design&nbsp;Competition&nbsp;for&nbsp;University&nbsp;Students.（Link）</p><p>2010</p><p>指导学生蒲众、周冬、林毓鹏创作虚拟现实作品《苗》，获2010年大学生文科计算机设计大赛三等奖。（链接）</p><p>Supervised&nbsp;Zhong&nbsp;Pu,&nbsp;Dong&nbsp;Zhou&nbsp;and&nbsp;Yupeng&nbsp;Lin&nbsp;to&nbsp;create&nbsp;a&nbsp;VR&nbsp;project&nbsp;Miao&nbsp;and&nbsp;won&nbsp;3rd&nbsp;prize&nbsp;of&nbsp;the&nbsp;National&nbsp;Digital&nbsp;Design&nbsp;Competition&nbsp;for&nbsp;University&nbsp;Students.（Link）</p><p>2009</p><p>指导学生田恬、金云水、林毓鹏创作虚拟现实作品《数字校园》，获2009年上海市计算机应用能力大赛三等奖。（链接）</p><p>Supervised&nbsp;Tian&nbsp;Tian,&nbsp;Yunshui&nbsp;Jin&nbsp;and&nbsp;Yupeng&nbsp;Lin&nbsp;to&nbsp;create&nbsp;a&nbsp;VR&nbsp;project&nbsp;Digital&nbsp;Campus&nbsp;and&nbsp;won&nbsp;2009's&nbsp;Competition&nbsp;of&nbsp;Software&nbsp;Operation&nbsp;Skills&nbsp;in&nbsp;Shanghai.（Link）</p><p>2008</p><p>指导学生金云水、蒲众等创作网页虚拟现实作品《虚拟新媒体艺术馆》，于2008年全国新媒体艺术院长/系主任论坛期间发布，并曾多次参加国内外的展览会。（链接）</p><p></p><p>Supervised&nbsp;Yunshui&nbsp;Jin&nbsp;and&nbsp;Zhong&nbsp;Pu&nbsp;to&nbsp;create&nbsp;an&nbsp;online&nbsp;VR&nbsp;application&nbsp;Virtual&nbsp;New&nbsp;Media&nbsp;Art&nbsp;Gallery.&nbsp;It&nbsp;was&nbsp;published&nbsp;during&nbsp;the&nbsp;2008's&nbsp;National&nbsp;Conference&nbsp;of&nbsp;New&nbsp;Media&nbsp;Art,&nbsp;and&nbsp;was&nbsp;for&nbsp;many&nbsp;times&nbsp;exhibited&nbsp;in&nbsp;China&nbsp;and&nbsp;abroad.（Link）</p><p><br></p>
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="teac-bkcon" id="custom26446">
+                                 <div class="teac-bk noborder">
+                                     <div class="btwz">
+                                         <i class="bgColor"></i><span class="fontColor">创作成果</span>
+                                     </div>
+                                     <div class="info2">
+                                         <p>1、宜昌智慧海洋信息中心4D游戏《海底两万里》（<u><a href="http://www.aboutleo.cn/%e6%b5%b7%e5%ba%95%e4%b8%a4%e4%b8%87%e9%87%8c-%c2%b7-20000-miles-under-the-sea-2023/" target="_blank"><font color="#008080">点此了解更多信息</font></a></u>）</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/feffc59fc05647f08ac6a728913fed15.jpg" alt="2023_2000Miles_Banner" style="max-width:100%;"><br></p><p><br></p><p>2、宜昌智慧海洋信息中心4D游戏《飞鲨出击》（<u><a href="http://www.aboutleo.cn/20230706-2/" target="_blank"><font color="#008080">点此了解更多信息</font></a></u>）</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/d276fc1917bb421797cd68f6c2315045.jpg" alt="2023_J15_BannerB" style="max-width:100%;"><br></p><p><br></p><p>3、2022年度同济大学设计创意学院虚拟展馆（<a href="https://tjdi.tongji.edu.cn/tags/virtual-gallery/" target="_blank"><font color="#008080" style=""><u>点此了解更多信息</u></font></a>）</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/bb1b81a397d54d60aea561222ab540a8.jpg" alt="Add01"></p><p><br></p><p>4、与腾讯合作的严肃游戏设计课程线上展（<a href="http://www.daelab.cn/20230123-2/" target="_blank"><font color="#008080" style=""><u>点此了解更多信息</u></font></a>）</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/73d1b377367d436c8b32352a5615cb27.jpg" alt="Add02"></p><p><br></p><p>5、与华大集团合作的严肃游戏设计课程线上展（<u><a href="http://www.daelab.cn/20230211-2/" target="_blank"><font color="#008080">点此了解更多信息</font></a></u>）</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/c1d7e953b5154d579d1d38eb04ae9ca6.jpg" alt="Highlight_202303" style="max-width:100%;"><br></p><p><br></p><p>6、国家级一流虚仿课程《镜头语言虚拟实验》（<u><a href="http://www.aboutleo.cn/20191019-2/" target="_blank"><font color="#008080">点此了解更多信息</font></a></u>）及严肃游戏《VR电影训练营》（<u><a href="http://www.aboutleo.cn/181230_1009/" target="_blank"><font color="#008080">点此了解更多信息</font></a></u>）</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/9babc8a565574a2e8d0c98687970000c.jpg" alt="2018VRFS_5" style="max-width:100%;"><br></p><p><br></p><p>7、沉浸式VR游戏《次要任务》（<u><a href="http://www.aboutleo.cn/20201125-2/" target="_blank"><font color="#008080">点此了解更多信息</font></a></u>）</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/43b280101b2142008e6a9412967b5a1d.jpg" alt="2020SM_Banner" style="max-width:100%;"><br></p><p><br></p><p>8、历年游戏/交互类毕业设计作品（<u><a href="http://www.aboutleo.cn/20230705-2/" target="_blank"><font color="#008080">链接1</font></a></u>、<u><a href="http://www.aboutleo.cn/20220901-2/" target="_blank"><font color="#008080">链接2</font></a></u>、<a href="http://www.aboutleo.cn/20210701-6/" target="_blank"><u><font color="#008080">链接3</font></u></a>、<a href="http://www.aboutleo.cn/20210701-5/" target="_blank"><u><font color="#008080">链接4</font></u></a>、<a href="http://www.aboutleo.cn/20210701-3/" target="_blank"><u><font color="#008080">链接5</font></u></a>、<a href="http://www.aboutleo.cn/20210701-2/" target="_blank"><u><font color="#008080">链接6</font></u></a>、<a href="http://www.aboutleo.cn/20210701-1/" target="_blank"><u><font color="#008080">链接7</font></u></a>、<a href="http://www.aboutleo.cn/20210701-4/" target="_blank"><u><font color="#008080">链接8</font></u></a>）</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/c38f6444cc2c4e789d73f4f31142f1db.jpg" alt="2023_GradProjects_Banner" style="max-width:100%;"><br></p><p><br></p><p>9、历年游戏/交互类作业（<u><a href="http://www.aboutleo.cn/20220116-2/" target="_blank"><font color="#008080">链接1</font></a></u>、<u><a href="http://www.aboutleo.cn/20220117-2/" target="_blank"><font color="#008080">链接2</font></a></u>、<u><a href="http://www.aboutleo.cn/20211101-3/" target="_blank"><font color="#008080">链接3</font></a></u>、<u><a href="http://www.aboutleo.cn/20210314-2/" target="_blank"><font color="#008080">链接4</font></a></u>、<u><a href="http://www.aboutleo.cn/20200115-3/" target="_blank"><font color="#008080">链接5</font></a></u>、<u><a href="http://www.aboutleo.cn/20191116-2/" target="_blank"><font color="#008080">链接6</font></a></u>、<a href="http://www.aboutleo.cn/181230_1008/" target="_blank" style="text-decoration-line: underline;"><font color="#008080">链接7</font></a>、<a href="http://www.aboutleo.cn/20200115-2/" target="_blank"><u><font color="#008080">链接8</font></u></a>）</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/5ef723d601a54dce8b0046165772ede5.jpg" alt="22MusicGames_BannerB" style="max-width:100%;"><br></p><p><br></p><p>10、历年三维艺术类作业（<u><a href="http://www.aboutleo.cn/20230703-2/" target="_blank"><font color="#008080">链接1</font></a></u>、<u><a href="http://www.aboutleo.cn/20220101-2/" target="_blank"><font color="#008080">链接2</font></a></u>、<u><a href="http://www.aboutleo.cn/20220630-2/" target="_blank"><font color="#008080">链接3</font></a></u>、<a href="http://www.aboutleo.cn/20220115-2/" target="_blank" style="text-decoration-line: underline;"><font color="#008080">链接4</font></a>、<a href="http://www.aboutleo.cn/20191201-2/" target="_blank"><u><font color="#008080">链接5</font></u></a>、<a href="http://www.aboutleo.cn/181230_1001/" target="_blank"><u><font color="#008080">链接6</font></u></a>、<a href="http://www.aboutleo.cn/181230_1002/" target="_blank"><u><font color="#008080">链接7</font></u></a>、<a href="http://www.aboutleo.cn/181230_1004/" target="_blank"><u>链接8</u></a>）</p><p><img src="http://kyimg.360eol.com/kaoyan/yzteacher/c54c245f965f4cbfb915ff0378366fe2.jpg" alt="2023_3DAni_BannerB" style="max-width:100%;"><br></p><p><br></p><p>更多创作成果请点击访问<a href="http://www.aboutleo.cn/creations/" target="_blank"><u><font color="#008080">柳喆俊个人网站的创作版块</font></u></a></p><p><br></p>
+                                     </div>
+                                 </div>
+                             </div>
+                <!-- <div id="stumsg" class="stumsg">
+                    <div class="teac-bk noborder">
+                        <div class="btwz clearfix" style="font-size:14px;">
+                            <i class="bgColor fn-left" style="margin-top:3px"></i><span class="fontColor fn-left">学生信息</span>
+                            <div class="fn-right">当前位置:<a href="javaScript:void(0);" onclick="returnTeacher();">教师主页</a> >学生信息 </div>
+                        </div>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td rowspan="4" width="260px">
+                                        <img class="img-box" src="images/vedio-page1_03.png" alt="" class="img-box">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="infos" colspan="2" style="text-align: left;">
+                                        
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="fn-left">入学日期：</span>
+                                        <div class="stu t1">
+                                            <input type="text" id="entranceDate" name="entranceDate" value="">
+                                        </div></td>
+                                    <td><span class="fn-left">所学专业：</span>
+                                        <div class="stu t1">
+                                            <input type="text" id="specialtyName" name="specialtyName" value="">
+                                        </div></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="fn-left">学号：</span>
+                                        <div class="stu t1">
+                                            <input type="text" id="studentNumber" name="studentNumber" value="">
+                                        </div></td>
+                                    <td><span class="fn-left">学位：</span>
+                                        <div class="stu t1">
+                                            <input type="text" id="degree" name="degree" value="">
+                                        </div></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div> -->
+                    
+                <div id="stumsg" class="teac-bkcon" >
+                    <div class="teac-bk noborder">
+                        <div class="btwz clearfix">
+                            <i class="bgColor" style="background-color: red;"></i><span class="fontColor" style="color: red;">学生信息</span>   
+                            <div class="btbar">当前位置：<a href="javaScript:void(0);" onclick="returnTeacher();">教师主页</a> &gt; 学生信息</div> 
+                        </div>
+                        <div class="info5">
+                            <div class="pictu"><img class="img-box" src="/inc/images/header.png?imageView2/1/w/120/h/168"></div>
+                            <div id="infos" class="student">
+                                
+                            </div>
+                            <div class="info4">
+                                <div class="itembk2">
+                                    <div class="tp1"><i class="stuColor" style="background-color: red;"></i><span>入学日期</span></div>
+                                    <div id="entranceDate" class="twz"></div>
+                                </div>  
+                                <div class="itembk2">
+                                    <div class="tp1"><i class="stuColor" style="background-color: red;"></i><span>所学专业</span></div>
+                                    <div id="stuSpecialtyName" class="twz"></div>
+                                </div>  
+                                <div class="itembk2">
+                                    <div class="tp1"><i class="stuColor" style="background-color: red;"></i><span>学号</span></div>
+                                    <div id="studentNumber" class="twz"></div>
+                                </div>  
+                                <div class="itembk2">
+                                    <div class="tp1"><i class="stuColor" style="background-color: red;"></i><span>学位</span></div>
+                                    <div id="degree" class="twz"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info2" id="student_content">
+
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 专业详情 -->
+                <div id="specialty-detail" class="teac-bkcon">
+                    <div class="teac-bk noborder">
+                        <div class="btwz clearfix">
+                            <i class="bgColor"></i><span class="fontColor">招生信息</span>   
+                            <div class="btbar">当前位置：<a href="javaScript:void(0);" onclick="returnTeacher();">教师主页</a> &gt; 招生信息</div> 
+                        </div>
+                        <div class="info4">
+                            <div class="itembk">
+                                <div class="tp1"><i class="bgColor"></i><span>招生学院</span></div>
+                                <div class="twz college"></div>
+                            </div>
+                            <div class="itembk">
+                                <div class="tp1"><i class="bgColor"></i><span>招生专业</span></div>
+                                <div class="twz specialtyName"></div>
+                            </div>
+                            <div class="itembk">
+                                <div class="tp1"><i class="bgColor"></i><span>研究方向</span></div>
+                                <div class="twz dir"></div>
+                            </div>
+                            <div class="itembk">
+                                <div class="tp1"><i class="bgColor"></i><span>招生人数</span></div>
+                                <div class="twz total"></div>
+                            </div>  
+                            <div class="itembk">
+                                <div class="tp1"><i class="bgColor"></i><span>推免人数</span></div>
+                                <div class="twz tm"></div>
+                            </div>  
+                            <div class="itembk">
+                                <div class="tp1"><i class="bgColor"></i><span>考试方式</span></div>
+                                <div class="twz exameType"></div>
+                            </div>
+                            <div class="itembk">
+                                <div class="tp1"><i class="bgColor"></i><span>招生类别</span></div>
+                                <div class="twz type"></div>
+                            </div>  
+                            <div class="itembk">
+                                <div class="tp1"><i class="bgColor"></i><span>招生年份</span></div>
+                                <div class="twz year"></div>
+                            </div>  
+                            <div class="itembk"></div>  
+
+                        </div>
+                        <div class="info4 infobottom">
+                            <div class="itembk"><div id="ctel" class="tp2 dh"></div></div>
+                            <div class="itembk"><div id="cemail" class="tp2 yx"></div></div>
+                            <div class="itembk"><div id="ctime" class="tp2 sj"></div></div>
+                        </div>
+                        
+                    </div>
+                </div>  
+
+            </div>
+        </div>
+        
+    </div> 
+<div class="login-bottom" style="line-height: 25px;position: absolute;    bottom: 0;">
+            <p style="font-size:14px;line-height: 1">同济大学研究生院招生办公室</p>
+        <p style="font-size: 12px; margin-top: 5px;line-height: 1">360eol提供技术支持</p>
+        <a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank" style="font-size: 12px;color: #9c9c9c;line-height: 1">Copyright © 2011
+            -All Rights Reserved 苏ICP备08015343号-4</a>
+</div>    <!--loading-->
+    <div class="loader">
+        <div>
+            <div class="loader-inner">
+                <div class="loader-line-wrap">
+                    <div class="loader-line"></div>
+                </div>
+                <div class="loader-line-wrap">
+                    <div class="loader-line"></div>
+                </div>
+                <div class="loader-line-wrap">
+                    <div class="loader-line"></div>
+                </div>
+                <div class="loader-line-wrap">
+                    <div class="loader-line"></div>
+                </div>
+                <div class="loader-line-wrap">
+                    <div class="loader-line"></div>
+                </div>
+                <p>文件上传中...</p>
+            </div>
+        </div>
+    </div>
+    <style>
+        .teac-rightcon .info3 .stu .namelist>a:hover{color:blue;}
+    </style>
+    <div class="share-info">
+        <div class="teac-share fbg">
+            <span>分享</span>
+            <div class="sharek">
+                <div class="share1">
+                    <div class="bdsharebuttonbox">
+                        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+                        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+                        <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+                        <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友">QQ好友</a>
+                    </div>
+                    <script>
+                                 window._bd_share_config={
+                                     "common":{
+                                         "bdSnsKey":{},
+                                         "bdText":"导师风采，欢迎咨询报考",
+                                         "bdMini":"1",
+                                         "bdMiniList":false,
+                                         "bdPic":"",
+                                         "bdUrl":"http://tongji.teacher.360eol.com/moblic/share?teacherId=15500",
+                                         "bdStyle":"1",
+                                         "bdSize":"24",
+                             "bdPic" : 'http://kyimg.360eol.com/kaoyan/yzteacher/8954da0c9f4340808ba5cee540ba0248.jpg'
+
+                                     },
+                                     "share":{}
+                                 };
+
+                   // with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='https://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                    </script>
+                </div>
+            </div>
+        </div>
+        <a class="teac-goindex fbg" href="/"><span>回到<br/>首页</span></a>
+        <a class="teac-gotop fbg"><span>回到<br/>顶部</span></a>
+    </div>
+    <script src="/inc/js/swiper-4.3.5.min.js"></script>
+    <script>
+        //添加自定义的栏目
+        var teacherCustomizeList = 'com.edu.model.TeacherBasic@25dc2f2f';
+
+       // initMenuLi();
+            function initMenuLi() {
+              var  html ="";
+                     html+='<li><a class="" href="javascript:void(0)">获奖荣誉</a></li>';
+                     html+='<li><a class="" href="javascript:void(0)">创作成果</a></li>';
+                $("#teac-menu").append(html);
+
+
+
+
+
+            }
+
+       var teacherId =  "15500";
+       var praiseId;
+       var praiseFlag;//点赞状态 0是未点过，1是已经点过
+
+               //获得点赞
+        function getTeacherPraise(){
+            var teacher ={teacherId:teacherId}
+            $.ajax({
+                url: "/teacher/getTeacherPraise",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(teacher),
+                success: function (result) {
+                    var data = result.data;
+                    praiseId= data.id;
+                    praiseFlag = data.praiseFlag;
+                    var html = "";
+                    html +=' <i></i>';
+
+                    if (praiseFlag == 0){
+                        html +=' <span class="zan not"></span>';
+                    } else {
+                        html +=' <span class="zan"></span>';
+                    }
+                    html +=' <span class="number">+ '+data.praiseSum+'</span>';
+
+                    var  list = JSON.parse(data.praiseTeacherList);
+
+                    $.each(list, function (i, n) {
+                        // html +=' <img src="'+n.header+'?imageView2/1/w/20/h/20/q/75">';
+                        // html +=' <img src="'+n.header+'">';
+                    })
+
+                    $(".wholike").html(html);
+
+                }
+            })
+        }
+
+
+        $(function() {
+                        getTeacherPraise();
+                        //分享浮窗
+                        $(".teac-share").mouseover(function () {
+                            $(".sharek").show();
+                        });
+                        $(".teac-share").mouseout(function () {
+                            $(".sharek").hide();
+                        })          
+                        $(".share-info .fbg").hover(function(){$(this).css('backgroundColor',color);},function(){$(this).css('background','#fff');});
+                        
+                        $(".teac-gotop").click(function (e) {
+                            e.preventDefault();
+                            $('html, body').animate({
+                              scrollTop: 0
+                            }, 300);
+                        });
+                        
+                        //换肤颜色
+                        var color = '#1890ff';
+                        $('.bgColor').css('backgroundColor', color);
+                        $('.stuColor').css('backgroundColor',color);
+                        $('.fontColor').css('color', color);
+                        $('.boderTopColor').css('borderColor', color);
+                        $('.bgColor').find('.fontColor').css('color', '#fff');
+                        $('.btbar a').mouseover(function() {
+                            $(this).css('color', color);
+                        }).mouseout(function() {
+                            $(this).css('color', '#999');
+                        });
+                        $('body').append(
+                                '<style>.fontColor .icon-shlg_1:before{color:'
+                                        + color + '}</style>')
+
+                        //切换1
+                        $('.teac-menu').on(
+                                'click',
+                                'li',
+                                function() {
+                                    $(this).siblings().find('a').removeClass(
+                                            'bgColor');
+                                    $(this).siblings().find('a').css(
+                                            'background', '#fff');
+                                    $(this).find('a').addClass('bgColor');
+                                    $(this).find('a').addClass('bgColor').css(
+                                            'background', color);
+                                    var num = $(this).index();
+                                    // console.log("num====="+num);
+                                $(".teac-rightcon").find(".teac-bkcon")
+                                        .eq(num).show().siblings(".teac-bkcon")
+                                                .hide();
+
+
+                                    
+                                });
+                        //切换2
+                        $('.tabmenu2').on(
+                                'click',
+                                'li',
+                                function() {
+                                    $(this).siblings().removeClass('bgColor');
+                                    $(this).siblings()
+                                            .css('background', '#fff');
+                                    $(this).siblings('li').find('.bt1').css(
+                                            'color', color);
+                                    $(this).addClass('bgColor');
+                                    $(this).addClass('bgColor').css(
+                                            'background', color);
+                                    $(this).find('.bt1').css('color', '#fff');
+                                    var num = $(this).index();
+                                    $(this).parent('.tabmenu2').next(
+                                            ".tabmain2").find(".tab-article")
+                                            .eq(num).show().siblings(
+                                                    ".tab-article").hide();
+                                    
+                                });
+                        //男女
+                        $('.zlitem .sex-item').click(
+                                function() {
+                                    var t = $(this), box = t
+                                            .closest('.sex-item');
+                                    t.addClass('on').siblings().removeClass(
+                                            'on');
+                                    t.find('em').addClass('boderTopColor').css(
+                                            'borderColor', color);
+                                    t.siblings().find('em').removeClass(
+                                            'boderTopColor').css('borderColor',
+                                            '#C4C6CF');
+                                    box.find('input').prop('checked', true)
+                                });
+                    // 点赞
+                    $(document).on('click', '.zan', function() {
+                        //点赞动画
+                        var teacher = {id:praiseId,teacherId:teacherId}
+                        $.ajax({
+                            url: "/teacher/saveTeacherPraise",
+                            type: "POST",
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: JSON.stringify(teacher),
+                            success: function (result) {
+                                //console.log(result)
+                                var praiseFlag = result.data;
+                                getTeacherPraise();
+                            }
+                        })
+
+                    })
+
+                        //上传图片
+                        $(document).on('change', '.s2 input', function() {
+                                            var t = $(this);
+                                            var src = getObjectURL(this.files[0])
+                                            if (src) {
+                                                t
+                                                        .closest('.zlitem')
+                                                        .find('.upfile')
+                                                        .append(
+                                                                "<div class='file_list'>"
+                                                                        + src
+                                                                        + "<i class='deletefile'></i></div>")
+                                                        .show();
+                                            }
+                                        });
+                        function getObjectURL(file) {
+                            //console.log(file)
+                            if (file == undefined) {
+                                return false;
+                            } else {
+                                return file.name
+                            }
+                        }
+                        ;
+                        $(document).on('click', '.zlitem .deletefile',
+                                function() {
+                                    var _ul = $(this).closest('.upfile');
+                                    $(this).parent('.file_list').remove();
+                                    if (_ul.find('.file_list').length < 1) {
+                                        _ul.hide();
+                                    }
+                                });
+
+                    })
+                </script>
+    <script>
+  //日期格式化
+  
+    function returnTeacher(){
+        window.location.reload(); 
+    }
+    function getDate(inputTime) {
+        var date = new Date(inputTime);
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = date.getHours();
+        h = h < 10 ? ('0' + h) : h;
+        //var minute = date.getMinutes();
+        //var second = date.getSeconds();
+        //minute = minute < 10 ? ('0' + minute) : minute;
+        //second = second < 10 ? ('0' + second) : second;
+        //return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        return y + '-' + m + '-' + d;
+    };
+        
+    $(document).on('click', '.stu a', function () {
+        //拿到学生ID进行查询跳转页面
+        var student = "";
+        var studentId = $(this).attr("stuId")
+         $.ajax({
+               url: "/teacherBasic/queryStudent",
+               type: "post",
+               data: {'studentId':studentId},
+               success: function (result) {
+                   if (result["success"]) {
+                        //这里进行拼接
+                        student = result.data;
+                        var sex = student.sex == 0?"女":"男";
+                        var graduateStatus = student.graduateStatus == 0?"正常在校":"已毕业"
+                        var html="<span class='name'>"+student.name+"</span><span>/ "+sex+" / "+graduateStatus+"</span>";
+                        $("#stumsg div[id='infos']").html(html);
+                        $("#entranceDate").html(getDate(student.entranceDate));
+                        var photo = "/inc/images/header.png?imageView2/1/w/120/h/168";
+                        if(student.photo != null && student.photo != ""){
+                            photo = student.photo;
+                        }
+                         $(".img-box").prop("src",photo);
+                        $("#stuSpecialtyName").html(student.specialtyName);
+                        $("#studentNumber").html(student.studentNumber);
+                        $("#degree").html(student.degree);
+                        $("#student_content").html(student.content);
+                        $("#students").hide();
+                        $("#stumsg").show();
+                   }else{
+                       layer.msg("查询失败,请联系管理员", {
+                            time: 1000
+                         })
+                   }
+               }
+           }) 
+        
+    });
+    
+    $(document).on('click', '.zhaoshengxx a', function () {
+        //拿到学生ID进行查询跳转页面
+        var student = "";
+        var studentId = $(this).attr("specialtyId")
+         $.ajax({
+               url: "/teacherBasic/getNewStudentMsg",
+               type: "post",
+               data: {'studentId':studentId},
+               success: function (result) {
+                   if (result["success"]) {
+                        //这里进行拼接
+                       student = result["data"];
+                       if('169'=='318' || '169'=='438' || 'true'== '12987'){
+                           $("#specialty-detail .total").text('-');
+                           $("#specialty-detail .tm").text('-');
+                       }else{
+                           $("#specialty-detail .total").text((student.enrollTkNum == null || student.enrollTkNum == 0 )?"":student.enrollTkNum);
+                           $("#specialty-detail .tm").text((student.enrollTmNum == null || student.enrollTmNum == 0)?"":student.enrollTmNum);
+                       }
+
+                        var typeName=student.studentType;
+                        // if(student.studentType==1){
+                        //     typeName="学术型硕士"
+                        // }else if(student.studentType==2){
+                        //     typeName="专业学位硕士";
+                        // }else if(student.studentType==3){
+                        //     typeName="学术型博士";
+                        // }else if(student.studentType==4){
+                        //     typeName="专业学位博士"
+                        // }
+                        $("#specialty-detail .type").text(typeName);
+                       $("#specialty-detail .exameType").text(student.exameType==null?"":student.exameType);
+                        $("#specialty-detail .year").text(student.year==null?"":student.year);
+                        $("#specialty-detail .college").text(student.schoolName == null?"":student.schoolName);
+                        $("#specialty-detail .specialtyName").text(student.specialtyName == null?"":student.specialtyName);
+                        //防止隐私泄露
+                        // $("#ctel").html(student.phone == null?"":student.phone);
+                        $("#cemail").html(student.email == null?"":student.email);
+                        $("#ctime").html(getDate(student.publishTime));
+                        $("#specialty-detail .dir").text(student.researchArea);
+                        $(".teac-bkcon").hide();
+                        $("#specialty-detail").show();
+                   }else{
+                       layer.msg("查询失败,请联系管理员", {
+                            time: 1000
+                         })
+                   }
+               }
+           }) 
+        
+    });
+
+        var type;
+        var count;
+        $(function(){
+            initUpload();
+            var uploadType;
+            //提交学生信息
+            $(".btn1").on("click",function(){
+                var teacherName = "柳喆俊";
+                var student={};
+                var name=$("#name").val();
+                if(name.length>20){
+                layer.msg("姓名过长")
+                    return false;
+                }
+                if($.trim(teacherName) == $.trim(name)){
+                    layer.msg("您不能对自己报名")
+                    return false;
+                }
+                if($.trim(name) ==""){
+                    layer.msg("请正确填写姓名")
+                    return false;
+                }
+                student['name']=name;
+                var phone=$('#phone').val();
+                if((phone!= '' &&!(/^1[3|4|5|6|7|8|9][0-9]\d{4,8}$/.test(phone))) || phone.length!=11){
+                    layer.msg('手机号格式错误');
+                    return false;
+                }
+                student['phone']=phone;
+                var email=$('#email').val();
+                if(email != '' && !(/[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/.test(email))){
+                    pass=false;
+                    layer.msg('邮箱格式错误');
+                    return false;
+                }
+                student['email']=email;
+                var graduateSchoolId=$("#graduateSchoolId").attr("data-value");
+                if(graduateSchoolId !='' && graduateSchoolId != undefined){
+                    student['graduateSchoolId']=graduateSchoolId;
+                    student['graduateSchoolName']=$("#graduateSchoolId").val();
+                }
+                var specialtyId=$("#specialtyId").attr("data-value");
+                if(specialtyId !='' && specialtyId != undefined){
+                    student['specialtyId']=specialtyId;
+                    student['specialtyName']=$("#specialtyId").val()
+                }
+                student['signUpType']=$("input[name='signUpType']:checked").val();//报考类型 1,硕士 2,博士
+                var resumeUrl=$("#resumeUrl").val();
+                if(resumeUrl !='' && resumeUrl != undefined){
+                    student['resume']=resumeUrl;
+                }else{
+                    student['resume']="";
+                    //必填
+                    pass=false;
+                    layer.msg('请上传个人简介！');
+                    return false;
+                }
+                
+                var reportCardUrl=$("#reportCardUrl").val();
+                if(reportCardUrl !='' && reportCardUrl != undefined){
+                    student['reportCard']=reportCardUrl;
+                }else{
+                    student['reportCard']='';
+                    pass=false;
+                    layer.msg('请上传成绩单！');
+                    return false;
+                }
+                var otherUrl=$("#otherUrl").val();
+
+                // console.log("~~~~otherUrl~~~~~:"+otherUrl);
+                if(otherUrl !='' && otherUrl != undefined){
+                    student['other']=otherUrl;
+                }else{
+                    student['other']= '';
+                }
+                var remark=$("#remark").val();
+                if(remark !='' && remark != undefined){
+                    student['remark']=remark;
+                }
+                var bmType=$("#bmType").val();
+                student['bmType']=bmType;
+                student['teacherId']=15500
+                $.ajax({
+                    url:'/student/saveStudent',
+                    dataType:'json',
+                    data:student,
+                    type:'post',
+                    success:function(res){
+                        if(res.success){
+                            layer.msg("提交成功");
+                            setTimeout(function(){
+                                location.reload();
+                            },1000)
+                        }
+                    }
+                })
+            
+            })
+            
+            $(".uploadExtro").on("click",function(){
+                type=$(this).attr("data-type");
+            })
+            
+            
+            // 图片上传
+            $(document).on('change', '.photo input', function () {
+                var t = $(this);
+                var src = getObjectURL(this.files[0]);
+                $('.photo img').attr('src', src)
+            })
+        
+            //换肤颜色
+            var color = '#1890ff';
+            $('.bgColor').css('backgroundColor',color);
+            $('.fontColor').css('color',color);
+            $('.boderTopColor').css('borderColor',color);
+            $('.bgColor').find('.fontColor').css('color','#fff');
+            $('.btbar a').mouseover(function() {
+                $(this).css('color',color); 
+            }).mouseout(function(){
+                $(this).css('color','#999');    
+                });
+            $('body').append('<style>.fontColor .icon-shlg_1:before{color:'+color+'}</style>')
+            
+            //切换1
+            $('.teac-menu').on('click', 'li', function () {
+                $(this).siblings().find('a').removeClass('bgColor');
+                $(this).siblings().find('a').css('background','#fff');
+                $(this).find('a').addClass('bgColor');
+                $(this).find('a').addClass('bgColor').css('background',color);
+                var num = $(this).index();
+                //xwm
+           //     $(".teac-rightcon").find(".teac-bkcon").eq(num).show().siblings(".teac-bkcon").hide();
+            });
+            //切换2
+            $('.tabmenu2').on('click', 'li', function () {
+                $(this).siblings().removeClass('bgColor');
+                $(this).siblings().css('background','#fff');
+                $(this).siblings('li').find('.bt1').css('color',color);
+                $(this).addClass('bgColor');
+                $(this).addClass('bgColor').css('background',color);
+                $(this).find('.bt1').css('color','#fff');
+                var num = $(this).index();
+                $(this).parent('.tabmenu2').next(".tabmain2").find(".tab-article").eq(num).show().siblings(".tab-article").hide();
+            });
+            //男女
+            $('.zlitem .sex-item').click(function () {
+                var t = $(this), box = t.closest('.sex-item');
+                t.addClass('on').siblings().removeClass('on');
+                t.find('em').addClass('boderTopColor').css('borderColor',color);
+                t.siblings().find('em').removeClass('boderTopColor').css('borderColor','#C4C6CF');
+                box.find('input').prop('checked', true)
+            });
+            // 点赞
+            $('.zan').click(function(){
+                var num = $(this).siblings('.number').text().substr(1);
+                // console.log(num)
+                if($(this).hasClass('not')){
+                    $(this).removeClass('not');
+                    ++num
+                }else{
+                    $(this).addClass('not');
+                    --num
+                }
+                $(this).siblings('.number').text('+ ' + num)
+            })
+            //上传图片
+            $(document).on('change', '.s2 input', function () {
+                var t = $(this);
+                var src = getObjectURL(this.files[0])
+                if(src){
+                    t.closest('.zlitem').find('.upfile').append("<div class='file_list'>"+ src +"<i class='deletefile'></i></div>").show();
+                }
+            });
+            
+            $(document).on("click",".icon-shlg_1",function(){
+                var keyword=$("#top-search-value").val();
+                window.location.href="/teacher/teacherList?keyword="+keyword
+                
+            })
+            function getObjectURL(file) {
+                //console.log(file)
+                if(file==undefined){
+                    return false;
+                    }else{return file.name}
+            };
+            $(document).on('click', '.zlitem .deletefile', function () {
+                var _ul = $(this).closest('.upfile');
+                $(this).parent('.file_list').remove();
+                if(_ul.find('.file_list').length<1){
+                        _ul.hide();
+                    }
+            });
+            // 选择事件
+            $(document).on('click', '.sch-tab tr', function () {
+                $(this).find('.choose-icon').addClass('on').closest('tr');
+                $(this).siblings('tr').find('.choose-icon').removeClass('on')
+            });
+            
+            layui.use(['form', 'layer'], function () {
+                $(document).on("click",".schsearch",function(){
+                    getData(1,10,1);
+                    initPage(1);
+                })
+                
+                $(document).on("click",".spesearch",function(){
+                    getData(1,10,2);
+                    initPage(2);
+                })
+                var chooseSch = '<div class="chooseSch">' +
+                        '        <div>' +
+                        '            <label for="">关键字：</label>' +
+                        '            <div class="sch-key">' +
+                        '               <span>' +
+                        '                   <input type="text" class="sch-key-i" placeholder="请输入关键词" id="search">' +
+                        '               </span>' +
+                        '               <button class="btn-search schsearch">查询</button>' +
+                        '             </div>' +
+                        '         </div>' +
+                        '         <div class="sch-tab">' +
+                        '<table class="pop1" style="height:450px" >' +
+                        '            </table>' +
+                        '</div>   ' +
+                        '       <div id="page" style="text-align:center;"></div>' +
+                        '        </div>'
+                
+                var form = layui.form;
+                var layer = layui.layer;
+                // 选择毕业学校
+                $(document).on('click', '.school', function () {
+                    
+                    layer.open({
+                        area: '520px',
+                        title: ['选择毕业学校', 'font-size:18px'],
+                        content: chooseSch,
+                        top: 15.5,
+                        yes: function () {
+                            layer.closeAll();
+                            var val1 = $('.pop1 .choose-icon.on').closest('td').siblings()[0].innerHTML;
+                            var val2 = $('.pop1 .choose-icon.on').closest('td').siblings()[1].innerHTML;
+                            $('.school').val(val2).attr('data-value', val1);
+                        }
+                    });
+                    getData(1,10,1);
+                    initPage(1);
+                })
+                
+                function initPage(type) {
+                        layui.use('laypage', function(){
+                            var laypage = layui.laypage;
+                            laypage.render({
+                                elem: 'page'
+                                ,limit:10
+                                ,count: count //数据总数，从服务端得到
+                                ,jump: function(obj, first){
+                                    //首次不执行
+                                    if(!first){
+                                        getData(obj.curr,obj.limit,type);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                    
+                    function getData(pageNumber, pageSize,type,param) {
+                        var  url="";
+                        queryParam={};
+                        if(type==1){
+                            url="/student/getSchoolByPage";
+                            
+                        }else{
+                            url="/student/getSpecialtyByPage";
+                            if(param!=undefined && param!='全部'){
+                                queryParam['categoryName']=param;
+                            }
+                        }
+                        
+                        queryParam['pageNumber']=pageNumber;
+                        queryParam['pageSize']=pageSize;
+                        queryParam['search']=$("#search").val();
+                        
+                        $.ajax({
+                            url:url,
+                            data:queryParam,
+                            type:"post",
+                            dataType:"json",
+                            async:false,
+                            success:function (ret) {
+                                if(type==1){
+                                    count=ret['data']['total'];
+                                    var dataList = ret['data']['list'];
+                                    
+                                    var html = " <colgroup>\n" +
+                                            "                    <col style=\"width:25%\">\n" +
+                                            "                    <col style=\"width:65%\">\n" +
+                                            "                    <col style=\"width:10%\">\n" +
+                                            "                </colgroup>\n" +
+                                            "                <tbody style=\"display: table-header-group;\">\n" +
+                                            "                <tr>\n" +
+                                            "                    <th>编码</th>\n" +
+                                            "                    <th>名称</th>\n" +
+                                            "                    <th>选择</th>\n" +
+                                            "                </tr>";
+                                     if(dataList.length==0){
+                                   
+                                        html+='<tr style="border:none"><td colspan="3">暂无数据</td></tr>'
+                                        $(".pop1").html(html);
+                                        return;
+                                     }       
+                                    for(var o in dataList){
+                                        if(dataList[o]['schoolName'].indexOf('360')<0){
+                                        
+                                            html += '<tr>\n' +
+                                                        '                    <td>'+dataList[o]['id']+'</td>\n' +
+                                                        '                    <td>'+dataList[o]['schoolName']+'</td>\n' +
+                                                        '                    <td> <span data-id="'+dataList[o]['id']+'" data-name="'+dataList[o]['schoolName']+'" class="choose-icon"><i></i></span>\n' +
+                                                        '                    </td>\n' +
+                                                        '                </tr>'
+                                            }
+                                            $(".pop1").html(html);
+                                    }
+                                }else{
+                                    count=ret['data']['total'];
+                                    var dataList = ret['data']['list'];
+                                    var html =
+                                            "                <tbody style=\"display: table-header-group;\">\n" +
+                                            "                <tr>\n" +
+                                            "                    <th width=\"25%\">编码</th>\n";
+                                                   // if(queryType == 'one'){
+                                                    //    html +="<th width=\"35%\">学院</th>\n";
+                                                    //}
+                                    html +="                    <th width=\"30%\">名称</th>\n" +
+                                            "                    <th width=\"10%\">选择</th>\n" +
+                                            "                </tr>";
+                                    if(dataList.length==0){
+                                   
+                                        html+='<tr style="border:none"><td colspan="3">暂无数据</td></tr>'
+                                        $(".pop2").html(html);
+                                        return;
+                                     }             
+                                    for(var o in dataList){
+                                        html += '<tr>\n' +
+                                                '                    <td>'+dataList[o]['specialtyZydm']+'</td>\n';
+                                       // if(queryType == 'one'){
+                                         //   html += '<td>'+dataList[o]['college']+'</td>\n';
+                                      //  }
+                                        html +=       '                    <td>'+dataList[o]['specialtyZymc']+'</td>\n' +
+                                                '                    <td> <span data-id="'+dataList[o]['id']+'" data-name="'+dataList[o]['specialtyZymc']+'" class="choose-icon"><i></i></span>\n' +
+                                                '                    </td>\n' +
+                                                '                </tr>';
+                                    }
+                                    $(".pop2").html(html);
+                                }
+                            }
+                        })
+                    }
+                    
+                // 选择毕业专业
+                var chooseSpe = '<div class="chooseSpe">' +
+                        '        <div>' +
+                /*      '            <label for="">类别：</label>' + */
+                        '            <div class="schoolLb">' +
+/*                      '                            <span>' +
+                        '                                <span class="bgChanged">请选择</span>' +
+                        '                                <i></i>' +
+                        '                            </span>' + */
+                        '                            <ul>' +
+                        '                                <li title="专业类型一">全部</li>' +
+                        '                                <li title="专业类型一">哲学</li>' +
+                        '                                <li title="专业类型一">经济学</li>' +
+                        '                                <li title="专业类型一">法学</li>' +
+                        '                                <li title="专业类型一">教育学</li>' +
+                        '                                <li title="专业类型一">文学</li>' +
+                        '                                <li title="专业类型一">历史学</li>' +
+                        '                                <li title="专业类型一">理学</li>' +
+                        '                                <li title="专业类型一">工学</li>' +
+                        '                                <li title="专业类型一">农学</li>' +
+                        '                                <li title="专业类型一">医学</li>' +
+                        '                                <li title="专业类型一">军事学</li>' +
+                        '                                <li title="专业类型一">管理学</li>' +
+                        '                                <li title="专业类型一">艺术学</li>' +
+                        '                            </ul>' +
+                        '              </div>' +
+                        '            <label for="" style="margin-left:30px;">关键字：</label>' +
+                        '            <div class="sch-key">' +
+                        '               <span>' +
+                        '                   <input type="text" class="sch-key-i" placeholder="请输入关键词" id="search">' +
+                        '               </span>' +
+                        '               <button class="btn-search spesearch">查询</button>' +
+                        '             </div>' +
+                        '         </div>' +
+                        '         <div class="sch-tab">' +
+                        '<table class="pop2" style="height:450px">' +
+                        '            </table>' +
+                        '</div>   ' +
+                        '       <div id="page" style="text-align:center;"></div>' +
+                        '        </div>'
+                        
+                $(document).on('click', '.zhuanye', function () {
+                    
+                    layer.open({
+                        area: '670px',
+                        title: ['选择毕业专业', 'font-size:18px'],
+                        content: chooseSpe,
+                        yes: function () {
+                            layer.closeAll();
+                            var val1 = $('.pop2 .choose-icon.on').closest('td').siblings()[0].innerHTML;
+                            var val2 = $('.pop2 .choose-icon.on').closest('td').siblings()[1].innerHTML;
+                            $('.zhuanye').val(val2).attr('data-value', val1);
+                        }
+                    });
+                    getData(1,10,2);
+                    initPage(2);
+                })
+                
+                $(document).on('click', '.schoolLb li', function () {
+                    var t = $(this), $ul = t.parent(), $span = $ul.prev();
+                    $ul.slideUp(300);
+                    $span.removeClass('on').children('span').text(t.text());
+                    var category=t.text();
+                    getData(1,10,2,category);
+                    initPage(2);
+                })
+    
+            })
+            
+            $('.teac-bk-img').click(function(){
+                var li=$(".teac-menu").find("a[data-attr='ZSXX']").parent();
+                  $('.teac-menu li').eq(li.index()).trigger('click');
+                  $('.mybaokao')[0].click();
+             })
+        })
+    </script>
+    <script>
+    var uploader;
+    function initUpload(){
+     $('.loader p').text('文件上传中');
+        if(uploader){
+            uploader.destroy();
+        }
+        //处理上传组件
+        uploader = WebUploader.create({
+            swf: '/inc/js/webuploader/Uploader.swf',
+            server: '/student/uploadFile',
+            auto: true,
+            method: 'POST',
+            pick: {
+                id: '.uploadExtro',
+                innerHTML: '',
+                multiple: false
+            },
+            compress:false,
+            fileSingleSizeLimit: 20*1024*1024 //100M
+        });
+        var index;
+        //当文件被加入队列之前
+        uploader.on('beforeFileQueued', function(file) {
+            var name = file.name;
+            var type = name.substring(name.lastIndexOf(".") + 1);
+            if (type != 'rar' && type != 'jpg' && type != 'zip' && type!='doc' && type!='docx' && type!='pdf' && type!='png' && type!='jpeg') {
+                window.layer.close(index);
+                layer.msg('文件格式错误', {
+                    shade: 0.6,
+                    time: 1000
+                });
+                uploader.reset();
+                return false;
+            }
+            if(type == ''){
+                window.layer.close(index);
+                layer.msg('文件没有后缀名', {
+                    shade: 0.6,
+                    time: 1000
+                });
+                uploader.reset();
+                return false;
+            }
+            var size = file.size;
+            if (size > 20*1024*1024) {
+                layer.msg('文件大小超过20M，请重新上传', {
+                    shade: 0.6,
+                    time: 1000
+                });
+                uploader.reset();
+                return false;
+            }
+        });
+
+        //当文件被加入队列之后
+        uploader.on('fileQueued', function(file) {
+            $('.loader').show();
+        });
+
+        //当文件上传成功时
+        uploader.on('uploadSuccess', function(file, response) {
+            // 视频上传完成
+            setTimeout(function(){
+                $('.loader p').text('文件加载完成');
+                setTimeout(function(){
+                    $('.loader').hide();
+                    $('.loader p').text('文件上传中');
+                    layer.close(index);
+                },1000);
+            },2000);
+            if(!response["success"]){
+                layer.msg('上传失败，请联系管理员', {
+                    shade: 0.6,
+                    time: 1000
+                });
+                uploader.reset();
+                return false;
+            }
+            var newFileUrl = response["data"].newFileUrl;
+            var fileName = response["data"].fileName;
+            // console.log("~~~~~~~~~~~~~~~type~~~~："+type);
+            if(type=="resume"){
+                $("#resumeName").val(fileName);
+                $("#resumeUrl").val(newFileUrl);
+                $(".showResumeName").html(fileName);
+                $("#resumeDiv").show();
+            }else if(type=="reportCard"){
+                $("#reportCardName").val(fileName);
+                $("#reportCardUrl").val(newFileUrl);
+                $(".showReportCardName").html(fileName);
+                $("#showReportCardDiv").show();
+            }else if(type=="other"){
+                $("#otherName").val(fileName);
+                $("#otherUrl").val(newFileUrl);
+                $(".showOtherName").html(fileName);
+                $("#showOtherDiv").show();
+
+            }
+        });
+
+        uploader.on("uploadFinished", function () {
+            uploader.destroy();
+            initUpload();
+        });
+
+        //当文件上传出错时
+        uploader.on( 'uploadError', function(result) {
+            window.layer.close(index);
+            layer.msg('服务器出错，请稍候再试~', {
+                shade: 0.6,
+                time: 1000
+            });
+            $('.loader').hide();
+        });
+    }
+
+
+
+
+
+</script>
+<script>
+$(function(){
+     var preurl=document.referrer;
+    if(preurl.indexOf('share')>0 && window.location.href.indexOf("jump")>0){
+        $(".teac-menu").find("#zs_stu").trigger('click');
+
+        $('.mybaokao')[0].click();
+    
+        
+    }
+
+    $(document).on('click','.line-info .deleteinfo',function(){
+        var type =$(this).parent('.line-info').attr("data-type");
+        $("#"+type+"Url").val("");
+        $("#"+type+"Name").val("");
+        $(this).parent('.line-info').remove();
+
+    });
+
+    })
+</script>
+        <script src="/inc/js/getZhaoshengInfo.js?v=1" type="text/javascript"></script>
+        <script>
+            $(document).on('click','#zs_stu',function(){
+                getZhaoshengInfo(15500,169);
+            });
+        </script>
+</body>
+</html>

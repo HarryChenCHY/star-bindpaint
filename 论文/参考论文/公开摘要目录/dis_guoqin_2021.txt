@@ -1,0 +1,146 @@
+来源：https://www.daelab.cn/dis_guoqin_2021/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+基于体验的4DVR交互媒体设计研究
+Research of experience-based 4DVR interactive media design
+郭　钦
+关 键 词:
+4DVR，设计原则，视觉保真度，飞行模拟，洗出算法
+Keywords:
+4DVR, design principles, picture fidelity, flight simulation, wash-out algorithm
+摘 要
+随着时代发展，娱乐和新技术的结合越来越紧密，而利用信息技术辅助实践教学也日益成为主要趋势。4DVR作为结合了4D座椅和VR的新技术，正在以上领域中发挥越来越重要的作用。但是目前4DVR交互媒体设计仍处在快速发展阶段，相关研究尤其是涉及用户体验的研究较为缺乏，市场上主流的4DVR交互媒体产品也仍然存在一些问题，尚未形成一个合理的、规范化的设计流程和设计原则，缺少相应的设计体系。适逢同济大学、上海航天技术研究院与徐州拓普技术研究院成立“沉浸式体感仿真实验室”，并展开飞行模拟相关课题的研究，笔者以飞行模拟为主题，对提升4DVR的用户体验的设计原则进行了研究。
+本文一方面通过文献分析，一方面对目前的4DVR类虚拟仿真产品进行分析与总结，对4DVR用户体验方面存在的问题进行了归纳。笔者结合了视觉高保真度原则与虚实运动一致性原则，提出了4DVR交互媒体设计的设计原则，并基于该原则开发了《4DVR J15舰载机模拟训练系统》。最后，通过定量研究的方式，对提出的设计原则进行了分析论证，为今后的基于4DVR的交互媒体设计提供了指导意见，促进了该领域的发展与进步。
+Abstract
+With the development of the times, the combination of entertainment and new technologies is getting closer and closer, and the use of information technology to assist practical teaching is becoming a major trend. 4DVR is playing an increasingly important role in the above fields as a new technology that combines 4D seats and VR. However, 4DVR interactive media design is still in a rapid development stage, and there is a lack of relevant research, especially the research involving user experience, and there are still some problems with the mainstream 4DVR interactive media products in the market, which have not yet formed a reasonable and standardized design process and design principles, and lack a corresponding design system. As Tongji University, Shanghai Academy of Spaceflight Technology and Xuzhou Toptech Research Institute set up the “Immersive Body Simulation Laboratory” and started the research of flight simulation related topics, I studied the design principles of enhancing the user experience of 4DVR with the theme of flight simulation.
+On one hand, through literature analysis, on the other hand, this paper analyzes and summarizes the current 4DVR-like virtual simulation products, and summarizes the problems in 4DVR user experience. The author combines the principles of visual high fidelity and virtual-real motion consistency to propose the design principles of 4DVR interactive media design, and develops the 4DVR J15 shipboard aircraft simulation training system based on the principles. Finally, the proposed design principles are analyzed and justified by means of quantitative research, which provides guidance for future 4DVR-based interactive media design and promotes the development and progress of the field.
+目 录 · Contents
+第1章 引言
+1.1 概述
+1.2 研究课题背景
+1.2.1 4DVR发展现状
+1.2.2 国家大力推进虚拟现实产业建设
+1.2.3 目前4DVR交互媒体中存在的问题
+1.3 研究目标
+1.4 研究内容
+1.5 研究意义
+1.6 研究方法
+第2章 文献综述
+2.1 4DVR概述
+2.2 4DVR应用领域
+2.2.1 数字娱乐领域
+2.2.2 虚拟仿真训练领域
+2.3 4DVR相关理论研究现状及问题
+2.4 4DVR的应用现状及问题
+2.5 理论基础
+2.5.1 视觉保真度原则
+2.5.2 虚实运动一致性原则
+第3章 《4DVR J15舰载机模拟训练系统》设计
+3.1 创作背景
+3.2 创作定位
+3.3 开发路径选择
+3.3.1 运动平台选择
+3.3.2 开发引擎选择
+3.4 体验流程设计
+3.4.1 冷启动部分
+3.4.2 基础飞行训练部分
+3.4.3 航炮训练部分
+3.4.4 导弹训练部分
+3.4.5 实战部分
+3.4.6 返航部分
+3.5 场景选择
+3.6 硬件输入系统
+3.7 飞机的动力学模拟
+3.7.1 动力学模块
+3.7.2 引擎模块
+3.7.3 起落架模块
+3.7.4 武器模块
+3.7.5 座舱模块和燃油模块
+第4章 二自由度运动平台运动控制
+4.1 二自由度运动平台的运动机制与通讯协议
+4.2 角度限位
+4.3 运动平台的运动补偿
+4.3.1 运动平台的运动叠加问题
+4.3.2 实现运动补偿的方法
+4.4 基于体感的二自由度运动平台洗出算法设计
+4.4.1 洗出算法的概念及意义
+4.4.2 洗出算法理论基础
+4.4.3 二自由度运动平台洗出算法结构设计
+4.4.4 控制方案设计
+4.4.5 关键代码及说明
+4.4.6 洗出算法的封装与使用
+第5章 视觉内容开发流程及优化
+5.1 3D模型优化
+5.1.1 优化模型面数
+5.1.2 减少模型数量
+5.1.3 模型检查
+5.2 UV展开
+5.3 基于PBR流程的纹理绘制规则
+5.4 纹理绘制流程
+5.4.1 烘焙基础信息
+5.4.2 确定基础材质
+5.4.3 绘制法线
+5.4.4 添加滤镜
+5.4.5 添加脏迹
+5.5 性能优化
+5.5.1 美术资产性能优化
+5.5.2 运行时性能优化
+第6章 程序化建模及着色器编程
+6.1 基于GIS数据的大地形生成
+6.2 基于GPU的高性能森林
+6.3 使用程序化处理大量的建筑
+6.3.1 使用AI生成建筑平面数据
+6.3.2 按照一定规则创建三角面
+6.3.3 对建筑类型进行分组
+6.3.4 挤出模型
+6.3.5 程序化计算UV信息
+6.3.6 赋予随机数属性
+6.3.7 分区块自动裁切
+6.4 定制化的Shader开发
+6.4.1 海水效果
+6.4.2 船只尾迹的效果
+6.4.3 HUD效果
+6.4.4 航母甲板
+第7章 用户体验研究实验
+7.1 实验内容简介
+7.2洗出算法实验
+7.2.1 实验目的
+7.2.2 实验方法与流程
+7.2.3 测量工具
+7.2.4 实验材料
+7.2.5 实验假设
+7.2.6 被试
+7.2.7 实验结果及分析
+7.2.8 结果讨论
+7.3 视觉保真度实验
+7.3.1 实验目的
+7.3.2 实验方法与流程
+7.3.3 测量工具
+7.3.4 实验材料
+7.3.5 实验假设
+7.3.6 被试
+7.3.7 实验结果及分析
+7.2.8 结果讨论
+第8章 结论与展望
+8.1 研究结论
+8.2 研究局限
+8.3 研究展望
+参考文献
+部 分 插 图 · Figures
+dis_guoqin_2021_01
+dis_guoqin_2021_02
+dis_guoqin_2021_03
+dis_guoqin_2021_04
+dis_guoqin_2021_05
+dis_guoqin_2021_08
+dis_guoqin_2021_06
+dis_guoqin_2021_07
+dis_guoqin_2021_10
+dis_guoqin_2021_09
+dis_guoqin_2021_11
+dis_guoqin_2021_12
+dis_guoqin_2021_13
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）
+All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.

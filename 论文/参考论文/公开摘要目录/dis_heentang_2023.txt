@@ -1,0 +1,122 @@
+来源：https://www.daelab.cn/dis_heentang_2023/
+材料性质：公开摘要、目录和插图介绍；不是学位论文全文。
+
+VR交互叙事语境下的引导线索设计研究
+Research on the Design of Guiding Cues in the Context of VR Interactive Narrative
+贺蒽堂
+关 键 词:
+虚拟现实，交互叙事，引导线索，用户体验，交互设计
+Keywords:
+Virtual Reality, Interactive Narrative, Guiding Cues, User Experience, Interaction Design
+摘 要
+叙事的发展与媒介的演变总是密不可分，随着虚拟现实技术（VR）作为一种新兴媒介的出现，为交互叙事带来了新的活力，同时也带来了许多设计上的挑战，传统的叙事方式需要被重新考虑。VR通过对视觉和听觉上的仿真模拟，能够为用户提供一个在感官上完全沉浸的体验，但由于VR环境的复杂性和用户的自由度，VR交互叙事中的注意力引导成为了一个挑战。让用户沉浸在这个虚拟世界的同时也可以聚焦到创作者所想要表达的叙事内容上，在VR体验的创作中是至关重要的，是本文迫切需要解决的问题。
+线索（Cues）作为一种视觉或听觉上的感知反馈，通常被用在传统的游戏或电影制作中来引导人们的注意力。而本文基于对信息认知流程的分析，搭建起了基于VR交互叙事的人机交互模型，并基于此模型框架，提出了一套VR交互叙事中引导线索的设计原则，包括显著性原则、鲁棒性原则、叙事性原则、匹配性原则和启示性原则这五点设计原则。
+基于该设计原则进行设计实践，创作和开发了一款VR交互叙事体验《带上她的眼睛》，并从中总结和提炼出一套VR交互叙事中的引导线索设计流程。最后，将设计实践截取一部分作为实验材料，通过设计组间实验开展了针对该设计原则的有效性评估。该实验一共招募了40名被试前来体验，实验结果表明，该设计原则在自然性和功能性层面上都得到了较好的验证，指导下所设计的引导线索也能够有效的引导用户的注意力，提升其叙事体验。同时证明了基于信息认知流程所提出的引导线索设计原则和流程是有效的，能够帮助VR交互叙事的内容创作者进行设计实践，帮助VR用户进一步提升叙事体验。
+Abstract
+The development of narrative has always been closely linked to the evolution of the medium. The emergence of Virtual Reality (VR) as a new medium has brought new dynamism to interactive narrative, but also poses many design challenges. Due to the complexity of the VR environment and the user’s freedom, attentional guidance in VR interactive narratives is particularly challenging. Thus, it is crucial to enable users to immerse themselves in the virtual world while focusing on the narrative content that the creator intends to convey, which is the pressing issue addressed in this paper.
+Cues, which take the form of visual or auditory perceptual feedback, are often utilized in traditional game or film production to guide users’ attention. Based on the analysis of information cognitive processes, this paper proposes a human-computer interaction model for VR interactive narratives, which includes a set of design principles for guiding cues. These principles include the prominence principle, robustness principle, narrative principle, matching principle, and revelation principle.
+Using these design principles, a VR interactive narrative experience called “Take Her Eyes” was developed, and a design process for guiding cues in VR interactive narratives was summarized and refined. Finally, a portion of the design practice was used as experimental material to evaluate the effectiveness of the design principles through a design intergroup experiment. A total of 40 participants were recruited to experience the experiment, and the results showed that the design principles were well validated in terms of naturalness and functionality. The guided cues designed were effective in directing users’ attention and enhancing their narrative experience. These findings validate the guiding cue design principle and process based on the information cognitive process, which can assist VR interactive narrative content creators in their design practice and help VR users to further enhance their narrative experience.
+目 录 · Contents
+第1章 引言
+1.1 研究背景
+1.2 国内外现状研究
+1.2.1 交互叙事和游戏
+1.2.2 VR电影和动画
+1.3 研究目的与意义
+1.4 研究问题和内容
+1.5 研究方法
+1.6 研究框架
+第2章 文献综述
+2.1 VR用户的信息认知流程分析
+2.2 基于VR交互叙事的人机交互模型建立
+2.3 引导线索与信息认知流程的关系研究
+2.3.1 高效性
+2.3.2 自然性
+2.3.3 功能性
+2.3.4 引导线索的特性在信息认知流程中的作用
+2.4 本章小结
+第3章 一致性设计框架与方法
+3.1 理论基础
+3.1.1 视听引导的机制
+3.1.2 叙事性
+3.1.3 自然交互
+3.2 设计原则
+3.2.1 显著性原则
+3.2.2 鲁棒性原则
+3.2.3 叙事性原则
+3.2.4 匹配性原则
+3.2.5 启示性原则
+3.3 设计原则总结
+3.4 本章小结
+第4章 一致性设计实践
+4.1 设计实践目的及意义
+4.2 设计背景
+4.2.1 案例介绍
+4.2.2 基本操作
+4.3 设计流程
+4.3.1 剧本改编
+4.3.2 场景设计
+4.4 功能实现
+4.4.1 开发工具
+4.4.2 交互和行动操作的实现
+4.4.3 交互式对话系统的实现
+4.4.4 针对VR场景的优化
+4.5 引导线索设计实践
+4.5.1 引导线索设计步骤
+4.5.2 设计原则运用
+4.6 设计总结
+4.7 本章小结
+第5章 设计验证与评价
+5.1 实验介绍
+5.1.1 实验目的
+5.1.2 实验设计
+5.1.3 测量工具
+5.2 实验材料
+5.2.1 体验流程
+5.2.2 行动线索设计
+5.2.3 交互线索设计
+5.3 实验实施
+5.3.1 实验环境
+5.3.2 被试信息
+5.3.3 实验流程
+5.4 实验结果
+5.4.1 用户行为数据记录结果
+5.4.2 问卷和量表结果
+5.4.3 行为观察和访谈结果
+5.5 分析与结论
+5.5.1 实验结果分析
+5.5.2 实验结论
+5.6 本章小结
+第6章 总结与展望
+6.1 研究成果总结
+6.2 后续展望
+参考文献
+附录A 交互叙事用户体验问卷
+附录B 用户体验量表
+附录C 交互叙事用户体验问卷
+附录D 访谈大纲
+附录E 展览现场
+致谢
+个人简历、在读期间发表的学术成果
+部 分 插 图 · Figures
+dis_heentant_2023_01
+dis_heentant_2023_02
+dis_heentant_2023_03
+dis_heentant_2023_04
+dis_heentant_2023_05
+dis_heentant_2023_06
+dis_heentant_2023_07
+dis_heentant_2023_08
+dis_heentant_2023_09
+dis_heentant_2023_10
+dis_heentant_2023_11
+dis_heentant_2023_12
+dis_heentant_2023_13
+dis_heentant_2023_14
+dis_heentant_2023_15
+dis_heentant_2023_16
+dis_heentant_2023_17
+dis_heentant_2023_18
+本网站内所有资料属于数字动画与数字娱乐实验室及相应创作团队或企业，未经许可请勿传播（
+沪ICP备2022027791号
+）All content is copyrighted by the DAELab or corresponding organizations. No distribution is allowed without permission.
