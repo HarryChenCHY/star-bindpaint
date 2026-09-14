@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-14T06:54:22.131Z",
+  "note": "实际本地项目界面；研究数据来自隔离演示数据库，不是真实参与者，不表示预试或正式实验已完成。未修改线上研究数据。",
+  "captures": [
+    {
+      "name": "图1_星迹智绘首页",
+      "url": "http://127.0.0.1:3028/",
+      "synthetic": true
+    },
+    {
+      "name": "图2_参考图选择与创作入口",
+      "url": "http://127.0.0.1:3028/create",
+      "synthetic": true
+    },
+    {
+      "name": "图3_笔触拆解与效果比较",
+      "url": "http://127.0.0.1:3028/simplify",
+      "synthetic": true
+    },
+    {
+      "name": "图4_逐笔绘画与提示面板",
+      "url": "http://127.0.0.1:3028/paint",
+      "synthetic": true
+    },
+    {
+      "name": "图5_研究者工作台与材料配置",
+      "url": "http://127.0.0.1:3028/admin/studies",
+      "synthetic": true
+    },
+    {
+      "name": "图6_用户测试入口与参与说明",
+      "url": "http://127.0.0.1:3028/study",
+      "synthetic": true
+    },
+    {
+      "name": "图7_测试前自评问卷",
+      "url": "http://127.0.0.1:3028/study",
+      "synthetic": true
+    },
+    {
+      "name": "图8_笔触引导条件测试界面",
+      "url": "http://127.0.0.1:3028/study",
+      "synthetic": true
+    },
+    {
+      "name": "图9_预试进度与问题记录",
+      "url": "http://127.0.0.1:3028/admin/studies/pilot",
+      "synthetic": true
+    }
+  ]
+}

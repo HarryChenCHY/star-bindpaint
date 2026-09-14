@@ -1,0 +1,26 @@
+{
+  "title": "基于笔触拆解算法的数字绘画辅助系统交互设计研究——以“星迹智绘”为例",
+  "date": "2026-09-14",
+  "chinese_prose_han_count": 5575,
+  "count_rule": "只计算中文正文段落中的U+4E00—U+9FFF汉字；不含标题、图注、图内文字、参考文献、模板说明及基本信息",
+  "english_body": "按用户要求暂不撰写",
+  "figures": 9,
+  "achievements": "无",
+  "exam_date": "待用户提供，保留空白",
+  "source_of_project": "沿用原开题报告勾选：国家自然科学基金课题",
+  "signature": "保留空白，待本人及导师签署",
+  "screenshot_note": "当前本地程序界面；研究记录为隔离演示数据，未作为真实实验结果",
+  "files": {
+    "filled": "/Users/harrychen/Desktop/startrace/论文/附件1-硕士生中期检查.docx等3个文件/附件1-硕士生中期检查_陈皓宇_中文版.docx",
+    "requested_original_path": "/Users/harrychen/Desktop/startrace/论文/附件1-硕士生中期检查.docx等3个文件/附件1-硕士生中期检查.docx",
+    "backup": "/Users/harrychen/Desktop/startrace/论文/附件1-硕士生中期检查.docx等3个文件/附件1-硕士生中期检查_原始空表备份.docx"
+  },
+  "pdf_pages": 17,
+  "checks": {
+    "nine_figure_captions": true,
+    "chinese_word_count": 5575,
+    "original_path_matches_named_copy": true,
+    "docx_archive_valid": true,
+    "pdf_preview": "论文/附件1-硕士生中期检查.docx等3个文件/附件1-硕士生中期检查_陈皓宇_中文版.pdf"
+  }
+}
