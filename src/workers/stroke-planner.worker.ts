@@ -41,7 +41,7 @@ self.onmessage = async (e: MessageEvent) => {
         regions: 0,
         simplified: false,
         notes: [
-          '直接拟合原图，按顺序绘画，无独立轮廓阶段。',
+          '五遍由粗到细，每遍网格逐行扫描，按新顺序重新拟合原图，无独立轮廓阶段。',
           'coverage 未计算，不代表完成度；1000 笔不能保留所有照片细节。',
         ],
       },

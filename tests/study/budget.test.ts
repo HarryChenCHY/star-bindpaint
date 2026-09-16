@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { planBudgetStrokes } from '../../src/lib/budget-strokes';
-import type { PlanningProgress } from '../../src/lib/stroke-config';
+import { allocatePassBudgets, type PlanningProgress } from '../../src/lib/stroke-config';
 import type { ImageSource } from '../../src/lib/stroke-engine';
 function source(width = 64, height = 48): ImageSource {
   const data = new Uint8ClampedArray(width * height * 4).fill(255);
@@ -60,4 +60,34 @@ test('progress reports optimization rounds without changing the accepted sequenc
   assert.equal(progress.at(-1)?.completed, 40);
   assert.equal(progress.at(-1)?.strokes, withProgress.length);
   assert.ok(progress.every((p, i) => i === 0 || p.completed >= progress[i - 1].completed));
+});
+
+test('five-pass planning stays coarse-to-fine and visits cells in row order at every budget', async () => {
+  assert.deepEqual(allocatePassBudgets(1000), [60, 120, 220, 280, 320]);
+  for (const budget of [1, 2, 25, 100, 200, 300, 500, 700, 1000]) {
+    const quotas = allocatePassBudgets(budget);
+    assert.equal(quotas.reduce((a, b) => a + b, 0), budget);
+    const strokes = await planBudgetStrokes(source(), 320, 240, budget);
+    assert.ok(strokes.length > 0 && strokes.length <= budget);
+    const counts = [0, 0, 0, 0, 0];
+    strokes.forEach((s, i) => {
+      const p = s.planning!;
+      counts[p.passIndex]++;
+      assert.ok(p.cell >= 0 && p.cell < p.grid ** 2);
+      if (!i) return;
+      const previous = strokes[i - 1];
+      assert.ok(s.width <= previous.width);
+      assert.ok(p.passIndex >= previous.planning!.passIndex);
+      if (p.passIndex === previous.planning!.passIndex) assert.ok(p.cell >= previous.planning!.cell);
+    });
+    counts.forEach((count, i) => assert.ok(count <= quotas[i]));
+  }
+});
+
+test('portrait and opaque study plans retain bounded widths, layers and deterministic output', async () => {
+  const s = source(32, 80);
+  const a = await planBudgetStrokes(s, 32, 80, 100, 1, 1);
+  assert.ok(a.length > 0);
+  assert.ok(a.every((stroke, i) => stroke.width >= 1 && (!i || stroke.width <= a[i - 1].width)));
+  assert.deepEqual(a, await planBudgetStrokes(s, 32, 80, 100, 3, 1));
 });

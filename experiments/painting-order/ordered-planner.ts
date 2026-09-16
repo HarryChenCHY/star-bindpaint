@@ -1,12 +1,12 @@
-import type { ImageSource, StrokeDrawData } from './stroke-engine';
-import { STROKE_CONFIG, STROKE_PASSES, allocatePassBudgets, type PlanningProgress } from './stroke-config';
+// GENERATED isolated experiment; make-prototype.py documents all changes.
+import type { ImageSource, StrokeDrawData } from '../../src/lib/stroke-engine';
+import { STROKE_CONFIG, type PlanningProgress } from './baseline-config';
 
 export const BUDGET_ENGINE_VERSION = STROKE_CONFIG.version;
 /** Greedy full-footprint least-squares painting. No contour pass, truncation,
  * palette quantization or reference-image underlay. Matches drawStroke's .85 alpha.
- * Five fixed-width passes visit cells in row-major order and refit on the shared canvas.
  * Search is deterministic so an approved study material can be reproduced. */
-export async function planBudgetStrokes(
+export async function planOrderedStrokes(
   source: ImageSource,
   canvasW: number,
   canvasH: number,
@@ -14,8 +14,9 @@ export async function planBudgetStrokes(
   roughness = 2,
   opacity = 0.85,
   onProgress?: (progress: PlanningProgress) => void,
-): Promise<StrokeDrawData[]> {
-  void roughness; // Retained for historical API compatibility; five fixed widths now define detail.
+  order: 'raster' | 'regions' = 'raster',
+) {
+  void roughness; // Fixed brush-width layers replace random roughness sampling in this prototype.
   if (
     !Number.isFinite(budget) ||
     budget < 1 ||
@@ -171,15 +172,43 @@ export async function planBudgetStrokes(
     };
   }
   const strokes: StrokeDrawData[] = [];
-  const quotasByPass = allocatePassBudgets(budget);
-  const tasks = STROKE_PASSES.map((pass, passIndex) => ({ ...pass, passIndex, count: quotasByPass[passIndex] }));
+  type Task = { width: number; count: number; grid: number; region?: number; label: string };
+  // 手工区域仅用于《日出·印象》概念验证，不是自动分割。
+  const regionAt = (x: number, y: number) => {
+    x /= w; y /= h;
+    if (Math.hypot((x - .607) / .037, (y - .286) / .045) < 1 || (x > .56 && x < .65 && y > .48 && y < .85)) return 4;
+    if ((x > .38 && x < .57 && y > .65 && y < .83) || (x > .2 && x < .37 && y > .52 && y < .65)) return 3;
+    if (y < .39) return 0;
+    if (y < .53) return 1;
+    return 2;
+  };
+  const tasks: Task[] = [
+    { width: 30, count: 60, grid: 3, label: '第1遍 · 大色块' },
+    { width: 16, count: 120, grid: 4, label: '第2遍 · 中色块' },
+  ];
+  if (order === 'raster') tasks.push(
+    { width: 8, count: 220, grid: 5, label: '第3遍 · 形体' },
+    { width: 4, count: 280, grid: 6, label: '第4遍 · 小笔触' },
+    { width: 2.2, count: 320, grid: 6, label: '第5遍 · 细节' },
+  );
+  else {
+    const names = ['天空远景', '港口雾带', '水面', '两处船只区域', '太阳与倒影'];
+    [100, 150, 290, 160, 120].forEach((count, region) => {
+      [8, 4, 2.2].forEach((width, layer) => tasks.push({
+        width, count: layer === 2 ? count - Math.floor(count * .25) - Math.floor(count * .3) : Math.floor(count * (layer === 0 ? .25 : .3)),
+        grid: 1, region, label: `${names[region]} · ${['塑形', '修整', '细化'][layer]}`,
+      }));
+    });
+  }
   const cumulative = new Float64Array(w * h);
+  const centers: { x: number; y: number; width: number; label: string; cell: number }[] = [];
   let n = 0;
   for (const task of tasks) {
     // 每遍从左上至右下按网格访问；残差高的网格分配更多笔数。
     const masses = new Array(task.grid * task.grid).fill(0);
     for (let i = 0; i < w * h; i++) {
       const x = i % w, y = Math.floor(i / w);
+      if (task.region !== undefined && regionAt(x, y) !== task.region) continue;
       let error = 0;
       for (let c = 0; c < 3; c++) error += (target[i * 3 + c] - canvas[i * 3 + c]) ** 2;
       const cell = Math.min(task.grid - 1, Math.floor(y / h * task.grid)) * task.grid + Math.min(task.grid - 1, Math.floor(x / w * task.grid));
@@ -191,91 +220,92 @@ export async function planBudgetStrokes(
     const remainder = task.count - quotas.reduce((a, b) => a + b, 0);
     raw.map((v, i) => ({ i, fraction: v - quotas[i] })).sort((a, b) => b.fraction - a.fraction).slice(0, remainder).forEach(({ i }) => quotas[i]++);
     for (let cell = 0; cell < quotas.length; cell++) for (let slot = 0; slot < quotas[cell]; slot++, n++) {
-      const inCell = (x: number, y: number) => {
-        if (x < 0 || x >= w || y < 0 || y >= h) return false;
-        return Math.min(task.grid - 1, Math.floor(y / h * task.grid)) * task.grid + Math.min(task.grid - 1, Math.floor(x / w * task.grid)) === cell;
-      };
-      if (n % 20 === 0) onProgress?.({ completed: n, total: budget, strokes: strokes.length, passIndex: task.passIndex });
-      if (n % 4 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
-      let total = 0;
-      for (let i = 0; i < cumulative.length; i++) {
-        let error = 0;
-        for (let c = 0; c < 3; c++)
-          error += (target[i * 3 + c] - canvas[i * 3 + c]) ** 2;
-        total += inCell(i % w, Math.floor(i / w)) ? error * weights[i] : 0;
-        cumulative[i] = total;
-      }
-      if (total < 1e-6) continue;
-      let best: Fit | undefined, bestCandidate: Candidate | undefined;
-      for (let trial = 0; trial < 64; trial++) {
-        const choice = random() * total;
-        let lo = 0,
-          hi = cumulative.length - 1;
-        while (lo < hi) {
-          const mid = (lo + hi) >>> 1;
-          if (cumulative[mid] < choice) lo = mid + 1;
-          else hi = mid;
-        }
-        const width = Math.max(1 / Math.min(canvasW / w, canvasH / h), task.width * Math.min(w, h) / 200);
-        const p: Candidate = {
-          x: (lo % w) + 0.5,
-          y: Math.floor(lo / w) + 0.5,
-          width,
-          angle: random() * Math.PI,
-          length: Math.min(
-            Math.hypot(w, h) * 0.55,
-            Math.max(2, width * (0.5 + random() * 4)),
-          ),
-        };
-        const result = fit(p);
-        if (!best || result.gain > best.gain) {
-          best = result;
-          bestCandidate = p;
-        }
-      }
-      // Local parameter refinement can turn a sampled stroke into a boundary-aligned one.
-      for (let trial = 0; trial < 36; trial++) {
-        const p = bestCandidate!;
-        const amount = trial < 18 ? 0.5 : 0.18;
-        const candidate = {
-          x: clamp(p.x + (random() - 0.5) * p.width * amount, w - 0.001),
-          y: clamp(p.y + (random() - 0.5) * p.width * amount, h - 0.001),
-          angle: p.angle + (random() - 0.5) * amount,
-          width: p.width,
-          length: Math.max(
-            2,
-            Math.min(
-              Math.hypot(w, h) * 0.55,
-              p.length * (1 + (random() - 0.5) * amount),
-            ),
-          ),
-        };
-        if (!inCell(candidate.x, candidate.y)) continue;
-        const result = fit(candidate);
-        if (result.gain > best!.gain) {
-          best = result;
-          bestCandidate = candidate;
-        }
-      }
-      // A coarse search failure must not discard the reserved fine-scale budget.
-      if (!best || best.gain <= 1e-7) continue;
-      for (let j = 0; j < best.indices.length; j++) {
-        const i = best.indices[j] * 3,
-          a = best.alphas[j];
-        for (let c = 0; c < 3; c++)
-          canvas[i + c] = canvas[i + c] * (1 - a) + best.stroke.color[c] * a;
-      }
-      strokes.push({
-        ...best.stroke,
-        planning: { passIndex: task.passIndex, cell, grid: task.grid },
-        width: best.stroke.width * Math.min(canvasW / w, canvasH / h),
-        points: best.stroke.points.map((p) => ({
-          x: (p.x * canvasW) / w,
-          y: (p.y * canvasH) / h,
-        })),
-      });
+    const inRegion = (x: number, y: number) => {
+      if (x < 0 || x >= w || y < 0 || y >= h) return false;
+      if (task.region !== undefined && regionAt(x, y) !== task.region) return false;
+      return Math.min(task.grid - 1, Math.floor(y / h * task.grid)) * task.grid + Math.min(task.grid - 1, Math.floor(x / w * task.grid)) === cell;
+    };
+    if (n % 20 === 0) onProgress?.({ completed: n, total: budget, strokes: strokes.length });
+    if (n % 4 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
+    let total = 0;
+    for (let i = 0; i < cumulative.length; i++) {
+      let error = 0;
+      for (let c = 0; c < 3; c++)
+        error += (target[i * 3 + c] - canvas[i * 3 + c]) ** 2;
+      total += inRegion(i % w, Math.floor(i / w)) ? error * weights[i] : 0;
+      cumulative[i] = total;
     }
+    if (total < 1e-6) continue;
+    let best: Fit | undefined, bestCandidate: Candidate | undefined;
+    for (let trial = 0; trial < 64; trial++) {
+      const choice = random() * total;
+      let lo = 0,
+        hi = cumulative.length - 1;
+      while (lo < hi) {
+        const mid = (lo + hi) >>> 1;
+        if (cumulative[mid] < choice) lo = mid + 1;
+        else hi = mid;
+      }
+      const width = task.width * Math.min(w, h) / 200;
+      const p: Candidate = {
+        x: (lo % w) + 0.5,
+        y: Math.floor(lo / w) + 0.5,
+        width,
+        angle: random() * Math.PI,
+        length: Math.min(
+          Math.hypot(w, h) * 0.55,
+          Math.max(2, width * (0.5 + random() * 4)),
+        ),
+      };
+      const result = fit(p);
+      if (!best || result.gain > best.gain) {
+        best = result;
+        bestCandidate = p;
+      }
+    }
+    // Local parameter refinement can turn a sampled stroke into a boundary-aligned one.
+    for (let trial = 0; trial < 36; trial++) {
+      const p = bestCandidate!;
+      const amount = trial < 18 ? 0.5 : 0.18;
+      const candidate = {
+        x: clamp(p.x + (random() - 0.5) * p.width * amount, w - 0.001),
+        y: clamp(p.y + (random() - 0.5) * p.width * amount, h - 0.001),
+        angle: p.angle + (random() - 0.5) * amount,
+        width: p.width,
+        length: Math.max(
+          2,
+          Math.min(
+            Math.hypot(w, h) * 0.55,
+            p.length * (1 + (random() - 0.5) * amount),
+          ),
+        ),
+      };
+      if (!inRegion(candidate.x, candidate.y)) continue;
+      const result = fit(candidate);
+      if (result.gain > best!.gain) {
+        best = result;
+        bestCandidate = candidate;
+      }
+    }
+    // A coarse search failure must not discard the reserved fine-scale budget.
+    if (!best || best.gain <= 1e-7) continue;
+    for (let j = 0; j < best.indices.length; j++) {
+      const i = best.indices[j] * 3,
+        a = best.alphas[j];
+      for (let c = 0; c < 3; c++)
+        canvas[i + c] = canvas[i + c] * (1 - a) + best.stroke.color[c] * a;
+    }
+    centers.push({ x: bestCandidate!.x / w, y: bestCandidate!.y / h, width: best.stroke.width, label: task.label, cell });
+    strokes.push({
+      ...best.stroke,
+      width: best.stroke.width * Math.min(canvasW / w, canvasH / h),
+      points: best.stroke.points.map((p) => ({
+        x: (p.x * canvasW) / w,
+        y: (p.y * canvasH) / h,
+      })),
+    });
+  }
   }
   onProgress?.({ completed: budget, total: budget, strokes: strokes.length });
-  return strokes;
+  return { strokes, centers };
 }

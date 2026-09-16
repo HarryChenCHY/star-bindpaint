@@ -1,0 +1,26 @@
+{
+  "count": 998,
+  "stages": [
+    {
+      "pass": 1,
+      "count": 60
+    },
+    {
+      "pass": 2,
+      "count": 179
+    },
+    {
+      "pass": 3,
+      "count": 398
+    },
+    {
+      "pass": 4,
+      "count": 678
+    },
+    {
+      "pass": 5,
+      "count": 998
+    }
+  ],
+  "exactPrototypeMatch": true
+}

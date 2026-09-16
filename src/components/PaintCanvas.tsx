@@ -19,6 +19,7 @@ interface PaintCanvasProps {
   guidanceLevel?: GuidanceLevel;
   brushColor?: string;
   brushWidth?: number;
+  autoPaused?: boolean;
   autoSpeed?: number;
   autoStartIdx?: number;
   masterStyle?: MasterStyleProfile | null;
@@ -48,7 +49,8 @@ export default function PaintCanvas({
   guidanceLevel = 'full',
   brushColor,
   brushWidth = 4,
-  autoSpeed = 30,
+  autoPaused = false,
+  autoSpeed = 1000,
   autoStartIdx,
   masterStyle,
   freeColor,
@@ -325,7 +327,7 @@ export default function PaintCanvas({
 
   // 自动播放模式
   useEffect(() => {
-    if (mode !== 'auto') {
+    if (mode !== 'auto' || autoPaused) {
       autoPlayRef.current.running = false;
       return;
     }
@@ -337,12 +339,8 @@ export default function PaintCanvas({
 
     playback.running = true;
     let idx = autoStartIdxRef.current;
-    const remainingAtStart = Math.max(1, strokes.length - idx);
-    // 保留全部真实笔触，只在自动续画时分帧批量绘制。
-    // 最慢档约 10–12 秒完成，最快档约 50 个事件循环完成。
-    const targetTicks = autoSpeed === 0 ? 50 : 220;
-    const strokesPerTick = Math.max(1, Math.ceil(remainingAtStart / targetTicks));
-    const tickDelay = autoSpeed === 0 ? 0 : Math.max(16, Math.round(autoSpeed / 4));
+    // 每笔间隔与工具栏一致，暂停时保留下一笔索引。
+    const tickDelay = Math.max(200, Math.min(1000, autoSpeed));
 
     function playNext() {
       if (!playback.running || idx >= strokes.length) {
@@ -351,7 +349,7 @@ export default function PaintCanvas({
         return;
       }
 
-      const batchEnd = Math.min(strokes.length, idx + strokesPerTick);
+      const batchEnd = Math.min(strokes.length, idx + 1);
       while (idx < batchEnd) {
         drawStroke(ctx, strokes[idx]);
         idx++;
@@ -369,13 +367,13 @@ export default function PaintCanvas({
       playback.timeoutId = window.setTimeout(playNext, tickDelay);
     }
 
-    playNext();
+    playback.timeoutId = window.setTimeout(playNext, tickDelay);
 
     return () => {
       playback.running = false;
       clearTimeout(playback.timeoutId);
     };
-  }, [mode, strokes, autoSpeed, onAutoComplete, onAutoProgress]);
+  }, [mode, strokes, autoPaused, autoSpeed, onAutoComplete, onAutoProgress]);
 
   // 绘制辅助模式下的 AI 笔触替换
   const drawAIStrokeOnBase = useCallback((stroke: StrokeDrawData) => {

@@ -31,6 +31,9 @@ type PaintMode = 'follow' | 'auto' | 'free';
 interface Props {
   mode: PaintMode;
   onModeChange: (m: PaintMode) => void;
+  autoPaused?: boolean;
+  onToggleAuto?: () => void;
+  onPauseAuto?: () => void;
   onEnterAutoMode?: () => void;
 
   brushWidth: number;
@@ -119,7 +122,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
 
   const MODES: { id: PaintMode; icon: ReactNode; label: string; color: string }[] = [
     { id: 'follow', icon: <Wand2 size={20} strokeWidth={2.5} />, label: '沿星迹', color: '#F9B801' },
-    { id: 'auto', icon: p.mode === 'auto' ? <Pause size={20} strokeWidth={2.5} /> : <Play size={20} strokeWidth={2.5} />, label: p.mode === 'auto' ? '暂停自动续画' : '自动续画', color: '#F302C9' },
+    { id: 'auto', icon: p.mode === 'auto' && !p.autoPaused ? <Pause size={20} strokeWidth={2.5} /> : <Play size={20} strokeWidth={2.5} />, label: p.mode === 'auto' ? (p.autoPaused ? '继续自动续画' : '暂停自动续画') : '自动续画', color: '#F302C9' },
     { id: 'free', icon: <Sparkles size={20} strokeWidth={2.5} />, label: '自由星域', color: '#7DC353' },
   ];
 
@@ -169,7 +172,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
             active={p.mode === m.id}
             onClick={() => {
               if (m.id === 'auto' && p.mode === 'auto') {
-                p.onModeChange('follow');
+                p.onToggleAuto?.();
                 return;
               }
               if (m.id === 'auto' && p.mode === 'follow' && p.onEnterAutoMode) {
@@ -246,7 +249,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
           <ToolBtn
             icon={<FastForward size={18} strokeWidth={2.5} />}
             label="快慢"
-            value={p.autoSpeed === 0 ? '快' : `${p.autoSpeed}`}
+            value={p.autoSpeed === 1000 ? '1s' : `${p.autoSpeed}ms`}
             isOpen={open === 'speed'}
             onClick={() => toggle('speed')}
             popover={<SpeedPopover value={p.autoSpeed} onChange={p.onAutoSpeedChange} />}
@@ -371,7 +374,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
           hoverBg="#7DC353"
         />
         <PaintTutorial
-          onOpen={() => { close(); if (p.mode === 'auto') p.onModeChange('follow'); }}
+          onOpen={() => { close(); if (p.mode === 'auto') p.onPauseAuto?.(); }}
           Trigger={TutorialButton}
         />
       </motion.div>
@@ -924,13 +927,14 @@ function SpeedPopover({ value, onChange }: { value: number; onChange: (v: number
       <div className="flex items-center justify-between mb-3">
         <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#888' }}>播放速度</span>
         <span style={{ fontSize: '1.05rem', fontWeight: 900, color: '#1A1A1A' }}>
-          {value === 0 ? '最快' : `${value}ms`}
+          {value === 1000 ? '1s / 笔' : `${value}ms / 笔`}
         </span>
       </div>
       <input
         type="range"
-        min="0"
-        max="200"
+        aria-label="自动续画每笔间隔"
+        min="200"
+        max="1000"
         step="10"
         value={value}
         onChange={e => onChange(Number(e.target.value))}

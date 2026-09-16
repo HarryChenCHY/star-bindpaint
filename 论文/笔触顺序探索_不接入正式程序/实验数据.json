@@ -1,0 +1,58 @@
+{
+  "image": "public/masterworks/monet/impression_sunrise.jpg",
+  "imageSha256": "d7f551430c0ce5cbb21b5918c6ee0fab3986b34bceedb836705c248d82c2d3a8",
+  "productionPlannerSha256": "c932be70bab0a672942b700d0d2a787d9124127b72c696c4ae3fb5a81db58591",
+  "budget": 1000,
+  "analysisSize": 256,
+  "inputSize": 512,
+  "width": 768,
+  "height": 597,
+  "opacity": 0.85,
+  "semanticRegions": "manual concept-test masks, not automatic object recognition",
+  "metrics": [
+    {
+      "id": "baseline",
+      "title": "当前算法",
+      "description": "全画面残差优先，位置可跨区域跳跃",
+      "count": 1000,
+      "elapsedMs": 2886,
+      "mae": 6.5415474362553505,
+      "meanCenterJump": 0.35448350647277616,
+      "largeJumps": 592,
+      "widthIncreases": 436
+    },
+    {
+      "id": "sorted",
+      "title": "对照：直接重排",
+      "description": "按笔宽档、网格顺序重排旧笔触，不重新拟合颜色",
+      "count": 1000,
+      "elapsedMs": 1,
+      "mae": 6.940123069048949,
+      "meanCenterJump": 0.09610128646905218,
+      "largeJumps": 46,
+      "widthIncreases": 327
+    },
+    {
+      "id": "raster",
+      "title": "方案 A：五遍扫描",
+      "description": "大→中→小五个笔宽层，每层按网格从左上到右下访问",
+      "count": 998,
+      "elapsedMs": 4242,
+      "mae": 6.594985924995347,
+      "meanCenterJump": 0.09494282747203507,
+      "largeJumps": 27,
+      "widthIncreases": 0
+    },
+    {
+      "id": "regions",
+      "title": "方案 B：铺底后局部雕琢",
+      "description": "先两遍铺底，再在手工指定的五个区域内分别由粗到细",
+      "count": 987,
+      "elapsedMs": 4657,
+      "mae": 6.819648008561325,
+      "meanCenterJump": 0.20082058252586932,
+      "largeJumps": 224,
+      "widthIncreases": 4
+    }
+  ]
+}

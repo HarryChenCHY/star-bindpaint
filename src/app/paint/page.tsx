@@ -1,5 +1,7 @@
 'use client';
 
+import { STROKE_PASSES } from '@/lib/stroke-config';
+
 /* eslint-disable react-hooks/set-state-in-effect */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -50,7 +52,8 @@ export default function PaintPage() {
   const [guidanceLevel, setGuidanceLevel] = useState<GuidanceLevel>('full');
   const [brushWidth, setBrushWidth] = useState(4);
   const userBrushWidthRef = useRef<number | null>(null);
-  const [autoSpeed, setAutoSpeed] = useState(200);
+  const [autoPaused, setAutoPaused] = useState(false);
+  const [autoSpeed, setAutoSpeed] = useState(1000);
   const [autoStartIdx, setAutoStartIdx] = useState(0);
   const [autoCompletionPending, setAutoCompletionPending] = useState(false);
   const [autoFillRatio, setAutoFillRatio] = useState(10);
@@ -227,8 +230,8 @@ export default function PaintPage() {
           roughness: savedRoughness,
           lloydIter: 12,
           palette: 'original',
-          onProgress: ({ completed, total, strokes }) => {
-            if (!cancelled) setLoadingMsg(`画面优化 ${Math.round(completed / total * 100)}% · 已规划 ${strokes} 笔`);
+          onProgress: ({ completed, total, strokes, passIndex }) => {
+            if (!cancelled) setLoadingMsg(`画面优化 ${Math.round(completed / total * 100)}% · ${STROKE_PASSES[passIndex ?? -1]?.label ?? '准备画面'} · 已规划 ${strokes} 笔`);
           },
         }, controller.signal);
         if (cancelled) return;
@@ -293,20 +296,8 @@ export default function PaintPage() {
 
       // 给用户有意义的进度引导（不只是默认消息）
       if (mode === 'follow' && !state.completed) {
-        const percent = Math.round(prog * 100);
-        if (percent < 10) {
-          setSpriteMessage('先完成大形笔触，画面的骨架会慢慢出现。');
-        } else if (percent < 25) {
-          setSpriteMessage('大形已经出现，继续沿星迹建立画面结构。');
-        } else if (percent < 50) {
-          setSpriteMessage('接近一半了，现在正在补充中等大小的笔触。');
-        } else if (percent < 75) {
-          setSpriteMessage('细节开始出现，注意每条星迹的方向变化。');
-        } else if (percent < 95) {
-          setSpriteMessage('已经进入最后的细节层，保持自己的绘画节奏。');
-        } else {
-          setSpriteMessage('最后几条星迹，完成后就能点亮这幅作品。');
-        }
+        const pass = STROKE_PASSES[state.currentStroke?.planning?.passIndex ?? -1];
+        setSpriteMessage(pass?.hint ?? '沿当前星迹继续绘画，按自己的节奏完成这一笔。');
       } else {
         setSpriteMessage(state.message);
       }
@@ -494,6 +485,7 @@ export default function PaintPage() {
 
     flushSync(() => {
       setAutoStartIdx(startIdx);
+      setAutoPaused(false);
       setMode('auto');
     });
 
@@ -505,13 +497,16 @@ export default function PaintPage() {
   }, [mode, strokes.length, guideSubMode, savePaintingUndo]);
 
   const handlePauseAuto = useCallback(() => {
-    const guide = guideRef.current;
-    setMode('follow');
-    setCurrentGuideStroke(guide.getCurrentStroke());
-    getTracker().setMode('follow', guideSubMode);
+    setAutoPaused(true);
     setSpriteMessage('自动续画已暂停，随时可以从这里继续。');
     setSpriteState('guiding');
-  }, [guideSubMode]);
+  }, []);
+
+  const handleToggleAuto = useCallback(() => {
+    if (!autoPaused) { handlePauseAuto(); return; }
+    setAutoPaused(false);
+    setSpriteMessage('月亮伙伴正在演示剩余星迹。');
+  }, [autoPaused, handlePauseAuto]);
 
   const handleBatchDraw = (count: number) => {
     const paintCanvas = (window as unknown as Record<string, {
@@ -657,7 +652,7 @@ export default function PaintPage() {
   const paintBarBottom = 'calc(5rem + env(safe-area-inset-bottom, 0px))';
 
   const currentStep = Math.min(strokes.length, Math.round(progress * strokes.length) + (progress < 1 ? 1 : 0));
-  const phaseLabel = progress < 0.25 ? '建立大形' : progress < 0.65 ? '组织结构' : progress < 0.95 ? '补充细节' : '完成作品';
+  const phaseLabel = progress >= 1 ? '完成作品' : (STROKE_PASSES[currentGuideStroke?.planning?.passIndex ?? -1]?.label ?? '沿星迹绘画');
   const guidanceLabel: Record<GuidanceLevel, string> = {
     full: '完整星迹',
     balanced: '适度星迹',
@@ -778,6 +773,7 @@ export default function PaintPage() {
             currentGuideStroke={currentGuideStroke}
             guidanceLevel={guidanceLevel}
             brushWidth={brushWidth}
+            autoPaused={autoPaused}
             autoSpeed={autoSpeed}
             autoStartIdx={autoStartIdx}
             masterStyle={selectedStyle}
@@ -925,7 +921,7 @@ export default function PaintPage() {
                   </button>
                 )}
                 {mode === 'auto' && progress < 1 && (
-                  <button type="button" onClick={handlePauseAuto} className="mt-3 w-full rounded-xl px-3 py-2.5 text-[11px] font-black text-white" style={{ background: '#6558D9', border: '1.5px solid #17233F' }}>暂停自动续画</button>
+                  <button type="button" onClick={handleToggleAuto} className="mt-3 w-full rounded-xl px-3 py-2.5 text-[11px] font-black text-white" style={{ background: '#6558D9', border: '1.5px solid #17233F' }}>{autoPaused ? '继续自动续画' : '暂停自动续画'}</button>
                 )}
                 {progress >= 1 && (
                   <button type="button" onClick={handleExport} className="mt-3 w-full rounded-xl px-3 py-2.5 text-[11px] font-black text-white" style={{ background: '#17233F', boxShadow: '2px 2px 0 #FFD166' }}>完成并保存作品</button>
@@ -1006,6 +1002,9 @@ export default function PaintPage() {
       {/* ═══ Bottom Toolbar (Figma-style) ═══ */}
       <PaintBottomBar
         mode={mode}
+        autoPaused={autoPaused}
+        onToggleAuto={handleToggleAuto}
+        onPauseAuto={handlePauseAuto}
         onModeChange={(m) => {
           if (mode === m) return;
           if (m !== 'free' && strokes.length === 0) {
@@ -1019,12 +1018,9 @@ export default function PaintPage() {
             handleEnterAutoMode();
             return;
           }
-          if (m === 'follow' && mode === 'auto') {
-            handlePauseAuto();
-            return;
-          }
 
           if (m === 'auto') {
+            setAutoPaused(false);
             savePaintingUndo();
             setAutoStartIdx(guideRef.current.getState().currentIndex);
           }

@@ -18,6 +18,8 @@ export interface ImageSource {
 }
 
 export interface StrokeDrawData {
+  /** Optional so saved historical sequences remain readable. Cell order is per pass. */
+  planning?: { passIndex: number; cell: number; grid: number };
   width: number;
   color: [number, number, number];
   points: Vec2[];
@@ -26,7 +28,7 @@ export interface StrokeDrawData {
 export interface DecomposeOptions {
   onProgress?: (progress: PlanningProgress) => void;
   maxStrokes?: number; // 默认 1000；从预算内重新优化完整画面
-  roughness?: number;   // 1-4, 控制笔刷层数和大小
+  roughness?: number;   // 保留历史接口兼容；当前统一五遍由粗到细
   lloydIter?: number;   // 保留接口兼容（本算法不使用）
   pixelStep?: number;   // 路径插值步长
   padding?: number;     // 保留接口兼容
