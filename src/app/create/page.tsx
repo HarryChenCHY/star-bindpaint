@@ -72,7 +72,7 @@ function cacheImage(img: HTMLImageElement) {
 
 export default function CreatePage() {
   const router = useRouter();
-  const [sourceMode, setSourceMode] = useState<SourceMode>('examples');
+  const [sourceMode, setSourceMode] = useState<SourceMode>('upload');
   const [preparedSource, setPreparedSource] = useState<PreparedSource | null>(null);
   const [preparing, setPreparing] = useState(false);
   const [prepareError, setPrepareError] = useState('');
@@ -234,8 +234,8 @@ export default function CreatePage() {
 
         <div className="mt-10 flex flex-wrap gap-2" role="tablist" aria-label="创作方式">
           {([
-            ['examples', ImageIcon, '精选临摹', '零基础推荐'],
             ['upload', Upload, '上传图片', '本地选图 · 小于 20 MB'],
+            ['examples', ImageIcon, '精选临摹', '零基础推荐'],
             ['free', Palette, '自由画布', '不使用拆解路径'],
           ] as const).map(([id, Icon, title, detail]) => {
             const active = sourceMode === id;

@@ -13,6 +13,7 @@ import {
   Wand2,
   Palette as PaletteIcon,
   Play,
+  Pause,
   Layers,
   ChevronDown,
   Undo2,
@@ -21,6 +22,8 @@ import {
 } from 'lucide-react';
 import { resolveBrushColor, brushColorCss } from '@/lib/brush-color';
 import { MASTER_STYLES, MasterStyleProfile } from '@/lib/style-transfer';
+import HsvColorPicker from '@/components/HsvColorPicker';
+import PaintTutorial from '@/components/PaintTutorial';
 
 type PaintMode = 'follow' | 'auto' | 'free';
 
@@ -115,7 +118,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
 
   const MODES: { id: PaintMode; icon: ReactNode; label: string; color: string }[] = [
     { id: 'follow', icon: <Wand2 size={20} strokeWidth={2.5} />, label: '沿星迹', color: '#F9B801' },
-    { id: 'auto', icon: <Play size={20} strokeWidth={2.5} />, label: '自动续画', color: '#F302C9' },
+    { id: 'auto', icon: p.mode === 'auto' ? <Pause size={20} strokeWidth={2.5} /> : <Play size={20} strokeWidth={2.5} />, label: p.mode === 'auto' ? '暂停自动续画' : '自动续画', color: '#F302C9' },
     { id: 'free', icon: <Sparkles size={20} strokeWidth={2.5} />, label: '自由星域', color: '#7DC353' },
   ];
 
@@ -164,6 +167,10 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
             color={m.color}
             active={p.mode === m.id}
             onClick={() => {
+              if (m.id === 'auto' && p.mode === 'auto') {
+                p.onModeChange('follow');
+                return;
+              }
               if (m.id === 'auto' && p.mode === 'follow' && p.onEnterAutoMode) {
                 p.onEnterAutoMode();
                 return;
@@ -361,6 +368,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
           }}
           hoverBg="#7DC353"
         />
+        <PaintTutorial onOpen={() => { close(); if (p.mode === 'auto') p.onModeChange('follow'); }} />
       </motion.div>
     </div>
   );
@@ -528,6 +536,8 @@ function ToolBtn({
                 boxShadow: '4px 4px 0 #1A1A1A',
                 padding: '0.8rem 0.85rem 0.9rem',
                 maxWidth: 'calc(100vw - 1.25rem)',
+                maxHeight: 'calc(100dvh - 160px)',
+                overflowY: 'auto',
               }}
             >
               <div
@@ -949,6 +959,7 @@ function ColorPopover({
   val?: number;
   onValChange?: (v: number) => void;
 }) {
+  const [custom, setCustom] = useState(false);
   const [shadeR, shadeG, shadeB] = resolveBrushColor(value, sat, val).map(c => Math.round(c * 255));
 
   return (
@@ -975,7 +986,10 @@ function ColorPopover({
             />
           );
         })}
+        <button type="button" title="自定义颜色" aria-label="自定义颜色" aria-expanded={custom} onClick={() => setCustom(c => !c)} className="h-[34px] w-[34px] rounded-full border-2 border-[#17233F] text-xl font-bold" style={{ background: 'conic-gradient(#ff7777,#ffff77,#77ff77,#77ffff,#7777ff,#ff77ff,#ff7777)' }}>+</button>
       </div>
+
+      {custom && <HsvColorPicker color={resolveBrushColor(value, sat, val)} onChange={color => { onChange(color); onSatChange?.(1); onValChange?.(1); }} />}
 
       {(onSatChange || onValChange) && (
         <div className="mt-3 pt-3" style={{ borderTop: '2px solid #E5E5E5' }}>

@@ -102,7 +102,8 @@ export default function PaintCanvas({
     const engine = new DrawingEngine(userCanvas, (stroke) => {
       if (mode === 'follow' && currentGuideStroke && onUserStrokeDone) {
         const userPts: Vec2[] = stroke.points.map(p => ({ x: p.x, y: p.y }));
-        const score = matchScore(userPts, currentGuideStroke.points);
+        const scale = width / Math.max(1, userCanvas.getBoundingClientRect().width);
+        const score = matchScore(userPts, currentGuideStroke.points, Math.max(100, 48 * scale, currentGuideStroke.width * 1.4));
         onUserStrokeDone(userPts, score);
       } else if (mode === 'free' && onUserStrokeDone) {
         const userPts: Vec2[] = stroke.points.map(p => ({ x: p.x, y: p.y }));
@@ -136,13 +137,21 @@ export default function PaintCanvas({
       }
     });
 
+    // 引擎会因风格/回调/引导状态变化而重建，必须同时恢复当前画笔参数。
+    if (mode === 'free') {
+      const [r, g, b] = resolveBrushColor(freeColor || [0.2, 0.2, 0.2], freeSat, freeVal);
+      engine.setColor(`rgba(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)},${FREE_BRUSH_OPACITY})`);
+    } else if (currentGuideStroke) {
+      engine.setColor(`rgba(${currentGuideStroke.color.map(c => Math.round(c * 255)).join(',')},0.85)`);
+    } else if (brushColor) engine.setColor(brushColor);
+    engine.setWidth(brushWidth);
     drawingEngineRef.current = engine;
     return () => {
       userCanvas.removeEventListener('pointerdown', handlePointerDown);
       engine.destroy();
       drawingEngineRef.current = null;
     };
-  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, freeSat, freeVal, sprayMode, eraserMode, width, height, brushWidth, onUndoAvailable]);
+  }, [mode, currentGuideStroke, onUserStrokeDone, onUserStrokeStart, masterStyle, freeColor, freeSat, freeVal, sprayMode, eraserMode, width, height, brushWidth, brushColor, onUndoAvailable]);
 
   // 橡皮擦模式：独立 pointer 事件，直接在 baseCanvas 上擦除
   useEffect(() => {

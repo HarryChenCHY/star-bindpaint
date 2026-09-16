@@ -49,6 +49,7 @@ export default function PaintPage() {
   const [guideSubMode, setGuideSubMode] = useState<'assist' | 'real'>('real');
   const [guidanceLevel, setGuidanceLevel] = useState<GuidanceLevel>('full');
   const [brushWidth, setBrushWidth] = useState(4);
+  const userBrushWidthRef = useRef<number | null>(null);
   const [autoSpeed, setAutoSpeed] = useState(200);
   const [autoStartIdx, setAutoStartIdx] = useState(0);
   const [autoCompletionPending, setAutoCompletionPending] = useState(false);
@@ -257,9 +258,9 @@ export default function PaintPage() {
         guideRef.current.loadStrokes(result);
         const state = guideRef.current.getState();
         setCurrentGuideStroke(state.currentStroke);
-        if (state.currentStroke) setBrushWidth(state.currentStroke.width);
+        if (state.currentStroke && userBrushWidthRef.current === null) setBrushWidth(state.currentStroke.width);
         setSpriteState('guiding');
-        setSpriteMessage(`已经生成 ${result.length} 条星迹，从黄色星点开始。`);
+        setSpriteMessage(`已经生成 ${result.length} 条星迹，从黄色圆圈 1 开始。`);
         setLoading(false);
       } catch (err) {
         if (!cancelled) fail(controller.signal.aborted ? '已取消规划' : err instanceof Error ? err.message : '星迹生成失败，请重试。');
@@ -284,7 +285,7 @@ export default function PaintPage() {
       // 批量绘制期间不更新引导线（防止闪烁）
       if (!batchingRef.current) {
         setCurrentGuideStroke(state.currentStroke);
-        if (state.currentStroke) setBrushWidth(state.currentStroke.width);
+        if (mode === 'follow' && state.currentStroke && userBrushWidthRef.current === null) setBrushWidth(state.currentStroke.width);
       }
       const prog = state.totalStrokes > 0 ? state.currentIndex / state.totalStrokes : 0;
       setProgress(prog);
@@ -317,6 +318,13 @@ export default function PaintPage() {
 
     return unsubscribe;
   }, [guideSubMode, mode]);
+
+  const handleUserStrokeStart = useCallback(() => {
+    const tracker = getTracker();
+    tracker.strokeStart();
+    const session = tracker.getSession();
+    recordPracticeStart(session.id, session.mode);
+  }, []);
 
   const handleUserStrokeDone = useCallback((userPoints: Vec2[], score: number) => {
     const tracker = getTracker();
@@ -760,12 +768,7 @@ export default function PaintPage() {
             eraserMode={eraserMode}
             sprayMode={sprayMode}
             onUserStrokeDone={handleUserStrokeDone}
-            onUserStrokeStart={() => {
-              const tracker = getTracker();
-              tracker.strokeStart();
-              const session = tracker.getSession();
-              recordPracticeStart(session.id, session.mode);
-            }}
+            onUserStrokeStart={handleUserStrokeStart}
             onUndoAvailable={setCanUndo}
             onAutoProgress={handleAutoProgress}
             onAutoComplete={handleAutoComplete}
@@ -1003,7 +1006,7 @@ export default function PaintPage() {
           }
 
           if (m === 'auto') setAutoStartIdx(guideRef.current.getState().currentIndex);
-          if (m === 'free') setBrushWidth(6);
+          if (m === 'free') setBrushWidth(userBrushWidthRef.current ?? 6);
 
           setMode(m);
           getTracker().setMode(m, guideSubMode);
@@ -1013,7 +1016,7 @@ export default function PaintPage() {
         }}
         onEnterAutoMode={handleEnterAutoMode}
         brushWidth={brushWidth}
-        onBrushWidthChange={setBrushWidth}
+        onBrushWidthChange={width => { userBrushWidthRef.current = width; setBrushWidth(width); }}
         guideSubMode={guideSubMode}
         onGuideSubModeChange={setGuideSubMode}
         fillMode={fillMode}

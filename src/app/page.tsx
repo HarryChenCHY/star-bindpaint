@@ -20,6 +20,7 @@ import {
   TrendingUp,
   Upload,
 } from 'lucide-react';
+import HomePaintingDemo from '@/components/HomePaintingDemo';
 import DailyWishCard from '@/components/DailyWishCard';
 
 const COLORS = {
@@ -184,79 +185,7 @@ export default function HomePage() {
             transition={{ duration: 0.7, delay: 0.12 }}
             className="relative mx-auto w-full max-w-[590px]"
           >
-            <div
-              className="absolute -left-4 top-12 z-10 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-black sm:-left-8"
-              style={{ background: COLORS.yellow, border: `2px solid ${COLORS.ink}`, boxShadow: `3px 3px 0 ${COLORS.ink}` }}
-            >
-              <CircleDot size={16} />
-              星点 08 / 24
-            </div>
-
-            <div
-              className="relative overflow-hidden rounded-[2rem] p-3 sm:p-4"
-              style={{ background: COLORS.white, border: `2px solid ${COLORS.ink}`, boxShadow: `10px 10px 0 ${COLORS.purple}` }}
-            >
-              <div className="flex items-center justify-between px-2 pb-3 pt-1">
-                <div>
-                  <p className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>正在探索</p>
-                  <p className="mt-1 text-sm font-black">窗边的向日葵</p>
-                </div>
-                <div className="flex items-center gap-2 rounded-full px-3 py-2 text-xs font-extrabold" style={{ background: COLORS.purpleSoft, color: COLORS.purple }}>
-                  <Moon size={15} />
-                  月亮伙伴
-                </div>
-              </div>
-
-              <div className="relative aspect-[4/3] overflow-hidden rounded-[1.35rem]" style={{ background: '#FFF9E8', border: `2px solid ${COLORS.ink}` }}>
-                <svg className="h-full w-full" viewBox="0 0 560 420" fill="none" role="img" aria-label="笔触拆解示意图">
-                  <rect width="560" height="420" fill="#FFF9E8" />
-                  <path d="M0 302C118 277 196 329 309 295C399 268 470 274 560 247V420H0V302Z" fill="#D7EEE6" />
-                  <path d="M42 85C125 40 223 63 279 119C320 160 348 164 413 124C469 90 521 106 550 130" stroke="#DED9FF" strokeWidth="32" strokeLinecap="round" />
-                  <path d="M96 286C169 236 242 225 305 248C352 265 411 250 467 211" stroke="#6558D9" strokeWidth="18" strokeLinecap="round" opacity="0.16" />
-                  <path d="M104 280C178 231 242 224 306 246C355 263 410 246 466 207" stroke="#6558D9" strokeWidth="5" strokeLinecap="round" strokeDasharray="10 12" />
-                  <circle cx="104" cy="280" r="13" fill="#FFD166" stroke="#17233F" strokeWidth="4" />
-                  <circle cx="466" cy="207" r="7" fill="#FFFFFF" stroke="#6558D9" strokeWidth="4" />
-                  <path d="M297 272C298 235 301 201 305 169" stroke="#4F8C68" strokeWidth="9" strokeLinecap="round" />
-                  <path d="M305 221C273 208 255 192 245 170" stroke="#4F8C68" strokeWidth="7" strokeLinecap="round" />
-                  <path d="M305 205C337 190 360 168 370 143" stroke="#4F8C68" strokeWidth="7" strokeLinecap="round" />
-                  <g transform="translate(305 143)">
-                    {[0, 45, 90, 135, 180, 225, 270, 315].map(angle => (
-                      <ellipse key={angle} cx="0" cy="-40" rx="15" ry="31" fill="#FFD166" stroke="#17233F" strokeWidth="3" transform={`rotate(${angle})`} />
-                    ))}
-                    <circle r="31" fill="#9C6137" stroke="#17233F" strokeWidth="4" />
-                    <circle r="18" fill="#6C3F27" opacity="0.7" />
-                  </g>
-                  <circle cx="503" cy="63" r="29" fill="#FFD166" opacity="0.75" />
-                  <circle cx="491" cy="54" r="28" fill="#FFF9E8" />
-                </svg>
-
-                <div
-                  className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-2xl p-3"
-                  style={{ background: 'rgba(255,255,255,0.92)', border: `1.5px solid ${COLORS.ink}` }}
-                >
-                  <span className="flex h-10 w-10 flex-none items-center justify-center rounded-xl" style={{ background: COLORS.yellow }}>
-                    <Moon size={21} strokeWidth={2.5} />
-                  </span>
-                  <div>
-                    <p className="text-xs font-black" style={{ color: COLORS.purple }}>下一笔</p>
-                    <p className="mt-0.5 text-sm font-extrabold">从黄色星点出发，顺着紫色轨迹向右画。</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 pt-3">
-                {[
-                  ['大形', '已完成', COLORS.mint],
-                  ['结构', '进行中', COLORS.yellow],
-                  ['细节', '稍后', COLORS.purpleSoft],
-                ].map(([label, state, color]) => (
-                  <div key={label} className="rounded-xl px-3 py-2.5" style={{ background: color }}>
-                    <p className="text-[10px] font-black tracking-[0.08em]" style={{ color: COLORS.inkSoft }}>{label}</p>
-                    <p className="mt-0.5 text-xs font-black">{state}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <HomePaintingDemo />
           </motion.div>
         </section>
 

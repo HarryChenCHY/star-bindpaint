@@ -492,7 +492,7 @@ export function drawStroke(ctx: CanvasRenderingContext2D, stroke: StrokeDrawData
 }
 
 /**
- * 绘制引导线（紫色虚线、星形起点和沿末段方向的终点箭头）
+ * 绘制引导线（紫色区域、虚线轮廓、数字端点与方向箭头）
  */
 export type GuidanceLevel = 'full' | 'balanced' | 'light';
 
@@ -503,90 +503,52 @@ export function drawGuideStroke(
 ) {
   const pts = stroke.points;
   if (pts.length < 2) return;
-
+  const start = pts[0], end = pts[pts.length - 1];
+  const radius = Math.max(14, stroke.width / 2 + 6);
   ctx.save();
-  ctx.setLineDash(guidanceLevel === 'full' ? [8, 6] : [3, 9]);
-  ctx.lineWidth = Math.min(
-    guidanceLevel === 'full' ? 7 : 5,
-    Math.max(2, stroke.width * (guidanceLevel === 'full' ? 0.36 : 0.24)),
-  );
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-
-  ctx.shadowColor = '#6558D9';
-  ctx.shadowBlur = guidanceLevel === 'full' ? 9 : 4;
-  ctx.strokeStyle = guidanceLevel === 'full' ? 'rgba(101, 88, 217, 0.78)' : 'rgba(101, 88, 217, 0.42)';
-
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x, pts[0].y);
-  if (guidanceLevel === 'light') {
-    const directionPoint = pts[Math.min(2, pts.length - 1)];
-    const dx = directionPoint.x - pts[0].x;
-    const dy = directionPoint.y - pts[0].y;
-    const length = Math.hypot(dx, dy) || 1;
-    const hintLength = Math.min(28, length);
-    ctx.lineTo(pts[0].x + dx / length * hintLength, pts[0].y + dy / length * hintLength);
-  } else if (pts.length === 2) {
-    ctx.lineTo(pts[1].x, pts[1].y);
-  } else {
-    for (let i = 0; i < pts.length - 1; i++) {
-      const p0 = pts[Math.max(0, i - 1)];
-      const p1 = pts[i];
-      const p2 = pts[i + 1];
-      const p3 = pts[Math.min(pts.length - 1, i + 2)];
-      const cp1x = p1.x + (p2.x - p0.x) / 6;
-      const cp1y = p1.y + (p2.y - p0.y) / 6;
-      const cp2x = p2.x - (p3.x - p1.x) / 6;
-      const cp2y = p2.y - (p3.y - p1.y) / 6;
-      ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
+  if (guidanceLevel === 'full') {
+    // 用轨迹的左右法线围成实际笔触区域，虚线描边不画成断续粗笔。
+    const left: Vec2[] = [], right: Vec2[] = [];
+    pts.forEach((p, i) => {
+      const before = pts[Math.max(0, i - 1)], after = pts[Math.min(pts.length - 1, i + 1)];
+      const angle = Math.atan2(after.y - before.y, after.x - before.x);
+      const nx = -Math.sin(angle) * radius, ny = Math.cos(angle) * radius;
+      left.push({ x: p.x + nx, y: p.y + ny });
+      right.push({ x: p.x - nx, y: p.y - ny });
+    });
+    const endAngle = Math.atan2(end.y - pts[pts.length - 2].y, end.x - pts[pts.length - 2].x);
+    const startAngle = Math.atan2(pts[1].y - start.y, pts[1].x - start.x);
+    ctx.beginPath(); ctx.moveTo(left[0].x, left[0].y);
+    left.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.arc(end.x, end.y, radius, endAngle + Math.PI / 2, endAngle - Math.PI / 2, true);
+    right.reverse().forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.arc(start.x, start.y, radius, startAngle - Math.PI / 2, startAngle - Math.PI * 1.5, true);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(101,88,217,0.30)'; ctx.fill();
+    ctx.strokeStyle = '#6558D9'; ctx.lineWidth = 2; ctx.setLineDash([7, 5]); ctx.stroke(); ctx.setLineDash([]);
+  }
+  if (guidanceLevel !== 'light') {
+    ctx.beginPath(); ctx.moveTo(start.x, start.y);
+    pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.strokeStyle = '#6558D9'; ctx.lineWidth = 2.5; ctx.stroke();
+    const before = pts[pts.length - 2];
+    const angle = Math.atan2(end.y - before.y, end.x - before.x);
+    const length = Math.hypot(end.x - start.x, end.y - start.y);
+    if (length > 32) {
+      const x = end.x - Math.cos(angle) * 15, y = end.y - Math.sin(angle) * 15;
+      ctx.beginPath(); ctx.moveTo(x - Math.cos(angle - .55) * 10, y - Math.sin(angle - .55) * 10);
+      ctx.lineTo(x, y); ctx.lineTo(x - Math.cos(angle + .55) * 10, y - Math.sin(angle + .55) * 10); ctx.stroke();
     }
   }
-  ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.shadowBlur = 0;
-
-  const start = pts[0];
-  const starRadius = Math.max(7, Math.min(12, stroke.width * 0.75));
-  ctx.fillStyle = 'rgba(255, 209, 102, 0.28)';
-  ctx.beginPath();
-  ctx.arc(start.x, start.y, starRadius + 7, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#FFD166';
-  ctx.strokeStyle = '#17233F';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  for (let i = 0; i < 10; i++) {
-    const radius = i % 2 === 0 ? starRadius : starRadius * 0.46;
-    const angle = -Math.PI / 2 + i * Math.PI / 5;
-    const x = start.x + Math.cos(angle) * radius;
-    const y = start.y + Math.sin(angle) * radius;
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-
-  if (guidanceLevel === 'full') {
-    const last = pts[pts.length - 1];
-    ctx.fillStyle = '#FFFFFF';
-    ctx.strokeStyle = '#6558D9';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    const previous = [...pts].reverse().find(p => Math.hypot(last.x - p.x, last.y - p.y) > 0.01) || start;
-    const angle = Math.atan2(last.y - previous.y, last.x - previous.x);
-    ctx.translate(last.x, last.y);
-    ctx.rotate(angle);
-    ctx.moveTo(7, 0);
-    ctx.lineTo(-6, -6);
-    ctx.lineTo(-3, 0);
-    ctx.lineTo(-6, 6);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  }
-
+  const badge = (p: Vec2, text: string, fill: string) => {
+    ctx.beginPath(); ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
+    ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = '#17233F'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#17233F'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, p.x, p.y);
+  };
+  if (guidanceLevel !== 'light' && Math.hypot(end.x - start.x, end.y - start.y) > 25) badge(end, '2', '#FFFFFF');
+  badge(start, '1', '#FFD166');
   ctx.restore();
 }
 

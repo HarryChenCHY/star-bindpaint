@@ -214,7 +214,7 @@ export class DrawingEngine {
  * 计算用户笔迹与引导线的匹配程度（简化 Hausdorff）
  * 返回 0-1 之间的匹配分数（1=完美匹配）
  */
-export function matchScore(userPoints: Vec2[], guidePoints: Vec2[]): number {
+export function matchScore(userPoints: Vec2[], guidePoints: Vec2[], tolerance = 100): number {
   if (userPoints.length < 2 || guidePoints.length < 2) return 0;
 
   // 采样一些点进行比较
@@ -226,18 +226,21 @@ export function matchScore(userPoints: Vec2[], guidePoints: Vec2[]): number {
     const idx = Math.min(Math.floor(t * (userPoints.length - 1)), userPoints.length - 1);
     const up = userPoints[idx];
 
-    // 找引导线上最近点
+    // 到整段轨迹的距离，而不是只到端点（预算笔触常常只有两个端点）。
     let minDist = Infinity;
-    for (const gp of guidePoints) {
-      const dx = up.x - gp.x, dy = up.y - gp.y;
-      const d = Math.sqrt(dx * dx + dy * dy);
+    for (let j = 1; j < guidePoints.length; j++) {
+      const a = guidePoints[j - 1], b = guidePoints[j];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const length2 = dx * dx + dy * dy;
+      const t = length2 ? Math.max(0, Math.min(1, ((up.x - a.x) * dx + (up.y - a.y) * dy) / length2)) : 0;
+      const d = Math.hypot(up.x - a.x - t * dx, up.y - a.y - t * dy);
       if (d < minDist) minDist = d;
     }
     totalDist += minDist;
   }
 
   const avgDist = totalDist / sampleN;
-  // 将距离映射到 0-1 分数（50px 内为满分区间）
-  const score = Math.max(0, 1 - avgDist / 80);
+  // 容错按显示尺寸传入；明显远离轨迹的笔迹仍不通过。
+  const score = Math.max(0, 1 - avgDist / tolerance);
   return score;
 }
