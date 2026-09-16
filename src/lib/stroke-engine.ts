@@ -504,7 +504,12 @@ export function drawGuideStroke(
   const pts = stroke.points;
   if (pts.length < 2) return;
   const start = pts[0], end = pts[pts.length - 1];
-  const radius = Math.max(14, stroke.width / 2 + 6);
+  const length = Math.hypot(end.x - start.x, end.y - start.y);
+  // 两端标记合计最多占路线长度的 27.5%，为短笔触保留方向线。
+  // 不使用固定最小圆圈/线宽，否则细节笔触仍会被遮住。
+  const scale = Math.min(1, Math.max(.01, stroke.width) / 20, length > .001 ? length / 80 : 1);
+  const radius = Math.max(.01, stroke.width) / 2 + 6 * scale;
+  const badgeRadius = 11 * scale;
   ctx.save();
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -527,27 +532,26 @@ export function drawGuideStroke(
     ctx.arc(start.x, start.y, radius, startAngle - Math.PI / 2, startAngle - Math.PI * 1.5, true);
     ctx.closePath();
     ctx.fillStyle = 'rgba(101,88,217,0.30)'; ctx.fill();
-    ctx.strokeStyle = '#6558D9'; ctx.lineWidth = 2; ctx.setLineDash([7, 5]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = '#6558D9'; ctx.lineWidth = 2 * scale; ctx.setLineDash([7 * scale, 5 * scale]); ctx.stroke(); ctx.setLineDash([]);
   }
   if (guidanceLevel !== 'light') {
     ctx.beginPath(); ctx.moveTo(start.x, start.y);
     pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
-    ctx.strokeStyle = '#6558D9'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.strokeStyle = '#6558D9'; ctx.lineWidth = 2.5 * scale; ctx.stroke();
     const before = pts[pts.length - 2];
     const angle = Math.atan2(end.y - before.y, end.x - before.x);
-    const length = Math.hypot(end.x - start.x, end.y - start.y);
-    if (length > 32) {
-      const x = end.x - Math.cos(angle) * 15, y = end.y - Math.sin(angle) * 15;
-      ctx.beginPath(); ctx.moveTo(x - Math.cos(angle - .55) * 10, y - Math.sin(angle - .55) * 10);
-      ctx.lineTo(x, y); ctx.lineTo(x - Math.cos(angle + .55) * 10, y - Math.sin(angle + .55) * 10); ctx.stroke();
+    if (length > .001) {
+      const x = end.x - Math.cos(angle) * 15 * scale, y = end.y - Math.sin(angle) * 15 * scale;
+      ctx.beginPath(); ctx.moveTo(x - Math.cos(angle - .55) * 10 * scale, y - Math.sin(angle - .55) * 10 * scale);
+      ctx.lineTo(x, y); ctx.lineTo(x - Math.cos(angle + .55) * 10 * scale, y - Math.sin(angle + .55) * 10 * scale); ctx.stroke();
     }
   }
   const badge = (p: Vec2, text: string, fill: string) => {
-    ctx.beginPath(); ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
-    ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = '#17233F'; ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = '#17233F'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, p.x, p.y);
+    ctx.beginPath(); ctx.arc(p.x, p.y, badgeRadius, 0, Math.PI * 2);
+    ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = '#17233F'; ctx.lineWidth = 2 * scale; ctx.stroke();
+    ctx.fillStyle = '#17233F'; ctx.font = `bold ${13 * scale}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, p.x, p.y);
   };
-  if (guidanceLevel !== 'light' && Math.hypot(end.x - start.x, end.y - start.y) > 25) badge(end, '2', '#FFFFFF');
+  if (guidanceLevel !== 'light' && length > .001) badge(end, '2', '#FFFFFF');
   badge(start, '1', '#FFD166');
   ctx.restore();
 }
