@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Music2,
+  BookOpen,
   FastForward,
   Sparkles,
   RotateCcw,
@@ -369,7 +370,10 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
           }}
           hoverBg="#7DC353"
         />
-        <PaintTutorial onOpen={() => { close(); if (p.mode === 'auto') p.onModeChange('follow'); }} />
+        <PaintTutorial
+          onOpen={() => { close(); if (p.mode === 'auto') p.onModeChange('follow'); }}
+          Trigger={TutorialButton}
+        />
       </motion.div>
     </div>
   );
@@ -577,6 +581,10 @@ function ToolBtn({
 }
 
 // ─── DirectBtn (no popover) ───────────────────────────────────────
+function TutorialButton({ onClick }: { onClick: () => void }) {
+  return <DirectBtn icon={<BookOpen size={20} />} label="教程" onClick={onClick} fillBg="#ECEAFE" hoverBg="#FFD166" />;
+}
+
 function DirectBtn({
   icon,
   label,

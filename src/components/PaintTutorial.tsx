@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ComponentType } from 'react';
 import { BookOpen, X, Wand2, Play, Sparkles, Lock, Unlock, Minus, RotateCcw, ArrowLeft, Check, Palette, Layers, Music2, ChevronsRight, Undo2, Eraser, SprayCan, ChevronDown, Maximize2, type LucideIcon } from 'lucide-react';
 import { drawGuideStroke, GuidanceLevel } from '@/lib/stroke-engine';
 import { brushColorCss, BrushColor } from '@/lib/brush-color';
@@ -45,12 +45,12 @@ function CardDemo() {
   return <div><div className="mb-3 flex gap-2"><button className="rounded-xl border bg-white p-2" onClick={() => setLocked(v => !v)}>{locked ? <Lock size={18} /> : <Unlock size={18} />}<span className="text-xs">{locked ? '解锁示例卡' : '锁定示例卡'}</span></button><button className="rounded-xl border bg-white p-2" onClick={() => setCollapsed(v => !v)}>{collapsed ? '展开示例卡' : '收起示例卡'}</button></div><div className="rounded-2xl border-2 bg-white p-4 shadow-[4px_4px_0_#6558D9]" style={{ marginLeft: position, width: collapsed ? 64 : '75%' }}>{collapsed ? '☾' : '☾ 月亮伙伴 · 从圆圈 1 开始'}</div><label className="mt-5 block text-xs">试试移动（先解锁）<input aria-label="移动示例卡" type="range" min={0} max={50} value={position} disabled={locked} onChange={e => setPosition(Number(e.target.value))} className="mt-2 w-full" /></label></div>;
 }
 
-export default function PaintTutorial({ onOpen }: { onOpen: () => void }) {
+export default function PaintTutorial({ onOpen, Trigger }: { onOpen: () => void; Trigger: ComponentType<{ onClick: () => void }> }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [topic, setTopic] = useState<Topic>('overview');
   const [color, setColor] = useState<BrushColor>([.4, .3, .8]);
   return <>
-    <button type="button" aria-label="教程" title="教程" onClick={() => { onOpen(); dialog.current?.showModal(); }} className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#17233F] bg-[#ECEAFE] sm:h-12 sm:w-12"><BookOpen size={20} /></button>
+    <Trigger onClick={() => { onOpen(); dialog.current?.showModal(); }} />
     <dialog ref={dialog} aria-label="绘画界面完整教程" className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none bg-[#F6F7FB] p-0 text-[#17233F] backdrop:bg-black/50">
       <div className="flex h-full flex-col">
         <header className="flex shrink-0 items-center justify-between gap-3 border-b-2 bg-white p-4 sm:px-8"><div><h2 className="text-xl font-black">绘画教程</h2><p className="mt-1 text-xs text-[#536079]">点击目录和示例，认识每一个工具。</p></div><button autoFocus onClick={() => dialog.current?.close()} aria-label="关闭教程返回画板" className="flex items-center gap-2 rounded-full border-2 px-3 py-2 text-sm font-bold"><X size={18} />返回画板</button></header>
