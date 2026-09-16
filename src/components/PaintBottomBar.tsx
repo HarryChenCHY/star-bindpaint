@@ -236,6 +236,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
               onClick={p.onSkip}
               hoverBg="#F9B801"
             />
+            {onUndo && <DirectBtn icon={<Undo2 size={18} strokeWidth={2.5} />} label="撤销" onClick={onUndo} disabled={!canUndo} />}
           </>
         )}
 

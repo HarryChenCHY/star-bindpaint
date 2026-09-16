@@ -261,6 +261,19 @@ export class PaintingTracker {
     this.session.autoStartCount++;
   }
 
+  /** 撤销恢复作品计数；实际尝试次数、首次动笔和会话时长仍保留。 */
+  captureArtworkProgress() {
+    const { completedStrokes, skippedStrokes, batchedStrokes } = this.session;
+    const length = this.session.strokes.length;
+    return () => {
+      this.session.strokes.length = length;
+      Object.assign(this.session, { completedStrokes, skippedStrokes, batchedStrokes });
+      this.session.endTime = 0;
+      this.session.finalImageBase64 = '';
+      this.lastStrokeEndTime = Date.now();
+    };
+  }
+
   // ── 结束方法 ────────────────────────────────────────────────────────
 
   /** 完成绘画（用户点"保存"或"完成"时调用） */

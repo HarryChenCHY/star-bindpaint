@@ -319,6 +319,23 @@ export default function PaintPage() {
     return unsubscribe;
   }, [guideSubMode, mode]);
 
+  const savePaintingUndo = useCallback(() => {
+    const pc = (window as unknown as Record<string, { saveUndoSnapshot: (restore: () => void) => void }>).__paintCanvas;
+    const index = guideRef.current.getState().currentIndex;
+    const restoreCounts = getTracker().captureArtworkProgress();
+    pc?.saveUndoSnapshot(() => {
+      restoreCounts();
+      guideRef.current.syncProgress(index, true);
+      setCurrentGuideStroke(guideRef.current.getCurrentStroke());
+      setUserStrokeCount(userStrokeCount);
+      setAutoStartIdx(index);
+      autoTrackedIndexRef.current = index;
+      setAutoCompletionPending(false);
+      setShowCompletion(false);
+      setSpriteMessage('已撤销上一步，可以重新画这一笔。');
+    });
+  }, [userStrokeCount]);
+
   const handleUserStrokeStart = useCallback(() => {
     const tracker = getTracker();
     tracker.strokeStart();
@@ -339,6 +356,7 @@ export default function PaintPage() {
         ? `rgba(${Math.round(currentGuideStroke.color[0]*255)},${Math.round(currentGuideStroke.color[1]*255)},${Math.round(currentGuideStroke.color[2]*255)},1)`
         : '';
 
+      if (score > .3 && guideState.waitingForUser && guideState.currentStroke) savePaintingUndo();
       const { passed, shouldReplace } = guide.submitStroke(score);
 
       const paintCanvas = (window as unknown as Record<string, {
@@ -367,19 +385,17 @@ export default function PaintPage() {
       if (fillMode === 'companion' && autoFillRatio > 0 && paintCanvas) {
         batchingRef.current = true;
         setCurrentGuideStroke(null);
-        setTimeout(() => {
-          let drawn = 0;
-          for (let i = 0; i < autoFillRatio; i++) {
-            const nextStroke = guide.getCurrentStroke();
-            if (!nextStroke) break;
-            paintCanvas.drawAIStrokeOnBase(nextStroke);
-            guide.skip();
-            drawn++;
-          }
-          if (drawn > 0) tracker.strokesBatched(guideState.currentIndex + 1, drawn);
-          batchingRef.current = false;
-          setCurrentGuideStroke(guide.getCurrentStroke());
-        }, 300);
+        let drawn = 0;
+        for (let i = 0; i < autoFillRatio; i++) {
+          const nextStroke = guide.getCurrentStroke();
+          if (!nextStroke) break;
+          paintCanvas.drawAIStrokeOnBase(nextStroke);
+          guide.skip();
+          drawn++;
+        }
+        if (drawn > 0) tracker.strokesBatched(guideState.currentIndex + 1, drawn);
+        batchingRef.current = false;
+        setCurrentGuideStroke(guide.getCurrentStroke());
       }
     } else if (mode === 'free') {
       setUserStrokeCount(previous => previous + 1);
@@ -389,7 +405,7 @@ export default function PaintPage() {
       tracker.strokeCompleted(tracker.getSession().strokes.length, '', center, score);
       guideRef.current.freeModeFeedback();
     }
-  }, [mode, currentGuideStroke, fillMode, autoFillRatio]);
+  }, [mode, currentGuideStroke, fillMode, autoFillRatio, savePaintingUndo]);
 
   const handleAutoProgress = useCallback((current: number, total: number) => {
     if (current > autoTrackedIndexRef.current) {
@@ -452,6 +468,7 @@ export default function PaintPage() {
     const guide = guideRef.current;
     const stroke = guide.getCurrentStroke();
     if (stroke && stroke.points.length > 0) {
+      savePaintingUndo();
       const mid = stroke.points[Math.floor(stroke.points.length / 2)];
       tracker.strokeSkipped(guide.getState().currentIndex, mid);
     }
@@ -472,6 +489,7 @@ export default function PaintPage() {
     }
 
     const paintCanvas = (window as unknown as Record<string, { clearUser?: () => void }>).__paintCanvas;
+    savePaintingUndo();
     paintCanvas?.clearUser?.();
 
     flushSync(() => {
@@ -484,7 +502,7 @@ export default function PaintPage() {
     getTracker().setMode('auto', guideSubMode);
     setSpriteMessage('月亮伙伴正在演示剩余星迹。');
     setSpriteState('guiding');
-  }, [mode, strokes.length, guideSubMode]);
+  }, [mode, strokes.length, guideSubMode, savePaintingUndo]);
 
   const handlePauseAuto = useCallback(() => {
     const guide = guideRef.current;
@@ -506,6 +524,7 @@ export default function PaintPage() {
     const guide = guideRef.current;
     const startIdx = guide.getState().currentIndex;
 
+    if (count > 0 && guide.getCurrentStroke()) savePaintingUndo();
     let drawn = 0;
     for (let i = 0; i < count; i++) {
       const stroke = guide.getCurrentStroke();
@@ -1005,7 +1024,10 @@ export default function PaintPage() {
             return;
           }
 
-          if (m === 'auto') setAutoStartIdx(guideRef.current.getState().currentIndex);
+          if (m === 'auto') {
+            savePaintingUndo();
+            setAutoStartIdx(guideRef.current.getState().currentIndex);
+          }
           if (m === 'free') setBrushWidth(userBrushWidthRef.current ?? 6);
 
           setMode(m);

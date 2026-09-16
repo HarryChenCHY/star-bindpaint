@@ -1,0 +1,116 @@
+[
+  {
+    "budget": 100,
+    "actualStrokes": 100,
+    "width": 768,
+    "height": 597,
+    "analysisMaxSize": 128,
+    "elapsedMs": 303,
+    "mae": 8.646028173273777,
+    "config": {
+      "version": "residual-capsule-2-detail-fine",
+      "defaultRoughness": 1,
+      "defaultBudget": 1000,
+      "maxBudget": 1000,
+      "analysisSize": 256,
+      "comparisonSize": 128,
+      "experienceOpacity": 0.85,
+      "studyOpacity": 1
+    }
+  },
+  {
+    "budget": 200,
+    "actualStrokes": 200,
+    "width": 768,
+    "height": 597,
+    "analysisMaxSize": 128,
+    "elapsedMs": 556,
+    "mae": 8.052695479713382,
+    "config": {
+      "version": "residual-capsule-2-detail-fine",
+      "defaultRoughness": 1,
+      "defaultBudget": 1000,
+      "maxBudget": 1000,
+      "analysisSize": 256,
+      "comparisonSize": 128,
+      "experienceOpacity": 0.85,
+      "studyOpacity": 1
+    }
+  },
+  {
+    "budget": 300,
+    "actualStrokes": 300,
+    "width": 768,
+    "height": 597,
+    "analysisMaxSize": 256,
+    "elapsedMs": 1656,
+    "mae": 7.618113716731807,
+    "config": {
+      "version": "residual-capsule-2-detail-fine",
+      "defaultRoughness": 1,
+      "defaultBudget": 1000,
+      "maxBudget": 1000,
+      "analysisSize": 256,
+      "comparisonSize": 128,
+      "experienceOpacity": 0.85,
+      "studyOpacity": 1
+    }
+  },
+  {
+    "budget": 500,
+    "actualStrokes": 500,
+    "width": 768,
+    "height": 597,
+    "analysisMaxSize": 256,
+    "elapsedMs": 1982,
+    "mae": 7.223563564349526,
+    "config": {
+      "version": "residual-capsule-2-detail-fine",
+      "defaultRoughness": 1,
+      "defaultBudget": 1000,
+      "maxBudget": 1000,
+      "analysisSize": 256,
+      "comparisonSize": 128,
+      "experienceOpacity": 0.85,
+      "studyOpacity": 1
+    }
+  },
+  {
+    "budget": 700,
+    "actualStrokes": 700,
+    "width": 768,
+    "height": 597,
+    "analysisMaxSize": 256,
+    "elapsedMs": 2364,
+    "mae": 6.90777091475898,
+    "config": {
+      "version": "residual-capsule-2-detail-fine",
+      "defaultRoughness": 1,
+      "defaultBudget": 1000,
+      "maxBudget": 1000,
+      "analysisSize": 256,
+      "comparisonSize": 128,
+      "experienceOpacity": 0.85,
+      "studyOpacity": 1
+    }
+  },
+  {
+    "budget": 1000,
+    "actualStrokes": 1000,
+    "width": 768,
+    "height": 597,
+    "analysisMaxSize": 256,
+    "elapsedMs": 2993,
+    "mae": 6.5415474362553505,
+    "config": {
+      "version": "residual-capsule-2-detail-fine",
+      "defaultRoughness": 1,
+      "defaultBudget": 1000,
+      "maxBudget": 1000,
+      "analysisSize": 256,
+      "comparisonSize": 128,
+      "experienceOpacity": 0.85,
+      "studyOpacity": 1
+    }
+  }
+]

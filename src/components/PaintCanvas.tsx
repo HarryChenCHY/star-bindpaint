@@ -69,7 +69,7 @@ export default function PaintCanvas({
   const baseCanvasRef = useRef<HTMLCanvasElement>(null);      // Layer 1: 已完成笔触
   const userCanvasRef = useRef<HTMLCanvasElement>(null);      // Layer 2: 用户绘制
   const guideCanvasRef = useRef<HTMLCanvasElement>(null);     // Layer 3: 引导线
-  const undoStackRef = useRef<ImageData[]>([]);               // 撤销栈（自由模式）
+  const undoStackRef = useRef<{ image: ImageData; restore?: () => void }[]>([]);
   const drawingEngineRef = useRef<DrawingEngine | null>(null);
   const autoPlayRef = useRef<{ running: boolean; timeoutId: number }>({ running: false, timeoutId: 0 });
   const eraserModeRef = useRef(eraserMode);                   // 用 ref 避免引擎重建
@@ -124,7 +124,7 @@ export default function PaintCanvas({
             const baseCtx = baseCanvas.getContext('2d');
             if (baseCtx) {
               const snapshot = baseCtx.getImageData(0, 0, width, height);
-              undoStackRef.current.push(snapshot);
+              undoStackRef.current.push({ image: snapshot });
               if (undoStackRef.current.length > 30) undoStackRef.current.shift();
               onUndoAvailable?.(true);
 
@@ -172,7 +172,7 @@ export default function PaintCanvas({
       const baseCtx = baseCanvas.getContext('2d');
       if (baseCtx) {
         const snapshot = baseCtx.getImageData(0, 0, width, height);
-        undoStackRef.current.push(snapshot);
+        undoStackRef.current.push({ image: snapshot });
         if (undoStackRef.current.length > 30) undoStackRef.current.shift();
         onUndoAvailable?.(true);
       }
@@ -234,7 +234,7 @@ export default function PaintCanvas({
       const baseCtx = baseCanvas.getContext('2d');
       if (baseCtx) {
         const snapshot = baseCtx.getImageData(0, 0, width, height);
-        undoStackRef.current.push(snapshot);
+        undoStackRef.current.push({ image: snapshot });
         if (undoStackRef.current.length > 30) undoStackRef.current.shift();
         onUndoAvailable?.(true);
       }
@@ -404,19 +404,22 @@ export default function PaintCanvas({
     const baseCanvas = baseCanvasRef.current;
     if (baseCanvas) {
       const ctx = baseCanvas.getContext('2d');
-      if (ctx) ctx.putImageData(snapshot, 0, 0);
+      if (ctx) ctx.putImageData(snapshot.image, 0, 0);
     }
+    const user = userCanvasRef.current;
+    if (user) user.getContext('2d')?.clearRect(0, 0, user.width, user.height);
+    snapshot.restore?.();
     onUndoAvailable?.(stack.length > 0);
     return true;
   }, [onUndoAvailable]);
 
-  const saveUndoSnapshot = useCallback(() => {
+  const saveUndoSnapshot = useCallback((restore?: () => void) => {
     const baseCanvas = baseCanvasRef.current;
     if (!baseCanvas) return;
     const ctx = baseCanvas.getContext('2d');
     if (!ctx) return;
     const snapshot = ctx.getImageData(0, 0, width, height);
-    undoStackRef.current.push(snapshot);
+    undoStackRef.current.push({ image: snapshot, restore });
     if (undoStackRef.current.length > 30) undoStackRef.current.shift();
     onUndoAvailable?.(true);
   }, [width, height, onUndoAvailable]);

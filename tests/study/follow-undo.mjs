@@ -1,0 +1,70 @@
+import { chromium } from '@playwright/test';
+import { build } from 'esbuild';
+import assert from 'node:assert/strict';
+const bundle = await build({ stdin: { contents: "export { planBudgetStrokes } from './src/lib/budget-strokes'; export { imageSourceFromImage } from './src/lib/stroke-engine';", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', globalName: 'TestPlanner' });
+const browser = await chromium.launch();
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto('http://localhost:3001/create');
+  await page.evaluate(() => {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const x = c.getContext('2d'); x.fillStyle = '#f0e5c0'; x.fillRect(0, 0, 256, 256);
+    x.fillStyle = '#34756a'; x.fillRect(30, 40, 200, 140); x.fillStyle = '#943f30'; x.fillRect(80, 100, 60, 125);
+    sessionStorage.setItem('star-bindpaint-source', c.toDataURL());
+    sessionStorage.removeItem('star-bindpaint-free-style');
+    sessionStorage.setItem('star-bindpaint-difficulty', 'free');
+  });
+  await page.goto('http://localhost:3001/paint');
+  await page.getByRole('button', { name: '完整', exact: true }).waitFor({ timeout: 60000 });
+  await page.addScriptTag({ content: bundle.outputFiles[0].text });
+  const strokes = await page.evaluate(async () => {
+    const img = new Image(); img.src = sessionStorage.getItem('star-bindpaint-source'); await img.decode();
+    return TestPlanner.planBudgetStrokes(TestPlanner.imageSourceFromImage(img), 256, 256, 1000, 1, .85);
+  });
+  const undo = page.getByRole('button', { name: '撤销', exact: true });
+  assert.equal(await undo.isDisabled(), true);
+  const pixels = () => page.locator('canvas').first().evaluate(c => c.toDataURL());
+  const initial = await pixels();
+  const index = () => page.getByTestId('floating-companion').innerText().then(t => Number(t.match(/星迹\s+(\d+)\s*\//)[1]));
+  const draw = async n => {
+    const b = await page.locator('canvas.paint-canvas').boundingBox();
+    const points = strokes[n].points;
+    await page.mouse.move(b.x + points[0].x / 256 * b.width, b.y + points[0].y / 256 * b.height);
+    await page.mouse.down();
+    for (const p of points.slice(1)) await page.mouse.move(b.x + p.x / 256 * b.width, b.y + p.y / 256 * b.height, { steps: 16 });
+    await page.mouse.up(); await page.waitForTimeout(100);
+  };
+  for (const submode of ['保留原笔', 'AI 修正']) {
+    await page.getByRole('button', { name: '笔迹方式', exact: true }).click();
+    await page.getByRole('button', { name: submode, exact: true }).click();
+    await page.getByRole('button', { name: '笔迹方式', exact: true }).click();
+    await draw(0); assert.equal(await index(), 2); assert.notEqual(await pixels(), initial);
+    await undo.click(); assert.equal(await pixels(), initial); assert.equal(await index(), 1);
+    await page.waitForTimeout(1000); assert.equal(await index(), 1); assert.equal(await undo.isDisabled(), true);
+  }
+  await draw(0); const afterFirst = await pixels();
+  await draw(1); assert.equal(await index(), 3);
+  await undo.click(); assert.equal(await index(), 2); assert.equal(await pixels(), afterFirst);
+  await undo.click(); assert.equal(await index(), 1); assert.equal(await pixels(), initial);
+  await page.getByRole('button', { name: '节奏', exact: true }).click();
+  await page.getByRole('button', { name: '一起画', exact: true }).click();
+  await page.getByRole('button', { name: '节奏', exact: true }).click();
+  await draw(0); assert.equal(await index(), 12);
+  await undo.click(); assert.equal(await index(), 1); assert.equal(await pixels(), initial);
+  await page.getByRole('button', { name: '换一笔', exact: true }).click();
+  assert.equal(await index(), 2); await undo.click(); assert.equal(await index(), 1);
+  await page.getByRole('button', { name: '月亮伙伴帮画', exact: true }).click();
+  await page.getByRole('button', { name: '+5', exact: true }).click();
+  assert.equal(await index(), 6); await undo.click(); assert.equal(await index(), 1); assert.equal(await pixels(), initial);
+  await page.getByRole('button', { name: '自动续画', exact: true }).click();
+  await page.waitForTimeout(300);
+  await page.getByRole('button', { name: '暂停自动续画', exact: true }).last().click();
+  assert.ok(await index() > 1); await undo.click();
+  assert.equal(await index(), 1); assert.equal(await pixels(), initial);
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(await undo.isVisible(), true);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+  assert.deepEqual(errors, []);
+  console.log('PASS: 原笔/修正、连续撤销、一起画整组撤销、跳过、补5笔、暂停续画撤销；画布与进度一致，手机入口可见');
+} finally { await browser.close(); }

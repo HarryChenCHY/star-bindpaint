@@ -125,6 +125,7 @@ export class GuideSystem {
    * @returns 是否通过（分数 > 0.3 即通过）
    */
   submitStroke(score: number): { passed: boolean; shouldReplace: boolean } {
+    if (!this.state.waitingForUser || !this.state.currentStroke) return { passed: false, shouldReplace: false };
     const passed = score > 0.3;
     this.state.lastScore = score;
 
@@ -135,8 +136,8 @@ export class GuideSystem {
       // 辅助模式下替换用户笔迹
       const shouldReplace = this.mode === 'assist';
 
-      // 延迟进入下一笔（让用户看到反馈）
-      this.advanceToNext();
+      // 原子推进，避免延迟回调在撤销或伙伴补笔之后再次跳笔。
+      this.advanceToNextImmediate();
 
       return { passed: true, shouldReplace };
     } else {
@@ -175,13 +176,6 @@ export class GuideSystem {
     };
 
     if (notify) this.notify();
-  }
-
-  /**
-   * 前进到下一笔（带动画延迟）
-   */
-  private advanceToNext() {
-    setTimeout(() => this.advanceToNextImmediate(), 800);
   }
 
   /**
