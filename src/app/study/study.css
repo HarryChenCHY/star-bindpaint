@@ -8,6 +8,13 @@
   max-width: 1100px;
   margin: 0 auto;
 }
+.study-steps { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin:22px 0; padding:0; list-style:none; }
+.study-steps li { display:flex; align-items:center; gap:8px; padding:12px 8px; border-radius:12px; background:#e9ecf3; color:#536079; font-size:13px; font-weight:750; }
+.study-steps li span { display:grid; place-items:center; flex-shrink:0; width:24px; height:24px; background:white; border-radius:50%; }
+.study-steps li[aria-current] { background:#6558d9; color:white; }
+.study-steps li[aria-current] span { color:#6558d9; }
+.study-steps li[data-done=true] { background:#d9f2ec; color:#245a51; }
+@media(max-width:600px) { .study-steps { gap:4px; } .study-steps li { flex-direction:column; text-align:center; font-size:11px; padding:10px 2px; gap:5px; } }
 .study-shell h1 {
   font-size: clamp(24px, 4vw, 36px);
   font-weight: 900;

@@ -8,9 +8,10 @@ import { PROTOCOL, RUBRIC, type StrokePlan } from '@/lib/study/protocol';
 import type { StudyConfig } from '@/lib/study/types';
 import type { report } from '@/lib/study/server/service';
 import { GroupReport, PairReport } from '@/components/study/StudyReport';
+import { ResearcherInterview } from '@/components/study/ResearcherInterview';
 import ImageUploader from '@/components/ImageUploader';
 import '../../study/study.css';
-type Data = { config: StudyConfig; report: ReturnType<typeof report>; tests: Array<{ pairId: string; researchCode: string; studyId: string; createdAt: string; withdrawnAt: string | null }>; handoffs: Array<{ id: string; createdAt: string; status: string; sha256: string }> };
+type Data = { enrollmentTarget: string; config: StudyConfig; report: ReturnType<typeof report>; tests: Array<{ pairId: string; researchCode: string; studyId: string; createdAt: string; withdrawnAt: string | null }>; handoffs: Array<{ id: string; createdAt: string; status: string; sha256: string }> };
 export default function StudyAdminPage() {
   const preparation = useRef<AbortController | null>(null);
   const [preparationStatus, setPreparationStatus] = useState('');
@@ -360,6 +361,12 @@ export default function StudyAdminPage() {
                 </div>
               )}
             </section>
+            <section className="study-card">
+              <h2>参与测试入口</h2>
+              <p>首页“参与测试”当前进入：{data.enrollmentTarget === 'novice-formal-v1' ? '正式测试' : '预试'}。参与者无需选择批次；已有参与者继续原批次。</p>
+              <button disabled={busy || !data.config.published || data.enrollmentTarget === studyId} onClick={() => void run(() => api({ action: 'enrollmentTarget', studyId }, token))}>将当前批次设为参与测试入口</button>
+              {!data.config.published && <p className="study-muted">请先完成材料审核并发布当前批次。</p>}
+            </section>
             <GroupReport data={data.report} />
             <section className="study-card">
               <h2>配对、质量与纳入管理</h2>
@@ -404,6 +411,9 @@ export default function StudyAdminPage() {
             {pair && (
               <>
                 <PairReport pair={pair} token={token} />
+                <ResearcherInterview key={`${pair.pairId}-${pair.interviewRecordedAt ?? ''}`} pairId={pair.pairId} code={pair.researchCode} answers={pair.interview} token={token} available={!pair.withdrawnAt && !!pair.control?.post && !!pair.guided?.post} onSaved={() => load()} />
+                {pair.interview && <p className="study-muted">访谈来源：{pair.interviewSource === 'researcher' ? '研究者口头访谈录入' : '参与者填写（历史流程）'}{pair.interviewRecordedAt ? ` · ${new Date(pair.interviewRecordedAt).toLocaleString()}` : ''}</p>}
+
                 <section className="study-card">
                   <h2>按预设规则处理记录</h2>
                   {pair.withdrawnAt && (

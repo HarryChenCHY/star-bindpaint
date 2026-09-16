@@ -18,6 +18,8 @@ import { pilotSnapshot, savePilotIssue, savePilotReview } from '@/lib/study/serv
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 const cookieName = 'startrace-study';
+const enrollmentTarget = (repo: ReturnType<typeof getRepository>) =>
+  repo.get<{ studyId: string }>('setting', 'enrollment-target')?.studyId || 'novice-pilot-v1';
 const equal = (a: string, b?: string) =>
   !!b && timingSafeEqual(Buffer.from(hash(a)), Buffer.from(hash(b)));
 function role(req: NextRequest) {
@@ -131,11 +133,12 @@ export async function GET(req: NextRequest) {
     const studyId =
       req.nextUrl.searchParams.get('studyId') ||
       p?.studyId ||
-      'novice-pilot-v1';
+      enrollmentTarget(repo);
     if (action === 'admin') {
       if (access !== 'admin')
         return json({ error: '研究者口令无效或未配置' }, 401);
       return json({
+        enrollmentTarget: enrollmentTarget(repo),
         config: config(repo, studyId),
         report: report(repo, studyId),
         tests: repo.all<Participant>('participant').map(person => ({ pairId: person.pairId, researchCode: person.researchCode ?? person.id, studyId: person.studyId, createdAt: person.createdAt, withdrawnAt: person.withdrawnAt })).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
@@ -225,6 +228,7 @@ export async function GET(req: NextRequest) {
         participant: null,
         protocol: PROTOCOL,
         config: {
+          id: studyId,
           published: config(repo, studyId).published,
           stage: config(repo, studyId).stage,
         },
@@ -280,7 +284,7 @@ export async function POST(req: NextRequest) {
         b.adult !== true
       )
         throw new Error('请完成筛选与两项研究同意');
-      const result = enroll(repo, String(b.studyId || 'novice-pilot-v1'), String(b.code || ''));
+      const result = enroll(repo, String(b.studyId || enrollmentTarget(repo)), String(b.code || ''));
       const response = json({
         participant: publicParticipant(result.participant),
       });
@@ -314,6 +318,8 @@ export async function POST(req: NextRequest) {
         repo.delete('export', item.id);
       }
       person.interview = null;
+      delete person.interviewSource;
+      delete person.interviewRecordedAt;
       for (const item of repo.all<{ id: string; studyId: string; path: string }>('pilot_export').filter(e => e.studyId === person.studyId)) {
         repo.remove(item.path);
         repo.delete('pilot_export', item.id);
@@ -586,6 +592,34 @@ export async function POST(req: NextRequest) {
       repo.audit(b.action, s.id, { reason: b.reason.slice(0, 500) });
       return json({ ok: true });
     }
+    if (b.action === 'enrollmentTarget') {
+      if (access !== 'admin') return json({ error: '需要研究者权限' }, 403);
+      const c = config(repo, String(b.studyId));
+      if (!c.published) throw new Error('请先发布该批次，再设为参与测试入口');
+      repo.put('setting', 'enrollment-target', { studyId: c.id });
+      repo.audit('enrollment_target_changed', c.id);
+      return json({ ok: true });
+    }
+    if (b.action === 'recordInterview') {
+      if (access !== 'admin') return json({ error: '需要研究者权限' }, 403);
+      return repo.transaction(() => {
+        const person = repo.get<Participant>('participant', String(b.pairId));
+        if (!person || person.withdrawnAt) throw new Error('参与者不存在或已撤回');
+        const ownSessions = sessions(repo, person);
+        if (![1, 2].every(n => ownSessions.filter(s => s.period === n).at(-1)?.post))
+          throw new Error('请在两轮及后测完成后记录访谈');
+        if (!Array.isArray(b.answers) || b.answers.length !== 3 || b.answers.some((v: unknown) => typeof v !== 'string' || v.length > 2000))
+          throw new Error('访谈答案无效');
+        if (person.interview && (typeof b.reason !== 'string' || !b.reason.trim()))
+          throw new Error('修改已有访谈需要填写原因');
+        person.interview = b.answers;
+        person.interviewSource = 'researcher';
+        person.interviewRecordedAt = new Date().toISOString();
+        repo.put('participant', person.pairId, person);
+        repo.audit('interview_recorded_by_researcher', person.pairId, { reason: String(b.reason || '').slice(0, 500) });
+        return json({ ok: true });
+      });
+    }
     if (!p || p.withdrawnAt) return json({ error: '请先进入研究' }, 401);
     if (b.action === 'practice_start') {
       p.practiceStartedAt = new Date().toISOString();
@@ -614,6 +648,8 @@ export async function POST(req: NextRequest) {
       )
         throw new Error('访谈答案无效');
       p.interview = b.answers;
+      p.interviewSource = 'participant';
+      p.interviewRecordedAt = new Date().toISOString();
       repo.put('participant', p.pairId, p);
       repo.audit('interview_submitted', p.pairId);
       return json({ ok: true });

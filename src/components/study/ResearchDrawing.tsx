@@ -22,12 +22,14 @@ export function ResearchDrawing({
   material,
   onComplete,
   practice = false,
+  autoStart = false,
 }: {
   session?: Session;
   plan: StrokePlan;
   material: string;
   onComplete: () => void;
   practice?: boolean;
+  autoStart?: boolean;
 }) {
   const [running, setRunning] = useState(false),
     [ended, setEnded] = useState(false),
@@ -37,6 +39,7 @@ export function ResearchDrawing({
     [step, setStep] = useState(0),
     [resting, setResting] = useState(false),
     [saveState, setSaveState] = useState('尚未开始');
+  const panel = useRef<HTMLDivElement>(null);
   const canvas = useRef<CanvasHandle>(null),
     startTime = useRef(0),
     deadline = practice ? PROTOCOL.practiceMs : PROTOCOL.timeLimitMs;
@@ -85,10 +88,14 @@ export function ResearchDrawing({
       });
     return sync.current;
   }
+  const starting = useRef(false), startedAutomatically = useRef(false);
   async function start() {
+    if (starting.current || running || ended) return;
+    starting.current = true;
     setBusy(true);
     setError('');
     try {
+      const image = new Image(); image.src = material; await image.decode();
       const pageId = crypto.randomUUID();
       journal.current = { id: session?.id || pageId, pageId, events: [] };
       if (practice) await api({ action: 'practice_start' });
@@ -105,9 +112,18 @@ export function ResearchDrawing({
     } catch (e) {
       setError(String(e));
     } finally {
+      starting.current = false;
       setBusy(false);
     }
   }
+  useEffect(() => {
+    if (autoStart && !startedAutomatically.current) {
+      startedAutomatically.current = true;
+      void start();
+    }
+    // A single explicit pre-questionnaire submission starts this mounted attempt once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStart]);
   async function finishTask(reason: EndReason) {
     if (finished.current || !journal.current) return;
     // Close any in-flight pointer before the unique terminal event.
@@ -138,6 +154,7 @@ export function ResearchDrawing({
   }
   useEffect(() => {
     if (!running) return;
+    panel.current?.scrollIntoView({ block: 'start' });
     const timer = setInterval(() => {
       setElapsed(now());
       if (now() >= deadline) void finishTask('timeout');
@@ -183,7 +200,7 @@ export function ResearchDrawing({
     setStep((s) => s + 1);
   }
   return (
-    <div>
+    <div ref={panel} style={{ scrollMarginTop: 20 }}>
       <div className="study-row justify-between">
         <h2>
           {practice

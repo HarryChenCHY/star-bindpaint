@@ -355,6 +355,8 @@ export function report(repo: StudyRepository, studyId: string) {
       },
       withdrawnAt: p.withdrawnAt,
       interview: p.interview,
+      interviewSource: p.interview ? p.interviewSource ?? 'participant' : null,
+      interviewRecordedAt: p.interviewRecordedAt ?? null,
       attempts: own,
       audit: { participant: repo.auditFor(p.pairId), sessions: Object.fromEntries(own.map(s => [s.id, repo.auditFor(s.id)])) },
       control: entry('control'),

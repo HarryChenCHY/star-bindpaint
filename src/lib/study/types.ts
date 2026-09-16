@@ -35,6 +35,8 @@ export interface Participant {
   practiceAt: string | null;
   practiceStartedAt?: string;
   interview: string[] | null;
+  interviewSource?: 'participant' | 'researcher';
+  interviewRecordedAt?: string;
   withdrawnAt: string | null;
 }
 export interface Rating {

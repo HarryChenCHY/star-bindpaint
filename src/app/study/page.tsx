@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { api, preparePlan, readLocal, syncAttempt } from '@/lib/study/client';
 import {
-  INTERVIEW,
   PROTOCOL,
   QUESTIONS,
   type Answers,
@@ -23,8 +22,10 @@ interface View {
 function Questionnaire({
   post,
   onSubmit,
+  submitLabel = '保存感受',
 }: {
   post: boolean;
+  submitLabel?: string;
   onSubmit: (a: Answers) => Promise<void>;
 }) {
   const [answers, setAnswers] = useState<Answers>({}),
@@ -74,7 +75,7 @@ function Questionnaire({
           }
         }}
       >
-        提交问卷
+        {busy ? '正在保存…' : submitLabel}
       </button>
     </div>
   );
@@ -94,15 +95,16 @@ export default function StudyPage() {
       plan: StrokePlan;
       material: string;
     } | null>(null),
-    [clock, setClock] = useState(0),
-    [interview, setInterview] = useState(['', '', '']);
-  const [stage, setStage] = useState('novice-pilot-v1');
+    [clock, setClock] = useState(0);
+  const [autoStartId, setAutoStartId] = useState('');
+  const [practiceError, setPracticeError] = useState('');
+  const [practiceRetry, setPracticeRetry] = useState(0);
   const reload = async () => {
     setView(await api<View>());
   };
   useEffect(() => {
     void api<View>()
-      .then(setView)
+      .then(result => { setView(result); setClock(Date.now()); })
       .catch((e) => setError(e instanceof Error ? e.message : '测试服务暂时不可用，请稍后重试。'));
     const timer = setInterval(() => setClock(Date.now()), 1000);
     return () => clearInterval(timer);
@@ -132,6 +134,29 @@ export default function StudyPage() {
   const restLeft = first?.finalizedAt
     ? Math.max(0, PROTOCOL.restMs - (clock - Date.parse(first.finalizedAt)))
     : 0;
+  const progressStep = !p ? 0 : !p.practiceAt ? 1 : second?.post ? 4 : readySecond ? 3 : 2;
+  const needsPractice = !!p && !p.withdrawnAt && !p.practiceAt;
+  useEffect(() => {
+    if (!needsPractice) return;
+    const controller = new AbortController();
+    void preparePlan('/study/practice.svg', controller.signal)
+      .then(result => { if (!controller.signal.aborted) setPractice(result); })
+      .catch(e => { if (!controller.signal.aborted) setPracticeError(e instanceof Error ? e.message : '练习图加载失败'); });
+    return () => controller.abort();
+  }, [needsPractice, practiceRetry]);
+  async function beginRound(answers: Answers, session?: Session) {
+    const round = (await api<{ session: Session }>({ action: 'session', period: session?.period ?? (readySecond ? 2 : 1) })).session;
+    if (!round.pre) await api({ action: 'questionnaire', sessionId: round.id, phase: 'pre', answers });
+    setAutoStartId(round.id);
+    await reload();
+  }
+  const readyQuestionnaire = (session?: Session) => <>
+    <h2>第{(session?.period ?? (readySecond ? 2 : 1)) === 1 ? '一' : '二'}轮 · 画前准备</h2>
+    <p className="study-muted">回答两道感受题后直接开始。每轮最多12分钟，觉得完成时可提前提交。</p>
+    <Questionnaire key={session?.id ?? `ready-${readySecond ? 2 : 1}`} post={false}
+      submitLabel={`开始第${(session?.period ?? (readySecond ? 2 : 1)) === 1 ? '一' : '二'}轮绘画`}
+      onSubmit={answers => beginRound(answers, session)} />
+  </>;
   return (
     <div className="study-shell">
       <div className="study-wrap">
@@ -142,9 +167,12 @@ export default function StudyPage() {
         <h1>两次绘画，一次体验记录</h1>
         <p className="study-muted">
           {p
-            ? `${p.researchCode ?? p.id} · ${view?.config.stage === 'pilot' ? '预试' : '正式测试'}`
+            ? `研究码：${p.researchCode ?? p.id}`
             : '同一幅画，两种绘画方式。按自己的节奏，不是考试。'}
         </p>
+        <ol className="study-steps" aria-label="测试进度">
+          {['进入', '熟悉工具', '第一轮', '第二轮', '完成对比'].map((label, index) => <li key={label} aria-current={index === progressStep ? 'step' : undefined} data-done={index < progressStep}><span>{index < progressStep ? '✓' : index + 1}</span>{label}</li>)}
+        </ol>
         {error && (
           <p role="alert" className="study-error">
             {error}
@@ -158,20 +186,14 @@ export default function StudyPage() {
         )}
         {view && !p && (
           <section className="study-card space-y-4">
-            <h2>进入研究</h2>
+            <h2>进入测试</h2>
+            {!view.config.published && <p role="status">测试暂未开放，请联系研究者；也可以先自由体验。</p>}
             <p>
               每轮最多 12 分钟，包含练习、问卷与休息，全程约 40
               分钟。记录匿名操作摘要与问卷，并私有保存真实作品供两人评分。默认保留至采集后{' '}
               {PROTOCOL.retentionDays}{' '}
               天；不公开作品，不记录姓名、联系方式或完整触点轨迹。你可随时停止，并凭本浏览器的研究凭证申请撤回；研究者会处理已有副本，已经匿名发布的汇总无法逐人追溯。
             </p>
-            <label>
-              研究批次{' '}
-              <select value={stage} onChange={(e) => setStage(e.target.value)}>
-                <option value="novice-pilot-v1">预试</option>
-                <option value="novice-formal-v1">正式测试</option>
-              </select>
-            </label>
             <label>
               研究码{' '}
               <input
@@ -211,14 +233,14 @@ export default function StudyPage() {
               <button
                 className="primary"
                 disabled={
-                  busy || !Object.values(consents).every(Boolean) || !code
+                  busy || !view.config.published || !Object.values(consents).every(Boolean) || !code
                 }
                 onClick={() =>
                   void run(() =>
                     api({
                       action: 'enroll',
                       code,
-                      studyId: stage,
+                      studyId: view.config.id,
                       ...consents,
                     }),
                   )
@@ -258,68 +280,32 @@ export default function StudyPage() {
                 material={practice.material}
                 onComplete={() => void run(() => api({ action: 'practice' }))}
               />
+            ) : practiceError ? (
+              <div><p role="alert">{practiceError}</p><button onClick={() => { setPracticeError(''); setPracticeRetry(v => v + 1); }}>重试加载练习图</button></div>
             ) : (
-              <button
-                disabled={busy}
-                onClick={async () => {
-                  setBusy(true);
-                  try {
-                    setPractice(await preparePlan('/study/practice.svg'));
-                  } catch (e) {
-                    setError(String(e));
-                  } finally {
-                    setBusy(false);
-                  }
-                }}
-              >
-                准备练习图
-              </button>
+              <p role="status">正在准备练习画布…</p>
             )}
           </section>
         )}
         {p?.practiceAt && !p.withdrawnAt && !current && !second?.post && (
           <section className="study-card">
-            <h2>{readySecond ? '轮间休息' : '第一轮准备'}</h2>
-            <p>
-              {readySecond
-                ? `请稍作休息，下一轮仍绘制同一张图。剩余 ${Math.ceil(restLeft / 1000)} 秒。`
-                : '请确认设备可用，随后填写两道题并开始绘画。'}
-            </p>
-            <button
-              className="primary"
-              disabled={busy || (readySecond && restLeft > 0)}
-              onClick={() =>
-                void run(() =>
-                  api({ action: 'session', period: readySecond ? 2 : 1 }),
-                )
-              }
-            >
-              {readySecond ? '准备第二轮' : '准备第一轮'}
-            </button>
+            {readySecond && restLeft > 0 ? <>
+              <h2>轮间休息</h2><p>第一轮已保存。请休息一下，{Math.ceil(restLeft / 1000)}秒后显示第二轮开始卡片。</p>
+              <p className="study-muted">下一轮使用同一张图和另一种绘画方式。休息结束不会自动开始计时。</p>
+            </> : readyQuestionnaire()}
           </section>
         )}
         {current && !p?.withdrawnAt && (
           <section className="study-card">
             {!current.pre ? (
-              <Questionnaire
-                key={`${current.id}-pre`}
-                post={false}
-                onSubmit={async (answers) => {
-                  await api({
-                    action: 'questionnaire',
-                    sessionId: current.id,
-                    phase: 'pre',
-                    answers,
-                  });
-                  await reload();
-                }}
-              />
+              readyQuestionnaire(current)
             ) : current.state === 'created' &&
               view?.config.plan &&
               view.config.material ? (
               <ResearchDrawing
                 key={current.id}
                 session={current}
+                autoStart={autoStartId === current.id}
                 plan={view.config.plan}
                 material={view.config.material}
                 onComplete={() =>
@@ -355,6 +341,7 @@ export default function StudyPage() {
               <Questionnaire
                 key={`${current.id}-post`}
                 post
+                submitLabel={current.period === 1 ? '保存感受，进入休息' : '保存感受，查看对比'}
                 onSubmit={async (answers) => {
                   await api({
                     action: 'questionnaire',
@@ -376,38 +363,9 @@ export default function StudyPage() {
         {second?.post && !p?.withdrawnAt && (
           <>
             <section className="study-card">
-              <h2>最后聊三句</h2>
-              {p?.interview ? (
-                <p>访谈已保存，谢谢参与。</p>
-              ) : (
-                <>
-                  {INTERVIEW.map((q, i) => (
-                    <label className="my-3 flex-col !items-start" key={q}>
-                      {q}
-                      <textarea
-                        value={interview[i]}
-                        maxLength={2000}
-                        placeholder="可以留空，记为未回答"
-                        onChange={(e) =>
-                          setInterview((v) =>
-                            v.map((s, j) => (i === j ? e.target.value : s)),
-                          )
-                        }
-                      />
-                    </label>
-                  ))}
-                  <button
-                    onClick={() =>
-                      void run(() =>
-                        api({ action: 'interview', answers: interview }),
-                      )
-                    }
-                    disabled={busy}
-                  >
-                    保存访谈
-                  </button>
-                </>
-              )}
+              <h2>测试完成，谢谢参与</h2>
+              <p>两轮绘画和感受问卷已保存。下方可以查看作品与过程对比；作品评分由研究者后续补充。</p>
+              <p className="study-muted">如研究者安排简短访谈，可以口头回答，由研究者记录，无需再填写文字。</p>
             </section>
             {view?.report && <PairReport pair={view.report} />}
             <button onClick={() => void run(() => api({ action: 'logout' }))}>

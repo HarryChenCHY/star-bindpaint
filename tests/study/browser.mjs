@@ -114,6 +114,14 @@ try {
     if (!response.ok()) throw new Error(JSON.stringify(result));
     return result;
   };
+
+  const unauthorizedTarget = await page.request.post(url + '/api/studies', { data: { action: 'enrollmentTarget', studyId: 'novice-pilot-v1' } });
+  if (unauthorizedTarget.status() !== 403) throw new Error('Entry target authorization failed');
+  const draftTarget = await page.request.post(url + '/api/studies', { data: { action: 'enrollmentTarget', studyId: 'novice-formal-v1' }, headers: { Authorization: 'Bearer ' + admin } });
+  if (draftTarget.status() !== 400) throw new Error('Unpublished entry target accepted');
+  await call(page.context(), { action: 'enrollmentTarget', studyId: 'novice-pilot-v1' }, admin);
+  const entry = await (await page.request.get(url + '/api/studies')).json();
+  if (entry.config.id !== 'novice-pilot-v1') throw new Error('Entry target missing');
   let context = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
   });
@@ -123,8 +131,8 @@ try {
   await person.getByLabel('研究码', { exact: true }).fill(code);
   for (const c of await person.getByRole('checkbox').all()) await c.check();
   await person.getByRole('button', { name: '同意并进入' }).click();
-  await person.getByRole('button', { name: '准备练习图' }).waitFor();
-  await person.getByRole('button', { name: '准备练习图' }).click();
+  if (await person.getByRole('combobox').count()) throw new Error('Participant must not select a batch');
+  await person.getByRole('button', { name: '开始练习', exact: true }).waitFor({ timeout: 60000 });
   await person.getByRole('button', { name: '开始练习', exact: true }).click();
   await person.getByRole('button', { name: '完成并提交' }).waitFor();
   // Fast-forward only the isolated synthetic fixture's practice timestamp and browser clock.
@@ -142,18 +150,17 @@ try {
   // The UI timer itself is exercised in a separate synthetic timeout check. Complete practice via API for the full workflow.
   await call(context, { action: 'practice' });
   await person.reload();
-  await person.getByRole('button', { name: '准备第一轮' }).click();
   async function questionnaire() {
     for (const field of await person.locator('fieldset').all())
       await field.locator('input[type=radio]').nth(4).check();
-    await person.getByRole('button', { name: '提交问卷' }).click();
+    await person.getByRole('button', { name: /^(开始第[一二]轮绘画|保存感受，)/ }).click();
   }
   for (let period = 1; period <= 2; period++) {
     await person.getByText('开始前的感受', { exact: true }).waitFor();
     await questionnaire();
-    await person.getByRole('button', { name: '开始本轮绘画' }).click();
     await person.getByRole('button', { name: '完成并提交' }).waitFor();
     const canvas = person.getByLabel('绘画画布');
+    await canvas.scrollIntoViewIfNeeded();
     const box = await canvas.boundingBox();
     await person.mouse.move(box.x + box.width * 0.3, box.y + box.height * 0.35);
     await person.mouse.down();
@@ -187,12 +194,22 @@ try {
         srow.id,
       );
       await person.reload();
-      await person.getByRole('button', { name: '准备第二轮' }).click();
     }
   }
-  await person.getByRole('button', { name: '保存访谈' }).click();
-  await person.getByText('访谈已保存，谢谢参与。').waitFor();
+  await person.getByRole('heading', { name: '测试完成，谢谢参与' }).waitFor();
+  if (await person.getByRole('textbox').count()) throw new Error('Participant interview form still visible');
   await person.screenshot({ path: dir + '/pair-report.png', fullPage: true });
+  const deniedInterview = await context.request.post(url + '/api/studies', { data: { action: 'recordInterview', pairId: p.pairId, answers: ['', '', ''] } });
+  if (deniedInterview.status() !== 403) throw new Error('Interview researcher authorization failed');
+  await page.getByRole('button', { name: '读取 / 刷新', exact: true }).click();
+  await page.getByRole('button', { name: '查看配对', exact: true }).first().click();
+  const interview = page.getByRole('region', { name: '研究者访谈记录' });
+  await interview.locator('textarea').first().fill('合成测试：引导容易开始');
+  await interview.getByRole('button', { name: '保存口头访谈' }).click();
+  await page.getByText(/访谈来源：研究者口头访谈录入/).waitFor();
+  const storedInterview = JSON.parse(db.prepare("select data from records where kind='participant' and id=?").get(p.pairId).data);
+  if (storedInterview.interviewSource !== 'researcher' || storedInterview.interview[0] !== '合成测试：引导容易开始') throw new Error('Interview persistence failed');
+
   // Exercise the opposite order with a second synthetic participant; assignment randomness is covered in domain tests.
   const blockRow = db
     .prepare("select id,data from records where kind='block'")
@@ -243,13 +260,12 @@ try {
   if (secondPerson.order === p.order)
     throw new Error('Expected opposite order');
   await person.goto(url + '/study');
-  await person.getByRole('button', { name: '准备第一轮' }).click();
   for (let period = 1; period <= 2; period++) {
     await person.getByText('开始前的感受', { exact: true }).waitFor();
     await questionnaire();
-    await person.getByRole('button', { name: '开始本轮绘画' }).click();
     await person.getByRole('button', { name: '完成并提交' }).waitFor();
     const canvas = person.getByLabel('绘画画布');
+    await canvas.scrollIntoViewIfNeeded();
     const box = await canvas.boundingBox();
     await person.mouse.move(box.x + box.width * 0.3, box.y + box.height * 0.35);
     await person.mouse.down();
@@ -288,15 +304,15 @@ try {
         srow.id,
       );
       await person.reload();
-      await person.getByRole('button', { name: '准备第二轮' }).click();
     }
   }
-  await person.getByRole('button', { name: '保存访谈' }).click();
-  await person.getByText('访谈已保存，谢谢参与。').waitFor();
+  await person.getByRole('heading', { name: '测试完成，谢谢参与' }).waitFor();
+  if (await person.getByRole('textbox').count()) throw new Error('Participant interview form still visible');
   await person.screenshot({
     path: dir + '/pair-report-second.png',
     fullPage: true,
   });
+  await call(context, { action: 'recordInterview', pairId: secondPerson.pairId, answers: ['', '', ''] }, admin);
   const srows = db
     .prepare("select data from records where kind='session'")
     .all()
@@ -308,7 +324,8 @@ try {
         !s.finalizedAt ||
         !s.artifactHash ||
         !s.post ||
-        s.events.filter((e) => e.type === 'stroke_ended').length !== 1,
+        s.events.filter((e) => e.type === 'stroke_ended').length !== 1 ||
+        s.events.filter((e) => e.type === 'task_started').length !== 1,
     )
   )
     throw new Error('Session integrity failed');
