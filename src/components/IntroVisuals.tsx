@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { MASTER_STYLES, stylizeStroke, drawStylizedStroke } from '@/lib/style-transfer';
 import { preparePlan } from '@/lib/study/client';
+import { StyleEvidence } from './StyleExplanation';
 import type { StrokePlan } from '@/lib/study/protocol';
 
 const STYLE_NOTES = [
@@ -36,6 +37,7 @@ export function StyleExplorer() {
       <h3>{style.name} · {notes[0]}</h3><p>{notes[1]}</p><p>{notes[2]}</p>
       <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold"><span className="intro-pill">不透明度 {Math.round(style.opacity * 100)}%</span><span className="intro-pill">色相扰动 ±{style.colorJitter}°</span><span className="intro-pill">边缘扰动 {style.roughness}</span><span className="intro-pill">纹理 {style.texture}</span></div>
     </div>
+    <StyleEvidence selected={selected} />
     <p className="intro-caption">六条示例使用同一条输入路径、同一基础颜色和笔宽，由自由画板的实际渲染函数绘制。主色与预览共用调色函数，色相扰动不超过 ±2°，不透明度统一为 96%。随机肌理每次可能略有不同；这是本地程序化笔刷，不需要调用大模型。</p>
   </>;
 }

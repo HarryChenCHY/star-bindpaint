@@ -5,7 +5,8 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, ChevronLeft, Menu, Moon, Paintbrush, FlaskConical, Layers3, ShieldCheck } from 'lucide-react';
 import { BudgetExplorer, ExperimentExplorer, StyleExplorer } from '@/components/IntroVisuals';
 import { PROTOCOL, QUESTIONS } from '@/lib/study/protocol';
-import { STROKE_CONFIG } from '@/lib/stroke-config';
+import { AlgorithmExplanation, PaperReferences } from '@/components/AlgorithmExplanation';
+import { StyleParameterGuide } from '@/components/StyleExplanation';
 import './intro.css';
 
 const CHAPTERS = [
@@ -55,35 +56,21 @@ export default function IntroPage() {
         <div className="intro-grid two mt-6"><Card title="图片格式与尺寸"><p>支持小于 20 MB 的 JPG、PNG、WebP、GIF、BMP、AVIF 等浏览器可解码图像；每次一张。GIF 按解码后的静态画面使用。图片会按画布与规划尺寸缩放，规划不等于逐像素复制原始大图。</p></Card><Card title="自由星域"><p>自由创作不要求参考图，提供风格笔刷、颜色、粗细、橡皮擦、撤销等工具。有参考计划时，可从沿星迹切到自由绘画并切回，已有画面保留；无计划时需先选图才能获得引导。</p></Card></div>
       </Section>
       <Section id="companion" number="03" title="帮助放在身边，画面留给你。" subtitle="月亮伙伴承担下一步提示，底栏承担绘画操作。提示的多少、位置与展开状态可以随时调整。">
-        <div className="intro-grid three"><Card title="完整 / 适度 / 起点"><p>完整显示起点、轨迹和方向箭头；适度降低轨迹强调；起点只保留短方向提示。切换改变提示显示，不重新计算笔触序列。</p></Card><Card title="可移动的提示卡"><p>点击减号收为方圆图标，再点图标展开。解锁后拖动顶部手柄调整位置，锁定后避免误拖；位置与锁定偏好保存在当前浏览器。</p></Card><Card title="自动续画与手动体验"><p>体验模式可以让伙伴演示剩余笔触，并随时暂停。亲手绘画与自动帮助分别记录；自动推进的进度不代表用户独立完成。</p></Card></div>
+        <div className="intro-grid three"><Card title="完整 / 适度 / 起点"><p>完整显示起点、轨迹和方向箭头；适度降低轨迹强调；起点只显示起点标记。切换改变提示显示，不重新计算笔触序列。</p></Card><Card title="可移动的提示卡"><p>点击减号收为方圆图标，再点图标展开。解锁后拖动顶部手柄调整位置，锁定后避免误拖；位置与锁定偏好保存在当前浏览器。</p></Card><Card title="自动续画与手动体验"><p>体验模式可以让伙伴演示剩余笔触，并随时暂停。亲手绘画与自动帮助分别记录；自动推进的进度不代表用户独立完成。</p></Card></div>
         <div className="intro-callout mt-6"><h3>作品保存与文字反馈</h3><p>星图保存亲手绘制的作品与体验记录。文字反馈可调用已配置的语言模型服务，依据本次指标解释过程；它依赖服务端配置与可用性，不参与本地笔触规划。自由笔刷在本地实时渲染，完成后直接保存原画。</p></div>
       </Section>
       <Section id="styles" number="04" title="同一条手势，六种笔触性格。" subtitle="自由笔刷保留你画出的路径，通过宽度、色彩扰动、边缘、不透明度和纹理改变落笔质感。点击卡片查看每种风格的实现与用途。">
+        <div className="intro-callout mb-6"><h3>艺术资料提供特征参照，画笔参数由项目人工设定</h3><p>六位画家的名字指向不同的视觉启发。当前没有六位大师的笔触测量数据库，也没有训练专属模型。点击一种风格，可以查看真实引擎示例、馆藏来源、感性解释、参数作用与证据边界。</p></div>
         <StyleExplorer />
-        <Flow items={[[ '路径重采样', '按约 4 像素间隔重新采样，并映射输入压力。'], ['形态与颜色', '计算渐细、鼓起、等宽或压感曲线，调整色相和饱和度。'], ['肌理渲染', '添加轻微路径扰动、双层厚涂、干笔缺口或周期断笔，再用曲线绘制。']]} />
-        <p className="intro-caption">大师名称是风格预设的命名。当前实现没有训练六位画家的专属模型，也不会自动理解或复制其构图与艺术语言。</p>
+        <Flow items={[[ '路径重采样', '按约 4 像素间隔重新采样，并映射输入压力。'], ['形态与颜色', '计算渐细、鼓起、等宽或压感曲线，在用户选定颜色上加入微小色相扰动。'], ['肌理渲染', '添加轻微路径扰动、双层厚涂、干笔缺口或周期断笔，再用曲线绘制。']]} />
+        <StyleParameterGuide />
       </Section>
-      <Section id="algorithm" number="05" title="每一笔，都要让整幅图更接近目标。" subtitle="当前算法以完整画面的误差为依据，在总预算内反复优化笔刷，而不是把旧算法的前 1000 笔直接截取出来。">
-        <div className="intro-callout"><p className="intro-eyebrow">当前实现 · {STROKE_CONFIG.version}</p><h3>五遍由粗到细 → 逐行扫描区域 → 误差搜索 → 拟合颜色 → 接受一笔 ↺</h3><p>从白色虚拟画布出发，每遍固定一个笔宽，按网格从左上向右下逐行推进，完成一遍后换更细的笔刷重新扫描。没有强制“先轮廓”的阶段，也不做物体语义分割。</p></div>
-        <Flow items={[
-          ['目标与误差', '1000 笔模式使用最长边 256 的分析图，比较目标与当前画布的加权 RGB 平方误差。'],
-          ['候选搜索', '在当前网格内按误差采样；固定本遍笔宽，每轮考察 64 个位置、方向和长度组合。'],
-          ['颜色拟合', '对笔刷覆盖的整片区域拟合颜色，考虑当前画布与混合透明度。'],
-          ['局部优化', '再做 36 次局部尝试；只有整片覆盖区误差下降才接受这一笔。'],
-          ['反馈与输出', '更新虚拟画布后再计算下一轮，保存有序路径、笔宽与颜色供引导使用。'],
-        ]} />
-        <div className="intro-grid two mt-6"><Card title="为什么前粗后细？"><p>大色块、中色块、形体、小笔触、细节共五遍，1000 笔预算分别分配 60、120、220、280、320 次尝试。网格内误差越大分配越多；没有改善的笔触会跳过，所以实际笔数可能略少。总规划轮数不超过 {STROKE_CONFIG.maxBudget}。</p></Card><Card title="为什么不会简单保证“和原图一致”？"><p>有限笔数、缩小的分析图和胶囊形笔刷都限制表达能力。复杂文字、头发、细线和极小结构可能丢失。像素误差下降可以说明重建更接近，不直接等于精美或用户更满意。</p></Card></div>
-        <details className="intro-details"><summary>查看简化公式与笔刷模型</summary><p>误差 E = Σᵢ wᵢ ‖Tᵢ − Cᵢ‖²。T 是目标，C 是当前虚拟画布，w 对局部边缘适度加权。候选笔触的混合为 C′ᵢ = (1 − aᵢ) Cᵢ + aᵢ c。</p><p>固定笔刷覆盖后，每个颜色通道的最小二乘解为 c = clip[Σᵢ wᵢ aᵢ (Tᵢ − (1 − aᵢ) Cᵢ) / Σᵢ wᵢ aᵢ², 0, 1]。比较绘制前后的误差差值，选择收益更大的候选。</p><p>笔刷用带圆形端帽的线段近似，覆盖率由像素到线段的距离决定。体验绘制按 0.85 透明度拟合，研究画布按不透明笔刷拟合。两者的渲染口径分别匹配。</p></details>
-        <p className="intro-caption">扫描约束的是笔触所在区域，区域内部仍根据画面误差选择位置与方向；笔触可跨网格边界，避免拼块接缝。五遍笔宽逐层变小，长度仍按局部结构拟合，不做物体识别。</p>
+      <Section id="algorithm" number="05" title="每一笔，都要让整幅图更接近目标。" subtitle="从多尺度曲线，到预算误差搜索，再到五遍由粗到细的区域扫描：看清算法的原理、项目的改动与取舍。">
+        <AlgorithmExplanation />
         <BudgetExplorer />
       </Section>
       <Section id="references" number="06" title="技术从哪里来，项目实现了什么。" subtitle="将论文中的启发与本项目的实际实现分别说明，便于理解算法演进与论文写作时的归因。">
-        <div className="intro-timeline">
-          <article><span>1998 · SIGGRAPH</span><h3>Aaron Hertzmann</h3><a href="https://mrl.cs.nyu.edu/publications/painterly98/" target="_blank" rel="noreferrer">Painterly Rendering with Curved Brush Strokes of Multiple Sizes ↗</a><p>多尺度笔刷从粗到细覆盖画面，在与模糊参考图有差异的位置补画，并沿图像梯度的垂直方向构造曲线路径。</p><p><strong>项目关系：</strong>旧版多尺度曲线实现参考这一思路：高斯模糊、误差区域、Sobel 梯度与曲线延伸。旧版仍保留作工程对照，当前默认采用上节的预算误差优化算法。</p></article>
-          <article><span>2019 · ICCV</span><h3>Zhewei Huang · Wen Heng · Shuchang Zhou</h3><a href="https://openaccess.thecvf.com/content_ICCV_2019/html/Huang_Learning_to_Paint_With_Model-Based_Deep_Reinforcement_Learning_ICCV_2019_paper.html" target="_blank" rel="noreferrer">Learning to Paint With Model-Based Deep Reinforcement Learning ↗</a><p>使用神经渲染器与基于模型的深度强化学习，学习笔触位置、颜色与长期绘画规划。</p><p><strong>项目关系：</strong>为有限笔触重建整幅图提供研究参照。本项目采用本地候选搜索与显式笔刷，没有训练或部署该强化学习策略。</p></article>
-          <article><span>2021 · CVPR</span><h3>Zhengxia Zou · Tianyang Shi · Shuang Qiu · Yi Yuan · Zhenwei Shi</h3><a href="https://arxiv.org/abs/2011.08114" target="_blank" rel="noreferrer">Stylized Neural Painting ↗</a><p>利用可微的绘制过程优化参数化笔触，使笔触组合逼近目标图像，并支持不同笔刷风格。</p><p><strong>项目关系：</strong>参考“优化笔触参数并用渲染结果反馈误差”的方向。当前实现以解析颜色拟合和随机局部搜索完成优化，没有接入其神经渲染器或训练权重。</p></article>
-        </div>
-        <div className="intro-callout"><h3>本项目的工程组合</h3><p>固定预算、显式胶囊笔刷、加权误差、颜色最小二乘、候选局部搜索、浏览器 Worker 与逐笔交互共同构成当前流程。六种自由笔刷另用程序化风格参数渲染。应将这些表述为本项目实现与参考启发，不把整套算法声称为某篇论文的原样复现。</p></div>
+        <PaperReferences />
       </Section>
       <Section id="experiment" number="07" title="同一个人，两种绘画方式。" subtitle="核心问题：笔触引导是否有助于零基础用户更愿意画、减少开始与停顿的负担、提高完成度，并增加满足感？">
         <ExperimentExplorer />
