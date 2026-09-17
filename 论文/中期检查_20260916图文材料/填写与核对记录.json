@@ -1,0 +1,74 @@
+{
+  "date": "2026-09-16",
+  "body_han_count": 6901,
+  "figures": 11,
+  "tables": 4,
+  "references": 10,
+  "target": "/Users/harrychen/Desktop/startrace/论文/附件1-硕士生中期检查.docx等3个文件/附件1-硕士生中期检查_陈皓宇_中文版.docx",
+  "backup": "/Users/harrychen/Desktop/startrace/论文/中期检查_20260916图文材料/改写前备份_附件1-硕士生中期检查_陈皓宇_中文版.docx",
+  "sha256": "e022ca281fb1d6449ccd3f7fbbb687a47afaee84c2b41fd15d4d584eb90f65f8",
+  "research_status": "软件开发及工程验证；真人预试与正式实验待执行",
+  "preserved": "封面基本信息、现有题目、课题来源、开题日期、空白考核日期及签名栏",
+  "language": "中文正文，保持原文件语言范围；正式提交的英文要求需按学院附件另行完成",
+  "sources": [
+    {
+      "number": 1,
+      "reference": "HERTZMANN A. Painterly Rendering with Curved Brush Strokes of Multiple Sizes[C]//Proceedings of SIGGRAPH 1998. 1998: 453–460. DOI: 10.1145/280814.280951.",
+      "url": "https://mrl.cs.nyu.edu/publications/painterly98/"
+    },
+    {
+      "number": 2,
+      "reference": "HUANG Z, HENG W, ZHOU S. Learning to Paint With Model-Based Deep Reinforcement Learning[C]//Proceedings of ICCV. 2019: 8709–8718. DOI: 10.1109/ICCV.2019.00880.",
+      "url": "https://arxiv.org/abs/1903.04411"
+    },
+    {
+      "number": 3,
+      "reference": "ZOU Z, SHI T, QIU S, et al. Stylized Neural Painting[C]//Proceedings of CVPR. 2021: 15689–15698. DOI: 10.1109/CVPR46437.2021.01543.",
+      "url": "https://openaccess.thecvf.com/content/CVPR2021/html/Zou_Stylized_Neural_Painting_CVPR_2021_paper.html"
+    },
+    {
+      "number": 4,
+      "reference": "HU T, YI R, ZHU H, et al. Stroke-based Neural Painting and Stylization with Dynamically Predicted Painting Region[C]//Proceedings of ACM Multimedia. 2023. DOI: 10.1145/3581783.3611766.",
+      "url": "https://arxiv.org/abs/2309.03504"
+    },
+    {
+      "number": 5,
+      "reference": "NATIONAL GALLERY. Claude Monet: The Water-Lily Pond[EB/OL]. [2026-09-16].",
+      "url": "https://www.nationalgallery.org.uk/paintings/claude-monet-the-water-lily-pond"
+    },
+    {
+      "number": 6,
+      "reference": "VAN GOGH MUSEUM. Unravel Van Gogh: Thick Brushstrokes[EB/OL]. [2026-09-16].",
+      "url": "https://ontrafel.vangogh.nl/en/story/29/thick-brushstrokes/"
+    },
+    {
+      "number": 7,
+      "reference": "NATIONAL GALLERY. Paul Gauguin: Harvest, Le Pouldu[EB/OL]. [2026-09-16].",
+      "url": "https://www.nationalgallery.org.uk/paintings/paul-gauguin-harvest-le-pouldu"
+    },
+    {
+      "number": 8,
+      "reference": "NATIONAL GALLERY. Rembrandt: The Late Works—A Resource for Science Teachers, What Is Paint?[EB/OL]. [2026-09-16].",
+      "url": "https://www.nationalgallery.org.uk/learning/teachers-notes/rembrandt-the-late-works-a-resource-for-science-teachers?viewPage=3"
+    },
+    {
+      "number": 9,
+      "reference": "THE METROPOLITAN MUSEUM OF ART. Pablo Picasso (1881–1973)[EB/OL]. [2026-09-16].",
+      "url": "https://www.metmuseum.org/essays/pablo-picasso-1881-1973"
+    },
+    {
+      "number": 10,
+      "reference": "CENTENO S A, MAHON D. A Technical Study of John Singer Sargent’s Portrait of Madame Pierre Gautreau[J]. Metropolitan Museum Journal, 2005, 40: 121–129.",
+      "url": "https://www.metmuseum.org/met-publications/technical-study-sargents-madame-pierre-gautreau-the-metropolitan-museum-journal-v-40-2005"
+    }
+  ],
+  "validation": {
+    "pdf_pages": 24,
+    "pdf_links": 15,
+    "figures_and_captions": 11,
+    "tables_with_original_form": 6,
+    "original_personal_info_unchanged": true,
+    "zip_integrity": true,
+    "rendering": "已导出并逐页检查图片、表格和引用"
+  }
+}
