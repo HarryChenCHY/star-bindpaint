@@ -25,7 +25,9 @@ test('handoff preserves stored material, verifies hashes and never publishes a d
     assert.deepEqual(bundle.material.plan, c.plan);
     assert.equal('participants' in bundle, false);
     assert.equal(bundle.manifest.protocolHash, hash(JSON.stringify(bundle.protocol)));
-    c.published = true; c.materialReviewed = true; repo.put('config', c.id, c);
+    c.published = true; c.materialReviewed = true;
+    c.governance = { researcherContact: 'synthetic contact', compensation: 'none', ethicsStatement: 'synthetic test only' };
+    repo.put('config', c.id, c);
     assert.equal(createHandoff(repo, c.id).status, 'published-pilot');
     c.protocolVersion = 'old-protocol'; repo.put('config', c.id, c);
     assert.equal(createHandoff(repo, c.id).status, 'draft');

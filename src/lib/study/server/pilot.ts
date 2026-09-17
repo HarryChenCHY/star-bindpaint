@@ -3,12 +3,13 @@ import type { Participant, Session } from '../types';
 import { config } from './service';
 import type { StudyRepository } from './repository';
 import { pilotWorkload } from '../pilot-workload';
+import { STUDY_IDS } from '../protocol';
 
 export const PILOT_CHECKS = ['device', 'workload', 'rating', 'storage'] as const;
 export interface PilotReview { id: string; revision: number; planHash: string; checks: Record<string, boolean>; note: string; updatedAt: string }
 export interface PilotIssue { id: string; studyId: string; planHash: string; title: string; severity: 'blocking' | 'general'; status: 'open' | 'resolved'; resolution: string; revision: number; createdAt: string; updatedAt: string }
 export function pilotSnapshot(repo: StudyRepository) {
-  const c = config(repo, 'novice-pilot-v1');
+  const c = config(repo, STUDY_IDS.pilot);
   const people = repo.all<Participant>('participant').filter(p => p.studyId === c.id);
   const all = repo.all<Session>('session');
   const participants = people.map(p => {
@@ -35,7 +36,7 @@ export function pilotSnapshot(repo: StudyRepository) {
 }
 export function savePilotReview(repo: StudyRepository, body: Record<string, unknown>) {
   return repo.transaction(() => {
-    const c = config(repo, 'novice-pilot-v1');
+    const c = config(repo, STUDY_IDS.pilot);
     const prior = repo.get<PilotReview>('pilot_review', c.id);
     if (!c.planHash || body.planHash !== c.planHash) throw new Error('材料已变化，请刷新后重新复核');
     if (body.revision !== (prior?.revision ?? 0)) throw new Error('复核记录已更新，请刷新后重试');
@@ -50,7 +51,7 @@ export function savePilotReview(repo: StudyRepository, body: Record<string, unkn
 }
 export function savePilotIssue(repo: StudyRepository, body: Record<string, unknown>) {
   return repo.transaction(() => {
-    const c = config(repo, 'novice-pilot-v1');
+    const c = config(repo, STUDY_IDS.pilot);
     const prior = body.id ? repo.get<PilotIssue>('pilot_issue', String(body.id)) : null;
     if (body.id && !prior) throw new Error('问题不存在');
     if (body.revision !== (prior?.revision ?? 0)) throw new Error('问题已更新，请刷新后重试');

@@ -11,9 +11,10 @@ import {
   enroll,
   finish,
 } from '../../src/lib/study/server/service';
-import { metrics, union, exactSign, holm } from '../../src/lib/study/metrics';
+import { metrics, union, exactSign, holm, questionnaireScores } from '../../src/lib/study/metrics';
 import {
   assertAnswers,
+  POST_QUESTIONS,
   PROTOCOL,
   type StudyEvent,
 } from '../../src/lib/study/protocol';
@@ -149,6 +150,21 @@ test('null answers stay null, invalid zero and omitted fields rejected', () => {
   assert.equal(a.willingness, null);
   assert.throws(() => assertAnswers({ willingness: 0, concern: 1 }, false));
   assert.throws(() => assertAnswers({ willingness: 3 }, false));
+});
+test('IMI reverse items and standard SUS scoring are deterministic and missing-safe', () => {
+  const answers = Object.fromEntries(POST_QUESTIONS.map(q => [q.id, q.max])) as Record<string, number>;
+  const scored = questionnaireScores(answers);
+  assert.equal(scored.sus, 50);
+  assert.equal(scored.interestEnjoyment, 43 / 7);
+  assert.equal(scored.perceivedCompetence, 7);
+  assert.equal(scored.perceivedChoice, 17 / 5);
+  assert.equal(scored.pressureTension, 23 / 5);
+  assertAnswers(answers, true);
+  answers.sus10 = 6;
+  assert.throws(() => assertAnswers(answers, true));
+  answers.sus10 = 7;
+  answers.imi01 = null as unknown as number;
+  assert.equal(questionnaireScores(answers).interestEnjoyment, null);
 });
 test('exact sign test known binomial answers and Holm preserve missingness', () => {
   assert.equal(exactSign([1, 2, 3, 4, 5]).p, 0.0625);

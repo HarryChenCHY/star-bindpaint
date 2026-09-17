@@ -18,6 +18,11 @@ export interface StudyConfig {
   rubric: string[];
   essentialItems: number[];
   checks: Record<string, boolean>;
+  governance: {
+    researcherContact: string;
+    compensation: string;
+    ethicsStatement: string;
+  };
   createdAt: string;
 }
 export interface Participant {
@@ -29,6 +34,17 @@ export interface Participant {
   tokenHash: string;
   createdAt: string;
   consentVersion: string;
+  consent?: {
+    informationRead: true;
+    voluntary: true;
+    privacyUnderstood: true;
+    recordedAt: string;
+  };
+  profile?: {
+    ageBand: '18-24' | '25-34' | '35-44' | '45-plus' | 'prefer-not';
+    drawingFrequency: 'never' | 'few-year' | 'monthly' | 'prefer-not';
+    digitalDrawingExperience: 'never' | 'tried' | 'occasional' | 'prefer-not';
+  };
   researchLogConsent: true;
   researchArtworkConsent: true;
   eligible: true;
@@ -76,6 +92,10 @@ export interface SessionMetrics {
   elapsedMs: number | null;
   drawingMs: number;
   firstMarkMs: number | null;
+  lastMarkMs: number | null;
+  activeSpanMs: number | null;
+  activeMinutes: number;
+  longestIdleMs: number;
   attempts: number;
   validStrokes: number;
   cancellations: number;

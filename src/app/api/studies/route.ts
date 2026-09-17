@@ -11,15 +11,16 @@ import {
   finish,
   report,
 } from '@/lib/study/server/service';
-import { PROTOCOL, type StrokePlan } from '@/lib/study/protocol';
-import type { Participant, Session } from '@/lib/study/types';
+import { INTERVIEW, PROTOCOL, STUDY_IDS, type StrokePlan } from '@/lib/study/protocol';
+import type { Participant, Session, StudyConfig } from '@/lib/study/types';
 import { createHandoff } from '@/lib/study/server/handoff';
 import { pilotSnapshot, savePilotIssue, savePilotReview } from '@/lib/study/server/pilot';
+import { questionnaireScores } from '@/lib/study/metrics';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 const cookieName = 'startrace-study';
 const enrollmentTarget = (repo: ReturnType<typeof getRepository>) =>
-  repo.get<{ studyId: string }>('setting', 'enrollment-target')?.studyId || 'novice-pilot-v1';
+  repo.get<{ studyId: string }>('setting', 'enrollment-target')?.studyId || STUDY_IDS.pilot;
 const equal = (a: string, b?: string) =>
   !!b && timingSafeEqual(Buffer.from(hash(a)), Buffer.from(hash(b)));
 function role(req: NextRequest) {
@@ -231,6 +232,8 @@ export async function GET(req: NextRequest) {
           id: studyId,
           published: config(repo, studyId).published,
           stage: config(repo, studyId).stage,
+          protocolVersion: config(repo, studyId).protocolVersion,
+          governance: config(repo, studyId).governance,
         },
       });
     const c = config(repo, p.studyId),
@@ -281,10 +284,37 @@ export async function POST(req: NextRequest) {
         b.eligible !== true ||
         b.logs !== true ||
         b.artwork !== true ||
-        b.adult !== true
+        b.adult !== true ||
+        b.informationRead !== true ||
+        b.voluntary !== true ||
+        b.privacyUnderstood !== true
       )
-        throw new Error('请完成筛选与两项研究同意');
-      const result = enroll(repo, String(b.studyId || enrollmentTarget(repo)), String(b.code || ''));
+        throw new Error('请完成资格确认并逐项确认知情同意');
+      const profile = {
+        ageBand: String(b.profile?.ageBand || ''),
+        drawingFrequency: String(b.profile?.drawingFrequency || ''),
+        digitalDrawingExperience: String(b.profile?.digitalDrawingExperience || ''),
+      };
+      if (
+        !['18-24', '25-34', '35-44', '45-plus', 'prefer-not'].includes(profile.ageBand) ||
+        !['never', 'few-year', 'monthly', 'prefer-not'].includes(profile.drawingFrequency) ||
+        !['never', 'tried', 'occasional', 'prefer-not'].includes(profile.digitalDrawingExperience)
+      )
+        throw new Error('请完成匿名背景信息');
+      const result = enroll(
+        repo,
+        String(b.studyId || enrollmentTarget(repo)),
+        String(b.code || ''),
+        {
+          profile: profile as Participant['profile'],
+          consent: {
+            informationRead: true,
+            voluntary: true,
+            privacyUnderstood: true,
+            recordedAt: new Date().toISOString(),
+          },
+        },
+      );
       const response = json({
         participant: publicParticipant(result.participant),
       });
@@ -343,8 +373,8 @@ export async function POST(req: NextRequest) {
       const id = randomUUID(), path = `pilot-reviews/${id}.json`;
       const snapshot = { exportedAt: new Date().toISOString(), ...pilotSnapshot(repo) };
       const sha256 = repo.write(path, JSON.stringify(snapshot, null, 2));
-      repo.put('pilot_export', id, { id, studyId: 'novice-pilot-v1', path, sha256, createdAt: snapshot.exportedAt });
-      repo.audit('pilot_export', 'novice-pilot-v1', { id, sha256 });
+      repo.put('pilot_export', id, { id, studyId: STUDY_IDS.pilot, path, sha256, createdAt: snapshot.exportedAt });
+      repo.audit('pilot_export', STUDY_IDS.pilot, { id, sha256 });
       return json({ id, sha256 });
     }
     if (b.action === 'pilotIssue' || b.action === 'pilotReview') {
@@ -355,6 +385,8 @@ export async function POST(req: NextRequest) {
       if (access !== 'admin') return json({ error: '需要研究者权限' }, 403);
       return repo.transaction(() => {
         const c = config(repo, String(b.studyId));
+        if (c.protocolVersion !== PROTOCOL.version)
+          throw new Error('这是历史协议批次，不能用当前程序重新配置或发布；请使用 v2 批次');
         if (
           repo.all<Participant>('participant').some((v) => v.studyId === c.id)
         )
@@ -376,15 +408,32 @@ export async function POST(req: NextRequest) {
             )
           )
             throw new Error('需要 10 个评分项目');
+          const governance = b.governance as Record<string, unknown>;
+          const governanceKeys = ['researcherContact', 'compensation', 'ethicsStatement'];
+          if (
+            !governance ||
+            governanceKeys.some(
+              (key) =>
+                typeof governance[key] !== 'string' ||
+                String(governance[key]).trim().length < 2 ||
+                String(governance[key]).length > 500,
+            )
+          )
+            throw new Error('请填写研究负责人联系方式、补偿办法和审批状态（每项 2–500 字）');
           c.material = b.material;
           c.materialHash = hash(data);
           c.plan = b.plan;
           c.planHash = hash(JSON.stringify(b.plan));
           c.rubric = b.rubric;
           c.materialReviewed = b.materialReviewed === true;
+          c.governance = Object.fromEntries(
+            governanceKeys.map((key) => [key, String(governance[key]).trim()]),
+          ) as StudyConfig['governance'];
         } else {
           if (!c.materialReviewed || !c.plan || !c.material)
             throw new Error('请先审核材料、计划和评分清单');
+          if (Object.values(c.governance).some((value) => value.trim().length < 2))
+            throw new Error('发布前必须补齐负责人联系方式、补偿办法和审批状态');
           if (c.stage === 'formal') {
             if (!pilotSnapshot(repo).ready) throw new Error('请先完成预试看板：6 人完整流程与双人评分、实际复核，以及阻断问题修复');
             const required = [
@@ -392,10 +441,13 @@ export async function POST(req: NextRequest) {
               'backupRestored',
               'deviceChecked',
               'protocolApproved',
+              'consentApproved',
+              'instrumentApproved',
+              'analysisFrozen',
             ];
             if (
               !required.every((k) => b.checks?.[k] === true) ||
-              report(repo, 'novice-pilot-v1').pairs.filter(
+              report(repo, STUDY_IDS.pilot).pairs.filter(
                 (pair) => pair.control?.finalizedAt && pair.guided?.finalizedAt,
               ).length < 6
             )
@@ -470,11 +522,13 @@ export async function POST(req: NextRequest) {
       };
       repo.write(`exports/${id}/dataset.json`, JSON.stringify(output, null, 2));
       const csv = [
-        'participant,order,control_score,guided_score,difference,control_ms,guided_ms,control_status,guided_status,control_inclusion,guided_inclusion,research_code',
+        'participant,order,control_score,guided_score,difference,control_ms,guided_ms,control_active_minutes,guided_active_minutes,control_satisfaction,guided_satisfaction,control_imi_interest,guided_imi_interest,control_imi_competence,guided_imi_competence,control_imi_choice,guided_imi_choice,control_imi_pressure,guided_imi_pressure,control_sus,guided_sus,control_status,guided_status,control_inclusion,guided_inclusion,research_code',
         ...snapshot.pairs
           .filter((p) => !p.withdrawnAt)
-          .map((p) =>
-            [
+          .map((p) => {
+            const controlQuestionnaire = questionnaireScores(p.control?.post ?? null),
+              guidedQuestionnaire = questionnaireScores(p.guided?.post ?? null);
+            return [
               p.participantId,
               p.order,
               p.control?.metrics.completion ?? '',
@@ -485,13 +539,27 @@ export async function POST(req: NextRequest) {
                 : '',
               p.control?.metrics.elapsedMs ?? '',
               p.guided?.metrics.elapsedMs ?? '',
+              p.control?.metrics.activeMinutes ?? '',
+              p.guided?.metrics.activeMinutes ?? '',
+              controlQuestionnaire.satisfaction ?? '',
+              guidedQuestionnaire.satisfaction ?? '',
+              controlQuestionnaire.interestEnjoyment ?? '',
+              guidedQuestionnaire.interestEnjoyment ?? '',
+              controlQuestionnaire.perceivedCompetence ?? '',
+              guidedQuestionnaire.perceivedCompetence ?? '',
+              controlQuestionnaire.perceivedChoice ?? '',
+              guidedQuestionnaire.perceivedChoice ?? '',
+              controlQuestionnaire.pressureTension ?? '',
+              guidedQuestionnaire.pressureTension ?? '',
+              controlQuestionnaire.sus ?? '',
+              guidedQuestionnaire.sus ?? '',
               p.control?.state ?? 'missing',
               p.guided?.state ?? 'missing',
               p.control?.inclusion ?? '',
               p.guided?.inclusion ?? '',
               p.researchCode.startsWith('-') ? "'" + p.researchCode : p.researchCode,
-            ].join(','),
-          ),
+            ].join(',');
+          }),
       ].join('\n');
       repo.write(`exports/${id}/dataset.csv`, '\uFEFF' + csv);
       repo.write(
@@ -608,7 +676,7 @@ export async function POST(req: NextRequest) {
         const ownSessions = sessions(repo, person);
         if (![1, 2].every(n => ownSessions.filter(s => s.period === n).at(-1)?.post))
           throw new Error('请在两轮及后测完成后记录访谈');
-        if (!Array.isArray(b.answers) || b.answers.length !== 3 || b.answers.some((v: unknown) => typeof v !== 'string' || v.length > 2000))
+        if (!Array.isArray(b.answers) || b.answers.length !== INTERVIEW.length || b.answers.some((v: unknown) => typeof v !== 'string' || v.length > 2000))
           throw new Error('访谈答案无效');
         if (person.interview && (typeof b.reason !== 'string' || !b.reason.trim()))
           throw new Error('修改已有访谈需要填写原因');
@@ -643,7 +711,7 @@ export async function POST(req: NextRequest) {
     if (b.action === 'interview') {
       if (
         !Array.isArray(b.answers) ||
-        b.answers.length !== 3 ||
+        b.answers.length !== INTERVIEW.length ||
         b.answers.some((v: unknown) => typeof v !== 'string' || v.length > 2000)
       )
         throw new Error('访谈答案无效');

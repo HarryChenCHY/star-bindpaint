@@ -1,4 +1,9 @@
-import { PROTOCOL } from './protocol';
+import {
+  IMI_QUESTIONS,
+  PROTOCOL,
+  SUS_QUESTIONS,
+  type Answers,
+} from './protocol';
 import type { Session, SessionMetrics } from './types';
 type Interval = [number, number];
 export function union(intervals: Interval[]): Interval[] {
@@ -70,10 +75,18 @@ export function metrics(s: Session, essential = [0, 3]): SessionMetrics {
       : completion >= PROTOCOL.qualificationScore &&
         ratings.every((r) => essential.every((i) => r.scores[i] >= 1));
   const observableMs = Math.max(0, observed - duration(unavailable));
+  const activeMinutes = new Set(
+    valid.map((e) => Math.floor(Number(e.payload.startedMs) / 60_000)),
+  ).size;
   return {
     elapsedMs: end,
     drawingMs: duration(drawn),
     firstMarkMs: drawn[0]?.[0] ?? null,
+    lastMarkMs: drawn.at(-1)?.[1] ?? null,
+    activeSpanMs:
+      drawn.length > 0 ? drawn.at(-1)![1] - drawn[0][0] : null,
+    activeMinutes,
+    longestIdleMs: gaps.length ? Math.max(...gaps.map(([a, b]) => b - a)) : 0,
     attempts: events.filter((e) => e.type === 'stroke_started').length,
     validStrokes: valid.length,
     cancellations: events.filter((e) => e.type === 'stroke_cancelled').length,
@@ -115,6 +128,51 @@ export function metrics(s: Session, essential = [0, 3]): SessionMetrics {
     completion,
     qualified,
     qualifiedTimeMs: s.state === 'submitted' && qualified ? end : null,
+  };
+}
+
+const completeMean = (answers: Answers | null, ids: readonly string[]) => {
+  if (!answers) return null;
+  const values = ids.map((id) => answers[id]);
+  return values.every((value): value is number => typeof value === 'number')
+    ? mean(values as number[])
+    : null;
+};
+
+export function questionnaireScores(answers: Answers | null) {
+  const imi = Object.fromEntries(
+    (['interestEnjoyment', 'perceivedCompetence', 'perceivedChoice', 'pressureTension'] as const).map(
+      (subscale) => {
+        const items = IMI_QUESTIONS.filter((item) => item.subscale === subscale);
+        if (!answers || items.some((item) => typeof answers[item.id] !== 'number'))
+          return [subscale, null];
+        return [
+          subscale,
+          mean(items.map((item) => item.reverse ? 8 - answers[item.id]! : answers[item.id]!)),
+        ];
+      },
+    ),
+  ) as Record<
+    'interestEnjoyment' | 'perceivedCompetence' | 'perceivedChoice' | 'pressureTension',
+    number | null
+  >;
+  let sus: number | null = null;
+  if (answers && SUS_QUESTIONS.every((item) => typeof answers[item.id] === 'number')) {
+    sus =
+      SUS_QUESTIONS.reduce(
+        (sum, item, index) =>
+          sum + (index % 2 === 0 ? answers[item.id]! - 1 : 5 - answers[item.id]!),
+        0,
+      ) * 2.5;
+  }
+  return {
+    ...imi,
+    sus,
+    willingness: completeMean(answers, ['willingness']),
+    concern: completeMean(answers, ['concern']),
+    satisfaction: completeMean(answers, ['satisfaction']),
+    confidence: completeMean(answers, ['confidence']),
+    ownership: completeMean(answers, ['ownership']),
   };
 }
 export const mean = (xs: number[]) =>

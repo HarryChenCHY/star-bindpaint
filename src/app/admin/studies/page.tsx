@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { STROKE_CONFIG } from '@/lib/stroke-config';
 import { api, preparePlan } from '@/lib/study/client';
-import { PROTOCOL, RUBRIC, type StrokePlan } from '@/lib/study/protocol';
+import { PROTOCOL, RUBRIC, STUDY_IDS, type StrokePlan } from '@/lib/study/protocol';
 import type { StudyConfig } from '@/lib/study/types';
 import type { report } from '@/lib/study/server/service';
 import { GroupReport, PairReport } from '@/components/study/StudyReport';
@@ -17,7 +17,7 @@ export default function StudyAdminPage() {
   const [preparationStatus, setPreparationStatus] = useState('');
   useEffect(() => () => preparation.current?.abort(), []);
   const [token, setToken] = useState(''),
-    [studyId, setStudyId] = useState('novice-pilot-v1'),
+    [studyId, setStudyId] = useState<string>(STUDY_IDS.pilot),
     [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState(''),
     [busy, setBusy] = useState(false),
@@ -27,6 +27,9 @@ export default function StudyAdminPage() {
     } | null>(null);
   const [rubric, setRubric] = useState<string[]>([...RUBRIC]),
     [reviewed, setReviewed] = useState(false),
+    [governance, setGovernance] = useState<StudyConfig['governance']>({
+      researcherContact: '', compensation: '', ethicsStatement: '',
+    }),
     [selected, setSelected] = useState(''),
     [exportId, setExportId] = useState('');
   const [checks, setChecks] = useState<Record<string, boolean>>({});
@@ -38,6 +41,7 @@ export default function StudyAdminPage() {
     );
     setData(d);
     setRubric(d.config.rubric);
+    setGovernance(d.config.governance);
   }
   async function run(fn: () => Promise<unknown>) {
     setBusy(true);
@@ -129,8 +133,10 @@ export default function StudyAdminPage() {
               setPrepared(null);
             }}
           >
-            <option value="novice-pilot-v1">预试（6 人）</option>
-            <option value="novice-formal-v1">正式研究</option>
+            <option value={STUDY_IDS.pilot}>v2 预试（6 人）</option>
+            <option value={STUDY_IDS.formal}>v2 正式研究</option>
+            <option value={STUDY_IDS.legacyPilot}>v1 历史预试（只读/续测）</option>
+            <option value={STUDY_IDS.legacyFormal}>v1 历史正式研究（只读/续测）</option>
           </select>
           <button disabled={busy || !token} onClick={() => void run(load)}>
             读取 / 刷新
@@ -173,6 +179,7 @@ export default function StudyAdminPage() {
                 <button onClick={() => {
                   const card = { generatedAt: new Date().toISOString(), studyId, stage: data.config.stage,
                     published: data.config.published, materialReviewed: data.config.materialReviewed,
+                    governance: data.config.governance,
                     algorithmVersion: data.config.plan!.version, planHash: data.config.planHash,
                     materialHash: data.config.materialHash, plannedStrokes: data.config.plan!.strokes.length,
                     timeLimitMs: PROTOCOL.timeLimitMs, rubric: data.config.rubric,
@@ -281,6 +288,19 @@ export default function StudyAdminPage() {
                   <h3 className="my-3 font-bold">
                     10 项共同完成标准（第 1、4 项为主体必需项）
                   </h3>
+                  <div className="rounded-xl border p-3 my-4">
+                    <h3 className="font-bold">研究治理与知情同意必填信息</h3>
+                    <label className="my-2 flex-col !items-start">研究负责人及联系方式
+                      <textarea maxLength={500} value={governance.researcherContact} onChange={e => setGovernance(v => ({ ...v, researcherContact: e.target.value }))} />
+                    </label>
+                    <label className="my-2 flex-col !items-start">参与补偿办法
+                      <textarea maxLength={500} value={governance.compensation} onChange={e => setGovernance(v => ({ ...v, compensation: e.target.value }))} />
+                    </label>
+                    <label className="my-2 flex-col !items-start">导师 / 伦理审批状态
+                      <textarea maxLength={500} value={governance.ethicsStatement} onChange={e => setGovernance(v => ({ ...v, ethicsStatement: e.target.value }))} />
+                    </label>
+                    <p className="study-muted">这些内容会展示给参与者。不得填写口令、身份证号或其他敏感凭据。</p>
+                  </div>
                   {rubric.map((r, i) => (
                     <label key={i} className="mb-2">
                       {i + 1}
@@ -316,6 +336,7 @@ export default function StudyAdminPage() {
                             studyId,
                             ...prepared,
                             rubric,
+                            governance,
                             materialReviewed: reviewed,
                           },
                           token,
@@ -335,6 +356,9 @@ export default function StudyAdminPage() {
                       backupRestored: '已实际执行备份恢复验证',
                       deviceChecked: '正式设备输入与两条件工具已核对',
                       protocolApproved: '导师/研究负责人已审核协议、题文和评分',
+                      consentApproved: '知情同意书、负责人联系方式、补偿与审批信息已补齐并审核',
+                      instrumentApproved: 'IMI/SUS 译文、呈现顺序与计分程序已复核',
+                      analysisFrozen: '主要结局、排除规则和统计方案已在正式采集前冻结',
                     }).map(([k, label]) => (
                       <label key={k} className="my-2">
                         <input
@@ -363,7 +387,7 @@ export default function StudyAdminPage() {
             </section>
             <section className="study-card">
               <h2>参与测试入口</h2>
-              <p>首页“参与测试”当前进入：{data.enrollmentTarget === 'novice-formal-v1' ? '正式测试' : '预试'}。参与者无需选择批次；已有参与者继续原批次。</p>
+              <p>首页“参与测试”当前进入：{data.enrollmentTarget.includes('formal') ? '正式测试' : '预试'}（{data.enrollmentTarget}）。参与者无需选择批次；已有参与者继续原批次。</p>
               <button disabled={busy || !data.config.published || data.enrollmentTarget === studyId} onClick={() => void run(() => api({ action: 'enrollmentTarget', studyId }, token))}>将当前批次设为参与测试入口</button>
               {!data.config.published && <p className="study-muted">请先完成材料审核并发布当前批次。</p>}
             </section>

@@ -75,11 +75,15 @@ export class StudyRepository {
       closeSync(fd);
     }
     renameSync(temp, target);
-    const directory = openSync(path.dirname(target), 'r');
-    try {
-      fsyncSync(directory);
-    } finally {
-      closeSync(directory);
+    // Windows does not permit fsync on directory handles. The file itself was
+    // already flushed above; keep the stronger directory flush on Unix hosts.
+    if (process.platform !== 'win32') {
+      const directory = openSync(path.dirname(target), 'r');
+      try {
+        fsyncSync(directory);
+      } finally {
+        closeSync(directory);
+      }
     }
     return hash(data);
   }

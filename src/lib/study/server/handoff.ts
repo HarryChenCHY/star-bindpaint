@@ -1,5 +1,14 @@
 import { randomUUID } from 'node:crypto';
-import { CAPABILITIES, INTERVIEW, PROTOCOL, QUESTIONS } from '../protocol';
+import {
+  CAPABILITIES,
+  CONSENT_SECTIONS,
+  IMI_QUESTIONS,
+  INTERVIEW,
+  OUTCOME_QUESTIONS,
+  PRE_QUESTIONS,
+  PROTOCOL,
+  SUS_QUESTIONS,
+} from '../protocol';
 import { STROKE_CONFIG } from '../../stroke-config';
 import { config } from './service';
 import { hash, type StudyRepository } from './repository';
@@ -12,13 +21,16 @@ export function createHandoff(repo: StudyRepository, studyId: string) {
   const planHash = hash(JSON.stringify(c.plan));
   if (materialHash !== c.materialHash || planHash !== c.planHash) throw new Error('材料或计划哈希不一致，请核对存储后重试');
   const protocolMatches = c.protocolVersion === PROTOCOL.version;
-  const status = !protocolMatches || !c.published || !c.materialReviewed ? 'draft' : c.stage === 'pilot' ? 'published-pilot' : 'published-formal';
-  const protocol = { ...PROTOCOL, questions: QUESTIONS, interview: INTERVIEW, capabilities: CAPABILITIES,
+  const governanceComplete = Object.values(c.governance).every(value => value.trim().length >= 2);
+  const status = !protocolMatches || !c.published || !c.materialReviewed || !governanceComplete ? 'draft' : c.stage === 'pilot' ? 'published-pilot' : 'published-formal';
+  const protocol = { ...PROTOCOL, consentSections: CONSENT_SECTIONS,
+    questionnaires: { pre: PRE_QUESTIONS, outcomes: OUTCOME_QUESTIONS, imi: IMI_QUESTIONS, sus: SUS_QUESTIONS },
+    interview: INTERVIEW, capabilities: CAPABILITIES,
     rubric: c.rubric, essentialItems: c.essentialItems };
   const id = randomUUID(), createdAt = new Date().toISOString();
   const bundle = { schemaVersion: 1, kind: 'study-handoff', id, createdAt, status,
     study: { id: c.id, stage: c.stage, published: c.published, materialReviewed: c.materialReviewed,
-      savedProtocolVersion: c.protocolVersion, protocolMatches },
+      savedProtocolVersion: c.protocolVersion, protocolMatches, governanceComplete, governance: c.governance },
     runtimeAlgorithm: STROKE_CONFIG, materialAlgorithmVersion: c.plan.version,
     protocol, material: { imagePng: c.material, plan: c.plan },
     manifest: { materialHash, planHash, protocolHash: hash(JSON.stringify(protocol)),

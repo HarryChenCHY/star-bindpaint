@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { api } from '@/lib/study/client';
 import { Artwork } from '@/components/study/StudyReport';
 import type { Rating } from '@/lib/study/types';
+import { STUDY_IDS } from '@/lib/study/protocol';
 import '../study/study.css';
 type RaterView = {
   rater: string;
@@ -12,7 +13,7 @@ type RaterView = {
 };
 export default function RaterPage() {
   const [token, setToken] = useState(''),
-    [studyId, setStudyId] = useState('novice-pilot-v1'),
+    [studyId, setStudyId] = useState<string>(STUDY_IDS.pilot),
     [data, setData] = useState<RaterView | null>(null);
   const [index, setIndex] = useState(0),
     [scores, setScores] = useState<number[]>(Array(10).fill(-1)),
@@ -60,8 +61,10 @@ export default function RaterPage() {
               setData(null);
             }}
           >
-            <option value="novice-pilot-v1">预试</option>
-            <option value="novice-formal-v1">正式</option>
+            <option value={STUDY_IDS.pilot}>v2 预试</option>
+            <option value={STUDY_IDS.formal}>v2 正式</option>
+            <option value={STUDY_IDS.legacyPilot}>v1 历史预试</option>
+            <option value={STUDY_IDS.legacyFormal}>v1 历史正式</option>
           </select>
           <button
             disabled={busy}

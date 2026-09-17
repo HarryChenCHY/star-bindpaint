@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from 'react';
 import type { report } from '@/lib/study/server/service';
+import { questionnaireScores } from '@/lib/study/metrics';
 type Report = ReturnType<typeof report>;
 export function Artwork({ id, token = '' }: { id: string; token?: string }) {
   const [url, setUrl] = useState('');
@@ -46,7 +47,9 @@ export function PairReport({
   token?: string;
 }) {
   const a = pair.control,
-    b = pair.guided;
+    b = pair.guided,
+    aq = questionnaireScores(a?.post ?? null),
+    bq = questionnaireScores(b?.post ?? null);
   const rows = [
     ['作品完成度', a?.metrics.completion, b?.metrics.completion, ' 分'],
     [
@@ -62,18 +65,37 @@ export function PairReport({
       ' 秒',
     ],
     ['真实绘画动作', a?.metrics.validStrokes, b?.metrics.validStrokes, ' 次'],
+    ['持续有落笔的分钟数', a?.metrics.activeMinutes, b?.metrics.activeMinutes, ' 分钟'],
+    [
+      '首笔到末笔跨度',
+      a?.metrics.activeSpanMs == null ? null : a.metrics.activeSpanMs / 1000,
+      b?.metrics.activeSpanMs == null ? null : b.metrics.activeSpanMs / 1000,
+      ' 秒',
+    ],
+    [
+      '最后一笔后的停留',
+      a?.metrics.terminalGapMs == null ? null : a.metrics.terminalGapMs / 1000,
+      b?.metrics.terminalGapMs == null ? null : b.metrics.terminalGapMs / 1000,
+      ' 秒',
+    ],
     ['停留（≥5秒）', a?.metrics.idleCount, b?.metrics.idleCount, ' 次'],
     ['再次绘画意愿', a?.post?.willingness, b?.post?.willingness, ' / 7'],
     ['满足感', a?.post?.satisfaction, b?.post?.satisfaction, ' / 7'],
     ['信心', a?.post?.confidence, b?.post?.confidence, ' / 7'],
     ['担忧', a?.post?.concern, b?.post?.concern, ' / 7'],
+    ['作品归属感', aq.ownership, bq.ownership, ' / 7'],
+    ['IMI 兴趣/享受', aq.interestEnjoyment, bq.interestEnjoyment, ' / 7'],
+    ['IMI 感知能力', aq.perceivedCompetence, bq.perceivedCompetence, ' / 7'],
+    ['IMI 感知选择', aq.perceivedChoice, bq.perceivedChoice, ' / 7'],
+    ['IMI 压力/紧张', aq.pressureTension, bq.pressureTension, ' / 7'],
+    ['SUS 可用性', aq.sus, bq.sus, ' / 100'],
   ];
   return (
     <section className="study-card">
       <h2 id="pair-detail">{pair.researchCode} · 两次绘画对比</h2>
       <p className="study-muted">
         顺序 {pair.order}
-        。作品完成度待两位评分者提交后更新。停留仅表示操作间隔。
+        。作品完成度待两位评分者提交后更新。IMI 子量表为反向题处理后的均分；SUS 按 0–100 标准计分。停留和持续时间仅描述行为，不等同能力。
       </p>
       <div className="study-grid my-4">
         {[a, b].map((s, i) => (
@@ -280,16 +302,27 @@ export function GroupReport({ data }: { data: Report }) {
             </tr>
           </thead>
           <tbody>
-            {[data.analysis.completion, data.analysis.willingness].map(
-              (v, i) => (
-                <tr key={i}>
-                  <td>{i ? '再次绘画意愿' : '作品完成度'}</td>
+            {[
+              ['作品完成度（主要）', data.analysis.completion, data.analysis.primaryHolmP[0]],
+              ['创作满足感（主要）', data.analysis.satisfaction, data.analysis.primaryHolmP[1]],
+              ['再次绘画意愿', data.analysis.willingness, null],
+              ['作品归属感', data.analysis.ownership, null],
+              ['IMI 兴趣/享受', data.analysis.interestEnjoyment, null],
+              ['IMI 感知能力', data.analysis.perceivedCompetence, null],
+              ['IMI 感知选择', data.analysis.perceivedChoice, null],
+              ['IMI 压力降低', data.analysis.pressureTension, null],
+              ['SUS 可用性', data.analysis.sus, null],
+            ].map(([label, value, adjusted]) => {
+              const v = value as Report['analysis']['completion'];
+              return (
+                <tr key={String(label)}>
+                  <td>{String(label)}</td>
                   <td>{v.n}</td>
                   <td>{display(v.meanDifference)}</td>
                   <td>
                     {v.positive} / {v.ties} / {v.negative}
                   </td>
-                  <td>{display(data.analysis.holmP[i])}</td>
+                  <td>{adjusted == null ? '探索性，不校正' : display(adjusted as number | null)}</td>
                   <td>
                     {v.positiveFractionCI
                       ? v.positiveFractionCI
@@ -298,19 +331,37 @@ export function GroupReport({ data }: { data: Report }) {
                       : '不足以估计'}
                   </td>
                 </tr>
-              ),
-            )}
+              );
+            })}
           </tbody>
         </table>
       </div>
       <p className="study-muted">
         {data.protocol.analysis}{' '}
-        尚未评分、缺答、退出、技术故障和未纳入记录不补零；各指标使用各自有效配对。此页不自动判定系统已被证明有效。
+        尚未评分、缺答、退出、技术故障和未纳入记录不补零；各指标使用各自有效配对。“IMI 压力降低”以 A−B 计，正值表示指导条件压力更低，其余正值表示 B 高于 A。此页不自动判定系统已被证明有效。
       </p>
       <p className="study-muted">
         区间针对排除平分后的“B
         较高”概率，使用精确二项区间，不是平均差的置信区间。
       </p>
+      <h3 className="mt-4 font-bold">行动与持续推进（探索性）</h3>
+      <div className="study-scroll">
+        <table>
+          <thead><tr><th>行为指标</th><th>有效配对</th><th>平均改善差</th><th>B 改善 / 相同 / 未改善</th></tr></thead>
+          <tbody>
+            {[
+              ['更快开始落笔（A−B，毫秒）', data.analysis.behavior.firstMarkSpeed],
+              ['实际绘画动作时长（B−A，毫秒）', data.analysis.behavior.drawingTime],
+              ['首笔到末笔跨度（B−A，毫秒）', data.analysis.behavior.activeSpan],
+              ['有落笔分钟数（B−A）', data.analysis.behavior.activeMinutes],
+            ].map(([label, value]) => {
+              const v = value as Report['analysis']['completion'];
+              return <tr key={String(label)}><td>{String(label)}</td><td>{v.n}</td><td>{display(v.meanDifference)}</td><td>{v.positive} / {v.ties} / {v.negative}</td></tr>;
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="study-muted">行为指标不直接代表作品质量：例如较短任务可能表示高效完成，也可能表示提前放弃，必须与完成度、结束原因、作品评分和访谈共同解释。</p>
       <h3 className="mt-4 font-bold">顺序与达标检查</h3>
       <div className="study-scroll">
         <table>

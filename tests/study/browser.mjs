@@ -37,7 +37,12 @@ try {
     } catch {}
     await new Promise((r) => setTimeout(r, 200));
   }
-  browser = await chromium.launch({ headless: true });
+  browser = await chromium.launch({
+    headless: true,
+    ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH
+      ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH }
+      : {}),
+  });
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
   });
@@ -53,6 +58,9 @@ try {
   await page.getByRole('button', { name: '准备盆栽候选图' }).click();
   await page.getByText('两条件共用的参考图').waitFor({ timeout: 30000 });
   await page.screenshot({ path: dir + '/admin-material.png', fullPage: true });
+  await page.getByLabel('研究负责人及联系方式').fill('合成测试负责人 test@example.invalid');
+  await page.getByLabel('参与补偿办法').fill('合成测试：无补偿');
+  await page.getByLabel('导师 / 伦理审批状态').fill('合成测试专用，非真实伦理审批');
   await page.getByRole('checkbox').first().check();
   await page.getByRole('button', { name: '保存材料与计划' }).click();
   await page.getByText('该材料使用当前算法。', { exact: true }).waitFor();
@@ -115,13 +123,13 @@ try {
     return result;
   };
 
-  const unauthorizedTarget = await page.request.post(url + '/api/studies', { data: { action: 'enrollmentTarget', studyId: 'novice-pilot-v1' } });
+  const unauthorizedTarget = await page.request.post(url + '/api/studies', { data: { action: 'enrollmentTarget', studyId: 'novice-pilot-v2' } });
   if (unauthorizedTarget.status() !== 403) throw new Error('Entry target authorization failed');
-  const draftTarget = await page.request.post(url + '/api/studies', { data: { action: 'enrollmentTarget', studyId: 'novice-formal-v1' }, headers: { Authorization: 'Bearer ' + admin } });
+  const draftTarget = await page.request.post(url + '/api/studies', { data: { action: 'enrollmentTarget', studyId: 'novice-formal-v2' }, headers: { Authorization: 'Bearer ' + admin } });
   if (draftTarget.status() !== 400) throw new Error('Unpublished entry target accepted');
-  await call(page.context(), { action: 'enrollmentTarget', studyId: 'novice-pilot-v1' }, admin);
+  await call(page.context(), { action: 'enrollmentTarget', studyId: 'novice-pilot-v2' }, admin);
   const entry = await (await page.request.get(url + '/api/studies')).json();
-  if (entry.config.id !== 'novice-pilot-v1') throw new Error('Entry target missing');
+  if (entry.config.id !== 'novice-pilot-v2') throw new Error('Entry target missing');
   let context = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
   });
@@ -131,6 +139,7 @@ try {
   await person.getByLabel('研究码', { exact: true }).fill(code);
   for (const c of await person.getByRole('checkbox').all()) await c.check();
   await person.getByRole('button', { name: '同意并进入' }).click();
+  await person.getByRole('heading', { name: '先熟悉工具' }).waitFor();
   if (await person.getByRole('combobox').count()) throw new Error('Participant must not select a batch');
   await person.getByRole('button', { name: '开始练习', exact: true }).waitFor({ timeout: 60000 });
   await person.getByRole('button', { name: '开始练习', exact: true }).click();
@@ -233,6 +242,10 @@ try {
     logs: true,
     artwork: true,
     adult: true,
+    informationRead: true,
+    voluntary: true,
+    privacyUnderstood: true,
+    profile: { ageBand: 'prefer-not', drawingFrequency: 'prefer-not', digitalDrawingExperience: 'prefer-not' },
   });
   const duplicateContext = await browser.newContext();
   const duplicatePage = await duplicateContext.newPage();
@@ -312,7 +325,7 @@ try {
     path: dir + '/pair-report-second.png',
     fullPage: true,
   });
-  await call(context, { action: 'recordInterview', pairId: secondPerson.pairId, answers: ['', '', ''] }, admin);
+  await call(context, { action: 'recordInterview', pairId: secondPerson.pairId, answers: ['', '', '', '', ''] }, admin);
   const srows = db
     .prepare("select data from records where kind='session'")
     .all()
@@ -374,7 +387,7 @@ try {
   const blindData = await blind.json();
   if (blindData.artworks.some(a => 'condition' in a || 'participantId' in a || a.rating?.rater !== 'rater1')) throw new Error('Rater identity leak');
   const recoveryContext = await browser.newContext();
-  const recoveredPerson = (await call(recoveryContext, { action: 'enroll', code: code + '-recovery', studyId: p.studyId, eligible: true, logs: true, artwork: true, adult: true })).participant;
+  const recoveredPerson = (await call(recoveryContext, { action: 'enroll', code: code + '-recovery', studyId: p.studyId, eligible: true, logs: true, artwork: true, adult: true, informationRead: true, voluntary: true, privacyUnderstood: true, profile: { ageBand: 'prefer-not', drawingFrequency: 'prefer-not', digitalDrawingExperience: 'prefer-not' } })).participant;
   const storedPerson = JSON.parse(db.prepare("select data from records where kind='participant' and id=?").get(recoveredPerson.pairId).data);
   storedPerson.practiceAt = new Date().toISOString();
   db.prepare("update records set data=? where kind='participant' and id=?").run(JSON.stringify(storedPerson), storedPerson.pairId);

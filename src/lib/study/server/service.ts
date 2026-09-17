@@ -2,20 +2,24 @@ import { randomInt, randomBytes, randomUUID } from 'node:crypto';
 import {
   PROTOCOL,
   RUBRIC,
+  STUDY_IDS,
   assertAnswers,
   conditionAt,
   type StudyEvent,
 } from '../protocol';
 import type { Participant, Session, StudyConfig } from '../types';
 import { hash, StudyRepository } from './repository';
-import { exactSign, holm, metrics } from '../metrics';
+import { exactSign, holm, metrics, questionnaireScores } from '../metrics';
 
-export const freshConfig = (stage: 'pilot' | 'formal'): StudyConfig => ({
-  id: `novice-${stage}-v1`,
+export const freshConfig = (
+  stage: 'pilot' | 'formal',
+  id: string = stage === 'pilot' ? STUDY_IDS.pilot : STUDY_IDS.formal,
+): StudyConfig => ({
+  id,
   stage,
   published: false,
   materialReviewed: false,
-  protocolVersion: PROTOCOL.version,
+  protocolVersion: id.endsWith('-v1') ? 'novice-paired-1.0' : PROTOCOL.version,
   material: null,
   plan: null,
   materialHash: '',
@@ -23,18 +27,39 @@ export const freshConfig = (stage: 'pilot' | 'formal'): StudyConfig => ({
   rubric: [...RUBRIC],
   essentialItems: [0, 3],
   checks: {},
+  governance: {
+    researcherContact: '',
+    compensation: '',
+    ethicsStatement: '',
+  },
   createdAt: new Date().toISOString(),
 });
-export function config(repo: StudyRepository, id = 'novice-pilot-v1') {
+export function config(repo: StudyRepository, id: string = STUDY_IDS.pilot) {
   const c = repo.get<StudyConfig>('config', id);
-  if (c) return c;
-  if (!['novice-pilot-v1', 'novice-formal-v1'].includes(id))
+  if (c)
+    return {
+      ...c,
+      governance: c.governance ?? {
+        researcherContact: '',
+        compensation: '',
+        ethicsStatement: '',
+      },
+    };
+  if (!Object.values(STUDY_IDS).includes(id as (typeof STUDY_IDS)[keyof typeof STUDY_IDS]))
     throw new Error('研究不存在');
-  const created = freshConfig(id.includes('formal') ? 'formal' : 'pilot');
+  const created = freshConfig(id.includes('formal') ? 'formal' : 'pilot', id);
   repo.put('config', id, created);
   return created;
 }
-export function enroll(repo: StudyRepository, studyId: string, code?: string) {
+export function enroll(
+  repo: StudyRepository,
+  studyId: string,
+  code?: string,
+  details?: {
+    profile?: Participant['profile'];
+    consent?: Participant['consent'];
+  },
+) {
   return repo.transaction(() => {
     const researchCode = code?.normalize('NFKC').trim();
     if (code !== undefined && (!researchCode || !/^[\p{L}\p{N}_-]{1,64}$/u.test(researchCode)))
@@ -79,6 +104,8 @@ export function enroll(repo: StudyRepository, studyId: string, code?: string) {
       tokenHash: hash(token),
       createdAt: new Date().toISOString(),
       consentVersion: PROTOCOL.consentVersion,
+      ...(details?.consent ? { consent: details.consent } : {}),
+      ...(details?.profile ? { profile: details.profile } : {}),
       researchLogConsent: true,
       researchArtworkConsent: true,
       eligible: true,
@@ -280,7 +307,8 @@ export function saveQuestionnaire(
   value: unknown,
 ) {
   if (!['pre', 'post'].includes(phase)) throw new Error('问卷阶段无效');
-  assertAnswers(value, phase === 'post');
+  const legacy = s.studyId === STUDY_IDS.legacyPilot || s.studyId === STUDY_IDS.legacyFormal;
+  assertAnswers(value, phase === 'post', legacy);
   if (phase === 'pre' && s.state !== 'created')
     throw new Error('开始后不能修改前测');
   if (phase === 'post' && !s.finalizedAt) throw new Error('请先完成并保存绘画');
@@ -352,6 +380,8 @@ export function report(repo: StudyRepository, studyId: string) {
         researchArtworkConsent: p.researchArtworkConsent,
         practiceStartedAt: p.practiceStartedAt ?? null,
         practiceEndedAt: p.practiceAt,
+        profile: p.profile ?? null,
+        consent: p.consent ?? null,
       },
       withdrawnAt: p.withdrawnAt,
       interview: p.interview,
@@ -380,8 +410,48 @@ export function report(repo: StudyRepository, studyId: string) {
       b = p.guided!.post?.willingness;
     return typeof a === 'number' && typeof b === 'number' ? [b - a] : [];
   });
+  const pairedScale = (
+    select: (scores: ReturnType<typeof questionnaireScores>) => number | null,
+    reverse = false,
+  ) =>
+    included.flatMap((p) => {
+      const control = select(questionnaireScores(p.control!.post));
+      const guided = select(questionnaireScores(p.guided!.post));
+      return typeof control === 'number' && typeof guided === 'number'
+        ? [reverse ? control - guided : guided - control]
+        : [];
+    });
+  const pairedMetric = (
+    select: (pair: (typeof included)[number]) => [number | null, number | null],
+    reverse = false,
+  ) =>
+    included.flatMap((p) => {
+      const [control, guided] = select(p);
+      return typeof control === 'number' && typeof guided === 'number'
+        ? [reverse ? control - guided : guided - control]
+        : [];
+    });
   const completion = exactSign(scores),
-    intention = exactSign(willingness);
+    satisfaction = exactSign(pairedScale((v) => v.satisfaction)),
+    intention = exactSign(willingness),
+    interestEnjoyment = exactSign(pairedScale((v) => v.interestEnjoyment)),
+    perceivedCompetence = exactSign(pairedScale((v) => v.perceivedCompetence)),
+    perceivedChoice = exactSign(pairedScale((v) => v.perceivedChoice)),
+    pressureTension = exactSign(pairedScale((v) => v.pressureTension, true)),
+    sus = exactSign(pairedScale((v) => v.sus)),
+    ownership = exactSign(pairedScale((v) => v.ownership)),
+    firstMarkSpeed = exactSign(
+      pairedMetric((p) => [p.control!.metrics.firstMarkMs, p.guided!.metrics.firstMarkMs], true),
+    ),
+    drawingTime = exactSign(
+      pairedMetric((p) => [p.control!.metrics.drawingMs, p.guided!.metrics.drawingMs]),
+    ),
+    activeSpan = exactSign(
+      pairedMetric((p) => [p.control!.metrics.activeSpanMs, p.guided!.metrics.activeSpanMs]),
+    ),
+    activeMinutes = exactSign(
+      pairedMetric((p) => [p.control!.metrics.activeMinutes, p.guided!.metrics.activeMinutes]),
+    );
   const byOrder = (['AB', 'BA'] as const).map((order) => ({
     order,
     completion: exactSign(
@@ -444,8 +514,16 @@ export function report(repo: StudyRepository, studyId: string) {
     includedPairs: included.length,
     analysis: {
       completion,
+      satisfaction,
       willingness: intention,
-      holmP: holm([completion.p, intention.p]),
+      interestEnjoyment,
+      perceivedCompetence,
+      perceivedChoice,
+      pressureTension,
+      sus,
+      ownership,
+      behavior: { firstMarkSpeed, drawingTime, activeSpan, activeMinutes },
+      primaryHolmP: holm([completion.p, satisfaction.p]),
       byOrder,
       qualification,
       firstPeriod,

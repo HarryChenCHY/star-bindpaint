@@ -3,9 +3,17 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { api, preparePlan, readLocal, syncAttempt } from '@/lib/study/client';
 import {
+  CONSENT_SECTIONS,
+  IMI_QUESTIONS,
+  LEGACY_POST_QUESTIONS,
+  LEGACY_PRE_QUESTIONS,
+  OUTCOME_QUESTIONS,
+  POST_QUESTIONS,
+  PRE_QUESTIONS,
   PROTOCOL,
-  QUESTIONS,
+  SUS_QUESTIONS,
   type Answers,
+  type QuestionnaireItem,
   type StrokePlan,
 } from '@/lib/study/protocol';
 import type { Participant, Session, StudyConfig } from '@/lib/study/types';
@@ -21,41 +29,61 @@ interface View {
 }
 function Questionnaire({
   post,
+  legacy = false,
   onSubmit,
   submitLabel = '保存感受',
 }: {
   post: boolean;
+  legacy?: boolean;
   submitLabel?: string;
   onSubmit: (a: Answers) => Promise<void>;
 }) {
   const [answers, setAnswers] = useState<Answers>({}),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
-  const questions = QUESTIONS.slice(0, post ? 4 : 2);
+  const questions = legacy
+    ? post
+      ? LEGACY_POST_QUESTIONS
+      : LEGACY_PRE_QUESTIONS
+    : post
+      ? POST_QUESTIONS
+      : PRE_QUESTIONS;
+  const sections: { title: string; note?: string; items: readonly QuestionnaireItem[] }[] =
+    post && !legacy
+      ? [
+          { title: '本轮结果感受', items: OUTCOME_QUESTIONS },
+          { title: '内在动机量表（IMI）', note: '请按刚才这一轮真实体验作答。', items: IMI_QUESTIONS },
+          { title: '系统可用性量表（SUS）', note: '以下“这种绘画方式”只指刚才使用的方式。', items: SUS_QUESTIONS },
+        ]
+      : [{ title: post ? '本轮结果感受' : '画前状态', items: questions }];
   return (
     <div>
       <h2>{post ? '本轮结束后的感受' : '开始前的感受'}</h2>
       <p className="study-muted">
-        1 非常不同意 · 4 既不同意也不反对 · 7 非常同意。可以选择不回答。
+        请按刚才这一轮独立作答。7 点题：1 非常不同意、4 中立、7 非常同意；SUS 为 5 点题。可以选择不回答，缺答不会被补零。
       </p>
-      {questions.map((q) => (
-        <fieldset key={q.id} className="my-5">
-          <legend className="font-bold">{q.text}</legend>
-          <div className="study-scale">
-            {[1, 2, 3, 4, 5, 6, 7, null].map((n) => (
-              <label key={String(n)}>
-                <input
-                  type="radio"
-                  name={q.id}
-                  checked={q.id in answers && answers[q.id] === n}
-                  onChange={() => setAnswers((a) => ({ ...a, [q.id]: n }))}
-                />
-                {n ?? '不回答'}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      ))}
+      {sections.map((section) => <section key={section.title} className="my-6">
+        <h3 className="font-bold">{section.title}</h3>
+        {section.note && <p className="study-muted">{section.note}</p>}
+        {section.items.map((q) => (
+          <fieldset key={q.id} className="my-5">
+            <legend className="font-bold">{q.text}</legend>
+            <div className="study-scale">
+              {[...Array.from({ length: q.max }, (_, index) => index + 1), null].map((n) => (
+                <label key={String(n)}>
+                  <input
+                    type="radio"
+                    name={q.id}
+                    checked={q.id in answers && answers[q.id] === n}
+                    onChange={() => setAnswers((a) => ({ ...a, [q.id]: n }))}
+                  />
+                  {n ?? '不回答'}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ))}
+      </section>)}
       {error && (
         <p role="alert" className="study-error">
           {error}
@@ -88,8 +116,16 @@ export default function StudyPage() {
   const [consents, setConsents] = useState({
     adult: false,
     eligible: false,
+    informationRead: false,
+    voluntary: false,
+    privacyUnderstood: false,
     logs: false,
     artwork: false,
+  });
+  const [profile, setProfile] = useState({
+    ageBand: 'prefer-not',
+    drawingFrequency: 'prefer-not',
+    digitalDrawingExperience: 'prefer-not',
   });
   const [practice, setPractice] = useState<{
       plan: StrokePlan;
@@ -123,6 +159,7 @@ export default function StudyPage() {
   }
   const p = view?.participant,
     all = view?.sessions || [];
+  const legacyQuestionnaire = view?.config.protocolVersion !== PROTOCOL.version;
   const first = all.filter((s) => s.period === 1).at(-1),
     second = all.filter((s) => s.period === 2).at(-1);
   const current =
@@ -152,8 +189,8 @@ export default function StudyPage() {
   }
   const readyQuestionnaire = (session?: Session) => <>
     <h2>第{(session?.period ?? (readySecond ? 2 : 1)) === 1 ? '一' : '二'}轮 · 画前准备</h2>
-    <p className="study-muted">回答两道感受题后直接开始。每轮最多12分钟，觉得完成时可提前提交。</p>
-    <Questionnaire key={session?.id ?? `ready-${readySecond ? 2 : 1}`} post={false}
+    <p className="study-muted">回答两道画前状态题后直接开始。每轮最多12分钟，觉得完成时可提前提交。</p>
+    <Questionnaire key={session?.id ?? `ready-${readySecond ? 2 : 1}`} post={false} legacy={legacyQuestionnaire}
       submitLabel={`开始第${(session?.period ?? (readySecond ? 2 : 1)) === 1 ? '一' : '二'}轮绘画`}
       onSubmit={answers => beginRound(answers, session)} />
   </>;
@@ -189,11 +226,23 @@ export default function StudyPage() {
             <h2>进入测试</h2>
             {!view.config.published && <p role="status">测试暂未开放，请联系研究者；也可以先自由体验。</p>}
             <p>
-              每轮最多 12 分钟，包含练习、问卷与休息，全程约 40
+              每轮最多 12 分钟，另含练习、两轮量表、休息和口头访谈，全程约 50–60
               分钟。记录匿名操作摘要与问卷，并私有保存真实作品供两人评分。默认保留至采集后{' '}
               {PROTOCOL.retentionDays}{' '}
               天；不公开作品，不记录姓名、联系方式或完整触点轨迹。你可随时停止，并凭本浏览器的研究凭证申请撤回；研究者会处理已有副本，已经匿名发布的汇总无法逐人追溯。
             </p>
+            <div className="rounded-xl border p-4" aria-label="研究知情同意说明">
+              <h3 className="font-bold">研究信息与知情同意</h3>
+              {CONSENT_SECTIONS.map(([title, body]) => <details key={title} className="my-2" open={title === '研究目的' || title === '参与内容'}>
+                <summary className="font-bold">{title}</summary>
+                <p className="study-muted">{body}</p>
+              </details>)}
+              <dl className="my-3 rounded-xl bg-[#f6f7fb] p-3">
+                <dt className="font-bold">研究负责人及联系方式</dt><dd>{view.config.governance?.researcherContact || '历史批次未在系统中配置，请向现场研究者索取。'}</dd>
+                <dt className="mt-2 font-bold">参与补偿办法</dt><dd>{view.config.governance?.compensation || '历史批次未在系统中配置，请向现场研究者确认。'}</dd>
+                <dt className="mt-2 font-bold">导师 / 伦理审批状态</dt><dd>{view.config.governance?.ethicsStatement || '历史批次未在系统中配置；未确认前不应参加正式研究。'}</dd>
+              </dl>
+            </div>
             <label>
               研究码{' '}
               <input
@@ -206,12 +255,32 @@ export default function StudyPage() {
               />
             </label>
             <p className="study-muted">研究码用于命名本次两轮测试，请勿填写姓名或联系方式。支持文字、数字、下划线和短横线；已使用的研究码不能重复创建。</p>
+            <div className="study-grid">
+              <label>年龄段
+                <select value={profile.ageBand} onChange={e => setProfile(v => ({ ...v, ageBand: e.target.value }))}>
+                  <option value="prefer-not">不回答</option><option value="18-24">18–24</option><option value="25-34">25–34</option><option value="35-44">35–44</option><option value="45-plus">45 岁及以上</option>
+                </select>
+              </label>
+              <label>近三个月绘画频率
+                <select value={profile.drawingFrequency} onChange={e => setProfile(v => ({ ...v, drawingFrequency: e.target.value }))}>
+                  <option value="prefer-not">不回答</option><option value="never">没有画过</option><option value="few-year">偶尔几次</option><option value="monthly">约每月一次，但没有固定训练</option>
+                </select>
+              </label>
+              <label>数字画布经验
+                <select value={profile.digitalDrawingExperience} onChange={e => setProfile(v => ({ ...v, digitalDrawingExperience: e.target.value }))}>
+                  <option value="prefer-not">不回答</option><option value="never">从未使用</option><option value="tried">尝试过</option><option value="occasional">偶尔使用</option>
+                </select>
+              </label>
+            </div>
             {[
               ['adult', '我已满 18 周岁'],
               [
                 'eligible',
                 '我未接受持续系统绘画训练，近 3 个月没有每周固定绘画练习',
               ],
+              ['informationRead', '我已阅读并理解研究目的、流程、可能风险与可能受益'],
+              ['voluntary', '我知道参与完全自愿，可以跳题、停止或申请撤回，且不会受到惩罚'],
+              ['privacyUnderstood', '我理解记录内容、保存期限、访问范围与撤回边界，并有机会向研究者提问'],
               ['logs', '我同意按上述用途记录本次匿名行为数据与问卷'],
               [
                 'artwork',
@@ -241,6 +310,7 @@ export default function StudyPage() {
                       action: 'enroll',
                       code,
                       studyId: view.config.id,
+                      profile,
                       ...consents,
                     }),
                   )
@@ -341,6 +411,7 @@ export default function StudyPage() {
               <Questionnaire
                 key={`${current.id}-post`}
                 post
+                legacy={legacyQuestionnaire}
                 submitLabel={current.period === 1 ? '保存感受，进入休息' : '保存感受，查看对比'}
                 onSubmit={async (answers) => {
                   await api({
