@@ -2,7 +2,7 @@ import { build } from 'esbuild';
 import { chromium } from '@playwright/test';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import assert from 'node:assert/strict';
-const out = '论文/06_工程验收与截图/方案A接入验收';
+const out = '论文/方案A接入验收';
 mkdirSync(out, { recursive: true });
 const bundle = await build({ stdin: { contents: "export { planBudgetStrokes } from './src/lib/budget-strokes'; export { imageSourceFromImage, drawStroke } from './src/lib/stroke-engine';", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', globalName: 'Lab' });
 const browser = await chromium.launch();
@@ -23,7 +23,7 @@ try {
     });
     return { strokes, stages };
   }, `data:image/jpeg;base64,${readFileSync('public/masterworks/monet/impression_sunrise.jpg').toString('base64')}`);
-  const expected = JSON.parse(readFileSync('论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/raster-序列.json', 'utf8'));
+  const expected = JSON.parse(readFileSync('论文/笔触顺序探索_不接入正式程序/raster-序列.json', 'utf8'));
   assert.deepEqual(result.strokes.map(({ points, width, color }) => ({ points, width, color })), expected.strokes.map(({ points, width, color }) => ({ points, width, color })));
   for (const s of result.stages) writeFileSync(`${out}/莫奈-第${s.pass}遍-${s.count}笔.png`, Buffer.from(s.image.split(',')[1], 'base64'));
   writeFileSync(`${out}/验收数据.json`, JSON.stringify({ count: result.strokes.length, stages: result.stages.map(({pass,count}) => ({pass,count})), exactPrototypeMatch: true }, null, 2));

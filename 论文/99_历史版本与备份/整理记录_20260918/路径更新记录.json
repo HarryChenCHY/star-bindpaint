@@ -1,0 +1,66 @@
+[
+  {
+    "file": "CLAUDE.md",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/CLAUDE.md"
+  },
+  {
+    "file": "experiments/painting-order/run.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/experiments/painting-order/run.mjs"
+  },
+  {
+    "file": "tests/study/revisions-0916.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/tests/study/revisions-0916.mjs"
+  },
+  {
+    "file": "tests/study/paint-budget.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/tests/study/paint-budget.mjs"
+  },
+  {
+    "file": "tests/study/intro-panels.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/tests/study/intro-panels.mjs"
+  },
+  {
+    "file": "tests/study/planning.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/tests/study/planning.mjs"
+  },
+  {
+    "file": "tests/study/layered-raster.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/tests/study/layered-raster.mjs"
+  },
+  {
+    "file": "tests/study/intro-algorithm.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/tests/study/intro-algorithm.mjs"
+  },
+  {
+    "file": "tests/study/experience-controls.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/tests/study/experience-controls.mjs"
+  },
+  {
+    "file": "scripts/compare-monet-budgets.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/scripts/compare-monet-budgets.mjs"
+  },
+  {
+    "file": "scripts/docs/generate_algorithm_doc.py",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/scripts/docs/generate_algorithm_doc.py"
+  },
+  {
+    "file": "scripts/docs/rewrite_midterm.py",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/scripts/docs/rewrite_midterm.py"
+  },
+  {
+    "file": "scripts/docs/midterm_diagrams.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/scripts/docs/midterm_diagrams.mjs"
+  },
+  {
+    "file": "scripts/docs/capture_midterm.mjs",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/scripts/docs/capture_midterm.mjs"
+  },
+  {
+    "file": "论文/03_用户测试与研究方案/用户测试_v2_实验方法与实施说明.md",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/论文/用户测试_v2_实验方法与实施说明.md"
+  },
+  {
+    "file": "论文/04_系统设计与实施/程序改造_实施记录与使用说明.md",
+    "backup": "论文/99_历史版本与备份/整理记录_20260918/路径更新前副本/论文/程序改造_实施记录与使用说明.md"
+  }
+]

@@ -1,0 +1,2938 @@
+[
+  {
+    "old_path": "论文/.DS_Store",
+    "new_path": "论文/.DS_Store",
+    "size": 6148,
+    "sha256_before": "9d0d2dc0b6a2fddf982476d4c447b05322161805a82e3273d5fe10f0168dfe21",
+    "sha256_after": "9d0d2dc0b6a2fddf982476d4c447b05322161805a82e3273d5fe10f0168dfe21",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/星迹智绘_论文思路与对比实验及程序改造规划.docx",
+    "new_path": "论文/04_系统设计与实施/星迹智绘_论文思路与对比实验及程序改造规划.docx",
+    "size": 604371,
+    "sha256_before": "bb00125363e67a147df66c6134860b8c9f3c2266011fcedb0e7459fccc0d207c",
+    "sha256_after": "bb00125363e67a147df66c6134860b8c9f3c2266011fcedb0e7459fccc0d207c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/附件4：上海交通大学硕士学位论文写作模板.docx",
+    "new_path": "论文/02_学校模板与要求/学位论文/附件4：上海交通大学硕士学位论文写作模板.docx",
+    "size": 218068,
+    "sha256_before": "22dfebf3332939293b1b08bb158fd479b7267162ffb63a82d95c3e8366c1a81f",
+    "sha256_after": "22dfebf3332939293b1b08bb158fd479b7267162ffb63a82d95c3e8366c1a81f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/用户测试_v2_实验方法与实施说明.md",
+    "new_path": "论文/03_用户测试与研究方案/用户测试_v2_实验方法与实施说明.md",
+    "size": 7089,
+    "sha256_before": "640650191fc536aa7d9080cdf021940ef8fa76229352640e340f10b55b3481c5",
+    "sha256_after": "dccd1c5aa0367d751c88bbefab9b889e03e73996cbce91fbf0d761437d88baf0",
+    "content_changed": true
+  },
+  {
+    "old_path": "论文/附件5：上海交通大学博士、硕士学位论文撰.docx",
+    "new_path": "论文/02_学校模板与要求/学位论文/附件5：上海交通大学博士、硕士学位论文撰.docx",
+    "size": 17730,
+    "sha256_before": "c473fa3998fed5fa3ea40746b43513a48a93bc7280e241fda762912b7ddfbd43",
+    "sha256_after": "c473fa3998fed5fa3ea40746b43513a48a93bc7280e241fda762912b7ddfbd43",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/星迹智绘_程序改造实施计划_待审核.docx",
+    "new_path": "论文/04_系统设计与实施/星迹智绘_程序改造实施计划_待审核.docx",
+    "size": 427557,
+    "sha256_before": "6454cded88b888a1650e2ae94422129f46c8caf88613bc3040a896d8ff804a65",
+    "sha256_after": "6454cded88b888a1650e2ae94422129f46c8caf88613bc3040a896d8ff804a65",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916修改计划与验收.md",
+    "new_path": "论文/06_工程验收与截图/0916修改计划与验收.md",
+    "size": 4986,
+    "sha256_before": "84548334ab2686086bdf8d9dfdc811487334fcc8f81a5d11fcdb28799b5de157",
+    "sha256_after": "84548334ab2686086bdf8d9dfdc811487334fcc8f81a5d11fcdb28799b5de157",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/测试记录结构示例.json",
+    "new_path": "论文/03_用户测试与研究方案/数据结构示例/测试记录结构示例.json",
+    "size": 2546,
+    "sha256_before": "0e95f84d93b344a2ab6b67a136a24e01667e499e16daa19fde9fa53664c6022c",
+    "sha256_after": "0e95f84d93b344a2ab6b67a136a24e01667e499e16daa19fde9fa53664c6022c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P7_研究版本交接使用说明.md",
+    "new_path": "论文/03_用户测试与研究方案/P7_研究版本交接使用说明.md",
+    "size": 1696,
+    "sha256_before": "8f26d1c98a9905838b6e62824720c3feefcb4be4dc8b8ea286601d6b41df66c2",
+    "sha256_after": "8f26d1c98a9905838b6e62824720c3feefcb4be4dc8b8ea286601d6b41df66c2",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/星迹智绘_程序改造实施计划_待审核.md",
+    "new_path": "论文/04_系统设计与实施/星迹智绘_程序改造实施计划_待审核.md",
+    "size": 56546,
+    "sha256_before": "0a53424bd3bada20b765e92a32ea70417fcd503f2af8f4251684723bf7e917c5",
+    "sha256_after": "0a53424bd3bada20b765e92a32ea70417fcd503f2af8f4251684723bf7e917c5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/124270910044-陈皓宇-修改后开题报告.pdf",
+    "new_path": "论文/01_论文与报告/开题报告/124270910044-陈皓宇-修改后开题报告.pdf",
+    "size": 1348221,
+    "sha256_before": "dbe0e2d86124b9da48482dfd8b3c7e732918ffa39c91c279a0be1988f45243f8",
+    "sha256_after": "dbe0e2d86124b9da48482dfd8b3c7e732918ffa39c91c279a0be1988f45243f8",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/程序改造_实施记录与使用说明.md",
+    "new_path": "论文/04_系统设计与实施/程序改造_实施记录与使用说明.md",
+    "size": 21856,
+    "sha256_before": "6f4ba601d1298dad65122995837128f9006e5cf8528411b86072bf8beff7866b",
+    "sha256_after": "7992215ea694a1cc158eedfca260d44d97f7bd0db4dd284f996475900997d60c",
+    "content_changed": true
+  },
+  {
+    "old_path": "论文/星迹智绘_1000笔算法原理解析与P6程序整合.docx",
+    "new_path": "论文/05_算法实验与验证/星迹智绘_1000笔算法原理解析与P6程序整合.docx",
+    "size": 487379,
+    "sha256_before": "0865b56efba047850d753f0fb45f8e576478df49c3777b9404ade4c92db738c4",
+    "sha256_after": "0865b56efba047850d753f0fb45f8e576478df49c3777b9404ade4c92db738c4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/附件1-硕士生中期检查.docx",
+    "new_path": "论文/01_论文与报告/中期检查/附件1-硕士生中期检查.docx",
+    "size": 2424805,
+    "sha256_before": "3b7dac96a3b9265fbc6f6c0e956497e343031a348c57add28f9fc07b0b825995",
+    "sha256_after": "3b7dac96a3b9265fbc6f6c0e956497e343031a348c57add28f9fc07b0b825995",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/历史记录.txt",
+    "new_path": "论文/99_历史版本与备份/项目历史记录/历史记录.txt",
+    "size": 2202764,
+    "sha256_before": "b592375d9595c9650c3996fbd2d262bb7a4ed498b7affb93cdd4e1c0c61adfaf",
+    "sha256_after": "b592375d9595c9650c3996fbd2d262bb7a4ed498b7affb93cdd4e1c0c61adfaf",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_六人预试执行指南.md",
+    "new_path": "论文/03_用户测试与研究方案/P6_六人预试执行指南.md",
+    "size": 4087,
+    "sha256_before": "cdd688f200d1eb6bb4aeb14febb41ef496b4ab3357849477d70e48c8066a4ffe",
+    "sha256_after": "cdd688f200d1eb6bb4aeb14febb41ef496b4ab3357849477d70e48c8066a4ffe",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/程序改造_验收截图/测试入口_390px.png",
+    "new_path": "论文/06_工程验收与截图/程序改造_验收截图/测试入口_390px.png",
+    "size": 103571,
+    "sha256_before": "5e2516e773496244ce5b2582f602c407489279e6a70ea45112a550ecaaf4e5c7",
+    "sha256_after": "5e2516e773496244ce5b2582f602c407489279e6a70ea45112a550ecaaf4e5c7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/程序改造_验收截图/合成测试_两轮报告_非真实研究数据.png",
+    "new_path": "论文/06_工程验收与截图/程序改造_验收截图/合成测试_两轮报告_非真实研究数据.png",
+    "size": 117093,
+    "sha256_before": "27cca658d95fa3be1088ad33191b6dbfe86d55da169494878412fe6ef89a5fe2",
+    "sha256_after": "27cca658d95fa3be1088ad33191b6dbfe86d55da169494878412fe6ef89a5fe2",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/程序改造_验收截图/材料规划_工程预览.png",
+    "new_path": "论文/06_工程验收与截图/程序改造_验收截图/材料规划_工程预览.png",
+    "size": 382959,
+    "sha256_before": "9639ea57445fc1129ecc1f75fe6778ac4b42a64604032ef2a7b45d72a22408c9",
+    "sha256_after": "9639ea57445fc1129ecc1f75fe6778ac4b42a64604032ef2a7b45d72a22408c9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/05-手机教程.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/05-手机教程.png",
+    "size": 64248,
+    "sha256_before": "80c0c9842367b535d9de814532d2e619a8504f282487fbfb64d33dd877d5e517",
+    "sha256_after": "80c0c9842367b535d9de814532d2e619a8504f282487fbfb64d33dd877d5e517",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/04-手机HSV.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/04-手机HSV.png",
+    "size": 77210,
+    "sha256_before": "165b9625a52b5a8e4fa2e4067ae035b73c5bc33dcb208c4868d3a23cb16b1ae0",
+    "sha256_after": "165b9625a52b5a8e4fa2e4067ae035b73c5bc33dcb208c4868d3a23cb16b1ae0",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/教程-自动续画.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/教程-自动续画.png",
+    "size": 74782,
+    "sha256_before": "b5bc18a0d22fc0f6bbcc89e1d93ceadc56f6fd1b3708e83442e772610bdf8866",
+    "sha256_after": "b5bc18a0d22fc0f6bbcc89e1d93ceadc56f6fd1b3708e83442e772610bdf8866",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/01-首页循环演示.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/01-首页循环演示.png",
+    "size": 147089,
+    "sha256_before": "1676d735d4b2785c1f427072e4bf1b8ccd0023e31be8de965779a2baab6f73e7",
+    "sha256_after": "1676d735d4b2785c1f427072e4bf1b8ccd0023e31be8de965779a2baab6f73e7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/教程-月亮伙伴.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/教程-月亮伙伴.png",
+    "size": 128359,
+    "sha256_before": "c52d1214f95aec3632d227c540f331c9c72fd18881b4d0aac34a6ee9cced688b",
+    "sha256_after": "c52d1214f95aec3632d227c540f331c9c72fd18881b4d0aac34a6ee9cced688b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/教程-沿星迹.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/教程-沿星迹.png",
+    "size": 128005,
+    "sha256_before": "84f2580d8c7f2a525d2459cda004c14179475c643bce0287d0ac31252ade13b0",
+    "sha256_after": "84f2580d8c7f2a525d2459cda004c14179475c643bce0287d0ac31252ade13b0",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/教程-界面总览.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/教程-界面总览.png",
+    "size": 106616,
+    "sha256_before": "e03d2a10f6f9d4ce7ae63cf4e30b19726c2bfd306a0f893d15136a2e56ddcf3f",
+    "sha256_after": "e03d2a10f6f9d4ce7ae63cf4e30b19726c2bfd306a0f893d15136a2e56ddcf3f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/教程-自由星域.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/教程-自由星域.png",
+    "size": 132943,
+    "sha256_before": "306681c44d43cdeb725d805f0f79c4b2e15432e11988b824a3a0455193a1be63",
+    "sha256_after": "306681c44d43cdeb725d805f0f79c4b2e15432e11988b824a3a0455193a1be63",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/02-虚线区域引导.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/02-虚线区域引导.png",
+    "size": 157500,
+    "sha256_before": "511eea7a6a487e6cf49d0ed168e29b652df2fbb13fbb231833ded370b8c9b8f4",
+    "sha256_after": "511eea7a6a487e6cf49d0ed168e29b652df2fbb13fbb231833ded370b8c9b8f4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/教程-完成与保存.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/教程-完成与保存.png",
+    "size": 101926,
+    "sha256_before": "6ea3454af5a14c0655425aed92060fbeb8b64b6301de4799317eec19165cc728",
+    "sha256_after": "6ea3454af5a14c0655425aed92060fbeb8b64b6301de4799317eec19165cc728",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/03-HSV选色.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/03-HSV选色.png",
+    "size": 203758,
+    "sha256_before": "7981d2e5cea6fee52e08403d3afd3eae03d99e8d2da78255434b807c8d34c149",
+    "sha256_after": "7981d2e5cea6fee52e08403d3afd3eae03d99e8d2da78255434b807c8d34c149",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/已有交互回归/参考原图提示卡.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/已有交互回归/参考原图提示卡.png",
+    "size": 32656,
+    "sha256_before": "24d6f534d05db412a9f4fda10c024f801f25afceb6471eb8ec382679e3c05d3f",
+    "sha256_after": "24d6f534d05db412a9f4fda10c024f801f25afceb6471eb8ec382679e3c05d3f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/已有交互回归/手机箭头引导.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/已有交互回归/手机箭头引导.png",
+    "size": 64733,
+    "sha256_before": "20431f6c1290e74016217e95737d1a34831ff6202972969e92094c765fe54e49",
+    "sha256_after": "20431f6c1290e74016217e95737d1a34831ff6202972969e92094c765fe54e49",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/已有交互回归/手机自由星域.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/已有交互回归/手机自由星域.png",
+    "size": 42696,
+    "sha256_before": "32e48107b7cb203c0b01005489c68cdd7a20e4d89528d61bb6fadd57a6079a9c",
+    "sha256_after": "32e48107b7cb203c0b01005489c68cdd7a20e4d89528d61bb6fadd57a6079a9c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/已有交互回归/手机选图.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/已有交互回归/手机选图.png",
+    "size": 189651,
+    "sha256_before": "2906f90b0af0299116cd83c66f19b3f6f9fc5ec0925a8508b1371ce42e6fd75e",
+    "sha256_after": "2906f90b0af0299116cd83c66f19b3f6f9fc5ec0925a8508b1371ce42e6fd75e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/已有交互回归/手机原图全屏.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/已有交互回归/手机原图全屏.png",
+    "size": 22382,
+    "sha256_before": "0e783b5c275039ac3955499a7b1568b701b41118a27b5382e3da7f0028aab2ea",
+    "sha256_after": "0e783b5c275039ac3955499a7b1568b701b41118a27b5382e3da7f0028aab2ea",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/0916验收/已有交互回归/首页.png",
+    "new_path": "论文/06_工程验收与截图/0916验收/已有交互回归/首页.png",
+    "size": 160393,
+    "sha256_before": "d2fc6536f9356b6ec6dbdd617d7284719c7ff534c846d86ccfd09fb6a753be07",
+    "sha256_after": "d2fc6536f9356b6ec6dbdd617d7284719c7ff534c846d86ccfd09fb6a753be07",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/对比数据.json",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/对比数据.json",
+    "size": 828,
+    "sha256_before": "bd99d6f810f875df36c2884564a6816102fa9446a55d62662decc18725330fbd",
+    "sha256_after": "bd99d6f810f875df36c2884564a6816102fa9446a55d62662decc18725330fbd",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/日出油画-旧算法截取对照.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/日出油画-旧算法截取对照.png",
+    "size": 124430,
+    "sha256_before": "dd91f75fea6f4927ef044e3b1bcab565af44143b911e32766dbb1a6c43be086e",
+    "sha256_after": "dd91f75fea6f4927ef044e3b1bcab565af44143b911e32766dbb1a6c43be086e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/日出油画-页面.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/日出油画-页面.png",
+    "size": 713189,
+    "sha256_before": "f42ea1fed1fb9ada9fad67ff7e93c31f5c231225cc5ffe6fa4d8c8420ca06161",
+    "sha256_after": "f42ea1fed1fb9ada9fad67ff7e93c31f5c231225cc5ffe6fa4d8c8420ca06161",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/盆栽-旧算法截取对照.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/盆栽-旧算法截取对照.png",
+    "size": 35359,
+    "sha256_before": "8c90cd05f4496a160f28cec803150691f3a9f604e5550d360f01eced8b9cd68d",
+    "sha256_after": "8c90cd05f4496a160f28cec803150691f3a9f604e5550d360f01eced8b9cd68d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/手机预览.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/手机预览.png",
+    "size": 516472,
+    "sha256_before": "6467a5e6963b5328d58951b9c6546171a0249d8f34389f972fd1a6e9f8e92e01",
+    "sha256_after": "6467a5e6963b5328d58951b9c6546171a0249d8f34389f972fd1a6e9f8e92e01",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/算法说明.md",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/算法说明.md",
+    "size": 5661,
+    "sha256_before": "f5f262a95fd961a087db6a0e7bcbbdf8a7ebf64e9fc53934206b1b6216bf3dd1",
+    "sha256_after": "f5f262a95fd961a087db6a0e7bcbbdf8a7ebf64e9fc53934206b1b6216bf3dd1",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/手机逐笔绘画.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/手机逐笔绘画.png",
+    "size": 111421,
+    "sha256_before": "5df9cf0c907563400d2a9518a1bb1b3be5a6277f4a9ef4d29a1d6732533ac1aa",
+    "sha256_after": "5df9cf0c907563400d2a9518a1bb1b3be5a6277f4a9ef4d29a1d6732533ac1aa",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/盆栽-新算法完整效果.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/盆栽-新算法完整效果.png",
+    "size": 53527,
+    "sha256_before": "9f961bd4b0ea661c8b05d80895ee782a84c86793ea5140d76267e302b0c5c781",
+    "sha256_after": "9f961bd4b0ea661c8b05d80895ee782a84c86793ea5140d76267e302b0c5c781",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/日出油画-旧算法完整效果.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/日出油画-旧算法完整效果.png",
+    "size": 260778,
+    "sha256_before": "44d06f6509bb57eadf1ae9d03d5a5d8a738b37195b5defde60d138395a1b66d9",
+    "sha256_after": "44d06f6509bb57eadf1ae9d03d5a5d8a738b37195b5defde60d138395a1b66d9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/日出油画-新算法完整效果.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/日出油画-新算法完整效果.png",
+    "size": 115949,
+    "sha256_before": "843fb0ec8a36e753d7673fb2eed288c4227c53f4443331a6f1289a562003a574",
+    "sha256_after": "843fb0ec8a36e753d7673fb2eed288c4227c53f4443331a6f1289a562003a574",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/盆栽-旧算法完整效果.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/盆栽-旧算法完整效果.png",
+    "size": 45134,
+    "sha256_before": "9269282dbf18de3ff27bb72387381a67d888490cda60d8de14f0bdace18c6cf2",
+    "sha256_after": "9269282dbf18de3ff27bb72387381a67d888490cda60d8de14f0bdace18c6cf2",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/盆栽-页面.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/盆栽-页面.png",
+    "size": 318584,
+    "sha256_before": "5ebc626a2b8b8ebf247210873f241e77ab92738b7fd0e4a6351ccfd56142053e",
+    "sha256_after": "5ebc626a2b8b8ebf247210873f241e77ab92738b7fd0e4a6351ccfd56142053e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/盆栽-参考原图.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/盆栽-参考原图.png",
+    "size": 12433,
+    "sha256_before": "19359bc2c39b253e915367dbea0aa152053ab4235179acd308273f2d3083da36",
+    "sha256_after": "19359bc2c39b253e915367dbea0aa152053ab4235179acd308273f2d3083da36",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/日出油画-参考原图.png",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/日出油画-参考原图.png",
+    "size": 458542,
+    "sha256_before": "4ca0731e811a8f0be0bbf901c1e509fe7ea01dc984febd8b93b6e3a78f907a5b",
+    "sha256_after": "4ca0731e811a8f0be0bbf901c1e509fe7ea01dc984febd8b93b6e3a78f907a5b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/200笔算法验证/12张材料检查.json",
+    "new_path": "论文/05_算法实验与验证/200笔算法验证/12张材料检查.json",
+    "size": 1191844,
+    "sha256_before": "3e4c2862d18556953c95c597ef82aef419d158d94898911ae0945db37067a8d1",
+    "sha256_after": "3e4c2862d18556953c95c597ef82aef419d158d94898911ae0945db37067a8d1",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍算法溯源验收/五遍扫描与真实结果.png",
+    "new_path": "论文/06_工程验收与截图/产品介绍算法溯源验收/五遍扫描与真实结果.png",
+    "size": 316703,
+    "sha256_before": "c750bc9232f408d80f0ac262752f512bd3f5e839b86fea483d86d0905366e6da",
+    "sha256_after": "c750bc9232f408d80f0ac262752f512bd3f5e839b86fea483d86d0905366e6da",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍算法溯源验收/更新说明.md",
+    "new_path": "论文/06_工程验收与截图/产品介绍算法溯源验收/更新说明.md",
+    "size": 2701,
+    "sha256_before": "e71535e4ac8947b390b4ea16915717b05bdb14f5ade5c8b6a9c8e570c3ca2ea4",
+    "sha256_after": "e71535e4ac8947b390b4ea16915717b05bdb14f5ade5c8b6a9c8e570c3ca2ea4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍算法溯源验收/大师风格来源.png",
+    "new_path": "论文/06_工程验收与截图/产品介绍算法溯源验收/大师风格来源.png",
+    "size": 139157,
+    "sha256_before": "74d12f46744c8019293780e797b812350a4a36461b0bb8d71b9674e7f1af67c1",
+    "sha256_after": "74d12f46744c8019293780e797b812350a4a36461b0bb8d71b9674e7f1af67c1",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍算法溯源验收/手机端.png",
+    "new_path": "论文/06_工程验收与截图/产品介绍算法溯源验收/手机端.png",
+    "size": 144811,
+    "sha256_before": "d915147b32eb9738941b9fb2ef015486947a0cc3ff43a145b76dfe1ad07dfd86",
+    "sha256_after": "d915147b32eb9738941b9fb2ef015486947a0cc3ff43a145b76dfe1ad07dfd86",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/03_星迹智绘论文框架建议.md",
+    "new_path": "论文/07_参考论文/03_星迹智绘论文框架建议.md",
+    "size": 4564,
+    "sha256_before": "b9cbd38b76ec746ad82bf40cc5f5d7445c8fa3c40379af5a958024e532108f89",
+    "sha256_after": "b9cbd38b76ec746ad82bf40cc5f5d7445c8fa3c40379af5a958024e532108f89",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/01_论文目录与来源.csv",
+    "new_path": "论文/07_参考论文/01_论文目录与来源.csv",
+    "size": 33300,
+    "sha256_before": "c6c848e0c156760dccd0bbe44da6a8c6f35c91cf2b5254f8cb8a81cbaf0b5b64",
+    "sha256_after": "c6c848e0c156760dccd0bbe44da6a8c6f35c91cf2b5254f8cb8a81cbaf0b5b64",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/02_研究框架与论文框架分析.docx",
+    "new_path": "论文/07_参考论文/02_研究框架与论文框架分析.docx",
+    "size": 52425,
+    "sha256_before": "aad04222f0260e71af4a2f58021731fea0def1fa69707479fbbab5a31d90bf35",
+    "sha256_after": "aad04222f0260e71af4a2f58021731fea0def1fa69707479fbbab5a31d90bf35",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/.DS_Store",
+    "new_path": "论文/07_参考论文/.DS_Store",
+    "size": 6148,
+    "sha256_before": "aea274aa147b457ca732970ab694aea9b327cc8956886571977d9347e0bd6b62",
+    "sha256_after": "aea274aa147b457ca732970ab694aea9b327cc8956886571977d9347e0bd6b62",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/04_全文获取优先清单.md",
+    "new_path": "论文/07_参考论文/04_全文获取优先清单.md",
+    "size": 3233,
+    "sha256_before": "2f13845acb91ddaf216785e01aff952ac69b0ef3d8126da834577c911b058575",
+    "sha256_after": "2f13845acb91ddaf216785e01aff952ac69b0ef3d8126da834577c911b058575",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/论文清单.json",
+    "new_path": "论文/07_参考论文/论文清单.json",
+    "size": 48654,
+    "sha256_before": "d671c28bad55026884402fde9b5dcd7e00c71cc7a7c5901d26e853beda48c4a5",
+    "sha256_after": "d671c28bad55026884402fde9b5dcd7e00c71cc7a7c5901d26e853beda48c4a5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/00_阅读说明与获取情况.md",
+    "new_path": "论文/07_参考论文/00_阅读说明与获取情况.md",
+    "size": 2631,
+    "sha256_before": "00d98247adac1761e0e4ce23d811045e30ac36f74c14036fef9554a1dd77a438",
+    "sha256_after": "00d98247adac1761e0e4ce23d811045e30ac36f74c14036fef9554a1dd77a438",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/参考论文导航.html",
+    "new_path": "论文/07_参考论文/参考论文导航.html",
+    "size": 27493,
+    "sha256_before": "d9b45a33b9e24774ad39ef5fd6698692eebf70ed6b684415c6481f9a0eb54f85",
+    "sha256_after": "d9b45a33b9e24774ad39ef5fd6698692eebf70ed6b684415c6481f9a0eb54f85",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开资料索引.json",
+    "new_path": "论文/07_参考论文/公开资料索引.json",
+    "size": 146352,
+    "sha256_before": "dcc337deeb7ae2e0987bd1d2d02aaf5b5629bd9b2b768c2c31e952486b374b14",
+    "sha256_after": "dcc337deeb7ae2e0987bd1d2d02aaf5b5629bd9b2b768c2c31e952486b374b14",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/02_研究框架与论文框架分析.md",
+    "new_path": "论文/07_参考论文/02_研究框架与论文框架分析.md",
+    "size": 35395,
+    "sha256_before": "3817301b609255eee5c23c80e3386228732df3b71dafdee4dfadd941c72d119c",
+    "sha256_after": "3817301b609255eee5c23c80e3386228732df3b71dafdee4dfadd941c72d119c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_zhaozhuodong_2025.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_zhaozhuodong_2025.html",
+    "size": 103519,
+    "sha256_before": "a93f30a7f99c511cdef619c3810ca73228c85068fb762f9d2ffc0ef1f19550c2",
+    "sha256_after": "a93f30a7f99c511cdef619c3810ca73228c85068fb762f9d2ffc0ef1f19550c2",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_lijiale_2025.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_lijiale_2025.txt",
+    "size": 7732,
+    "sha256_before": "edfc5e1720bdf2a106b37a582d51cdc4c486079ceb96de2ca2baa24e3dd104c1",
+    "sha256_after": "edfc5e1720bdf2a106b37a582d51cdc4c486079ceb96de2ca2baa24e3dd104c1",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_jianwen_2025.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_jianwen_2025.txt",
+    "size": 9459,
+    "sha256_before": "c26a258604728232904c489833d48beede302f54081bd85dec91d221ad4822b7",
+    "sha256_after": "c26a258604728232904c489833d48beede302f54081bd85dec91d221ad4822b7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_zhangmucai_2024.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_zhangmucai_2024.html",
+    "size": 110808,
+    "sha256_before": "90c30f03c3c735ecb2214bde3c276123ef1adb8233fde618ea49fb595da37391",
+    "sha256_after": "90c30f03c3c735ecb2214bde3c276123ef1adb8233fde618ea49fb595da37391",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_xietian_2022.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_xietian_2022.html",
+    "size": 104223,
+    "sha256_before": "cc309207784cdf625d1690a6109be0934faaaf721f1042dd8af50c7db25e55f8",
+    "sha256_after": "cc309207784cdf625d1690a6109be0934faaaf721f1042dd8af50c7db25e55f8",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_chenxinghui_2024.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_chenxinghui_2024.txt",
+    "size": 6762,
+    "sha256_before": "ec7fb6bc7c4249d9a9e8dfe04c28d6a31d29f5a751e44dedeac14ab3488e7d8a",
+    "sha256_after": "ec7fb6bc7c4249d9a9e8dfe04c28d6a31d29f5a751e44dedeac14ab3488e7d8a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_luozhen_2023.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_luozhen_2023.html",
+    "size": 99531,
+    "sha256_before": "5b078c115c344eb36442bb7d2212e6bb98c81d2ff713797a4010654eb33ce2a1",
+    "sha256_after": "5b078c115c344eb36442bb7d2212e6bb98c81d2ff713797a4010654eb33ce2a1",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_chenxinghui_2024.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_chenxinghui_2024.html",
+    "size": 100452,
+    "sha256_before": "cebb56f53dbd623a04370a8d799d93ca28716cd2cb118aecb2d033b1b1535e7d",
+    "sha256_after": "cebb56f53dbd623a04370a8d799d93ca28716cd2cb118aecb2d033b1b1535e7d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_lilinjian_2023.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_lilinjian_2023.html",
+    "size": 109003,
+    "sha256_before": "8d4f5c9bf29c912e2cb28692b4905423f50d289d48b90b6916954efe2b9fe814",
+    "sha256_after": "8d4f5c9bf29c912e2cb28692b4905423f50d289d48b90b6916954efe2b9fe814",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_zhangmucai_2024.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_zhangmucai_2024.txt",
+    "size": 9708,
+    "sha256_before": "cc8755aa5ab30ab1cc03204290b7d4cf43e041efda26c83b9662f9dd3ee807cb",
+    "sha256_after": "cc8755aa5ab30ab1cc03204290b7d4cf43e041efda26c83b9662f9dd3ee807cb",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_zhoujingyu_2025.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_zhoujingyu_2025.html",
+    "size": 102884,
+    "sha256_before": "e6c82afb8a1bf1bb0d4e96a4424fa40890ea7cfbda0a12cee58f94f3c37e2c7b",
+    "sha256_after": "e6c82afb8a1bf1bb0d4e96a4424fa40890ea7cfbda0a12cee58f94f3c37e2c7b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_guoqin_2021.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_guoqin_2021.html",
+    "size": 97339,
+    "sha256_before": "486666333ac2b373f872e909690e2b29d3abd2aff7f0f851edff684558921db0",
+    "sha256_after": "486666333ac2b373f872e909690e2b29d3abd2aff7f0f851edff684558921db0",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_jianwen_2025.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_jianwen_2025.html",
+    "size": 103886,
+    "sha256_before": "3cf8cb839d19008efeb80c31bb49ebd83a8e26e1b0db4605d551fdf52a0b41c4",
+    "sha256_after": "3cf8cb839d19008efeb80c31bb49ebd83a8e26e1b0db4605d551fdf52a0b41c4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_gukeyi_2024.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_gukeyi_2024.txt",
+    "size": 8140,
+    "sha256_before": "e8aed7a8215e05595520eddbe13a5b62fbd4fd7c0483e91fc35481124409bcb9",
+    "sha256_after": "e8aed7a8215e05595520eddbe13a5b62fbd4fd7c0483e91fc35481124409bcb9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_zhaozhuodong_2025.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_zhaozhuodong_2025.txt",
+    "size": 11627,
+    "sha256_before": "6b250b10facead08e0b56d53940747d1b233ccc330a5ce899c429e57eee883b8",
+    "sha256_after": "6b250b10facead08e0b56d53940747d1b233ccc330a5ce899c429e57eee883b8",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_luozhen_2023.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_luozhen_2023.txt",
+    "size": 10448,
+    "sha256_before": "3c14e0fb5c5b65d2c9da4c6824097d605deee910cf1ea9e214397ae342e9e4a8",
+    "sha256_after": "3c14e0fb5c5b65d2c9da4c6824097d605deee910cf1ea9e214397ae342e9e4a8",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_yuguodong_2022.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_yuguodong_2022.html",
+    "size": 100327,
+    "sha256_before": "a65fb76fdd0e074ceb073ee6f878d8a32dbd91dc78f781267904ddbeae5e408b",
+    "sha256_after": "a65fb76fdd0e074ceb073ee6f878d8a32dbd91dc78f781267904ddbeae5e408b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_maria_2025.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_maria_2025.html",
+    "size": 96385,
+    "sha256_before": "c45e824a657bf0a7148ac216fd260c42ec641f6ae4fc3b482134c8ddef775697",
+    "sha256_after": "c45e824a657bf0a7148ac216fd260c42ec641f6ae4fc3b482134c8ddef775697",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_gukeyi_2024.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_gukeyi_2024.html",
+    "size": 110269,
+    "sha256_before": "208b49831050e343bf195d530621b189614867a73d9fb9baf0e7aeaf24373409",
+    "sha256_after": "208b49831050e343bf195d530621b189614867a73d9fb9baf0e7aeaf24373409",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_nicolos_2023.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_nicolos_2023.html",
+    "size": 100723,
+    "sha256_before": "6588cc9bebc8be4505998d06ec7b89f48c4714274febd77bc52bf9cad1699437",
+    "sha256_after": "6588cc9bebc8be4505998d06ec7b89f48c4714274febd77bc52bf9cad1699437",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_xietian_2022.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_xietian_2022.txt",
+    "size": 8637,
+    "sha256_before": "8a59184606f09386d8843e56f4e7e92ed00e18ce364704971c9c4bb49aa18afb",
+    "sha256_after": "8a59184606f09386d8843e56f4e7e92ed00e18ce364704971c9c4bb49aa18afb",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_heentang_2023.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_heentang_2023.html",
+    "size": 104625,
+    "sha256_before": "988e474a76b6a30fe26b8188903591d264d38cb6f081d5b694848b8b72eda88c",
+    "sha256_after": "988e474a76b6a30fe26b8188903591d264d38cb6f081d5b694848b8b72eda88c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_maria_2025.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_maria_2025.txt",
+    "size": 6338,
+    "sha256_before": "faddba5cb941195143a3b85907e8229aac9781facf4312422fd18a33dd3de860",
+    "sha256_after": "faddba5cb941195143a3b85907e8229aac9781facf4312422fd18a33dd3de860",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_yuguodong_2022.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_yuguodong_2022.txt",
+    "size": 6410,
+    "sha256_before": "62d3e011fda8f4283b54c2857268132092e458a5a908a1fa15cffab94a7c2eca",
+    "sha256_after": "62d3e011fda8f4283b54c2857268132092e458a5a908a1fa15cffab94a7c2eca",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_guoqin_2021.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_guoqin_2021.txt",
+    "size": 7011,
+    "sha256_before": "589bd3ba6ab737a3a29958a58792f14ba5a2c1ccf002b45cbf69efe1493e852f",
+    "sha256_after": "589bd3ba6ab737a3a29958a58792f14ba5a2c1ccf002b45cbf69efe1493e852f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_heentang_2023.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_heentang_2023.txt",
+    "size": 7059,
+    "sha256_before": "bd6aee9ba7aa5313f74ed8208820c1df154e16dd265cc0c8c17e000bc89cb7a1",
+    "sha256_after": "bd6aee9ba7aa5313f74ed8208820c1df154e16dd265cc0c8c17e000bc89cb7a1",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_lijiale_2025.html",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_lijiale_2025.html",
+    "size": 94980,
+    "sha256_before": "8493c7f25a144e34f64fe54dd2ac79ecb95c3d5c04a1350ec96e6499cd2b4389",
+    "sha256_after": "8493c7f25a144e34f64fe54dd2ac79ecb95c3d5c04a1350ec96e6499cd2b4389",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_zhoujingyu_2025.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_zhoujingyu_2025.txt",
+    "size": 8635,
+    "sha256_before": "a4506165fe3419f468a0165b300cadaceae6a0f6cdc4ef52db6604494035d3a3",
+    "sha256_after": "a4506165fe3419f468a0165b300cadaceae6a0f6cdc4ef52db6604494035d3a3",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_nicolos_2023.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_nicolos_2023.txt",
+    "size": 6414,
+    "sha256_before": "2b2a2b72d060ecd73e47866f1e4dd7ccbdacea0705d517910dbb995e267ac6db",
+    "sha256_after": "2b2a2b72d060ecd73e47866f1e4dd7ccbdacea0705d517910dbb995e267ac6db",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/公开摘要目录/dis_lilinjian_2023.txt",
+    "new_path": "论文/07_参考论文/公开摘要目录/dis_lilinjian_2023.txt",
+    "size": 15632,
+    "sha256_before": "5b596365676941773aaad787330e5292c82e64fe9d7e98a8111f0948d17c6a85",
+    "sha256_after": "5b596365676941773aaad787330e5292c82e64fe9d7e98a8111f0948d17c6a85",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ10_服务于第二语言文化认知的VR教育游戏设计研究——以对外汉语教育游戏为例.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ10_服务于第二语言文化认知的VR教育游戏设计研究——以对外汉语教育游戏为例.md",
+    "size": 1464,
+    "sha256_before": "81378565044f6bb720f7777fc8deee10430ca68862f57825189c68c9b112f3a3",
+    "sha256_after": "81378565044f6bb720f7777fc8deee10430ca68862f57825189c68c9b112f3a3",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ39_实时影像与虚拟角色的交互体验——展示用增强现实趣味互动设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ39_实时影像与虚拟角色的交互体验——展示用增强现实趣味互动设计.md",
+    "size": 1014,
+    "sha256_before": "f5843f0a93934f8bf7bbe856812c89f78dd70c55ae9a0e14b7e69fb15d6965f9",
+    "sha256_after": "f5843f0a93934f8bf7bbe856812c89f78dd70c55ae9a0e14b7e69fb15d6965f9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/SJ03_基于用户体验的汽车智能中控HMI设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/SJ03_基于用户体验的汽车智能中控HMI设计研究.md",
+    "size": 907,
+    "sha256_before": "bbca6ac4abbbb10b922e0a2784c7ac2010ceff4275810ee222a4c2f8ae0ba400",
+    "sha256_after": "bbca6ac4abbbb10b922e0a2784c7ac2010ceff4275810ee222a4c2f8ae0ba400",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ06_游戏化虚拟展馆体验设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ06_游戏化虚拟展馆体验设计研究.md",
+    "size": 1314,
+    "sha256_before": "042b2c946b73e0d0ee9276ec8f76d70edc7997253557c84d1a4231d9844bf8b5",
+    "sha256_after": "042b2c946b73e0d0ee9276ec8f76d70edc7997253557c84d1a4231d9844bf8b5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ20_回归“单纯”—绘画艺术与互动装置创作实践研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ20_回归“单纯”—绘画艺术与互动装置创作实践研究.md",
+    "size": 985,
+    "sha256_before": "18b3fba7f450f59b7c110c61881483422943060e4374bfd3e3855c136a2ff57e",
+    "sha256_after": "18b3fba7f450f59b7c110c61881483422943060e4374bfd3e3855c136a2ff57e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ44_基于车内交互场景的用户参与式手势设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ44_基于车内交互场景的用户参与式手势设计.md",
+    "size": 934,
+    "sha256_before": "782b6770d658074b5552ef01ad04fa9c7030c39313e3be364c6c6092eee78e51",
+    "sha256_after": "782b6770d658074b5552ef01ad04fa9c7030c39313e3be364c6c6092eee78e51",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ04_以研究时间感知如何影响决策过程为目的的严肃游戏设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ04_以研究时间感知如何影响决策过程为目的的严肃游戏设计.md",
+    "size": 1339,
+    "sha256_before": "742438ba92d7e097ee757ae41fc3eefe81caf5f9d3fcb182695ff978efd303e5",
+    "sha256_after": "742438ba92d7e097ee757ae41fc3eefe81caf5f9d3fcb182695ff978efd303e5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ41__宁静致远“— 虚拟交互技术与传统水墨.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ41__宁静致远“— 虚拟交互技术与传统水墨.md",
+    "size": 959,
+    "sha256_before": "c65ddb37ba606a294c4be9b23486beabc16f2393d7b18125378409365ae77ad4",
+    "sha256_after": "c65ddb37ba606a294c4be9b23486beabc16f2393d7b18125378409365ae77ad4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ18_以自由意志为主题的综合材料艺术创作研究——风筝互动装置作品.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ18_以自由意志为主题的综合材料艺术创作研究——风筝互动装置作品.md",
+    "size": 1018,
+    "sha256_before": "981463818025dcb8d028ca79f0f258798b93f57ebd2de615e674c10a705a61e6",
+    "sha256_after": "981463818025dcb8d028ca79f0f258798b93f57ebd2de615e674c10a705a61e6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/SJ04_电子支付网站用户帮助平台的用户体验研究与设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/SJ04_电子支付网站用户帮助平台的用户体验研究与设计.md",
+    "size": 874,
+    "sha256_before": "217b7e9a1930ea7dbf838bcdae62d4ca794e767cb532e7e063e61671a74e0e5e",
+    "sha256_after": "217b7e9a1930ea7dbf838bcdae62d4ca794e767cb532e7e063e61671a74e0e5e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ22_焦虑——基于VR技术的沉浸式体验装置.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ22_焦虑——基于VR技术的沉浸式体验装置.md",
+    "size": 940,
+    "sha256_before": "eca7b1dcc6ca54f040b77db8eba1ad6dce513090908fccecee49a0a7b4553869",
+    "sha256_after": "eca7b1dcc6ca54f040b77db8eba1ad6dce513090908fccecee49a0a7b4553869",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ09_VR交互叙事语境下的引导线索设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ09_VR交互叙事语境下的引导线索设计研究.md",
+    "size": 1196,
+    "sha256_before": "5a6931f1b6ddea94b7236740a3d423067a9cdddaef98b6a9d24b1e6202e5a7e3",
+    "sha256_after": "5a6931f1b6ddea94b7236740a3d423067a9cdddaef98b6a9d24b1e6202e5a7e3",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ02_基于生成式智能体的焦虑缓释严肃游戏设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ02_基于生成式智能体的焦虑缓释严肃游戏设计研究.md",
+    "size": 1291,
+    "sha256_before": "7c7d19587f5bb06480ccf413b5e59007e39f0f085da59e284a946e886368b9dc",
+    "sha256_after": "7c7d19587f5bb06480ccf413b5e59007e39f0f085da59e284a946e886368b9dc",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ42_基于敏捷设计思维的交互设计工具研究与制作.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ42_基于敏捷设计思维的交互设计工具研究与制作.md",
+    "size": 946,
+    "sha256_before": "3ac5b1aec3a2254c2e526b53477392d5bfd9983734f9af7a71b6210ade037e74",
+    "sha256_after": "3ac5b1aec3a2254c2e526b53477392d5bfd9983734f9af7a71b6210ade037e74",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ11_基于视觉注意机制的战斗机下视显示界面布局设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ11_基于视觉注意机制的战斗机下视显示界面布局设计研究.md",
+    "size": 1462,
+    "sha256_before": "90cb2004bf2967d57a93e406eefef7f95c70d31ad2b0b749422237fd1d831ab4",
+    "sha256_after": "90cb2004bf2967d57a93e406eefef7f95c70d31ad2b0b749422237fd1d831ab4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ19_基于开放式橱窗的多模式交互系统设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ19_基于开放式橱窗的多模式交互系统设计.md",
+    "size": 949,
+    "sha256_before": "efcfc65094647a6f0451aac1b7423c5e75bffb14fbb13dff12f3ff283117832b",
+    "sha256_after": "efcfc65094647a6f0451aac1b7423c5e75bffb14fbb13dff12f3ff283117832b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ05_鸟瞰视角VR游戏交互界面设计研究——以RTT游戏为例.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ05_鸟瞰视角VR游戏交互界面设计研究——以RTT游戏为例.md",
+    "size": 1402,
+    "sha256_before": "9b7cdccf4a791876e11ed91b974fba9a812359dc1e6e22aabf475d10b320df9e",
+    "sha256_after": "9b7cdccf4a791876e11ed91b974fba9a812359dc1e6e22aabf475d10b320df9e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/SJ01_触摸屏界面通用设计原则研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/SJ01_触摸屏界面通用设计原则研究.md",
+    "size": 1087,
+    "sha256_before": "5e64cd0378d9ec2b34e678d84ed58ff22aa9828cfc654638e53a68e78d4f1c2c",
+    "sha256_after": "5e64cd0378d9ec2b34e678d84ed58ff22aa9828cfc654638e53a68e78d4f1c2c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ15_基于情感化理论的定格动画网站设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ15_基于情感化理论的定格动画网站设计.md",
+    "size": 946,
+    "sha256_before": "d0ffd7d41836de427fac067c10c691eba22b0a112487384456ec5bd213fb1b0f",
+    "sha256_after": "d0ffd7d41836de427fac067c10c691eba22b0a112487384456ec5bd213fb1b0f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ40_基于平板与触屏的交互儿童动画.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ40_基于平板与触屏的交互儿童动画.md",
+    "size": 931,
+    "sha256_before": "f0e64e9176436100bb4832da41b6380319dfe12a480b57f10476a7cf08ec42c8",
+    "sha256_after": "f0e64e9176436100bb4832da41b6380319dfe12a480b57f10476a7cf08ec42c8",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ26_基于中国老龄化社会的社区服务体系的交互设计实践.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ26_基于中国老龄化社会的社区服务体系的交互设计实践.md",
+    "size": 982,
+    "sha256_before": "39a9938338a82407480431d501b2940ffc8d21c8dcd6c52dd6ab35cd0cda89a2",
+    "sha256_after": "39a9938338a82407480431d501b2940ffc8d21c8dcd6c52dd6ab35cd0cda89a2",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ28_基于增强现实的健身交互软件设计概念.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ28_基于增强现实的健身交互软件设计概念.md",
+    "size": 942,
+    "sha256_before": "b5b9e4994693e3f798631af077bf3c1fc8b2b986a832295786af73fdd9385461",
+    "sha256_after": "b5b9e4994693e3f798631af077bf3c1fc8b2b986a832295786af73fdd9385461",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ01_同地VR中面向联合行动的虚拟移动设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ01_同地VR中面向联合行动的虚拟移动设计研究.md",
+    "size": 1556,
+    "sha256_before": "18caf06d5d89003f1f5b8f46b9400526c83302b7bba1eac142682ae44fca5972",
+    "sha256_after": "18caf06d5d89003f1f5b8f46b9400526c83302b7bba1eac142682ae44fca5972",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ13_基于体验的4DVR交互媒体设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ13_基于体验的4DVR交互媒体设计研究.md",
+    "size": 1328,
+    "sha256_before": "3930129b1957bb5bce3128bc8187ba71a7ff92f8d7363f8aa60fff747efac691",
+    "sha256_after": "3930129b1957bb5bce3128bc8187ba71a7ff92f8d7363f8aa60fff747efac691",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ24_基于城市道路场景的车载HUD与中控屏交互设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ24_基于城市道路场景的车载HUD与中控屏交互设计研究.md",
+    "size": 1007,
+    "sha256_before": "91e3ad0d7332aff5914aa1ffcd214050cb4e51304c963a669bd5524f50af5308",
+    "sha256_after": "91e3ad0d7332aff5914aa1ffcd214050cb4e51304c963a669bd5524f50af5308",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ45_基于红绿灯路口场景下的汽车安全驾驶行为研究-以HUD上的交互设计为例.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ45_基于红绿灯路口场景下的汽车安全驾驶行为研究-以HUD上的交互设计为例.md",
+    "size": 1014,
+    "sha256_before": "0c6f8a9efb10395bb5eef4ac8abb3a68ebc119d4ca2c2e681e93d9634437d0dc",
+    "sha256_after": "0c6f8a9efb10395bb5eef4ac8abb3a68ebc119d4ca2c2e681e93d9634437d0dc",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ33_基于移动互联网的汽车后市场服务设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ33_基于移动互联网的汽车后市场服务设计研究.md",
+    "size": 958,
+    "sha256_before": "de85a00bcdf1da1e0771e71b9463125261b5741a0389b465c247285e166cbc53",
+    "sha256_after": "de85a00bcdf1da1e0771e71b9463125261b5741a0389b465c247285e166cbc53",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ35_基于LEAP MOTION运动感知的设计教育卡片系统的交互设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ35_基于LEAP MOTION运动感知的设计教育卡片系统的交互设计.md",
+    "size": 989,
+    "sha256_before": "4fb615292eae45afc116a4f4dddc088a44e52c74159f7302728f9380b92175be",
+    "sha256_after": "4fb615292eae45afc116a4f4dddc088a44e52c74159f7302728f9380b92175be",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ34_自媒体商业模式及服务设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ34_自媒体商业模式及服务设计研究.md",
+    "size": 968,
+    "sha256_before": "bc9e947c59ad3cecbebb3999d5165a4818d396e354a03e994046bad38796d9d0",
+    "sha256_after": "bc9e947c59ad3cecbebb3999d5165a4818d396e354a03e994046bad38796d9d0",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ30_互动纪录片中交互性的探索.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ30_互动纪录片中交互性的探索.md",
+    "size": 916,
+    "sha256_before": "65365081542e4b4317d6dc62aa1494d1cd38f47b6e7c79978e3d1f6bce9bcf6c",
+    "sha256_after": "65365081542e4b4317d6dc62aa1494d1cd38f47b6e7c79978e3d1f6bce9bcf6c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ43_面向用户测试数据的可视化分析系统研究与设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ43_面向用户测试数据的可视化分析系统研究与设计.md",
+    "size": 952,
+    "sha256_before": "6d5989ad642a36928e2fee88afcadc292ffd397836f47025d4f9cbefb0c68ba9",
+    "sha256_after": "6d5989ad642a36928e2fee88afcadc292ffd397836f47025d4f9cbefb0c68ba9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ17_基于敏捷交互设计的用户体验方法研究与实践.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ17_基于敏捷交互设计的用户体验方法研究与实践.md",
+    "size": 964,
+    "sha256_before": "1df676c7b26d68570ed4b554c088155f9e32779fdcd700cc59eb1a53f75b2613",
+    "sha256_after": "1df676c7b26d68570ed4b554c088155f9e32779fdcd700cc59eb1a53f75b2613",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ12_用于对外汉语学习的AR情景抽认卡设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ12_用于对外汉语学习的AR情景抽认卡设计研究.md",
+    "size": 1372,
+    "sha256_before": "a98be7e10253c7d70d0d5c6f7c9f8be512c9382c5ce116a14e0503e4ddd387f1",
+    "sha256_after": "a98be7e10253c7d70d0d5c6f7c9f8be512c9382c5ce116a14e0503e4ddd387f1",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ29_大数据时代下的公民隐私危机——交互艺术创作实践.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ29_大数据时代下的公民隐私危机——交互艺术创作实践.md",
+    "size": 982,
+    "sha256_before": "1be00c0caf229f78a0499aa99726c37eeaeb045d8285f86348b4b6a70f9b8c73",
+    "sha256_after": "1be00c0caf229f78a0499aa99726c37eeaeb045d8285f86348b4b6a70f9b8c73",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ25_以个性化需求为导向的艺术品线上交易网站的界面设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ25_以个性化需求为导向的艺术品线上交易网站的界面设计研究.md",
+    "size": 1000,
+    "sha256_before": "5c49ef935479e8b51e9d7a0c964ae910333ce94fbff77ed696b87bd71935a1da",
+    "sha256_after": "5c49ef935479e8b51e9d7a0c964ae910333ce94fbff77ed696b87bd71935a1da",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ37_基于手机与公共屏幕的多人交互儿童动画.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ37_基于手机与公共屏幕的多人交互儿童动画.md",
+    "size": 964,
+    "sha256_before": "270efdb2ab0b295773cf3419290ea93a4ecb9f24b5b084d647ca676fe6b1c6d5",
+    "sha256_after": "270efdb2ab0b295773cf3419290ea93a4ecb9f24b5b084d647ca676fe6b1c6d5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/SJ05_儿童认知风格对移动数字化早期教育产品的交互设计的影响之研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/SJ05_儿童认知风格对移动数字化早期教育产品的交互设计的影响之研究.md",
+    "size": 976,
+    "sha256_before": "06ed595f0910f527856c28a3a6c1b431ff207c8a05a407feb46b7b288f5552b6",
+    "sha256_after": "06ed595f0910f527856c28a3a6c1b431ff207c8a05a407feb46b7b288f5552b6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ21_基于交互心理体验的情绪可视化设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ21_基于交互心理体验的情绪可视化设计.md",
+    "size": 946,
+    "sha256_before": "4f038a702b3f06e22db9634603ea7e938a69cfad3c9634b8d3b22b83f7e4fd26",
+    "sha256_after": "4f038a702b3f06e22db9634603ea7e938a69cfad3c9634b8d3b22b83f7e4fd26",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ07_VR场景下间接虚拟屏幕的多点触控交互设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ07_VR场景下间接虚拟屏幕的多点触控交互设计研究.md",
+    "size": 1447,
+    "sha256_before": "41f53331e58deb49b101a63d6dc3b53a5f31e5ad0f6ca4bf141f9a4be3cd7c0c",
+    "sha256_after": "41f53331e58deb49b101a63d6dc3b53a5f31e5ad0f6ca4bf141f9a4be3cd7c0c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ36_基于多人协作的触屏桌面教育系统交互设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ36_基于多人协作的触屏桌面教育系统交互设计.md",
+    "size": 1001,
+    "sha256_before": "039e4174bc5047dcf1ca2bb3b65d6ade52df8f557258e96b106d24a36567421c",
+    "sha256_after": "039e4174bc5047dcf1ca2bb3b65d6ade52df8f557258e96b106d24a36567421c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ32_上海地铁站空间的广告交互设计研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ32_上海地铁站空间的广告交互设计研究.md",
+    "size": 940,
+    "sha256_before": "61cf8f83747ec81d333ca4d7353c92eab61cbee0f18f2042df2897b99304ba62",
+    "sha256_after": "61cf8f83747ec81d333ca4d7353c92eab61cbee0f18f2042df2897b99304ba62",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ08_面向公众环境教育的严肃游戏设计——以城市野生动物与人的关系为议题.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ08_面向公众环境教育的严肃游戏设计——以城市野生动物与人的关系为议题.md",
+    "size": 1445,
+    "sha256_before": "4a77a8a04c1b4559e535769fcd47035365d683b6db90c7daf392e5f675d6a99f",
+    "sha256_after": "4a77a8a04c1b4559e535769fcd47035365d683b6db90c7daf392e5f675d6a99f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ14_跨VR多设备应用的用户体验一致性研究——以VR严肃游戏《镜头语言虚拟实验》为例.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ14_跨VR多设备应用的用户体验一致性研究——以VR严肃游戏《镜头语言虚拟实验》为例.md",
+    "size": 1372,
+    "sha256_before": "ecf963c623f8b7f3f4d4fd1224e169d81c5efe409e5c81f93548872ddd1f9ff6",
+    "sha256_after": "ecf963c623f8b7f3f4d4fd1224e169d81c5efe409e5c81f93548872ddd1f9ff6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ27_基于上海南站大型商业空间文化塑造的交互创作实践.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ27_基于上海南站大型商业空间文化塑造的交互创作实践.md",
+    "size": 982,
+    "sha256_before": "f4ab700e3fa6e24f364e4264118e8fba316395de090ee082e542b5e45766f278",
+    "sha256_after": "f4ab700e3fa6e24f364e4264118e8fba316395de090ee082e542b5e45766f278",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ16_基于虚拟现实技术的娱乐体验设计——以VR游戏《鲸屿》创作为例.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ16_基于虚拟现实技术的娱乐体验设计——以VR游戏《鲸屿》创作为例.md",
+    "size": 1012,
+    "sha256_before": "fc7921a1cd6f70c440e7d817b4914576e9b81e7d709bf3bf7ebb0e8948acb628",
+    "sha256_after": "fc7921a1cd6f70c440e7d817b4914576e9b81e7d709bf3bf7ebb0e8948acb628",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ38_基于平板与公共屏幕的交互三维儿童动画.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ38_基于平板与公共屏幕的交互三维儿童动画.md",
+    "size": 952,
+    "sha256_before": "31a19cfaa4a61a962739dea79fe6d497ca5bb1690762089bca683e69e0e3d8b0",
+    "sha256_after": "31a19cfaa4a61a962739dea79fe6d497ca5bb1690762089bca683e69e0e3d8b0",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/SJ02_基于决策实验室法的轿车内饰用户体验研究.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/SJ02_基于决策实验室法的轿车内饰用户体验研究.md",
+    "size": 1143,
+    "sha256_before": "fdb597b9ef8256ba229d98376ece290f3998624789c0337199cb6a475204d489",
+    "sha256_after": "fdb597b9ef8256ba229d98376ece290f3998624789c0337199cb6a475204d489",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ31_“过程即存在”—综合材料绘画与交互展示创作实践.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ31_“过程即存在”—综合材料绘画与交互展示创作实践.md",
+    "size": 991,
+    "sha256_before": "6e6e628900bb185d2a2e21fdb20373f6f936a78b401019140545ca2687fb0c50",
+    "sha256_after": "6e6e628900bb185d2a2e21fdb20373f6f936a78b401019140545ca2687fb0c50",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ23_交互设计在线学习平台网站设计.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ23_交互设计在线学习平台网站设计.md",
+    "size": 968,
+    "sha256_before": "73da692975511419625f18d5bd74fdc59b99ec4524bd7425ed099dc50dcd5c4f",
+    "sha256_after": "73da692975511419625f18d5bd74fdc59b99ec4524bd7425ed099dc50dcd5c4f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/逐篇资料卡/TJ03_癌症患儿健康干预严肃游戏设计研究——以白血病患儿的饮食健康管理严肃游戏为例.md",
+    "new_path": "论文/07_参考论文/逐篇资料卡/TJ03_癌症患儿健康干预严肃游戏设计研究——以白血病患儿的饮食健康管理严肃游戏为例.md",
+    "size": 1570,
+    "sha256_before": "a1c82b0a6b79e162f744bfaf43bad79c1b341bd7e1ee4284067eb2d5fcbbc1cd",
+    "sha256_after": "a1c82b0a6b79e162f744bfaf43bad79c1b341bd7e1ee4284067eb2d5fcbbc1cd",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/上交交互设计硕士学位论文/促进音乐要素理解的增强现实应用交互设计_陈奕扬.pdf",
+    "new_path": "论文/07_参考论文/上交交互设计硕士学位论文/促进音乐要素理解的增强现实应用交互设计_陈奕扬.pdf",
+    "size": 4380999,
+    "sha256_before": "c750d2187f26bec2b667aa2d517e66bf3c946ff3b0737055822560d4b3552c67",
+    "sha256_after": "c750d2187f26bec2b667aa2d517e66bf3c946ff3b0737055822560d4b3552c67",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/交大_图书馆学位论文说明.html",
+    "new_path": "论文/07_参考论文/来源存档/交大_图书馆学位论文说明.html",
+    "size": 4162,
+    "sha256_before": "6d5f0f971790dec4ca933132fd7da689674df1113c57dd423b17cd4c3a36cff6",
+    "sha256_after": "6d5f0f971790dec4ca933132fd7da689674df1113c57dd423b17cd4c3a36cff6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/SJ01_检索证据说明.md",
+    "new_path": "论文/07_参考论文/来源存档/SJ01_检索证据说明.md",
+    "size": 678,
+    "sha256_before": "34bbfeaecb784b2681afd9ad5e20df47a002b293dffc0eecd971877bd938013c",
+    "sha256_after": "34bbfeaecb784b2681afd9ad5e20df47a002b293dffc0eecd971877bd938013c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/同济_导师学位论文链接.txt",
+    "new_path": "论文/07_参考论文/来源存档/同济_导师学位论文链接.txt",
+    "size": 36136,
+    "sha256_before": "acf2434b2b113bf84b7d0a12429e6446bcc5b0385e60cc94b7f275b690036f9f",
+    "sha256_after": "acf2434b2b113bf84b7d0a12429e6446bcc5b0385e60cc94b7f275b690036f9f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/同济_用户研究实验室.html",
+    "new_path": "论文/07_参考论文/来源存档/同济_用户研究实验室.html",
+    "size": 54828,
+    "sha256_before": "2e97fa4634ec5b810a2f6852745b9cce94145c87d8244c5ec778407a6faabee4",
+    "sha256_after": "2e97fa4634ec5b810a2f6852745b9cce94145c87d8244c5ec778407a6faabee4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/SJ02_检索证据说明.md",
+    "new_path": "论文/07_参考论文/来源存档/SJ02_检索证据说明.md",
+    "size": 760,
+    "sha256_before": "839c942d88423cc36ff2596a4b4dbab416d3099931146352ce68e4504c39e27d",
+    "sha256_after": "839c942d88423cc36ff2596a4b4dbab416d3099931146352ce68e4504c39e27d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/交大_图书馆学位论文说明.txt",
+    "new_path": "论文/07_参考论文/来源存档/交大_图书馆学位论文说明.txt",
+    "size": 1790,
+    "sha256_before": "942523899c56272246a8abb871b89ef5aa910ef6d37275f9c47bece5246c7564",
+    "sha256_after": "942523899c56272246a8abb871b89ef5aa910ef6d37275f9c47bece5246c7564",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/SJ04_检索证据说明.md",
+    "new_path": "论文/07_参考论文/来源存档/SJ04_检索证据说明.md",
+    "size": 548,
+    "sha256_before": "ccfbc944207b90e301f8995b983ce6d87ac36015935046d62e9a240718d23640",
+    "sha256_after": "ccfbc944207b90e301f8995b983ce6d87ac36015935046d62e9a240718d23640",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/同济_MFA作品与论文名单.txt",
+    "new_path": "论文/07_参考论文/来源存档/同济_MFA作品与论文名单.txt",
+    "size": 4277,
+    "sha256_before": "ab9a6fc1dededf53f6362de5b8b0fd6261ab82c985497dec1444da6879826b3c",
+    "sha256_after": "ab9a6fc1dededf53f6362de5b8b0fd6261ab82c985497dec1444da6879826b3c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/同济_导师学位论文链接.html",
+    "new_path": "论文/07_参考论文/来源存档/同济_导师学位论文链接.html",
+    "size": 141707,
+    "sha256_before": "5c76b1715875f37476570eb63abaa4ef23f88ffe37dee08835c7d97107359117",
+    "sha256_after": "5c76b1715875f37476570eb63abaa4ef23f88ffe37dee08835c7d97107359117",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/SJ03_检索证据说明.md",
+    "new_path": "论文/07_参考论文/来源存档/SJ03_检索证据说明.md",
+    "size": 596,
+    "sha256_before": "8f941bbdb80f4984b2ecce4dc645409bf786dddead9d4e8ab67a22c99aa00c03",
+    "sha256_after": "8f941bbdb80f4984b2ecce4dc645409bf786dddead9d4e8ab67a22c99aa00c03",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/SJ05_检索证据说明.md",
+    "new_path": "论文/07_参考论文/来源存档/SJ05_检索证据说明.md",
+    "size": 623,
+    "sha256_before": "0cc82167eccad462b4d66c8333c9a943ee1a32d3786dc918d28ae51e4e0f613e",
+    "sha256_after": "0cc82167eccad462b4d66c8333c9a943ee1a32d3786dc918d28ae51e4e0f613e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/同济_用户研究实验室.txt",
+    "new_path": "论文/07_参考论文/来源存档/同济_用户研究实验室.txt",
+    "size": 5372,
+    "sha256_before": "e15100f1dae3ee04445d2b7dadecd9820c468b2a1ff7438bd2474fd6922b1e04",
+    "sha256_after": "e15100f1dae3ee04445d2b7dadecd9820c468b2a1ff7438bd2474fd6922b1e04",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/参考论文/来源存档/同济_MFA作品与论文名单.html",
+    "new_path": "论文/07_参考论文/来源存档/同济_MFA作品与论文名单.html",
+    "size": 48845,
+    "sha256_before": "f9f1a07bcedc688474abf925356141e013cb456d9d3e29a27fd2f8896ea8af5c",
+    "sha256_after": "f9f1a07bcedc688474abf925356141e013cb456d9d3e29a27fd2f8896ea8af5c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/1000笔.png",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/1000笔.png",
+    "size": 334482,
+    "sha256_before": "7b31e75afbcb716234dbeb173d6077d78671741a3a83f4d1b24edf82a1b99eb9",
+    "sha256_after": "7b31e75afbcb716234dbeb173d6077d78671741a3a83f4d1b24edf82a1b99eb9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/500笔.png",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/500笔.png",
+    "size": 248502,
+    "sha256_before": "eace939ec207b08e0e9404127848f930f3d6bbc95ed76d6280f2373c9694bae3",
+    "sha256_after": "eace939ec207b08e0e9404127848f930f3d6bbc95ed76d6280f2373c9694bae3",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/对比数据.json",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/对比数据.json",
+    "size": 2648,
+    "sha256_before": "8482b91f5afec9cb37acb7e53570d330926e4d858727cc1792537b2bc05a460c",
+    "sha256_after": "8482b91f5afec9cb37acb7e53570d330926e4d858727cc1792537b2bc05a460c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/700笔.png",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/700笔.png",
+    "size": 284803,
+    "sha256_before": "d4018e325fefc5afb0c84002ac64cd9a9c999f038f54e5e99f1759bc0b0180d9",
+    "sha256_after": "d4018e325fefc5afb0c84002ac64cd9a9c999f038f54e5e99f1759bc0b0180d9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/500笔-序列.json",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/500笔-序列.json",
+    "size": 99002,
+    "sha256_before": "4c6f64be0b666f1172504ab742aaebd57021d24b0e9d26c7a319b051b1f27b5a",
+    "sha256_after": "4c6f64be0b666f1172504ab742aaebd57021d24b0e9d26c7a319b051b1f27b5a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/200笔-序列.json",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/200笔-序列.json",
+    "size": 39428,
+    "sha256_before": "b61d4f9f9c2f9d9c6696343e97d9ac828fde741af1aa848cd5a70e1808e2956d",
+    "sha256_after": "b61d4f9f9c2f9d9c6696343e97d9ac828fde741af1aa848cd5a70e1808e2956d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/300笔.png",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/300笔.png",
+    "size": 209735,
+    "sha256_before": "56de0b684d244a3b8cfafe5ab248ba2545a8dd99027008f087829bb0109301d7",
+    "sha256_after": "56de0b684d244a3b8cfafe5ab248ba2545a8dd99027008f087829bb0109301d7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/参考原图.png",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/参考原图.png",
+    "size": 1040272,
+    "sha256_before": "4bc959c0a79ba2bc3f5ac4350218a8d6c35d338717f2f8ce04f387dcd386fb52",
+    "sha256_after": "4bc959c0a79ba2bc3f5ac4350218a8d6c35d338717f2f8ce04f387dcd386fb52",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/700笔-序列.json",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/700笔-序列.json",
+    "size": 138710,
+    "sha256_before": "b25e782dee53e475d6626097fdd291d30c15b453f3ea8596354c43c0f9f0a1a6",
+    "sha256_after": "b25e782dee53e475d6626097fdd291d30c15b453f3ea8596354c43c0f9f0a1a6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/六档效果总览.png",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/六档效果总览.png",
+    "size": 877689,
+    "sha256_before": "02d509da314171c1e20eb2caee8726fe8faf272ad04e462bd00cc6bb29e75de5",
+    "sha256_after": "02d509da314171c1e20eb2caee8726fe8faf272ad04e462bd00cc6bb29e75de5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/100笔.png",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/100笔.png",
+    "size": 139169,
+    "sha256_before": "131c6231bf2354e46014d157dccc62ab6b786fa01a2eabb1e7a4a0692613439c",
+    "sha256_after": "131c6231bf2354e46014d157dccc62ab6b786fa01a2eabb1e7a4a0692613439c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/100笔-序列.json",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/100笔-序列.json",
+    "size": 19666,
+    "sha256_before": "c103c08a5cb8c33d87724959bf1889a4a585fd70caeafa76f402d9f26ee4fd94",
+    "sha256_after": "c103c08a5cb8c33d87724959bf1889a4a585fd70caeafa76f402d9f26ee4fd94",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/200笔.png",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/200笔.png",
+    "size": 185817,
+    "sha256_before": "dda75eb0ef8157630e91c23e5aeb777c416f95aaadd48070c28005b7b79f17c7",
+    "sha256_after": "dda75eb0ef8157630e91c23e5aeb777c416f95aaadd48070c28005b7b79f17c7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/交互对比.html",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/交互对比.html",
+    "size": 3260452,
+    "sha256_before": "9c70cea8c68b2249af6391ed4ee0f7352233bcc3fa4f80a875ddb03edf794f3b",
+    "sha256_after": "9c70cea8c68b2249af6391ed4ee0f7352233bcc3fa4f80a875ddb03edf794f3b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/300笔-序列.json",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/300笔-序列.json",
+    "size": 59261,
+    "sha256_before": "db37e4ab6e29f55f6f2fcb7b524493c76b2877775d9c50e9bae0ae609a6f2054",
+    "sha256_after": "db37e4ab6e29f55f6f2fcb7b524493c76b2877775d9c50e9bae0ae609a6f2054",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/莫奈日出_六档笔触对比/1000笔-序列.json",
+    "new_path": "论文/05_算法实验与验证/莫奈日出_六档笔触对比/1000笔-序列.json",
+    "size": 198275,
+    "sha256_before": "fc15e5849d3cc7ffc2e31f73e11253c7cc0a1eae280216670b25bf2ab81d41f8",
+    "sha256_after": "fc15e5849d3cc7ffc2e31f73e11253c7cc0a1eae280216670b25bf2ab81d41f8",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/测试流程简化验收/完成对比.png",
+    "new_path": "论文/06_工程验收与截图/测试流程简化验收/完成对比.png",
+    "size": 178680,
+    "sha256_before": "8eb05c4e402558364e5b06762cb884a302ae35fa9ba8c669480418c4ef3357dd",
+    "sha256_after": "8eb05c4e402558364e5b06762cb884a302ae35fa9ba8c669480418c4ef3357dd",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/测试流程简化验收/使用说明.md",
+    "new_path": "论文/06_工程验收与截图/测试流程简化验收/使用说明.md",
+    "size": 2325,
+    "sha256_before": "cb9f6bc8934ab7899f56c584e510e8e5901b21c0120764cea8d9c04fa5097f6b",
+    "sha256_after": "cb9f6bc8934ab7899f56c584e510e8e5901b21c0120764cea8d9c04fa5097f6b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/测试流程简化验收/手机测试入口.png",
+    "new_path": "论文/06_工程验收与截图/测试流程简化验收/手机测试入口.png",
+    "size": 124579,
+    "sha256_before": "199d67f83e0d7b32ae2eddb77fa75ea944ffc32dfa61289eafcc289772672670",
+    "sha256_after": "199d67f83e0d7b32ae2eddb77fa75ea944ffc32dfa61289eafcc289772672670",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/交互简化与研究码验收/参考原图提示卡.png",
+    "new_path": "论文/06_工程验收与截图/交互简化与研究码验收/参考原图提示卡.png",
+    "size": 32557,
+    "sha256_before": "cb9333f2712219bc12f605981e2ffea116d135e6d065bfbc9b77b937405aa032",
+    "sha256_after": "cb9333f2712219bc12f605981e2ffea116d135e6d065bfbc9b77b937405aa032",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/交互简化与研究码验收/手机箭头引导.png",
+    "new_path": "论文/06_工程验收与截图/交互简化与研究码验收/手机箭头引导.png",
+    "size": 59302,
+    "sha256_before": "45e4011769bab65b77a2aff1d8a202ff0ed9f53ada2b5f2d574b512a4e37c5ba",
+    "sha256_after": "45e4011769bab65b77a2aff1d8a202ff0ed9f53ada2b5f2d574b512a4e37c5ba",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/交互简化与研究码验收/手机自由星域.png",
+    "new_path": "论文/06_工程验收与截图/交互简化与研究码验收/手机自由星域.png",
+    "size": 41163,
+    "sha256_before": "d2170b0e73eb3aaad814f99d94562757b44006674414a427bbf9a2b0f1567bfd",
+    "sha256_after": "d2170b0e73eb3aaad814f99d94562757b44006674414a427bbf9a2b0f1567bfd",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/交互简化与研究码验收/手机选图.png",
+    "new_path": "论文/06_工程验收与截图/交互简化与研究码验收/手机选图.png",
+    "size": 187651,
+    "sha256_before": "dfdabdce1e176939226b7069cec460b16f0c6a037d1654d8c28179994dc243eb",
+    "sha256_after": "dfdabdce1e176939226b7069cec460b16f0c6a037d1654d8c28179994dc243eb",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/交互简化与研究码验收/手机原图全屏.png",
+    "new_path": "论文/06_工程验收与截图/交互简化与研究码验收/手机原图全屏.png",
+    "size": 21860,
+    "sha256_before": "d579915df095f38869ea2c15e38a9756ab70c30cb76f9951d7089bfcbeb2d8ba",
+    "sha256_after": "d579915df095f38869ea2c15e38a9756ab70c30cb76f9951d7089bfcbeb2d8ba",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/交互简化与研究码验收/说明.md",
+    "new_path": "论文/06_工程验收与截图/交互简化与研究码验收/说明.md",
+    "size": 1238,
+    "sha256_before": "e5b53e35f511c020527585764ccde7bd6c59cd6b92457d86d4fe74a1787a617d",
+    "sha256_after": "e5b53e35f511c020527585764ccde7bd6c59cd6b92457d86d4fe74a1787a617d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/交互简化与研究码验收/首页.png",
+    "new_path": "论文/06_工程验收与截图/交互简化与研究码验收/首页.png",
+    "size": 185403,
+    "sha256_before": "fd3dc31285747d76e75f1333ab78887c4bd26feffcb9e6683f0684dc6a4441fa",
+    "sha256_after": "fd3dc31285747d76e75f1333ab78887c4bd26feffcb9e6683f0684dc6a4441fa",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/截图来源记录.json",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/截图来源记录.json",
+    "size": 2036,
+    "sha256_before": "a8bf7c5b66c8083bf22a0e7b5da6cee3fe11d9effac880eb2729f76289d41c98",
+    "sha256_after": "a8bf7c5b66c8083bf22a0e7b5da6cee3fe11d9effac880eb2729f76289d41c98",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/六种笔刷.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/六种笔刷.png",
+    "size": 110244,
+    "sha256_before": "8fb4533b9bbbf23a07d0df5db32586f96cae1a314c872169d0dd17f0cf8c199f",
+    "sha256_after": "8fb4533b9bbbf23a07d0df5db32586f96cae1a314c872169d0dd17f0cf8c199f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/系统结构.html",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/系统结构.html",
+    "size": 2511,
+    "sha256_before": "1749abcaeb33acf24282cdb30ddc528fe362f9d08c1e8fad56583ac843b040f5",
+    "sha256_after": "1749abcaeb33acf24282cdb30ddc528fe362f9d08c1e8fad56583ac843b040f5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/改写前备份_中文版.pdf",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/改写前备份_中文版.pdf",
+    "size": 1501307,
+    "sha256_before": "24fe6a8d5700f777625c8e8a945bf173266b9e1c6e9275328dbe222f3666ade6",
+    "sha256_after": "24fe6a8d5700f777625c8e8a945bf173266b9e1c6e9275328dbe222f3666ade6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/实验流程.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/实验流程.png",
+    "size": 297918,
+    "sha256_before": "5b344ccd18721f1557cc043dc0a945f0242e81290bd29b37e2a3ac4e5dc91cb6",
+    "sha256_after": "5b344ccd18721f1557cc043dc0a945f0242e81290bd29b37e2a3ac4e5dc91cb6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/系统结构.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/系统结构.png",
+    "size": 258602,
+    "sha256_before": "5f427b0b32758a98b780bd39a0554209c8e8c4f781451d8ef7827a2695fc5926",
+    "sha256_after": "5f427b0b32758a98b780bd39a0554209c8e8c4f781451d8ef7827a2695fc5926",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/配对报告.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/配对报告.png",
+    "size": 75837,
+    "sha256_before": "2be6a8ab0c922a40ba27f9b2ff3e00937d6b54ecfc79c71d310d4dce961b7caa",
+    "sha256_after": "2be6a8ab0c922a40ba27f9b2ff3e00937d6b54ecfc79c71d310d4dce961b7caa",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/选图上传.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/选图上传.png",
+    "size": 228687,
+    "sha256_before": "a80bf3db6f00a45ba60889cc4b665ecfe24bc7551c24f781c7663bc8aa3243e7",
+    "sha256_after": "a80bf3db6f00a45ba60889cc4b665ecfe24bc7551c24f781c7663bc8aa3243e7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/测试入口.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/测试入口.png",
+    "size": 230866,
+    "sha256_before": "30cba766dcd86305b91bccf4ba431820e7ec39c338a89b9e95e740b5555ecf64",
+    "sha256_after": "30cba766dcd86305b91bccf4ba431820e7ec39c338a89b9e95e740b5555ecf64",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/开始前自评.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/开始前自评.png",
+    "size": 146253,
+    "sha256_before": "8a51171a0f41672ede2ee3e6b78fff117a4b0a4f8a25295ff285e27ca717d105",
+    "sha256_after": "8a51171a0f41672ede2ee3e6b78fff117a4b0a4f8a25295ff285e27ca717d105",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/产品介绍.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/产品介绍.png",
+    "size": 322500,
+    "sha256_before": "eac818338bbf1b58ef93cfff2130f2828ec3d3f4a27dcb75e33f297a5892e0bb",
+    "sha256_after": "eac818338bbf1b58ef93cfff2130f2828ec3d3f4a27dcb75e33f297a5892e0bb",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/中期检查报告_中文正文.md",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/中期检查报告_中文正文.md",
+    "size": 24059,
+    "sha256_before": "c80fdfb49d37c4c5a1a13efc068e4095c387d5db32fdd2b1daa92056edfbbb02",
+    "sha256_after": "c80fdfb49d37c4c5a1a13efc068e4095c387d5db32fdd2b1daa92056edfbbb02",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/五遍阶段.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/五遍阶段.png",
+    "size": 872886,
+    "sha256_before": "d5afae4f8b969d2e79b4f6c710e8638feceeb5746f9ec83f44c571a6c5eb7b91",
+    "sha256_after": "d5afae4f8b969d2e79b4f6c710e8638feceeb5746f9ec83f44c571a6c5eb7b91",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/实验流程.html",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/实验流程.html",
+    "size": 3182,
+    "sha256_before": "9e215fd25e8a5db5b29d9a56cd7ea359664c5d04abb883743973f6a349e1b1f5",
+    "sha256_after": "9e215fd25e8a5db5b29d9a56cd7ea359664c5d04abb883743973f6a349e1b1f5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/引导测试画布.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/引导测试画布.png",
+    "size": 143952,
+    "sha256_before": "c9e923d836040c5b70a77b41767a61e77418ab4d701aa0b3edee71b7f15b7ddc",
+    "sha256_after": "c9e923d836040c5b70a77b41767a61e77418ab4d701aa0b3edee71b7f15b7ddc",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/附件1-硕士生中期检查_陈皓宇_中文版.pdf",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/附件1-硕士生中期检查_陈皓宇_中文版.pdf",
+    "size": 2750760,
+    "sha256_before": "3a6440e725410bfb999e2fc67d79a7e6a88a3235c62cda94fc094b9c6ac35b35",
+    "sha256_after": "3a6440e725410bfb999e2fc67d79a7e6a88a3235c62cda94fc094b9c6ac35b35",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/填写与核对记录.json",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/填写与核对记录.json",
+    "size": 3778,
+    "sha256_before": "dbf35fb5fb0f4472a38093841309f0fca1410035063ee0515d31dbeccffd098c",
+    "sha256_after": "dbf35fb5fb0f4472a38093841309f0fca1410035063ee0515d31dbeccffd098c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/逐笔绘画.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/逐笔绘画.png",
+    "size": 1196467,
+    "sha256_before": "3fdf1ecc88ea6daf2daea6347d87d4731aae9748f0f4ecdcafe598863a2b95cc",
+    "sha256_after": "3fdf1ecc88ea6daf2daea6347d87d4731aae9748f0f4ecdcafe598863a2b95cc",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/交付说明.md",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/交付说明.md",
+    "size": 1008,
+    "sha256_before": "84a4d510032859ba9f9404fb72bb1dd28fdcc7de075dcfe182e7a4fdb88a4dde",
+    "sha256_after": "84a4d510032859ba9f9404fb72bb1dd28fdcc7de075dcfe182e7a4fdb88a4dde",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/五遍阶段.html",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/五遍阶段.html",
+    "size": 2101287,
+    "sha256_before": "6eda491699489eb930d0ecef5858c85495d6f789d6e75ba9bccd4cbfd03fba89",
+    "sha256_after": "6eda491699489eb930d0ecef5858c85495d6f789d6e75ba9bccd4cbfd03fba89",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/改写前备份_附件1-硕士生中期检查_陈皓宇_中文版.docx",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/改写前备份_附件1-硕士生中期检查_陈皓宇_中文版.docx",
+    "size": 1471618,
+    "sha256_before": "ae1ccc10fa19a906acc4fc995d5bb9220460f68de3ae0a37b7c44590b3bfd38a",
+    "sha256_after": "ae1ccc10fa19a906acc4fc995d5bb9220460f68de3ae0a37b7c44590b3bfd38a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/首页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/首页.png",
+    "size": 232616,
+    "sha256_before": "5ee29cbe605c718b23291e2978a857c8307203d418479b6df303e56afcc1e9ed",
+    "sha256_after": "5ee29cbe605c718b23291e2978a857c8307203d418479b6df303e56afcc1e9ed",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/研究工作台.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/研究工作台.png",
+    "size": 271562,
+    "sha256_before": "5697f4e6f394ec802a9f79f2549736757493f19c5ccd733dc7edbb95a5184b07",
+    "sha256_after": "5697f4e6f394ec802a9f79f2549736757493f19c5ccd733dc7edbb95a5184b07",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第08页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第08页.png",
+    "size": 352764,
+    "sha256_before": "80c5ce9d8eb299a69164a34262979bd9e9bc8c790fa78e0327d27471f0f42422",
+    "sha256_after": "80c5ce9d8eb299a69164a34262979bd9e9bc8c790fa78e0327d27471f0f42422",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第24页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第24页.png",
+    "size": 70783,
+    "sha256_before": "82414bb187d64bf13effb0f8abe121511f2b1f07652ef189a77ef35a2e9865a3",
+    "sha256_after": "82414bb187d64bf13effb0f8abe121511f2b1f07652ef189a77ef35a2e9865a3",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第04页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第04页.png",
+    "size": 199574,
+    "sha256_before": "7e1c40739c239f3a42a154eddf23208312eee0ebddd1cb9ce53cd4dd4b70cbbb",
+    "sha256_after": "7e1c40739c239f3a42a154eddf23208312eee0ebddd1cb9ce53cd4dd4b70cbbb",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第12页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第12页.png",
+    "size": 260549,
+    "sha256_before": "39d0c30b35da80a08ef986e78943e14816338cea4d3668604f83a3700a1f8c4d",
+    "sha256_after": "39d0c30b35da80a08ef986e78943e14816338cea4d3668604f83a3700a1f8c4d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第13页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第13页.png",
+    "size": 172554,
+    "sha256_before": "16e223c39af2b2aa9af25e67d995641b1e9a699893709efd7847b66fed1bd459",
+    "sha256_after": "16e223c39af2b2aa9af25e67d995641b1e9a699893709efd7847b66fed1bd459",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第05页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第05页.png",
+    "size": 133419,
+    "sha256_before": "4a1602a60f8aab2742c91ccad8d4b848aa898b81167981e6c25b5d853b8d19e6",
+    "sha256_after": "4a1602a60f8aab2742c91ccad8d4b848aa898b81167981e6c25b5d853b8d19e6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第09页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第09页.png",
+    "size": 181337,
+    "sha256_before": "1f8b7b2d680784066bcd847de437a6934154a007f922f0de5afea2d51cfa0fcb",
+    "sha256_after": "1f8b7b2d680784066bcd847de437a6934154a007f922f0de5afea2d51cfa0fcb",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第02页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第02页.png",
+    "size": 95515,
+    "sha256_before": "96f9f35648876aa130a47df6c6b36517008e039c35698ce232ecc4a7fc439b89",
+    "sha256_after": "96f9f35648876aa130a47df6c6b36517008e039c35698ce232ecc4a7fc439b89",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第14页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第14页.png",
+    "size": 184081,
+    "sha256_before": "83abf6f7863455254636da6318ffc837d55a5d89b1fab66b001efe487a7390da",
+    "sha256_after": "83abf6f7863455254636da6318ffc837d55a5d89b1fab66b001efe487a7390da",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第18页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第18页.png",
+    "size": 158288,
+    "sha256_before": "77a72e55a5c1eb2a7849afb613d821e2f6e28f38fd8ce19e559914fa9adb1f96",
+    "sha256_after": "77a72e55a5c1eb2a7849afb613d821e2f6e28f38fd8ce19e559914fa9adb1f96",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第22页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第22页.png",
+    "size": 105213,
+    "sha256_before": "c44e8a3d683dd47cae87f9c9ef457077229f727e6ddd3b810a7624a300610bb1",
+    "sha256_after": "c44e8a3d683dd47cae87f9c9ef457077229f727e6ddd3b810a7624a300610bb1",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第23页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第23页.png",
+    "size": 150711,
+    "sha256_before": "5e97be85c20c065c645b986b7c348d839f189578f2dd372dddff3f1d96067b40",
+    "sha256_after": "5e97be85c20c065c645b986b7c348d839f189578f2dd372dddff3f1d96067b40",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第19页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第19页.png",
+    "size": 134955,
+    "sha256_before": "63b8f1bc65e3fe4560389571f8d91fce5ea3632040170669a6818cfa2e76409d",
+    "sha256_after": "63b8f1bc65e3fe4560389571f8d91fce5ea3632040170669a6818cfa2e76409d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第15页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第15页.png",
+    "size": 165491,
+    "sha256_before": "b7db5f5eadf16ecb117a862058126c7422462de3917e2cf59492cd820d9f41d5",
+    "sha256_after": "b7db5f5eadf16ecb117a862058126c7422462de3917e2cf59492cd820d9f41d5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第03页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第03页.png",
+    "size": 152621,
+    "sha256_before": "70368d452724508aef4c4a0bb5061dc39e22cff995383663c7c55a118c522b0e",
+    "sha256_after": "70368d452724508aef4c4a0bb5061dc39e22cff995383663c7c55a118c522b0e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第16页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第16页.png",
+    "size": 122907,
+    "sha256_before": "e494a0dee1a7eec023bc2230577e2dcd76ebe9b6b3b12711b45e94b9eba27f74",
+    "sha256_after": "e494a0dee1a7eec023bc2230577e2dcd76ebe9b6b3b12711b45e94b9eba27f74",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第20页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第20页.png",
+    "size": 132909,
+    "sha256_before": "d9592150d7ab01e3ef8678a60b3d4c68e6dd1a9f3fb63ba5df6d7ec07b4da518",
+    "sha256_after": "d9592150d7ab01e3ef8678a60b3d4c68e6dd1a9f3fb63ba5df6d7ec07b4da518",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第21页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第21页.png",
+    "size": 154801,
+    "sha256_before": "4d4fb1419079f41ac66509dbbccf50f30d4d8a5ed229105150768e27276ed0e6",
+    "sha256_after": "4d4fb1419079f41ac66509dbbccf50f30d4d8a5ed229105150768e27276ed0e6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第01页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第01页.png",
+    "size": 90300,
+    "sha256_before": "07008497256e8ca526cf5a5c40f2759ffc6a069b8d9bd63c5d64fcf579f63b26",
+    "sha256_after": "07008497256e8ca526cf5a5c40f2759ffc6a069b8d9bd63c5d64fcf579f63b26",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第17页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第17页.png",
+    "size": 136660,
+    "sha256_before": "911a31fbc6c080cbe7c40164ffb1a3c75f5e173a826002f996e1e61fa324e03b",
+    "sha256_after": "911a31fbc6c080cbe7c40164ffb1a3c75f5e173a826002f996e1e61fa324e03b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第10页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第10页.png",
+    "size": 192505,
+    "sha256_before": "333b6ad236e8c1092651f9edc5ea65c1547bf2662f65eae3d1fe346c5c9980d7",
+    "sha256_after": "333b6ad236e8c1092651f9edc5ea65c1547bf2662f65eae3d1fe346c5c9980d7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第06页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第06页.png",
+    "size": 180937,
+    "sha256_before": "dbdd58273d75cd8c6f2940231048daf4cef36cfec1450c6247bbc886b3a793d4",
+    "sha256_after": "dbdd58273d75cd8c6f2940231048daf4cef36cfec1450c6247bbc886b3a793d4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第07页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第07页.png",
+    "size": 76438,
+    "sha256_before": "dab28775555f5d51fb17f591c5c5d88b59b11d06c38718f99de32520edb37150",
+    "sha256_after": "dab28775555f5d51fb17f591c5c5d88b59b11d06c38718f99de32520edb37150",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_20260916图文材料/排版核对/第11页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260916_改写与图文材料/排版核对/第11页.png",
+    "size": 173896,
+    "sha256_before": "a2efc4a115fda09a17f725fbe3ba20b59e0d6f31c8fdeee8c8cc407d18b86aaf",
+    "sha256_after": "a2efc4a115fda09a17f725fbe3ba20b59e0d6f31c8fdeee8c8cc407d18b86aaf",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/验证说明.md",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/验证说明.md",
+    "size": 1002,
+    "sha256_before": "a6ae9355b84aa787207a2763ea821e475ee7d7b664f6edb5f0eb51a7f4e5591f",
+    "sha256_after": "a6ae9355b84aa787207a2763ea821e475ee7d7b664f6edb5f0eb51a7f4e5591f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/对比数据.json",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/对比数据.json",
+    "size": 820,
+    "sha256_before": "be5473968fa2cf2fb9a470e9322d38221a623ca4801d8fcfc7ed49a06c1dc967",
+    "sha256_after": "be5473968fa2cf2fb9a470e9322d38221a623ca4801d8fcfc7ed49a06c1dc967",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/日出油画-页面.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/日出油画-页面.png",
+    "size": 800168,
+    "sha256_before": "30a802ab745d79198fa2499563d7a1d211306d53bd9ee45021ba873f9a32e701",
+    "sha256_after": "30a802ab745d79198fa2499563d7a1d211306d53bd9ee45021ba873f9a32e701",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/日出油画-200笔预算效果.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/日出油画-200笔预算效果.png",
+    "size": 115949,
+    "sha256_before": "843fb0ec8a36e753d7673fb2eed288c4227c53f4443331a6f1289a562003a574",
+    "sha256_after": "843fb0ec8a36e753d7673fb2eed288c4227c53f4443331a6f1289a562003a574",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/盆栽-200笔预算效果.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/盆栽-200笔预算效果.png",
+    "size": 53527,
+    "sha256_before": "9f961bd4b0ea661c8b05d80895ee782a84c86793ea5140d76267e302b0c5c781",
+    "sha256_after": "9f961bd4b0ea661c8b05d80895ee782a84c86793ea5140d76267e302b0c5c781",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/手机预览.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/手机预览.png",
+    "size": 576644,
+    "sha256_before": "7409754608437f509ff6817f1488ff1facbcdf4251a803f1818e85ca08eda769",
+    "sha256_after": "7409754608437f509ff6817f1488ff1facbcdf4251a803f1818e85ca08eda769",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/手机逐笔绘画.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/手机逐笔绘画.png",
+    "size": 18720,
+    "sha256_before": "271c351bc853b8ed82edcced2d34b1e03d45526a1fd638ad7087205390489b9d",
+    "sha256_after": "271c351bc853b8ed82edcced2d34b1e03d45526a1fd638ad7087205390489b9d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/盆栽-新算法完整效果.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/盆栽-新算法完整效果.png",
+    "size": 59492,
+    "sha256_before": "fa7fb0e2900ddcd47e3b770c6f063f8138eb27b398b26ae8c9f06e263b7cf745",
+    "sha256_after": "fa7fb0e2900ddcd47e3b770c6f063f8138eb27b398b26ae8c9f06e263b7cf745",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/日出油画-旧算法完整效果.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/日出油画-旧算法完整效果.png",
+    "size": 262072,
+    "sha256_before": "132c9d6152e514793de86510a9e7fcb7a65957ef8a1f6eddbf0d7a8254075613",
+    "sha256_after": "132c9d6152e514793de86510a9e7fcb7a65957ef8a1f6eddbf0d7a8254075613",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/日出油画-新算法完整效果.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/日出油画-新算法完整效果.png",
+    "size": 207200,
+    "sha256_before": "6c22ad25e2ed32ef3f452ea0303593bd9e2c818fb5d7d3e9567e16cde1a4e518",
+    "sha256_after": "6c22ad25e2ed32ef3f452ea0303593bd9e2c818fb5d7d3e9567e16cde1a4e518",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/盆栽-旧算法完整效果.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/盆栽-旧算法完整效果.png",
+    "size": 44630,
+    "sha256_before": "04e83de51eede6adfd484a0fa65de2fcfffabfa7987f23a7cac6f339c52b80ab",
+    "sha256_after": "04e83de51eede6adfd484a0fa65de2fcfffabfa7987f23a7cac6f339c52b80ab",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/盆栽-页面.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/盆栽-页面.png",
+    "size": 327807,
+    "sha256_before": "779e1ebd910a53ad652e72322df683b945910c6e00c8428f0e979795b8717ece",
+    "sha256_after": "779e1ebd910a53ad652e72322df683b945910c6e00c8428f0e979795b8717ece",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/盆栽-参考原图.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/盆栽-参考原图.png",
+    "size": 12433,
+    "sha256_before": "19359bc2c39b253e915367dbea0aa152053ab4235179acd308273f2d3083da36",
+    "sha256_after": "19359bc2c39b253e915367dbea0aa152053ab4235179acd308273f2d3083da36",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/日出油画-参考原图.png",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/日出油画-参考原图.png",
+    "size": 458542,
+    "sha256_before": "4ca0731e811a8f0be0bbf901c1e509fe7ea01dc984febd8b93b6e3a78f907a5b",
+    "sha256_after": "4ca0731e811a8f0be0bbf901c1e509fe7ea01dc984febd8b93b6e3a78f907a5b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/1000笔算法验证/12张材料检查.json",
+    "new_path": "论文/05_算法实验与验证/1000笔算法验证/12张材料检查.json",
+    "size": 5257244,
+    "sha256_before": "d8b5b1fbba07420f93297995752526827769b8f9e1c8464911f983d0201f2509",
+    "sha256_after": "d8b5b1fbba07420f93297995752526827769b8f9e1c8464911f983d0201f2509",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/sorted-1000笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/sorted-1000笔.png",
+    "size": 338971,
+    "sha256_before": "7b3e2e0a6152b283fa67d3f39b5acf9a8cfa3d8238ec30f37f2d03d819d3af1c",
+    "sha256_after": "7b3e2e0a6152b283fa67d3f39b5acf9a8cfa3d8238ec30f37f2d03d819d3af1c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/sorted-最终.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/sorted-最终.png",
+    "size": 338971,
+    "sha256_before": "7b3e2e0a6152b283fa67d3f39b5acf9a8cfa3d8238ec30f37f2d03d819d3af1c",
+    "sha256_after": "7b3e2e0a6152b283fa67d3f39b5acf9a8cfa3d8238ec30f37f2d03d819d3af1c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/raster-过程.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/raster-过程.png",
+    "size": 187320,
+    "sha256_before": "1f38e8d8f87440424ccaa39fde4521f3b3a8bfb12f6a5c8069d702f390e1c9e5",
+    "sha256_after": "1f38e8d8f87440424ccaa39fde4521f3b3a8bfb12f6a5c8069d702f390e1c9e5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/sorted-700笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/sorted-700笔.png",
+    "size": 294965,
+    "sha256_before": "99d2f4f7fac8499018b208feb88a522e22d831803b6074f93db8c1d1c919fe20",
+    "sha256_after": "99d2f4f7fac8499018b208feb88a522e22d831803b6074f93db8c1d1c919fe20",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/思考、方案与实验结论.md",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/思考、方案与实验结论.md",
+    "size": 9304,
+    "sha256_before": "4374f83cc66dd1f8802c8ba48e6e0bd84c0a5d8d2d83593db4e3ced7c2ae9baf",
+    "sha256_after": "4374f83cc66dd1f8802c8ba48e6e0bd84c0a5d8d2d83593db4e3ced7c2ae9baf",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/交互过程对比.html",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/交互过程对比.html",
+    "size": 2361729,
+    "sha256_before": "f09690b3b8275d1c966a8a4073291080c2491443ae4f9b80b9843b7b57692f7c",
+    "sha256_after": "f09690b3b8275d1c966a8a4073291080c2491443ae4f9b80b9843b7b57692f7c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/raster-最终.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/raster-最终.png",
+    "size": 356994,
+    "sha256_before": "e9584f1c85f01ca6c2acf7ae7f351a66b42b9e503c9d11e568a66361a21e3364",
+    "sha256_after": "e9584f1c85f01ca6c2acf7ae7f351a66b42b9e503c9d11e568a66361a21e3364",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/raster-100笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/raster-100笔.png",
+    "size": 137648,
+    "sha256_before": "b959e32a0f6aa234e533d1e65301804f1fda81e1ef286851bf5f805772f01605",
+    "sha256_after": "b959e32a0f6aa234e533d1e65301804f1fda81e1ef286851bf5f805772f01605",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/sorted-过程.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/sorted-过程.png",
+    "size": 165442,
+    "sha256_before": "5bb766f28a7fc6287a5e056ae47e69999e8c870f059e51f3e08c0b49fed7ab12",
+    "sha256_after": "5bb766f28a7fc6287a5e056ae47e69999e8c870f059e51f3e08c0b49fed7ab12",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/regions-700笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/regions-700笔.png",
+    "size": 301237,
+    "sha256_before": "fc544307de193490eae802901ba10551918002b463d4f5bad8c5315d1d1406c4",
+    "sha256_after": "fc544307de193490eae802901ba10551918002b463d4f5bad8c5315d1d1406c4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/raster-998笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/raster-998笔.png",
+    "size": 356994,
+    "sha256_before": "e9584f1c85f01ca6c2acf7ae7f351a66b42b9e503c9d11e568a66361a21e3364",
+    "sha256_after": "e9584f1c85f01ca6c2acf7ae7f351a66b42b9e503c9d11e568a66361a21e3364",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/sorted-100笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/sorted-100笔.png",
+    "size": 137330,
+    "sha256_before": "80085308eb44b28c43dd0882b7b55493a792df12fbd29cf87b04dc03049b0d6d",
+    "sha256_after": "80085308eb44b28c43dd0882b7b55493a792df12fbd29cf87b04dc03049b0d6d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/实验数据.json",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/实验数据.json",
+    "size": 1821,
+    "sha256_before": "c2536fbfe28c20c48e9ba26fde16871ab98550342388b5e970ec6ef2cd5672e6",
+    "sha256_after": "c2536fbfe28c20c48e9ba26fde16871ab98550342388b5e970ec6ef2cd5672e6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/baseline-180笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/baseline-180笔.png",
+    "size": 173091,
+    "sha256_before": "9e2f44b2c5e42751c4feb9855aa6dd43f639ca25e12b1f20f76534a98b8ea030",
+    "sha256_after": "9e2f44b2c5e42751c4feb9855aa6dd43f639ca25e12b1f20f76534a98b8ea030",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/参考原图.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/参考原图.png",
+    "size": 1040272,
+    "sha256_before": "4bc959c0a79ba2bc3f5ac4350218a8d6c35d338717f2f8ce04f387dcd386fb52",
+    "sha256_after": "4bc959c0a79ba2bc3f5ac4350218a8d6c35d338717f2f8ce04f387dcd386fb52",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/regions-过程.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/regions-过程.png",
+    "size": 171594,
+    "sha256_before": "c8d5f8bdef9bc15fd912fc4dc1fa6808dc43c116397e6c222a2b6566399caec5",
+    "sha256_after": "c8d5f8bdef9bc15fd912fc4dc1fa6808dc43c116397e6c222a2b6566399caec5",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/baseline-400笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/baseline-400笔.png",
+    "size": 230098,
+    "sha256_before": "2a1c05bdc2bd64700375cacb9b8593d52175d678fca2fd1a68000b53e709f0fb",
+    "sha256_after": "2a1c05bdc2bd64700375cacb9b8593d52175d678fca2fd1a68000b53e709f0fb",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/regions-最终.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/regions-最终.png",
+    "size": 336031,
+    "sha256_before": "25add1fc8ca43c75ed3fdece85f678464e4e4736d7ff6eb70a4a328eda025178",
+    "sha256_after": "25add1fc8ca43c75ed3fdece85f678464e4e4736d7ff6eb70a4a328eda025178",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/regions-100笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/regions-100笔.png",
+    "size": 137648,
+    "sha256_before": "b959e32a0f6aa234e533d1e65301804f1fda81e1ef286851bf5f805772f01605",
+    "sha256_after": "b959e32a0f6aa234e533d1e65301804f1fda81e1ef286851bf5f805772f01605",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/raster-700笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/raster-700笔.png",
+    "size": 309864,
+    "sha256_before": "c6545690a598d326e547305a1e820ff205991fa8dd1620ac826114c4605ede60",
+    "sha256_after": "c6545690a598d326e547305a1e820ff205991fa8dd1620ac826114c4605ede60",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/四方案最终效果.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/四方案最终效果.png",
+    "size": 1042947,
+    "sha256_before": "d8c2014ecad1e2c5e35eecc436243243adec0fca7a4ffd9d04b04dfaff67043a",
+    "sha256_after": "d8c2014ecad1e2c5e35eecc436243243adec0fca7a4ffd9d04b04dfaff67043a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/baseline-1000笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/baseline-1000笔.png",
+    "size": 334482,
+    "sha256_before": "7b31e75afbcb716234dbeb173d6077d78671741a3a83f4d1b24edf82a1b99eb9",
+    "sha256_after": "7b31e75afbcb716234dbeb173d6077d78671741a3a83f4d1b24edf82a1b99eb9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/baseline-序列.json",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/baseline-序列.json",
+    "size": 198300,
+    "sha256_before": "79bacdf8cbe4b594f3f7a6a9d33acab20b78e37012d2e0f36a4c6639fc51b7f4",
+    "sha256_after": "79bacdf8cbe4b594f3f7a6a9d33acab20b78e37012d2e0f36a4c6639fc51b7f4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/sorted-180笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/sorted-180笔.png",
+    "size": 174697,
+    "sha256_before": "7b06c7887272398c9c88936c1a1546f81f164bc854f2f957aa098d28b9680751",
+    "sha256_after": "7b06c7887272398c9c88936c1a1546f81f164bc854f2f957aa098d28b9680751",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/sorted-序列.json",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/sorted-序列.json",
+    "size": 198300,
+    "sha256_before": "911a1670bfaed774b93a33129bf9babf5ddd09fb47cd91b9d65e23922c61dee2",
+    "sha256_after": "911a1670bfaed774b93a33129bf9babf5ddd09fb47cd91b9d65e23922c61dee2",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/regions-400笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/regions-400笔.png",
+    "size": 230642,
+    "sha256_before": "6c3f88ea0c8fe734bc4d9dd91e15a31a67a9ed39a0904d1850272bfc63745182",
+    "sha256_after": "6c3f88ea0c8fe734bc4d9dd91e15a31a67a9ed39a0904d1850272bfc63745182",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/baseline-100笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/baseline-100笔.png",
+    "size": 135907,
+    "sha256_before": "26e66a5a171d5ef6908022e0a4b5b3a3a06508b9e118711cffb788a624af5c83",
+    "sha256_after": "26e66a5a171d5ef6908022e0a4b5b3a3a06508b9e118711cffb788a624af5c83",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/baseline-最终.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/baseline-最终.png",
+    "size": 334482,
+    "sha256_before": "7b31e75afbcb716234dbeb173d6077d78671741a3a83f4d1b24edf82a1b99eb9",
+    "sha256_after": "7b31e75afbcb716234dbeb173d6077d78671741a3a83f4d1b24edf82a1b99eb9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/regions-180笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/regions-180笔.png",
+    "size": 173700,
+    "sha256_before": "a5b8e2c795b949d3cf14393c0efd44442b766032c197c7c6d6c1291bd250f69a",
+    "sha256_after": "a5b8e2c795b949d3cf14393c0efd44442b766032c197c7c6d6c1291bd250f69a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/baseline-过程.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/baseline-过程.png",
+    "size": 167348,
+    "sha256_before": "95704a8a37472088f2106effb6835d554e73dca0fc24fd3b7e4e623e63ec88f8",
+    "sha256_after": "95704a8a37472088f2106effb6835d554e73dca0fc24fd3b7e4e623e63ec88f8",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/regions-987笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/regions-987笔.png",
+    "size": 336031,
+    "sha256_before": "25add1fc8ca43c75ed3fdece85f678464e4e4736d7ff6eb70a4a328eda025178",
+    "sha256_after": "25add1fc8ca43c75ed3fdece85f678464e4e4736d7ff6eb70a4a328eda025178",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/raster-序列.json",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/raster-序列.json",
+    "size": 286702,
+    "sha256_before": "60806aeba75ee7a1b0f1eb339999cf0fbc1184b83672e78a54fa750f9da1a0ad",
+    "sha256_after": "60806aeba75ee7a1b0f1eb339999cf0fbc1184b83672e78a54fa750f9da1a0ad",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/regions-序列.json",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/regions-序列.json",
+    "size": 286086,
+    "sha256_before": "dc8fbbfdeecd42df6ca148f5293988fa73f53ca0a219cedb7e271e46f782ce2b",
+    "sha256_after": "dc8fbbfdeecd42df6ca148f5293988fa73f53ca0a219cedb7e271e46f782ce2b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/sorted-400笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/sorted-400笔.png",
+    "size": 237300,
+    "sha256_before": "fd39153a837394ecfbf53be1bca4410aa82b8d4489b549e72b896ce7751cea06",
+    "sha256_after": "fd39153a837394ecfbf53be1bca4410aa82b8d4489b549e72b896ce7751cea06",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/raster-400笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/raster-400笔.png",
+    "size": 244838,
+    "sha256_before": "281b0d8a4adad59b9958f1d9eb994c6b9dc491b830f77688c7fd5a5c08642a9a",
+    "sha256_after": "281b0d8a4adad59b9958f1d9eb994c6b9dc491b830f77688c7fd5a5c08642a9a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/baseline-700笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/baseline-700笔.png",
+    "size": 284803,
+    "sha256_before": "d4018e325fefc5afb0c84002ac64cd9a9c999f038f54e5e99f1759bc0b0180d9",
+    "sha256_after": "d4018e325fefc5afb0c84002ac64cd9a9c999f038f54e5e99f1759bc0b0180d9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/笔触顺序探索_不接入正式程序/raster-180笔.png",
+    "new_path": "论文/05_算法实验与验证/笔触顺序探索_不接入正式程序/raster-180笔.png",
+    "size": 173578,
+    "sha256_before": "74aec53e65749b0f42fa0e7571dc7ed4c0c44a84f6c5a42921b46e830fcb6eba",
+    "sha256_after": "74aec53e65749b0f42fa0e7571dc7ed4c0c44a84f6c5a42921b46e830fcb6eba",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/核对页-09.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/核对页-09.png",
+    "size": 207711,
+    "sha256_before": "f4b46eca8bd10b425b1b4260dc29db9db34adfddca0a39b8ee6dea0321971b55",
+    "sha256_after": "f4b46eca8bd10b425b1b4260dc29db9db34adfddca0a39b8ee6dea0321971b55",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/核对页-21.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/核对页-21.png",
+    "size": 106588,
+    "sha256_before": "95190851dfa82e141cfbc5169ace6b8d6777f417675b6b31b9c83dc6d673f183",
+    "sha256_after": "95190851dfa82e141cfbc5169ace6b8d6777f417675b6b31b9c83dc6d673f183",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/核对页-20.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/核对页-20.png",
+    "size": 130990,
+    "sha256_before": "ffeeabeda80642b51d9503e00d7b73b10e0e1cdb171e87cdbc0245814a6151b2",
+    "sha256_after": "ffeeabeda80642b51d9503e00d7b73b10e0e1cdb171e87cdbc0245814a6151b2",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/附件1-硕士生中期检查.pdf",
+    "new_path": "论文/01_论文与报告/中期检查/附件1-硕士生中期检查.pdf",
+    "size": 2579758,
+    "sha256_before": "34cf4d972a433a27d6c28e61171b4e50f272bc7aeab735f40e33fc2ec7b1cd2a",
+    "sha256_after": "34cf4d972a433a27d6c28e61171b4e50f272bc7aeab735f40e33fc2ec7b1cd2a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/核对页-16.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/核对页-16.png",
+    "size": 120443,
+    "sha256_before": "84daa885b5786259ca20ac16d8f795a14209e6d17a44b5fa2ab54d07b54f0457",
+    "sha256_after": "84daa885b5786259ca20ac16d8f795a14209e6d17a44b5fa2ab54d07b54f0457",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/核对页-14.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/核对页-14.png",
+    "size": 132982,
+    "sha256_before": "fe188a5797f2dbf085d20f13c4786e6158787468a1f04b7457895bf8774ee435",
+    "sha256_after": "fe188a5797f2dbf085d20f13c4786e6158787468a1f04b7457895bf8774ee435",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/修订说明.md",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/修订说明.md",
+    "size": 1891,
+    "sha256_before": "6711eefad721aff1f0f13c7ed61ca9d52bd252ef0893d6f0c3923f97193f4ab7",
+    "sha256_after": "6711eefad721aff1f0f13c7ed61ca9d52bd252ef0893d6f0c3923f97193f4ab7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/核对页-10.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/核对页-10.png",
+    "size": 170295,
+    "sha256_before": "dd96fa05acffa67084d6697d8bedd9dbf5b1ac77fca51bb40dcc433cd2da762e",
+    "sha256_after": "dd96fa05acffa67084d6697d8bedd9dbf5b1ac77fca51bb40dcc433cd2da762e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/修改前备份_附件1-硕士生中期检查.docx",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/修改前备份_附件1-硕士生中期检查.docx",
+    "size": 5066242,
+    "sha256_before": "472748d12db9f70beeff491856941d9734d816cf2b34e9df8fca3916b679d531",
+    "sha256_after": "472748d12db9f70beeff491856941d9734d816cf2b34e9df8fca3916b679d531",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/核对页-13.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/核对页-13.png",
+    "size": 112413,
+    "sha256_before": "2219aa159c8e49c7303094f0626e8718f31f50a073b7dda80e5837894d6386be",
+    "sha256_after": "2219aa159c8e49c7303094f0626e8718f31f50a073b7dda80e5837894d6386be",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/最终核对记录.json",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/最终核对记录.json",
+    "size": 429,
+    "sha256_before": "a05482717ee86f4a208aeac70a8b03b10b7258e226aee0a541c467024eae725a",
+    "sha256_after": "a05482717ee86f4a208aeac70a8b03b10b7258e226aee0a541c467024eae725a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_用户测试v2修订_20260918/修订正文核对.txt",
+    "new_path": "论文/99_历史版本与备份/中期检查/20260918_用户测试v2修订记录/修订正文核对.txt",
+    "size": 30969,
+    "sha256_before": "404b5e38b317d37e2061448c9aa4435dbec703c3fd6df56fa7886e16952aa4ca",
+    "sha256_after": "404b5e38b317d37e2061448c9aa4435dbec703c3fd6df56fa7886e16952aa4ca",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_材料检查/盆栽轮廓与点状笔触.png",
+    "new_path": "论文/06_工程验收与截图/P6_材料检查/盆栽轮廓与点状笔触.png",
+    "size": 62918,
+    "sha256_before": "dad24015d6091bb99a34c63befde6680890f6f4b66ac4854170a43a4a99b7d7d",
+    "sha256_after": "dad24015d6091bb99a34c63befde6680890f6f4b66ac4854170a43a4a99b7d7d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_材料检查/细线丢失问题.png",
+    "new_path": "论文/06_工程验收与截图/P6_材料检查/细线丢失问题.png",
+    "size": 64857,
+    "sha256_before": "528399f178ae6da7a514c031ca75c21325ff10f759e51a00f6195357eb5956c9",
+    "sha256_after": "528399f178ae6da7a514c031ca75c21325ff10f759e51a00f6195357eb5956c9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_材料检查/材料工程检查.json",
+    "new_path": "论文/06_工程验收与截图/P6_材料检查/材料工程检查.json",
+    "size": 647172,
+    "sha256_before": "460dac2f5da0c7ac01856ada44fe0ed331ecdbfb0d161a0fa523a368d0aa535d",
+    "sha256_after": "460dac2f5da0c7ac01856ada44fe0ed331ecdbfb0d161a0fa523a368d0aa535d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_材料检查/检查结果.md",
+    "new_path": "论文/06_工程验收与截图/P6_材料检查/检查结果.md",
+    "size": 2367,
+    "sha256_before": "a753338f859ea246f323e11aa033fc37a0918900efa9c18245aeb48fc504f3b8",
+    "sha256_after": "a753338f859ea246f323e11aa033fc37a0918900efa9c18245aeb48fc504f3b8",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/方案A接入验收/莫奈-第2遍-179笔.png",
+    "new_path": "论文/06_工程验收与截图/方案A接入验收/莫奈-第2遍-179笔.png",
+    "size": 172989,
+    "sha256_before": "88f6f0b4ebc4654ae94017cf3c4f2d959e056c28e8a217f009f240752df2e3aa",
+    "sha256_after": "88f6f0b4ebc4654ae94017cf3c4f2d959e056c28e8a217f009f240752df2e3aa",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/方案A接入验收/验收数据.json",
+    "new_path": "论文/06_工程验收与截图/方案A接入验收/验收数据.json",
+    "size": 311,
+    "sha256_before": "f4f8b5ed0f62d08e729528886fb6a1588bb9a930988b01db6c09ef086a9cd22d",
+    "sha256_after": "f4f8b5ed0f62d08e729528886fb6a1588bb9a930988b01db6c09ef086a9cd22d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/方案A接入验收/实施说明.md",
+    "new_path": "论文/06_工程验收与截图/方案A接入验收/实施说明.md",
+    "size": 2832,
+    "sha256_before": "3d6b2aed9fa41e743ec983d9fc7a5a570ac56a51ab70aacebf96293ca893792f",
+    "sha256_after": "3d6b2aed9fa41e743ec983d9fc7a5a570ac56a51ab70aacebf96293ca893792f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/方案A接入验收/莫奈-第4遍-678笔.png",
+    "new_path": "论文/06_工程验收与截图/方案A接入验收/莫奈-第4遍-678笔.png",
+    "size": 305405,
+    "sha256_before": "61cb9a8f4138f431557b0408f65b740984481f95ac66889062db6beadec64aeb",
+    "sha256_after": "61cb9a8f4138f431557b0408f65b740984481f95ac66889062db6beadec64aeb",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/方案A接入验收/莫奈-第5遍-998笔.png",
+    "new_path": "论文/06_工程验收与截图/方案A接入验收/莫奈-第5遍-998笔.png",
+    "size": 356994,
+    "sha256_before": "e9584f1c85f01ca6c2acf7ae7f351a66b42b9e503c9d11e568a66361a21e3364",
+    "sha256_after": "e9584f1c85f01ca6c2acf7ae7f351a66b42b9e503c9d11e568a66361a21e3364",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/方案A接入验收/莫奈-第3遍-398笔.png",
+    "new_path": "论文/06_工程验收与截图/方案A接入验收/莫奈-第3遍-398笔.png",
+    "size": 244165,
+    "sha256_before": "804f24cdf619f5d672497f923264b5d896fb085394abb3b04d2736b33c27afcb",
+    "sha256_after": "804f24cdf619f5d672497f923264b5d896fb085394abb3b04d2736b33c27afcb",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/方案A接入验收/莫奈-第1遍-60笔.png",
+    "new_path": "论文/06_工程验收与截图/方案A接入验收/莫奈-第1遍-60笔.png",
+    "size": 122604,
+    "sha256_before": "df560cc66e79906c486f1b60138242bb45b29f0f29ce63a76eeee4cc63bc1012",
+    "sha256_after": "df560cc66e79906c486f1b60138242bb45b29f0f29ce63a76eeee4cc63bc1012",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/方案A接入验收/1000笔取消重试后进入画板.png",
+    "new_path": "论文/06_工程验收与截图/方案A接入验收/1000笔取消重试后进入画板.png",
+    "size": 153200,
+    "sha256_before": "5f1b035f23f23b87478a7d1dabdb375e80479a1a6e19faad3e7ac889698beaf9",
+    "sha256_after": "5f1b035f23f23b87478a7d1dabdb375e80479a1a6e19faad3e7ac889698beaf9",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/附件1-硕士生中期检查.docx等3个文件/附件3：论文中期检查----系统申请注意事项.pdf",
+    "new_path": "论文/02_学校模板与要求/中期检查/附件3：论文中期检查----系统申请注意事项.pdf",
+    "size": 103728,
+    "sha256_before": "c3a765d866485f5795a971f083b789c83c803673a90d5e01a2e4ac6828c47b26",
+    "sha256_after": "c3a765d866485f5795a971f083b789c83c803673a90d5e01a2e4ac6828c47b26",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/附件1-硕士生中期检查.docx等3个文件/~$1-硕士生中期检查.docx",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期报告副本/~$1-硕士生中期检查.docx",
+    "size": 162,
+    "sha256_before": "9b5746832892b97dea6d07db5b4c01d2aafd59c3149efd5ab1c16c4313efff22",
+    "sha256_after": "9b5746832892b97dea6d07db5b4c01d2aafd59c3149efd5ab1c16c4313efff22",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/附件1-硕士生中期检查.docx等3个文件/~$1-硕士生中期检查_陈皓宇_中文版.docx",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期报告副本/~$1-硕士生中期检查_陈皓宇_中文版.docx",
+    "size": 162,
+    "sha256_before": "9b5746832892b97dea6d07db5b4c01d2aafd59c3149efd5ab1c16c4313efff22",
+    "sha256_after": "9b5746832892b97dea6d07db5b4c01d2aafd59c3149efd5ab1c16c4313efff22",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/附件1-硕士生中期检查.docx等3个文件/附件1-硕士生中期检查_陈皓宇_中文版.pdf",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期报告副本/附件1-硕士生中期检查_陈皓宇_中文版.pdf",
+    "size": 2750760,
+    "sha256_before": "3a6440e725410bfb999e2fc67d79a7e6a88a3235c62cda94fc094b9c6ac35b35",
+    "sha256_after": "3a6440e725410bfb999e2fc67d79a7e6a88a3235c62cda94fc094b9c6ac35b35",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/附件1-硕士生中期检查.docx等3个文件/附件1-硕士生中期检查_原始空表备份.docx",
+    "new_path": "论文/02_学校模板与要求/中期检查/附件1-硕士生中期检查_原始空表备份.docx",
+    "size": 101555,
+    "sha256_before": "e30f5284846fdc8da6e08007848cfff47136e731fa40b6d695ccba1d14c2bea6",
+    "sha256_after": "e30f5284846fdc8da6e08007848cfff47136e731fa40b6d695ccba1d14c2bea6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/附件1-硕士生中期检查.docx等3个文件/附件1-硕士生中期检查_陈皓宇_中文版.docx",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期报告副本/附件1-硕士生中期检查_陈皓宇_中文版.docx",
+    "size": 3923808,
+    "sha256_before": "e022ca281fb1d6449ccd3f7fbbb687a47afaee84c2b41fd15d4d584eb90f65f8",
+    "sha256_after": "e022ca281fb1d6449ccd3f7fbbb687a47afaee84c2b41fd15d4d584eb90f65f8",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/附件1-硕士生中期检查.docx等3个文件/附件1-硕士生中期检查.docx",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期报告副本/附件1-硕士生中期检查.docx",
+    "size": 1471618,
+    "sha256_before": "ae1ccc10fa19a906acc4fc995d5bb9220460f68de3ae0a37b7c44590b3bfd38a",
+    "sha256_after": "ae1ccc10fa19a906acc4fc995d5bb9220460f68de3ae0a37b7c44590b3bfd38a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/附件1-硕士生中期检查.docx等3个文件/附件2：论文中期检查报告填写注意事项.pdf",
+    "new_path": "论文/02_学校模板与要求/中期检查/附件2：论文中期检查报告填写注意事项.pdf",
+    "size": 252130,
+    "sha256_before": "2c07d47fcb19b0d0f54f2b1f70ab70d80f16d5af9f02c153987cabf304aab34e",
+    "sha256_after": "2c07d47fcb19b0d0f54f2b1f70ab70d80f16d5af9f02c153987cabf304aab34e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/截图来源记录.json",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/截图来源记录.json",
+    "size": 1442,
+    "sha256_before": "e82c33001f868601a9d70ec3226c399de987dbb7d446e65af374dc51c61e1724",
+    "sha256_after": "e82c33001f868601a9d70ec3226c399de987dbb7d446e65af374dc51c61e1724",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/图5_用户测试入口与参与说明.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/图5_用户测试入口与参与说明.png",
+    "size": 133450,
+    "sha256_before": "0f25d77db20940df7ef324ce55976008c50d90f553b5ddc1e76406d014aa75f7",
+    "sha256_after": "0f25d77db20940df7ef324ce55976008c50d90f553b5ddc1e76406d014aa75f7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/图2_星迹智绘首页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/图2_星迹智绘首页.png",
+    "size": 156371,
+    "sha256_before": "8a6bdd1598179022d0187815d6e97bb1a3507b05f30e9dc84a1012f3a038427f",
+    "sha256_after": "8a6bdd1598179022d0187815d6e97bb1a3507b05f30e9dc84a1012f3a038427f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/中期检查报告_中文正文.md",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/中期检查报告_中文正文.md",
+    "size": 18882,
+    "sha256_before": "8f9967b17461e2fda29aa1dc8e8ceedcb3fd6cdcb42a0d27f8c6e2f98db40c83",
+    "sha256_after": "8f9967b17461e2fda29aa1dc8e8ceedcb3fd6cdcb42a0d27f8c6e2f98db40c83",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/图3_参考图选择与创作入口.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/图3_参考图选择与创作入口.png",
+    "size": 344448,
+    "sha256_before": "400e0d2115013d32b385f72c6bc684c8bd120176f5e1a089c095eee6cb137c34",
+    "sha256_after": "400e0d2115013d32b385f72c6bc684c8bd120176f5e1a089c095eee6cb137c34",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/附件1-硕士生中期检查_陈皓宇_中文版.pdf",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/附件1-硕士生中期检查_陈皓宇_中文版.pdf",
+    "size": 1501307,
+    "sha256_before": "24fe6a8d5700f777625c8e8a945bf173266b9e1c6e9275328dbe222f3666ade6",
+    "sha256_after": "24fe6a8d5700f777625c8e8a945bf173266b9e1c6e9275328dbe222f3666ade6",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/填写与核对记录.json",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/填写与核对记录.json",
+    "size": 1546,
+    "sha256_before": "ad811aee106817951b90609d83abb914e116c5448f2a4200f8d927451698b8de",
+    "sha256_after": "ad811aee106817951b90609d83abb914e116c5448f2a4200f8d927451698b8de",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/图1_笔触拆解算法的原图与重建效果比较.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/图1_笔触拆解算法的原图与重建效果比较.png",
+    "size": 167233,
+    "sha256_before": "d1c9ce66f081df32e34a935ab04c972a69fd91be1f2affed28b141026f84f164",
+    "sha256_after": "d1c9ce66f081df32e34a935ab04c972a69fd91be1f2affed28b141026f84f164",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/交付说明.md",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/交付说明.md",
+    "size": 1000,
+    "sha256_before": "4ff9288bac4a65c2e82c24cb5ecd8479d7e470cdac90be7d3145e4f988d03337",
+    "sha256_after": "4ff9288bac4a65c2e82c24cb5ecd8479d7e470cdac90be7d3145e4f988d03337",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/图4_普通体验模式的逐笔绘画与提示面板.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/图4_普通体验模式的逐笔绘画与提示面板.png",
+    "size": 128399,
+    "sha256_before": "a98e9aec1d8fad40a2667f7eb358275b31a6f93c100c7da1f8f44eba7618a263",
+    "sha256_after": "a98e9aec1d8fad40a2667f7eb358275b31a6f93c100c7da1f8f44eba7618a263",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/图9_预试看板与任务负担记录.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/图9_预试看板与任务负担记录.png",
+    "size": 151428,
+    "sha256_before": "c661c70a839b747b754464c0cdbec153e177c50c37d6142b62d22c1f43c4ff4c",
+    "sha256_after": "c661c70a839b747b754464c0cdbec153e177c50c37d6142b62d22c1f43c4ff4c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/图7_笔触引导条件下的用户测试界面.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/图7_笔触引导条件下的用户测试界面.png",
+    "size": 124054,
+    "sha256_before": "dc75b62f0bbf4baba6fb290df5306afa67e6515b1fe03c842ee619c13eb23449",
+    "sha256_after": "dc75b62f0bbf4baba6fb290df5306afa67e6515b1fe03c842ee619c13eb23449",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/图6_测试前自评问卷.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/图6_测试前自评问卷.png",
+    "size": 72214,
+    "sha256_before": "6506d66aa388b32a19aab10116720dad2d7109ed561de7cf23f8ff997dfa6273",
+    "sha256_after": "6506d66aa388b32a19aab10116720dad2d7109ed561de7cf23f8ff997dfa6273",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/图8_研究者工作台与材料配置.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/图8_研究者工作台与材料配置.png",
+    "size": 133352,
+    "sha256_before": "c1109e36c0cef5da4254143b7b586fb87501464644e9740726078ced6d52c98d",
+    "sha256_after": "c1109e36c0cef5da4254143b7b586fb87501464644e9740726078ced6d52c98d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/原始截图/截图来源记录.json",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/原始截图/截图来源记录.json",
+    "size": 1442,
+    "sha256_before": "e82c33001f868601a9d70ec3226c399de987dbb7d446e65af374dc51c61e1724",
+    "sha256_after": "e82c33001f868601a9d70ec3226c399de987dbb7d446e65af374dc51c61e1724",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/原始截图/图8_笔触引导条件测试界面.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/原始截图/图8_笔触引导条件测试界面.png",
+    "size": 124054,
+    "sha256_before": "dc75b62f0bbf4baba6fb290df5306afa67e6515b1fe03c842ee619c13eb23449",
+    "sha256_after": "dc75b62f0bbf4baba6fb290df5306afa67e6515b1fe03c842ee619c13eb23449",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/原始截图/图4_逐笔绘画与提示面板.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/原始截图/图4_逐笔绘画与提示面板.png",
+    "size": 128399,
+    "sha256_before": "a98e9aec1d8fad40a2667f7eb358275b31a6f93c100c7da1f8f44eba7618a263",
+    "sha256_after": "a98e9aec1d8fad40a2667f7eb358275b31a6f93c100c7da1f8f44eba7618a263",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/原始截图/图5_研究者工作台与材料配置.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/原始截图/图5_研究者工作台与材料配置.png",
+    "size": 133352,
+    "sha256_before": "c1109e36c0cef5da4254143b7b586fb87501464644e9740726078ced6d52c98d",
+    "sha256_after": "c1109e36c0cef5da4254143b7b586fb87501464644e9740726078ced6d52c98d",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/原始截图/图7_测试前自评问卷.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/原始截图/图7_测试前自评问卷.png",
+    "size": 72214,
+    "sha256_before": "6506d66aa388b32a19aab10116720dad2d7109ed561de7cf23f8ff997dfa6273",
+    "sha256_after": "6506d66aa388b32a19aab10116720dad2d7109ed561de7cf23f8ff997dfa6273",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/原始截图/图2_参考图选择与创作入口.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/原始截图/图2_参考图选择与创作入口.png",
+    "size": 344448,
+    "sha256_before": "400e0d2115013d32b385f72c6bc684c8bd120176f5e1a089c095eee6cb137c34",
+    "sha256_after": "400e0d2115013d32b385f72c6bc684c8bd120176f5e1a089c095eee6cb137c34",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/原始截图/图6_用户测试入口与参与说明.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/原始截图/图6_用户测试入口与参与说明.png",
+    "size": 133450,
+    "sha256_before": "0f25d77db20940df7ef324ce55976008c50d90f553b5ddc1e76406d014aa75f7",
+    "sha256_after": "0f25d77db20940df7ef324ce55976008c50d90f553b5ddc1e76406d014aa75f7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/原始截图/图9_预试进度与问题记录.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/原始截图/图9_预试进度与问题记录.png",
+    "size": 151428,
+    "sha256_before": "c661c70a839b747b754464c0cdbec153e177c50c37d6142b62d22c1f43c4ff4c",
+    "sha256_after": "c661c70a839b747b754464c0cdbec153e177c50c37d6142b62d22c1f43c4ff4c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/原始截图/图1_星迹智绘首页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/原始截图/图1_星迹智绘首页.png",
+    "size": 156371,
+    "sha256_before": "8a6bdd1598179022d0187815d6e97bb1a3507b05f30e9dc84a1012f3a038427f",
+    "sha256_after": "8a6bdd1598179022d0187815d6e97bb1a3507b05f30e9dc84a1012f3a038427f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/原始截图/图3_笔触拆解与效果比较.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/原始截图/图3_笔触拆解与效果比较.png",
+    "size": 167233,
+    "sha256_before": "d1c9ce66f081df32e34a935ab04c972a69fd91be1f2affed28b141026f84f164",
+    "sha256_after": "d1c9ce66f081df32e34a935ab04c972a69fd91be1f2affed28b141026f84f164",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/排版核对/报告第11页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/排版核对/报告第11页.png",
+    "size": 215115,
+    "sha256_before": "330c8d6e887695a0ec0db098f0af23cc8f077c8e8eda2504a40192073f1a0833",
+    "sha256_after": "330c8d6e887695a0ec0db098f0af23cc8f077c8e8eda2504a40192073f1a0833",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/排版核对/报告第1页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/排版核对/报告第1页.png",
+    "size": 90229,
+    "sha256_before": "1fb479e26c4d3ccbde45b475a0da0d9f300986b5e93a910d3d61fafa3d69b32b",
+    "sha256_after": "1fb479e26c4d3ccbde45b475a0da0d9f300986b5e93a910d3d61fafa3d69b32b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/排版核对/填写要求_3.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/排版核对/填写要求_3.png",
+    "size": 71038,
+    "sha256_before": "bfdc6467cf34a1b76540ff288a7659bafe8f45bd8718721be0ec0732ee315f4f",
+    "sha256_after": "bfdc6467cf34a1b76540ff288a7659bafe8f45bd8718721be0ec0732ee315f4f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/排版核对/填写要求_2.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/排版核对/填写要求_2.png",
+    "size": 96275,
+    "sha256_before": "81a96aaff988043136a54d7c93c873d8555cac7b530c5afe040edf7bbd8f8ab8",
+    "sha256_after": "81a96aaff988043136a54d7c93c873d8555cac7b530c5afe040edf7bbd8f8ab8",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/排版核对/报告第17页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/排版核对/报告第17页.png",
+    "size": 79746,
+    "sha256_before": "d33381664d383df8dd8b44f6f7ec28563297c54f25e1279109653b0524fb7b9b",
+    "sha256_after": "d33381664d383df8dd8b44f6f7ec28563297c54f25e1279109653b0524fb7b9b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/排版核对/填写要求_1.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/排版核对/填写要求_1.png",
+    "size": 140422,
+    "sha256_before": "a4b9c48c25175366e681765cb4cc056f01a69ac9b4de2e663c429404a93f63a4",
+    "sha256_after": "a4b9c48c25175366e681765cb4cc056f01a69ac9b4de2e663c429404a93f63a4",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/排版核对/填写要求_4.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/排版核对/填写要求_4.png",
+    "size": 133777,
+    "sha256_before": "17fe91da82c212cba243ecd33cc6b7beae07db81f3e32f9cf66a563e166bf66a",
+    "sha256_after": "17fe91da82c212cba243ecd33cc6b7beae07db81f3e32f9cf66a563e166bf66a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/排版核对/报告第8页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/排版核对/报告第8页.png",
+    "size": 221444,
+    "sha256_before": "f7524deaccc5e3f4aa1b4dfbe0058e29a7576609f1dc91380e6532653fa2c56b",
+    "sha256_after": "f7524deaccc5e3f4aa1b4dfbe0058e29a7576609f1dc91380e6532653fa2c56b",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/中期检查_图文材料/排版核对/报告第12页.png",
+    "new_path": "论文/99_历史版本与备份/中期检查/早期图文材料/排版核对/报告第12页.png",
+    "size": 104357,
+    "sha256_before": "e859b1fcb1f192a26fc52a0ebd3d31ee393ebf363e40e4eaea5a76fe4d186fea",
+    "sha256_after": "e859b1fcb1f192a26fc52a0ebd3d31ee393ebf363e40e4eaea5a76fe4d186fea",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍与浮动面板验收/六种笔刷.png",
+    "new_path": "论文/06_工程验收与截图/产品介绍与浮动面板验收/六种笔刷.png",
+    "size": 195588,
+    "sha256_before": "03651c845390a879164a4602be20ae7414f606270fdfdfba02ad3d59ad733f80",
+    "sha256_after": "03651c845390a879164a4602be20ae7414f606270fdfdfba02ad3d59ad733f80",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍与浮动面板验收/首页默认收起.png",
+    "new_path": "论文/06_工程验收与截图/产品介绍与浮动面板验收/首页默认收起.png",
+    "size": 201818,
+    "sha256_before": "33a4046afac3af38667e20799619fe3977a3a654a2c2b664e49cb29015a19a45",
+    "sha256_after": "33a4046afac3af38667e20799619fe3977a3a654a2c2b664e49cb29015a19a45",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍与浮动面板验收/产品介绍手机.png",
+    "new_path": "论文/06_工程验收与截图/产品介绍与浮动面板验收/产品介绍手机.png",
+    "size": 72212,
+    "sha256_before": "9e3c80662fa509cb4bcaf97a99d1398a448fb784d272d6685ba3f2ab532d3cc0",
+    "sha256_after": "9e3c80662fa509cb4bcaf97a99d1398a448fb784d272d6685ba3f2ab532d3cc0",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍与浮动面板验收/手机方圆图标.png",
+    "new_path": "论文/06_工程验收与截图/产品介绍与浮动面板验收/手机方圆图标.png",
+    "size": 50125,
+    "sha256_before": "366c61550aea09781d407f8044b4b14208109befc193d44744fb39a9cf013f9e",
+    "sha256_after": "366c61550aea09781d407f8044b4b14208109befc193d44744fb39a9cf013f9e",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍与浮动面板验收/提示卡移动后锁定.png",
+    "new_path": "论文/06_工程验收与截图/产品介绍与浮动面板验收/提示卡移动后锁定.png",
+    "size": 131644,
+    "sha256_before": "555093a9c3bb82c112fbfdc8e62eee6b8cdf500d0d727253159e8744f2670c8c",
+    "sha256_after": "555093a9c3bb82c112fbfdc8e62eee6b8cdf500d0d727253159e8744f2670c8c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍与浮动面板验收/说明.md",
+    "new_path": "论文/06_工程验收与截图/产品介绍与浮动面板验收/说明.md",
+    "size": 2213,
+    "sha256_before": "72b9746929f4ff2ed3a1422ec9c535a9893bffab942cc4f5a98c5de7592ea99a",
+    "sha256_after": "72b9746929f4ff2ed3a1422ec9c535a9893bffab942cc4f5a98c5de7592ea99a",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍与浮动面板验收/真实算法演示.png",
+    "new_path": "论文/06_工程验收与截图/产品介绍与浮动面板验收/真实算法演示.png",
+    "size": 64324,
+    "sha256_before": "3234591da4c268471dee926f779e79374b55d6aaac0858699c3962ba92ed668f",
+    "sha256_after": "3234591da4c268471dee926f779e79374b55d6aaac0858699c3962ba92ed668f",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/产品介绍与浮动面板验收/产品介绍桌面.png",
+    "new_path": "论文/06_工程验收与截图/产品介绍与浮动面板验收/产品介绍桌面.png",
+    "size": 200404,
+    "sha256_before": "1c3bd3f9e0e004d117704cda202f4165574abf80a1ad1cf757faa1c006c281ce",
+    "sha256_after": "1c3bd3f9e0e004d117704cda202f4165574abf80a1ad1cf757faa1c006c281ce",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P7_交接验收/验收记录.md",
+    "new_path": "论文/06_工程验收与截图/P7_交接验收/验收记录.md",
+    "size": 1063,
+    "sha256_before": "fc12d6bd28fa21e14c504fe85848226700fe2359749e4f4f91fa08ab5c59e2cb",
+    "sha256_after": "fc12d6bd28fa21e14c504fe85848226700fe2359749e4f4f91fa08ab5c59e2cb",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P7_交接验收/合成材料交接包示例.json",
+    "new_path": "论文/06_工程验收与截图/P7_交接验收/合成材料交接包示例.json",
+    "size": 430724,
+    "sha256_before": "024ad8dbbf402fc953ba63bde70318c12abcb1e5715fd00f03b5af3fca4e2cb0",
+    "sha256_after": "024ad8dbbf402fc953ba63bde70318c12abcb1e5715fd00f03b5af3fca4e2cb0",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_整合验收/六人预试看板_合成测试截图.png",
+    "new_path": "论文/06_工程验收与截图/P6_整合验收/六人预试看板_合成测试截图.png",
+    "size": 164988,
+    "sha256_before": "ef4a4fa2b21a5ece650584811e2a3ef975cb786f42ca720131fe355a104ed5ae",
+    "sha256_after": "ef4a4fa2b21a5ece650584811e2a3ef975cb786f42ca720131fe355a104ed5ae",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_整合验收/合成预试执行卡示例.json",
+    "new_path": "论文/06_工程验收与截图/P6_整合验收/合成预试执行卡示例.json",
+    "size": 1015,
+    "sha256_before": "04ddaab93277d793a5dfe52daa411fd80b45b987ba4ac1741fb8bf577fc521e7",
+    "sha256_after": "04ddaab93277d793a5dfe52daa411fd80b45b987ba4ac1741fb8bf577fc521e7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_整合验收/六人预试看板_合成测试导出.json",
+    "new_path": "论文/06_工程验收与截图/P6_整合验收/六人预试看板_合成测试导出.json",
+    "size": 1087,
+    "sha256_before": "e570d9859f25523c9496044ee8cd2237dce1ccf18128b1eece9cc41aea58d8f7",
+    "sha256_after": "e570d9859f25523c9496044ee8cd2237dce1ccf18128b1eece9cc41aea58d8f7",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_整合验收/新版材料与负担提示.png",
+    "new_path": "论文/06_工程验收与截图/P6_整合验收/新版材料与负担提示.png",
+    "size": 447322,
+    "sha256_before": "84c3b24a8312fa74a00b833ffe140fbe76e0c861ec69fe98060e4d9133b52092",
+    "sha256_after": "84c3b24a8312fa74a00b833ffe140fbe76e0c861ec69fe98060e4d9133b52092",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_整合验收/任务负担复盘_合成空数据导出.json",
+    "new_path": "论文/06_工程验收与截图/P6_整合验收/任务负担复盘_合成空数据导出.json",
+    "size": 3163,
+    "sha256_before": "f9cc6bfe66e0d383834acac6a007931a8f056f926d5312d141eed77f9176aa4c",
+    "sha256_after": "f9cc6bfe66e0d383834acac6a007931a8f056f926d5312d141eed77f9176aa4c",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_整合验收/验收记录.md",
+    "new_path": "论文/06_工程验收与截图/P6_整合验收/验收记录.md",
+    "size": 1584,
+    "sha256_before": "5e1e276227b0c2ed89b6920094298a69d695e4a24f5bbf2db73de5c1fddd81bd",
+    "sha256_after": "5e1e276227b0c2ed89b6920094298a69d695e4a24f5bbf2db73de5c1fddd81bd",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_整合验收/任务负担复盘_合成测试截图.png",
+    "new_path": "论文/06_工程验收与截图/P6_整合验收/任务负担复盘_合成测试截图.png",
+    "size": 394355,
+    "sha256_before": "6beb45abfc3b503bce6dedf82b7e769a28684bdd2545c5e62e4d7ee4990d8039",
+    "sha256_after": "6beb45abfc3b503bce6dedf82b7e769a28684bdd2545c5e62e4d7ee4990d8039",
+    "content_changed": false
+  },
+  {
+    "old_path": "论文/P6_整合验收/1000笔取消重试后进入画板.png",
+    "new_path": "论文/06_工程验收与截图/P6_整合验收/1000笔取消重试后进入画板.png",
+    "size": 114268,
+    "sha256_before": "c8a51fa159cb6221840bcd99090428c44dbc274af40499beda4b114399e90200",
+    "sha256_after": "c8a51fa159cb6221840bcd99090428c44dbc274af40499beda4b114399e90200",
+    "content_changed": false
+  }
+]

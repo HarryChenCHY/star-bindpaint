@@ -1,7 +1,7 @@
 import { chromium } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-const out = join(process.cwd(), '论文/05_算法实验与验证/1000笔算法验证');
+const out = join(process.cwd(), '论文/1000笔算法验证');
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch();
 try {

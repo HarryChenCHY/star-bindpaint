@@ -1,7 +1,7 @@
 import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';
 import { mkdirSync } from 'node:fs';
-const out = '论文/06_工程验收与截图/0916验收';
+const out = '论文/0916验收';
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch();
 try {

@@ -3,7 +3,7 @@ import { chromium } from '@playwright/test';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-const out = join(process.cwd(), '论文/05_算法实验与验证/莫奈日出_六档笔触对比');
+const out = join(process.cwd(), '论文/莫奈日出_六档笔触对比');
 mkdirSync(out, { recursive: true });
 const bundle = await build({ stdin: { contents: "export { planBudgetStrokes } from './src/lib/budget-strokes'; export { imageSourceFromImage, drawStroke } from './src/lib/stroke-engine'; export { STROKE_CONFIG } from './src/lib/stroke-config';", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', globalName: 'PaintingComparison', platform: 'browser' });
 const browser = await chromium.launch();

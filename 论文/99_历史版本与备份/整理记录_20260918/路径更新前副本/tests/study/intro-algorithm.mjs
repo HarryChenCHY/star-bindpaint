@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';
 import { mkdirSync } from 'node:fs';
 const browser = await chromium.launch();
-const out = '论文/06_工程验收与截图/产品介绍算法溯源验收';
+const out = '论文/产品介绍算法溯源验收';
 mkdirSync(out, { recursive: true });
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });

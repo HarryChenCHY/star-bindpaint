@@ -20,8 +20,8 @@ try {
   await page.getByText(/画面优化 \d+%/).waitFor({ timeout: 30000 });
   await page.getByText('沿星迹绘画', { exact: true }).waitFor({ timeout: 120000 });
   if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)) throw new Error('390px overflow');
-  mkdirSync('论文/06_工程验收与截图/P6_整合验收', { recursive: true });
-  await page.screenshot({ path: '论文/06_工程验收与截图/P6_整合验收/1000笔取消重试后进入画板.png', fullPage: true });
+  mkdirSync('论文/P6_整合验收', { recursive: true });
+  await page.screenshot({ path: '论文/P6_整合验收/1000笔取消重试后进入画板.png', fullPage: true });
   if (errors.length) throw new Error(errors.join('\n'));
   console.log('PASS: real Worker cancellation, retry, progress, painting and 390px');
 } finally { await browser.close(); }

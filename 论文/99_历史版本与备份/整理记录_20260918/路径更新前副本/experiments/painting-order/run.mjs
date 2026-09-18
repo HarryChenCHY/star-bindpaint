@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 
-const out = join(process.cwd(), '论文/05_算法实验与验证/笔触顺序探索_不接入正式程序');
+const out = join(process.cwd(), '论文/笔触顺序探索_不接入正式程序');
 mkdirSync(out, { recursive: true });
 const bundle = await build({ stdin: { contents: "export { planBudgetStrokes } from './experiments/painting-order/baseline-planner'; export { planOrderedStrokes } from './experiments/painting-order/ordered-planner'; export { imageSourceFromImage, drawStroke } from './src/lib/stroke-engine';", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', globalName: 'Lab' });
 const browser = await chromium.launch();

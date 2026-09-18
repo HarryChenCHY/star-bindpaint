@@ -1,0 +1,19 @@
+{
+  "pdf_pages": 22,
+  "references": 15,
+  "images_preserved": 17,
+  "tables_preserved": 5,
+  "apa_hanging_indent_inches": 0.5,
+  "apa_line_spacing": 2,
+  "package_modified": [
+    "word/_rels/document.xml.rels",
+    "word/document.xml",
+    "word/footer3.xml",
+    "word/footer5.xml",
+    "word/footer6.xml",
+    "word/styles.xml"
+  ],
+  "signature_date_preserved": true,
+  "text_checks": "passed",
+  "zip_integrity": "passed"
+}
