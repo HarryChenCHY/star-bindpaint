@@ -36,3 +36,23 @@ ssh -N -L 3010:127.0.0.1:3000 root@1.13.169.247
 打开 `http://localhost:3010`。正式研究的登录凭证要求 HTTPS；隧道用于检查界面与服务，不作为真人招募地址。
 
 备案通过后：配置域名 A 记录到 CVM、腾讯云安全组放行 80/443、安装证书和 Nginx HTTPS 反向代理到 127.0.0.1:3000、页面展示实际备案号，再验证登录 Cookie、两轮测试、上传与导出。证书私钥不进入仓库。现有 CloudBase 默认域名不会自动转向 CVM，需停用旧入口或单独配置跳转；未确认前不删除旧服务。
+
+### 2026-09-22 正式域名已启用
+
+用户已确认备案通过，正式域名为 `startracepaint.com`，`www.startracepaint.com` 跳转至主域名。DNSPod 需要两条 A 记录：`@` 和 `www` 均指向 `1.13.169.247`。
+
+两条解析已生效。正式入口为 `https://startracepaint.com`，用户测试入口为 `https://startracepaint.com/study`。HTTP 与 HTTPS 的 www 入口均以 308 跳转至主域名并保留路径。
+
+本轮已安装 Nginx、Certbot，验证公网 80/443 端口、证书链及首页、选图、测试页面和研究 API。浏览器检查未发现页面脚本异常；同源请求正常进入接口鉴权，跨站请求被拒绝。应用仍仅监听内部 3000 端口，前端和 API 经同一域名转发。未创建真实研究参与者，登录后的完整实验流程未在生产数据上重复执行。
+
+`nginx-http-challenge.conf.example` 是签发证书前的临时配置；`nginx-https.conf.example` 是已安装的正式配置。`enable-domain.sh` 与 HTTPS 配置已放在服务器 `/srv/startrace/domain`，后续维护时可使用 root 执行：
+
+```bash
+bash /srv/startrace/domain/enable-domain.sh
+```
+
+脚本先核对两个域名的 IPv4、IPv6 与 HTTP 验证路径，再签发免费证书、检查 Nginx 配置并切换 HTTPS，最后启用自动续期。证书账户暂不绑定邮箱；定时续期日志可通过 `journalctl -u certbot-renew.service` 查看。切换失败会恢复之前的 Nginx 配置。
+
+证书覆盖主域名与 www，当前有效期截至 2026-12-21，`certbot-renew.timer` 已启用，解析传播后的续期演练已通过。首页备案编号按用户提供的内容显示为“渝ICP备2026023024号”，链接至工信部查询首页，未自行补写网站序号。独立研究回归应使用隔离测试数据，不把自动验证记录混入真实实验。
+
+本轮还修复了归档下载重试问题：GitHub 下载先写入独立文件，完整性验证后再解包，避免中断后的重试内容被拼接进 tar 输入流。单次下载时限调整为 600 秒；失败时现有应用继续运行。

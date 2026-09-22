@@ -416,6 +416,11 @@ export default function HomePage() {
           </div>
           <p className="text-xs font-bold" style={{ color: COLORS.inkSoft }}>智能笔触拆解 · 渐进式绘画引导 · 作品成长记录</p>
         </div>
+        <div className="mt-5 text-center text-xs" style={{ color: COLORS.inkSoft }}>
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:underline">
+            渝ICP备2026023024号
+          </a>
+        </div>
       </footer>
     </div>
   );

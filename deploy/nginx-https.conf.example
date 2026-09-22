@@ -1,14 +1,28 @@
-# Install only after ICP approval and a certificate have been verified.
+# Canonical production domain. Install after the certificate has been issued.
 server {
     listen 80;
     server_name startracepaint.com www.startracepaint.com;
-    return 301 https://$host$request_uri;
+    location /.well-known/acme-challenge/ {
+        root /var/lib/letsencrypt;
+        try_files $uri =404;
+    }
+    location / {
+        return 308 https://startracepaint.com$request_uri;
+    }
 }
 server {
     listen 443 ssl;
-    server_name startracepaint.com www.startracepaint.com;
-    ssl_certificate /etc/nginx/ssl/startracepaint.com.fullchain.pem;
-    ssl_certificate_key /etc/nginx/ssl/startracepaint.com.key;
+    server_name www.startracepaint.com;
+    ssl_certificate /etc/letsencrypt/live/startracepaint.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/startracepaint.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    return 308 https://startracepaint.com$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name startracepaint.com;
+    ssl_certificate /etc/letsencrypt/live/startracepaint.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/startracepaint.com/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
     client_max_body_size 12m;
     location / {
@@ -18,6 +32,8 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
         proxy_read_timeout 120s;
         proxy_buffering off;
     }

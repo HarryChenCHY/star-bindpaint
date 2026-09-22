@@ -19,6 +19,10 @@ else
   sha=$(curl --fail --silent --show-error --connect-timeout 8 --max-time 20 \
     https://api.github.com/repos/HarryChenCHY/star-bindpaint/git/ref/heads/main \
     | python3 -c 'import json,sys; print(json.load(sys.stdin)["object"]["sha"])')
+  # Reuse an already verified local commit after a transient fetch failure.
+  if [[ "$sha" =~ ^[0-9a-f]{40}$ ]] && git --git-dir="$repo" cat-file -e "$sha^{commit}" 2>/dev/null; then
+    source_mode=git
+  fi
 fi
 [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
 if [[ -f "$base/deployed-commit" ]] && [[ "$(<"$base/deployed-commit")" == "$sha" ]]; then exit 0; fi
@@ -30,9 +34,20 @@ release=$(mktemp -d "$base/releases/$sha.XXXXXX")
 if [[ "$source_mode" == git ]]; then
   git --git-dir="$repo" archive "$sha" | tar -x -C "$release"
 else
-  curl --fail --silent --show-error --connect-timeout 8 --max-time 180 --retry 2 \
-    "https://codeload.github.com/HarryChenCHY/star-bindpaint/tar.gz/$sha" \
-    | tar -xz --strip-components=1 -C "$release"
+  # A retried response must replace the partial download, not be appended to
+  # the stream already consumed by tar. Validate the complete archive first.
+  archive=$(mktemp "$base/releases/source-$sha.XXXXXX.tar.gz")
+  if ! curl --fail --silent --show-error --connect-timeout 8 --max-time 600 --retry 2 \
+    --output "$archive" "https://codeload.github.com/HarryChenCHY/star-bindpaint/tar.gz/$sha"; then
+    rm -f "$archive"
+    exit 1
+  fi
+  if ! tar -tzf "$archive" >/dev/null; then
+    rm -f "$archive"
+    exit 1
+  fi
+  tar -xzf "$archive" --strip-components=1 -C "$release"
+  rm -f "$archive"
 fi
 image=localhost/startrace:$sha
 if ! podman build --format docker --memory=1400m --memory-swap=3g --pull-never -t "$image" "$release"; then

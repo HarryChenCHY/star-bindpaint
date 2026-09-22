@@ -1,0 +1,14 @@
+# Temporary configuration used only while DNS and the HTTPS certificate are prepared.
+server {
+    listen 80;
+    server_name startracepaint.com www.startracepaint.com;
+    location /.well-known/acme-challenge/ {
+        root /var/lib/letsencrypt;
+        try_files $uri =404;
+    }
+    location / {
+        default_type text/plain;
+        add_header Retry-After 300 always;
+        return 503 "StarTrace HTTPS setup is in progress.\n";
+    }
+}
