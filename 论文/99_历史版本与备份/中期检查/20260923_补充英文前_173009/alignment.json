@@ -1,0 +1,1040 @@
+[
+  {
+    "source_paragraph": 52,
+    "chinese": "一、研究目标与中期工作概况",
+    "english": "I. Research Objectives and Overview of Work at the Mid-term Stage",
+    "images": 0
+  },
+  {
+    "source_paragraph": 53,
+    "chinese": "本课题围绕绘画初学者的数字绘画体验展开，研究如何通过设计一款绘画交互系统，将传统的已有图像笔触拆解计算表达转化为可理解、可执行的操作引导，帮助使用者开始绘画、持续推进并获得创作满足感。",
+    "english": "This project examines the digital painting experience of beginners. It explores how an interactive painting system can translate the computational representation produced by conventional stroke decomposition of existing images into understandable, actionable guidance, helping users begin painting, sustain their progress, and gain satisfaction from creating their own work.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 54,
+    "chinese": "论文题目为“基于笔触拆解算法的数字绘画辅助系统交互设计研究——以‘星迹智绘’为例”。研究关注于绘画初学者进行电子绘画时的“不会画、不想画、怕画不好”多种绘画难点于抵触点，分别对应操作方法不明确、行动意愿不足以及对结果的不确定感，通过设计此绘画系统，希望通过清晰的下一笔触交互提示以降低这些障碍。",
+    "english": "The thesis is entitled “Research on the Interaction Design of a Digital Painting Assistance System Based on a Stroke Decomposition Algorithm: A Case Study of Star Trace Paint.” It addresses several difficulties and sources of resistance that beginners encounter in digital painting: “not knowing how to paint,” “not wanting to paint,” and “being afraid of painting poorly.” These correspond to uncertainty about how to proceed, insufficient motivation to act, and uncertainty about the outcome. By designing this painting system, I aim to reduce these barriers through clear, interactive guidance for the next stroke.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 55,
+    "chinese": "开题阶段，本项目初步确定了大致的研究方向、问题意识和产品构想，尚未形成可运行的系统。后续阶段工作主要集中于四个方面：（1）搜集与梳理传统的笔触式渲染及神经绘画相关算法；（2）融合方法思想并完成适合浏览器交互的笔触规划实现；（3）搭建选图、绘画、反馈和作品保存的交互流程及视觉界面；（4）开发支持对比实验的数据采集、研究管理和分析展示模块。目前已形成可操作、可演示的自研“星迹智绘”网页原型，研究进入以真实使用检验设计的准备阶段。",
+    "english": "At the proposal stage, the project had established a preliminary research direction, an understanding of the problem, and a product concept, but had not yet produced a functioning system. Subsequent work has focused on four areas: (1) collecting and reviewing conventional stroke-based rendering and neural painting algorithms; (2) combining methodological ideas and implementing stroke planning suitable for browser interaction; (3) building the interaction flow and visual interface for image selection, painting, feedback, and artwork saving; and (4) developing data collection, research management, and analytical display modules to support a comparative experiment. A usable, demonstrable, independently developed web prototype of Star Trace Paint is now available, and the research has entered the preparation stage for examining the design through actual use.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 56,
+    "chinese": "本研究将传统算法的前端应用化设计、交互设计和评价放在同一条研究主线上。算法提供有序的绘画动作规则与参数，交互设计将位置、方向、颜色、宽度和进度转译为易于理解的提示，系统记录实际操作与主观反馈，后续实验再评价这种帮助是否有效。",
+    "english": "This study brings the adaptation of conventional algorithms for a front-end application, interaction design, and evaluation into a single research framework. The algorithm supplies rules and parameters for an ordered sequence of painting actions. Interaction design translates position, direction, color, width, and progress into understandable guidance. The system records actual actions and subjective feedback, and subsequent experiments will evaluate whether this assistance is effective.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 57,
+    "chinese": "该作品项目已完成云部署：https://startracepaint.com/，可在线体验。",
+    "english": "The project has been deployed to the cloud and can be tried online at https://startracepaint.com/.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 58,
+    "chinese": "二、相关算法的搜集、理解与方法整合",
+    "english": "II. Collection, Understanding, and Integration of Related Algorithms",
+    "images": 0
+  },
+  {
+    "source_paragraph": 59,
+    "chinese": "2.1 笔触式渲染的基础原理",
+    "english": "2.1 Fundamentals of Stroke-based Rendering",
+    "images": 0
+  },
+  {
+    "source_paragraph": 60,
+    "chinese": "Hertzmann提出的多尺度曲线笔触方法是本课题的重要基础文献与笔触序列拆解算法来源[1]。该方法用较大的笔刷建立画面，再用逐渐缩小的笔刷修整与相应模糊参考图存在差异的区域；曲线沿图像梯度的垂直方向延伸，形成具有绘画感的笔迹。论文还把笔刷尺寸、曲率及颜色变化等组织为可调风格参数，为“将图像表示为动作序列”和“通过参数形成不同笔触外观”提供了方法参照。",
+    "english": "Hertzmann’s method of curved brush strokes at multiple scales is an important foundational reference and a source for the stroke-sequence decomposition algorithm in this project [1]. The method first establishes the image using larger brushes, then uses progressively smaller brushes to refine regions that differ from the corresponding blurred reference image. Curves extend perpendicular to the image gradient to produce painterly marks. The paper also organizes brush size, curvature, color variation, and other properties into adjustable style parameters, providing a methodological reference for representing an image as a sequence of actions and producing different stroke appearances through parameters.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 61,
+    "chinese": "在交互设计中，我重点区分了图像重建与人的绘画任务。自动渲染主要关心生成图像，逐笔指导还需要考虑笔数、寻找起点的难度、位置跳转与动作顺序。因而本项目以多尺度表达为基础，将有限动作预算、可预测的空间顺序以及每一步可显示的笔触参数纳入实现目标。参考文献提供方法思想，具体的预算分配、扫描规则和界面提示则由本项目结合应用场景设计。",
+    "english": "In the interaction design, I have paid particular attention to the distinction between image reconstruction and the painting task performed by a person. Automatic rendering primarily concerns image generation, whereas stroke-by-stroke guidance must also consider the number of strokes, the difficulty of locating starting points, changes in position, and the order of actions. Building on a multiscale representation, this project therefore incorporates a limited action budget, a predictable spatial order, and stroke parameters that can be displayed at each step into its implementation objectives. The references provide methodological ideas, while the specific budget allocation, scanning rules, and interface guidance are designed for the application context of this project.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 62,
+    "chinese": "2.2 神经绘画研究的参照价值",
+    "english": "2.2 Relevance of Neural Painting Research",
+    "images": 0
+  },
+  {
+    "source_paragraph": 63,
+    "chinese": "1998年，Huang等研究者将绘画描述为连续笔触决策，通过神经渲染器和基于模型的强化学习生成笔触序列[2]；2021年，ZouZ等研究者将参数化笔触渲染与图像相似度优化相结合，讨论神经渲染及参数搜索问题[3]；2023年，HU T等研究者进一步区分“在哪里画”和“画什么”，通过动态预测绘画区域组织重建过程[4]。这三类研究帮助本课题理解有限笔触表达、参数优化反馈以及绘画区域组织之间的联系。",
+    "english": "In 1998, Huang and colleagues described painting as a sequence of stroke decisions and generated stroke sequences using a neural renderer and model-based reinforcement learning [2]. In 2021, Zou Z and colleagues combined parametric stroke rendering with image similarity optimization, examining neural rendering and parameter search [3]. In 2023, Hu T and colleagues further distinguished between “where to paint” and “what to paint,” organizing reconstruction through dynamically predicted painting regions [4]. These three lines of research have helped this project understand the relationships among representation with a limited number of strokes, feedback from parameter optimization, and the organization of painting regions.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 64,
+    "chinese": "本课题的工作定位是面向交互需求的算法适配与系统设计，研究项目对上述研究采用方法层面进行综合参照：保留可回放的参数化动作、以重建误差评价候选笔触，并明确组织区域访问顺序，采用显式搜索和解析颜色拟合。",
+    "english": "The work in this project is positioned as algorithm adaptation and system design for interaction needs. It draws on the above studies at the methodological level: retaining replayable parametric actions, evaluating candidate strokes through reconstruction error, and explicitly organizing the order of region visits, while using explicit search and analytical color fitting.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 65,
+    "chinese": "2.3 方法选择与系统结构",
+    "english": "2.3 Method Selection and System Structure",
+    "images": 0
+  },
+  {
+    "source_paragraph": 66,
+    "chinese": "此项目已在浏览器web端中完成规划，可以让用户选图后直接获得绘画引导，也便于将取消、进度反馈和重新尝试纳入交互。当前研究方法为，把输入图像转成一组包含起止点、宽度、颜色及遍次信息的笔触，由画布模块按顺序显示和绘制。计算过程放在Web 端后台线程中，避免主要交互长时间被计算阻塞；研究模块则保存经过审核的参考图和计划，使同一批次的参与者使用一致材料。图1展示了从参考图像输入到绘画指导、再到研究记录的结构。",
+    "english": "The project now performs planning in the web browser, allowing users to obtain painting guidance directly after selecting an image and making it easier to incorporate cancellation, progress feedback, and retries into the interaction. The current method converts an input image into a set of strokes containing start and end points, width, color, and pass information, which the canvas module displays and draws in sequence. Computation runs in a background web thread to avoid blocking the main interaction for extended periods. The research module stores approved reference images and plans so that participants in the same batch use consistent materials. Figure 1 shows the structure from reference image input to painting guidance and research records.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 67,
+    "chinese": "",
+    "english": "",
+    "images": 1
+  },
+  {
+    "source_paragraph": 68,
+    "chinese": "图1  图像输入、笔触规划、绘画交互与研究记录的系统结构",
+    "english": "Figure 1. System structure linking image input, stroke planning, painting interaction, and research records",
+    "images": 0
+  },
+  {
+    "source_paragraph": 69,
+    "chinese": "三、笔触拆解序列有序规划算法实现",
+    "english": "III. Implementation of the Algorithm for Ordered Stroke-sequence Planning",
+    "images": 0
+  },
+  {
+    "source_paragraph": 70,
+    "chinese": "3.1 有限预算与五遍尺度组织",
+    "english": "3.1 A Limited Budget and Five-pass Scale Organization",
+    "images": 0
+  },
+  {
+    "source_paragraph": 71,
+    "chinese": "当前默认规划器从白色画布开始重新组织整幅图像，系统每次只接受能够改善目标误差且路径有效的笔触，绘画顺序分为五遍：大色块、中色块、形体、小笔触和细节。各遍分别采用固定宽度，整组宽度由大到小递减；每遍按网格逐行访问，从左上到右下推进，并在当前区域中选择仍需修整的位置。空间顺序是区域访问顺序，每一笔的端点尽量沿一条对角线排列。笔触可以跨越网格边界，其颜色拟合与误差评价始终基于同一张共享画布，以避免把各块分别绘制后再硬性拼接。",
+    "english": "The current default planner reorganizes the entire image starting from a white canvas. At each step, the system accepts only strokes that improve the objective error and have valid paths. Painting is organized into five passes: large color blocks, medium color blocks, forms, small strokes, and details. Each pass uses a fixed width, with widths decreasing from one pass to the next. Each pass visits the grid row by row, moving from the upper left to the lower right, and selects positions within the current region that still require refinement. The spatial order refers to the order of region visits, while the endpoints of each stroke are arranged along a diagonal as far as possible. Strokes may cross grid boundaries, and their color fitting and error evaluation always use the same shared canvas, avoiding the rigid stitching together of separately painted blocks.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 72,
+    "chinese": "",
+    "english": "",
+    "images": 0
+  },
+  {
+    "source_paragraph": 73,
+    "chinese": "表1  五遍规划的尺度与预算设置",
+    "english": "Table 1. Scales and budget settings for the five-pass planner",
+    "images": 0
+  },
+  {
+    "source_paragraph": 74,
+    "chinese": "遍次 / 用途",
+    "english": "Pass / Purpose",
+    "images": 0
+  },
+  {
+    "source_paragraph": 75,
+    "chinese": "基准宽度",
+    "english": "Base width",
+    "images": 0
+  },
+  {
+    "source_paragraph": 76,
+    "chinese": "网格",
+    "english": "Grid",
+    "images": 0
+  },
+  {
+    "source_paragraph": 77,
+    "chinese": "1000预算下尝试次数",
+    "english": "Attempts with a budget of 1,000",
+    "images": 0
+  },
+  {
+    "source_paragraph": 78,
+    "chinese": "1 / 大色块",
+    "english": "1 / Large color blocks",
+    "images": 0
+  },
+  {
+    "source_paragraph": 79,
+    "chinese": "30",
+    "english": "30",
+    "images": 0
+  },
+  {
+    "source_paragraph": 80,
+    "chinese": "3 × 3",
+    "english": "3 × 3",
+    "images": 0
+  },
+  {
+    "source_paragraph": 81,
+    "chinese": "60",
+    "english": "60",
+    "images": 0
+  },
+  {
+    "source_paragraph": 82,
+    "chinese": "2 / 中色块",
+    "english": "2 / Medium color blocks",
+    "images": 0
+  },
+  {
+    "source_paragraph": 83,
+    "chinese": "16",
+    "english": "16",
+    "images": 0
+  },
+  {
+    "source_paragraph": 84,
+    "chinese": "4 × 4",
+    "english": "4 × 4",
+    "images": 0
+  },
+  {
+    "source_paragraph": 85,
+    "chinese": "120",
+    "english": "120",
+    "images": 0
+  },
+  {
+    "source_paragraph": 86,
+    "chinese": "3 / 形体",
+    "english": "3 / Forms",
+    "images": 0
+  },
+  {
+    "source_paragraph": 87,
+    "chinese": "8",
+    "english": "8",
+    "images": 0
+  },
+  {
+    "source_paragraph": 88,
+    "chinese": "5 × 5",
+    "english": "5 × 5",
+    "images": 0
+  },
+  {
+    "source_paragraph": 89,
+    "chinese": "220",
+    "english": "220",
+    "images": 0
+  },
+  {
+    "source_paragraph": 90,
+    "chinese": "4 / 小笔触",
+    "english": "4 / Small strokes",
+    "images": 0
+  },
+  {
+    "source_paragraph": 91,
+    "chinese": "4",
+    "english": "4",
+    "images": 0
+  },
+  {
+    "source_paragraph": 92,
+    "chinese": "6 × 6",
+    "english": "6 × 6",
+    "images": 0
+  },
+  {
+    "source_paragraph": 93,
+    "chinese": "280",
+    "english": "280",
+    "images": 0
+  },
+  {
+    "source_paragraph": 94,
+    "chinese": "5 / 细节",
+    "english": "5 / Details",
+    "images": 0
+  },
+  {
+    "source_paragraph": 95,
+    "chinese": "2.2",
+    "english": "2.2",
+    "images": 0
+  },
+  {
+    "source_paragraph": 96,
+    "chinese": "6 × 6",
+    "english": "6 × 6",
+    "images": 0
+  },
+  {
+    "source_paragraph": 97,
+    "chinese": "320",
+    "english": "320",
+    "images": 0
+  },
+  {
+    "source_paragraph": 98,
+    "chinese": "注：宽度按分析图短边200像素换算；无收益候选跳过，尝试次数不等于最终接受笔数。",
+    "english": "Note: Widths are scaled relative to an analysis image whose shorter side is 200 pixels. Candidates that provide no improvement are skipped, so the number of attempts is not the final number of accepted strokes.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 99,
+    "chinese": "表1的宽度以分析图短边200像素为基准，再按实际尺寸换算。每遍的尝试次数按预算比例分配，区域内部则按当前加权残差分配数量：尚未表达充分的区域获得更多机会，已接近参考图的区域减少重复覆盖。图2用莫奈《日出·印象》的同一份规划结果展示五遍的累积重建，便于观察整体色彩、形体和细节逐渐形成的过程。",
+    "english": "The widths in Table 1 use an analysis image with a shorter side of 200 pixels as the baseline and are then scaled to the actual dimensions. The number of attempts in each pass is allocated as a proportion of the budget. Within regions, allocation depends on the current weighted residual: regions that remain insufficiently represented receive more opportunities, while those already close to the reference image receive less repeated coverage. Figure 2 shows the cumulative reconstruction across five passes from a single plan for Monet’s Impression, Sunrise, making it possible to observe the gradual formation of overall color, forms, and details.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 100,
+    "chinese": "",
+    "english": "",
+    "images": 1
+  },
+  {
+    "source_paragraph": 101,
+    "chinese": "图2  莫奈《日出·印象》的五遍累积重建效果",
+    "english": "Figure 2. Cumulative reconstruction of Monet’s Impression, Sunrise across five passes",
+    "images": 0
+  },
+  {
+    "source_paragraph": 102,
+    "chinese": "四、交互流程与UI设计建设",
+    "english": "IV. Development of the Interaction Flow and UI Design",
+    "images": 0
+  },
+  {
+    "source_paragraph": 103,
+    "chinese": "4.1 信息架构与创作入口",
+    "english": "4.1 Information Architecture and Entry Points for Creation",
+    "images": 0
+  },
+  {
+    "source_paragraph": 104,
+    "chinese": "“星迹智绘”程序已经建立首页、选图、绘画、作品查看、产品介绍及研究测试等主要页面。普通体验路径围绕“选择想画的图—获得有序笔触—亲手绘画—保存作品”组织；用户测试通过独立入口进入统一任务。首页突出“开始我的第一幅画”的主操作，将较长介绍默认折叠，减少初次进入时需要阅读的信息。产品介绍页面则承担完整功能说明、算法原理和文献来源展示，避免把技术细节集中放入绘画任务界面。",
+    "english": "Star Trace Paint now includes the main pages for the home screen, image selection, painting, artwork viewing, product introduction, and research testing. The ordinary user experience follows the sequence “choose an image to paint—obtain ordered strokes—paint by hand—save the artwork,” while user testing has a separate entry point leading to a standardized task. The home page emphasizes the primary action, “Start My First Painting,” and collapses the longer introduction by default to reduce the amount of reading required on a first visit. The product introduction page presents the full explanation of features, algorithm principles, and reference sources, keeping extensive technical details out of the painting task interface.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 105,
+    "chinese": "",
+    "english": "",
+    "images": 2
+  },
+  {
+    "source_paragraph": 106,
+    "chinese": "图3  星迹智绘首页与主要创作入口",
+    "english": "Figure 3. Star Trace Paint home page and main entry point for creation",
+    "images": 0
+  },
+  {
+    "source_paragraph": 107,
+    "chinese": "注：当前程序截图；首页的长介绍默认收起。",
+    "english": "Note: Screenshots of the current application. The long introduction on the home page is collapsed by default.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 108,
+    "chinese": "参考图既可以来自作品库，也可以由用户本地选择或拖拽上传。当前支持20MB以下的JPG、PNG等浏览器可解码图像，并提供文件检查、预览和加载反馈。用户可以先检查拆解后的预期效果，再决定是否进入绘画。对于参考图过于复杂或细节不足的情况，这一步能使目标更明确。自由画布允许直接绘画，不要求先挑选主题；它为不想跟随固定参考图的绘画使用者保留了自主表达的空间。",
+    "english": "Reference images can be selected from the artwork library or chosen locally and uploaded by clicking or dragging and dropping. The current system supports JPG, PNG, and other browser-decodable images smaller than 20 MB, with file checks, previews, and loading feedback. Users can inspect the expected result of decomposition before deciding whether to begin painting. This step helps clarify the goal when a reference image is overly complex or lacks sufficient detail. The free canvas allows users to paint directly without selecting a theme first, leaving room for independent expression for those who do not want to follow a fixed reference image.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 109,
+    "chinese": "",
+    "english": "",
+    "images": 3
+  },
+  {
+    "source_paragraph": 110,
+    "chinese": "图4  图片上传、精选临摹、自由画布选择界面",
+    "english": "Figure 4. Interfaces for image upload, selected reference artworks, and free-canvas selection",
+    "images": 0
+  },
+  {
+    "source_paragraph": 111,
+    "chinese": "注：当前程序截图；支持点击选图、拖拽上传和进入自由画布。",
+    "english": "Note: Screenshots of the current application. Users can click to select an image, drag and drop an upload, or enter the free canvas.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 112,
+    "chinese": "4.2 绘画中的提示、控制与反馈",
+    "english": "4.2 Guidance, Control, and Feedback During Painting",
+    "images": 0
+  },
+  {
+    "source_paragraph": 113,
+    "chinese": "绘画界面以画布为中心，当前笔触通过半透明区域、数字起终点和方向箭头表示。数字、圆圈、箭头和路线会随笔触尺寸同比缩放，减少细小笔触被大图标遮挡的情况。用户默认获得完整引导，也可在工具中选择适度提示或仅保留起点。进度与遍次说明共同告诉用户当前处于大色块建立还是细节修整阶段，使“下一笔”与整幅画的形成过程建立联系。",
+    "english": "The painting interface centers on the canvas. The current stroke is represented by a translucent region, numbered start and end points, and a directional arrow. Numbers, circles, arrows, and paths scale proportionally with stroke size, reducing the likelihood that large icons obscure small strokes. Users receive full guidance by default but can select moderate guidance or retain only the starting point through the tools. Progress and pass descriptions together indicate whether the user is establishing large color blocks or refining details, connecting the “next stroke” to the formation of the whole painting.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 114,
+    "chinese": "参考原图置于提示面板中，按容器适配显示，点击可以放大查看并恢复。面板可移动、锁定和收起为方圆图标，帮助使用者根据画布位置安排信息。底部工具栏把模式、画笔与常用操作集中呈现，按钮提供悬停文字提示，教程入口解释不同工具的作用。沿星迹模式支持撤销，使误操作具备可恢复性，也让用户可以重新尝试当前动作。",
+    "english": "The original reference image appears in the guidance panel, fitted to its container; clicking enlarges it and allows it to be restored. The panel can be moved, locked, or collapsed into a rounded-square icon, helping users arrange information around the canvas. The bottom toolbar groups modes, brushes, and common actions, with hover text for buttons and a tutorial entry explaining the tools. Follow the Star Trail mode supports undo, making accidental actions recoverable and allowing users to retry the current action.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 115,
+    "chinese": "",
+    "english": "",
+    "images": 4
+  },
+  {
+    "source_paragraph": 116,
+    "chinese": "图5  沿星迹绘画、参考原图与可移动提示面板",
+    "english": "Figure 5. Guided painting along the star trail, the original reference image, and the movable guidance panel",
+    "images": 0
+  },
+  {
+    "source_paragraph": 117,
+    "chinese": "注：当前程序截图；图中画布为绘画起始状态，紫色区域表示待执行笔触。",
+    "english": "Note: Screenshots of the current application. The canvas is shown at the start of painting; the purple region indicates the stroke to be executed.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 118,
+    "chinese": "普通体验提供沿星迹、自动续画和自由星域三种使用方式。沿星迹强调按照当前提示动笔；自动续画用于观察序列怎样构成画面，逐笔间隔可在200毫秒至1秒之间调整，默认1秒，暂停后保持当前模式和进度；自由星域直接响应使用者的绘画手势。绘画过程中可调整笔宽、颜色和风格，笔宽数字用整数显示。",
+    "english": "The ordinary user experience offers three modes: Follow the Star Trail, Automatic Continuation, and Free Star Field. Follow the Star Trail emphasizes drawing according to the current guidance. Automatic Continuation allows users to observe how the sequence forms an image; the interval between strokes can be adjusted from 200 milliseconds to 1 second, with a default of 1 second, and pausing preserves the current mode and progress. Free Star Field responds directly to the user’s drawing gestures. Brush width, color, and style can be adjusted during painting, and brush width is displayed as an integer.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 119,
+    "chinese": "五、程序与实验平台的开发建设",
+    "english": "V. Development of the Application and Experimental Platform",
+    "images": 0
+  },
+  {
+    "source_paragraph": 120,
+    "chinese": "5.1 前后端与数据流程",
+    "english": "5.1 Front-end, Back-end, and Data Flow",
+    "images": 0
+  },
+  {
+    "source_paragraph": 121,
+    "chinese": "程序以Next.js、React和TypeScript搭建页面与状态管理，浏览器Canvas承载参考图、引导和实际笔迹，Web 端运行较重的图像规划。服务端提供研究配置、入组、轮次记录、作品保存、评分和导出接口，使用持久化数据库及文件目录管理研究材料。算法模块与绘画操作分离，研究材料保存版本和哈希，便于核对某一份记录使用了哪张图片、哪套笔触计划和哪一版规则。",
+    "english": "The application uses Next.js, React, and TypeScript for pages and state management. Browser Canvas displays reference images, guidance, and actual strokes, while the web application performs the more demanding image-planning computation. The server provides interfaces for research configuration, enrollment, round records, artwork saving, scoring, and export, and uses a persistent database and file directories to manage research materials. The algorithm module is separated from painting operations. Research materials retain versions and hashes, making it possible to verify which image, stroke plan, and rule version were used for a particular record.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 122,
+    "chinese": "普通体验与研究任务采用不同的使用边界。普通体验允许自行选图、切换风格与观察自动续画；研究任务由研究者统一设置材料、工具能力和时限。同一研究码关联同一人的两轮任务，重复研究码会被提示，不作为进入任意已有记录的凭证。研究者工作台集中查看测试记录、材料状态和配对结果，参与者无需选择后台批次。实际测试是否开放由材料审核和批次发布状态控制，软件功能完成不等于某个研究批次已经开始招募。",
+    "english": "The ordinary user experience and research tasks have different boundaries of use. Ordinary use permits independent image selection, style changes, and observation of Automatic Continuation. Research tasks use materials, tool capabilities, and time limits configured centrally by the researcher. The same research code links one person’s two task rounds. Duplicate research codes trigger a message and do not serve as credentials for accessing arbitrary existing records. The researcher workspace brings together test records, material status, and paired results; participants do not need to select a back-end batch. Whether testing is open depends on material approval and batch publication status. Completing the software features does not mean that a particular research batch has begun recruitment.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 123,
+    "chinese": "5.2 已搭建的五步用户测试流程",
+    "english": "5.2 The Implemented Five-step User-testing Procedure",
+    "images": 0
+  },
+  {
+    "source_paragraph": 124,
+    "chinese": "参与者侧的流程组织为“进入—熟悉工具—第一轮—第二轮—完成对比”。进入时说明用途、预计时间、保存内容与退出方式，并确认研究同意及参与条件。练习图自动准备，参与者主动开始90秒练习；每轮绘画前填写两道自评题，然后直接开始任务，避免在准备页面之间反复跳转。两轮之间安排休息，第二轮结束后显示配对结果，口头访谈由研究者在后台记录。图7概括了该流程与两种实验条件。",
+    "english": "The participant procedure consists of “entry—tool familiarization—first round—second round—completion of the comparison.” At entry, the system explains the purpose, estimated duration, information to be saved, and withdrawal procedure, and confirms research consent and eligibility. The practice image is prepared automatically, and participants actively start a 90-second practice session. Before each painting round, they answer two self-assessment questions and then begin the task directly, avoiding repeated transitions between preparation pages. A rest is scheduled between rounds. After the second round, the system displays paired results, and the researcher records the oral interview in the back end. Figure 7 summarizes this procedure and the two experimental conditions.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 125,
+    "chinese": "",
+    "english": "",
+    "images": 1
+  },
+  {
+    "source_paragraph": 126,
+    "chinese": "图6  五步参与流程与两条件对比结构",
+    "english": "Figure 6. The five-step participation procedure and two-condition comparison structure",
+    "images": 0
+  },
+  {
+    "source_paragraph": 127,
+    "chinese": "",
+    "english": "",
+    "images": 1
+  },
+  {
+    "source_paragraph": 128,
+    "chinese": "图7  研究参与说明、研究码与同意入口",
+    "english": "Figure 7. Research participation information, research code, and consent entry",
+    "images": 0
+  },
+  {
+    "source_paragraph": 129,
+    "chinese": "",
+    "english": "",
+    "images": 0
+  },
+  {
+    "source_paragraph": 130,
+    "chinese": "研究采用同一参与者、同一参考图的两条件比较。A条件为参照图片进行普通数字绘画；B条件在相同基础画布上提供笔触序列与引导信息。系统分配AB或BA顺序，以平衡先后影响；两条件共用画笔、橡皮、撤销重做和图层等基础工具，均禁用自动续画与标准笔触替代。B条件包含位置、方向及参数建议，因此实验评价的是整套笔触引导交互，不单独归因于一根路径线。",
+    "english": "The study compares two conditions using the same participant and the same reference image. In Condition A, participants undertake ordinary digital painting with a reference image. Condition B provides a stroke sequence and guidance on the same basic canvas. The system assigns an AB or BA order to balance order effects. Both conditions share basic tools including brushes, an eraser, undo and redo, and layers, while disabling Automatic Continuation and standard-stroke substitution. Condition B includes suggestions for position, direction, and parameters. The experiment therefore evaluates the complete stroke-guidance interaction, rather than attributing its effects solely to a path line.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 131,
+    "chinese": "",
+    "english": "",
+    "images": 0
+  },
+  {
+    "source_paragraph": 132,
+    "chinese": "",
+    "english": "",
+    "images": 1
+  },
+  {
+    "source_paragraph": 133,
+    "chinese": "图8  笔触引导条件下的研究任务界面",
+    "english": "Figure 8. The research task interface under the stroke-guidance condition",
+    "images": 0
+  },
+  {
+    "source_paragraph": 134,
+    "chinese": "",
+    "english": "",
+    "images": 0
+  },
+  {
+    "source_paragraph": 135,
+    "chinese": "当前每轮设置12分钟上限，轮间休息2分钟，两轮前后均采集简短感受。前测关注再次绘画意愿和担心画不好，后测再加入体验满足感及完成类似任务的信心，采用七级回答并允许不回答。题目是围绕本项目目标编写的简短自评，尚不能视为已验证的标准心理量表。正式采集前还需通过预试检查语言是否容易理解、任务是否过长以及参与者是否把引导当作必须全部完成的考核。",
+    "english": "Each round currently has a 12-minute limit, with a 2-minute rest between rounds. Brief responses about participants’ feelings are collected before and after both rounds. The pre-task questions address willingness to paint again and concern about painting poorly. The post-task questions additionally cover satisfaction with the experience and confidence in completing a similar task. Responses use a seven-point scale, and participants may leave questions unanswered. These brief self-assessment items were written around the objectives of this project and cannot yet be treated as a validated standard psychological scale. Before formal data collection, a pilot study is needed to check whether the wording is understandable, the task is too long, and participants interpret the guidance as an assessment that they must complete in full.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 136,
+    "chinese": "5.3 数据埋点、评分与可视化",
+    "english": "5.3 Event Logging, Scoring, and Visualization",
+    "images": 0
+  },
+  {
+    "source_paragraph": 137,
+    "chinese": "系统已建立任务开始与结束、落笔、撤销、引导推进、休息、页面切换和系统阻塞等事件记录，并将行为摘要、作品和问卷关联到同一轮次。记录支持服务端保存、失败重试及导出；后台可逐份查看测试，进行配对分析、独立作品评分和问题复盘。",
+    "english": "The system now records events including task start and end, stroke initiation, undo, guidance advancement, rest, page switching, and system blocking, and links behavioral summaries, artworks, and questionnaires to the same round. Records support server-side saving, retries after failure, and export. In the back end, individual tests can be reviewed for paired analysis, independent artwork scoring, and examination of problems.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 138,
+    "chinese": "",
+    "english": "",
+    "images": 0
+  },
+  {
+    "source_paragraph": 139,
+    "chinese": "",
+    "english": "",
+    "images": 1
+  },
+  {
+    "source_paragraph": 140,
+    "chinese": "图9  研究者工作台、测试记录与材料配置",
+    "english": "Figure 9. Researcher workspace, test records, and material configuration",
+    "images": 0
+  },
+  {
+    "source_paragraph": 141,
+    "chinese": "",
+    "english": "",
+    "images": 0
+  },
+  {
+    "source_paragraph": 142,
+    "chinese": "表3  研究目标与已实现测量口径",
+    "english": "Table 3. Research objectives and implemented measurement definitions",
+    "images": 0
+  },
+  {
+    "source_paragraph": 143,
+    "chinese": "研究目标",
+    "english": "Research objective",
+    "images": 0
+  },
+  {
+    "source_paragraph": 144,
+    "chinese": "主要记录",
+    "english": "Main records",
+    "images": 0
+  },
+  {
+    "source_paragraph": 145,
+    "chinese": "解释与限制",
+    "english": "Interpretation and limitations",
+    "images": 0
+  },
+  {
+    "source_paragraph": 146,
+    "chinese": "愿意开始与再次绘画",
+    "english": "Willingness to start and paint again",
+    "images": 0
+  },
+  {
+    "source_paragraph": 147,
+    "chinese": "首次有效落笔等待；每轮前后意愿自评",
+    "english": "Waiting time to the first valid stroke; willingness self-ratings before and after each round",
+    "images": 0
+  },
+  {
+    "source_paragraph": 148,
+    "chinese": "等待是启动行为指标；意愿不是长期实际练习频次。",
+    "english": "Waiting time indicates initiation behavior; willingness is not the actual frequency of long-term practice.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 149,
+    "chinese": "绘画推进与速度",
+    "english": "Painting progress and speed",
+    "images": 0
+  },
+  {
+    "source_paragraph": 150,
+    "chinese": "开始/结束时间；有效绘画时长；结束原因",
+    "english": "Start/end time; effective painting duration; reason for ending",
+    "images": 0
+  },
+  {
+    "source_paragraph": 151,
+    "chinese": "耗时必须结合完成度；超时、主动结束与技术退出分别解释。",
+    "english": "Time must be considered alongside completion; timeout, voluntary ending, and technical exit are interpreted separately.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 152,
+    "chinese": "过程中的停顿",
+    "english": "Pauses during the process",
+    "images": 0
+  },
+  {
+    "source_paragraph": 153,
+    "chinese": "有效落笔间≥5秒停顿；休息/隐藏/阻塞",
+    "english": "Pauses of ≥5 seconds between valid stroke initiations; rest/hidden page/blocking",
+    "images": 0
+  },
+  {
+    "source_paragraph": 154,
+    "chinese": "停顿不等于困难；首次等待与末次落笔后间隔另计。",
+    "english": "Pauses do not necessarily indicate difficulty; initial waiting time and the interval after the last stroke are recorded separately.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 155,
+    "chinese": "作品完成情况",
+    "english": "Artwork completion",
+    "images": 0
+  },
+  {
+    "source_paragraph": 156,
+    "chinese": "共同十项清单；两位评分者独立评分",
+    "english": "A common ten-item checklist; independent scoring by two raters",
+    "images": 0
+  },
+  {
+    "source_paragraph": 157,
+    "chinese": "每项0/1/2分，换算百分制后平均；与引导进度分离。",
+    "english": "Each item receives 0/1/2 points; scores are converted to percentages and averaged, separately from guidance progress.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 158,
+    "chinese": "担忧、满足与信心",
+    "english": "Concern, satisfaction, and confidence",
+    "images": 0
+  },
+  {
+    "source_paragraph": 159,
+    "chinese": "两题前测、四题后测；七级自评",
+    "english": "Two pre-task and four post-task items; seven-point self-ratings",
+    "images": 0
+  },
+  {
+    "source_paragraph": 160,
+    "chinese": "项目自编题目；可不回答，不作为已验证心理量表。",
+    "english": "Project-specific items; answers are optional, and the items are not treated as a validated psychological scale.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 161,
+    "chinese": "过程解释与数据完整性",
+    "english": "Process interpretation and data integrity",
+    "images": 0
+  },
+  {
+    "source_paragraph": 162,
+    "chinese": "落笔、撤销、推进、问卷、作品、访谈",
+    "english": "Stroke initiation, undo, advancement, questionnaires, artworks, and interviews",
+    "images": 0
+  },
+  {
+    "source_paragraph": 163,
+    "chinese": "研究者录入口头访谈；JSON与后端记录支持核对。",
+    "english": "The researcher enters oral interview responses; JSON and back-end records support cross-checking.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 164,
+    "chinese": "",
+    "english": "",
+    "images": 0
+  },
+  {
+    "source_paragraph": 165,
+    "chinese": "停顿在当前程序中有明确口径：相邻两次有效非橡皮落笔之间的间隔达到5秒，且不与页面隐藏、主动休息或系统阻塞重叠，才计入停顿。首次落笔前的等待和结束前的尾段另行记录，不能混在同一种停顿指标里。这样可以区分观察思考、主动暂停与技术等待，但仍不能仅凭日志推断参与者的心理原因，需要结合口头访谈解释。",
+    "english": "Pauses have an explicit definition in the current application: an interval is counted as a pause only if it reaches 5 seconds between two consecutive valid non-eraser stroke initiations and does not overlap with a hidden page, a voluntary rest, or system blocking. Waiting before the first stroke and the final interval before the task ends are recorded separately and must not be combined with the same pause measure. This helps distinguish observation and reflection, voluntary pauses, and technical waiting. Nevertheless, logs alone cannot establish participants’ psychological reasons, which require interpretation alongside oral interviews.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 166,
+    "chinese": "作品完成度依据共同的十项内容清单，由两位评分者独立按0、1、2分评分，并换算为百分制平均值；关键主体项目另设基本要求。它与引导进度、匹配数量及算法覆盖率分别保存。研究者可以配置与参考图对应的评分清单，正式实验前应固定评分规则并检查一致性。导出的结构化JSON与后端保存记录可用于追溯，报告中的缺失值保留为空，不用零分替代未完成的评分。",
+    "english": "Artwork completion is assessed using a common ten-item content checklist. Two raters independently score each item as 0, 1, or 2, and their scores are converted to percentages and averaged. Additional basic requirements apply to key subject items. This measure is stored separately from guidance progress, the number of matches, and algorithmic coverage. Researchers can configure a scoring checklist for the reference image. Before the formal experiment, scoring rules should be fixed and consistency checked. Exported structured JSON and records saved in the back end support traceability. Missing values in the report remain blank; unfinished scoring is not replaced with zero.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 167,
+    "chinese": "",
+    "english": "",
+    "images": 1
+  },
+  {
+    "source_paragraph": 168,
+    "chinese": "图10  两轮绘画的指标对比与过程时间线",
+    "english": "Figure 10. Comparison of measures and process timelines across the two painting rounds",
+    "images": 0
+  },
+  {
+    "source_paragraph": 169,
+    "chinese": "",
+    "english": "",
+    "images": 0
+  },
+  {
+    "source_paragraph": 170,
+    "chinese": "软件验证已覆盖材料准备、两种顺序的任务执行、问卷提交、离线后重试保存、后台访谈、评分、权限与移动端布局。现有检查说明这些流程可以在隔离环境中运行，但真实设备和真实参与者仍可能出现不同问题。本阶段的结果是实验执行工具已搭建，而不是对产品效果完成了验证。研究保留退出与撤回入口，按既定期限私有保存研究作品，不公开参与者身份信息或完整触点轨迹。",
+    "english": "Software verification has covered material preparation, task execution in both orders, questionnaire submission, saving retries after going offline, back-end interviews, scoring, permissions, and mobile layouts. The existing checks show that these procedures can run in an isolated environment, but real devices and participants may still present different problems. The result of this stage is an implemented tool for conducting the experiment, rather than completed validation of the product’s effectiveness. The research retains options to exit and withdraw, stores research artworks privately for the specified retention period, and does not disclose participants’ identities or complete touch-point trajectories.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 171,
+    "chinese": "六、阶段性成果与待验证问题",
+    "english": "VI. Interim Outcomes and Questions Awaiting Validation",
+    "images": 0
+  },
+  {
+    "source_paragraph": 172,
+    "chinese": "本阶段已形成可运行的网页原型、独立的笔触规划模块、由粗到细的五遍序列、六种自由笔刷、交互教程与产品说明，以及覆盖研究执行和记录管理的前后端模块。文献阅读已转化为具体的方法选择、实现说明和参考来源；UI设计已从页面表达落实到可操作的上传、提示、撤销、模式切换和保存流程。这些成果使课题具备开展用户测试的条件，构成中期工作的主要完成内容。",
+    "english": "This stage has produced a functioning web prototype, an independent stroke-planning module, a coarse-to-fine five-pass sequence, six freehand brushes, interactive tutorials and product explanations, and front-end and back-end modules covering research execution and record management. Literature review has been translated into specific methodological choices, implementation explanations, and reference sources. UI design has progressed from page presentation to usable procedures for uploading, guidance, undo, mode switching, and saving. These outcomes prepare the project for user testing and constitute the main work completed by the mid-term stage.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 173,
+    "chinese": "当前待验证的问题主要涉及任务负担与交互有效性。1000笔可改善部分图像的细节表达，但大量逐笔操作可能增加等待与重复动作；由粗到细的顺序更容易说明，却不保证每名用户都能理解局部笔触与原图之间的关系。参考图、画布、提示卡和工具栏的注意力分配也需要实际观察。后续将重点记录犹豫、误触、反复查看提示和提前结束的位置，以判断问题来自材料难度、算法动作还是界面组织。",
+    "english": "The main questions awaiting validation concern task burden and interaction effectiveness. A budget of 1,000 strokes can improve the representation of detail in some images, but extensive stroke-by-stroke operations may increase waiting and repetitive actions. A coarse-to-fine order is easier to explain, yet it does not guarantee that every user can understand the relationship between local strokes and the original image. The distribution of attention among the reference image, canvas, guidance card, and toolbar also requires direct observation. Subsequent work will focus on recording where users hesitate, make accidental inputs, repeatedly consult guidance, or end early, to determine whether problems arise from material difficulty, algorithmic actions, or interface organization.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 174,
+    "chinese": "研究解释同样需要明确边界。同图重复绘画会产生记忆和熟悉效应，AB与BA平衡只能缓解，不能完全消除；单次自评意愿不能证明长期习惯形成；更快结束也可能源于提前放弃。分析速度时必须结合完成度、结束原因及作品内容，分析满意度时要注意亲手创作感与系统帮助之间的关系。论文将把这些限制纳入讨论，并保留与预期不一致的结果。",
+    "english": "The interpretation of the research also requires clear boundaries. Repainting the same image produces memory and familiarity effects, which balancing AB and BA orders can reduce but cannot eliminate. A single self-rating of willingness cannot demonstrate the formation of a long-term habit, and finishing sooner may also reflect early abandonment. Analyses of speed must therefore consider completion, reasons for ending, and artwork content. Analyses of satisfaction must attend to the relationship between the feeling of creating something by hand and the assistance provided by the system. The thesis will address these limitations in the discussion and retain findings that do not match expectations.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 175,
+    "chinese": "七、下一阶段用户测试计划",
+    "english": "VII. User-testing Plan for the Next Stage",
+    "images": 0
+  },
+  {
+    "source_paragraph": 176,
+    "chinese": "表4  下一阶段执行安排与阶段交付",
+    "english": "Table 4. Work plan and stage deliverables for the next phase",
+    "images": 0
+  },
+  {
+    "source_paragraph": 177,
+    "chinese": "顺序",
+    "english": "Sequence",
+    "images": 0
+  },
+  {
+    "source_paragraph": 178,
+    "chinese": "主要工作",
+    "english": "Main work",
+    "images": 0
+  },
+  {
+    "source_paragraph": 179,
+    "chinese": "完成标志",
+    "english": "Completion criteria",
+    "images": 0
+  },
+  {
+    "source_paragraph": 180,
+    "chinese": "1 / 预试准备",
+    "english": "1 / Pilot preparation",
+    "images": 0
+  },
+  {
+    "source_paragraph": 181,
+    "chinese": "核对研究说明、候选材料、设备与评分清单",
+    "english": "Check research information, candidate materials, devices, and scoring checklists",
+    "images": 0
+  },
+  {
+    "source_paragraph": 182,
+    "chinese": "形成可执行的统一说明与材料包。",
+    "english": "Produce usable, standardized instructions and a material package.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 183,
+    "chinese": "2 / 六人预试",
+    "english": "2 / Six-person pilot",
+    "images": 0
+  },
+  {
+    "source_paragraph": 184,
+    "chinese": "观察五步流程、任务负担与数据完整性",
+    "english": "Observe the five-step procedure, task burden, and data integrity",
+    "images": 0
+  },
+  {
+    "source_paragraph": 185,
+    "chinese": "记录问题、访谈及每项修正依据。",
+    "english": "Record problems, interviews, and the basis for each revision.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 186,
+    "chinese": "3 / 交互优化与复验",
+    "english": "3 / Interaction refinement and retesting",
+    "images": 0
+  },
+  {
+    "source_paragraph": 187,
+    "chinese": "优化提示、遮挡、按钮语义与任务节奏",
+    "english": "Improve guidance, occlusion, button meanings, and task pacing",
+    "images": 0
+  },
+  {
+    "source_paragraph": 188,
+    "chinese": "复验通过，固定正式版本与协议。",
+    "english": "Pass retesting and fix the formal version and protocol.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 189,
+    "chinese": "4 / 正式对比实验",
+    "english": "4 / Formal comparative experiment",
+    "images": 0
+  },
+  {
+    "source_paragraph": 190,
+    "chinese": "按AB/BA获取拟定24份有效配对记录",
+    "english": "Obtain a planned 24 valid paired records using AB/BA orders",
+    "images": 0
+  },
+  {
+    "source_paragraph": 191,
+    "chinese": "完成两轮作品、问卷与双人评分核对。",
+    "english": "Complete both rounds of artworks, questionnaires, and checks of scoring by two raters.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 192,
+    "chinese": "5 / 分析和论文完善",
+    "english": "5 / Analysis and thesis completion",
+    "images": 0
+  },
+  {
+    "source_paragraph": 193,
+    "chinese": "配对分析、访谈解释、设计总结",
+    "english": "Paired analysis, interview-based interpretation, and design synthesis",
+    "images": 0
+  },
+  {
+    "source_paragraph": 194,
+    "chinese": "完成结果与讨论，报告局限和适用范围。",
+    "english": "Complete the results and discussion, reporting limitations and scope of application.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 195,
+    "chinese": "注：采用相对阶段安排；具体日程在预试组织与导师确认后确定。",
+    "english": "Note: The plan uses relative stages. Specific dates will be determined after pilot arrangements and confirmation with the supervisor.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 196,
+    "chinese": "7.1 开展预试并优化交互",
+    "english": "7.1 Conducting the Pilot and Refining the Interaction",
+    "images": 0
+  },
+  {
+    "source_paragraph": 197,
+    "chinese": "下一阶段首先执行6名绘画初学者的参与者的预试。预试重点是确认用户能否理解说明、进入练习、独立开始绘画、使用提示并提交作品，以及同一材料在两条件下的任务负担是否合理。研究者将观察关键犹豫点、记录口头反馈，并核查日志、问卷和作品是否配对完整。预试数据用于发现设计和测量问题，不与正式数据直接混合用于证明假设。",
+    "english": "The next stage begins with a pilot involving six participants who are painting beginners. The pilot will primarily establish whether users can understand the instructions, enter practice, start painting independently, use the guidance, and submit their work, and whether the task burden for the same material is reasonable under both conditions. The researcher will observe key points of hesitation, record oral feedback, and check that logs, questionnaires, and artworks form complete pairs. Pilot data will be used to identify design and measurement problems and will not be directly pooled with formal data to substantiate the hypotheses.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 198,
+    "chinese": "根据预试结果，优先优化与核心任务有关的交互：控制提示信息量、调整面板遮挡与工具触达、明确开始和结束含义、改善细小笔触的可辨识性，并检查撤销是否符合用户预期。材料与笔触预算也根据真实操作时间和完成情况共同确定；优化后进行复验，再冻结正式材料、算法计划、界面、问卷和评分规则，使条件之间保持可比。",
+    "english": "Based on the pilot results, priority will be given to improving interactions related to the core task: controlling the amount of guidance, adjusting panel occlusion and access to tools, clarifying what starting and ending mean, improving the visibility of small strokes, and checking whether undo behaves as users expect. Materials and the stroke budget will also be determined together on the basis of actual operation time and completion. After refinement, retesting will be conducted before the formal materials, algorithmic plans, interface, questionnaires, and scoring rules are frozen, ensuring comparability between conditions.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 199,
+    "chinese": "7.2 执行正式对比实验与结果分析",
+    "english": "7.2 Conducting the Formal Comparative Experiment and Analyzing Results",
+    "images": 0
+  },
+  {
+    "source_paragraph": 200,
+    "chinese": "正式研究拟取得24名参与者的有效配对记录，招募数量和纳入条件结合预试及导师意见最终确定。参与者使用统一设备和输入方式，对同一图完成A、B两条件，遵循平衡顺序与一致时限。研究者按照统一说明执行，不在某一条件额外提供绘画帮助；口头访谈重点询问哪种方式更容易开始、何时最想停止，以及哪幅作品更有“自己画出来”的感受。",
+    "english": "The formal study aims to obtain valid paired records from 24 participants. The recruitment target and inclusion criteria will be finalized in light of the pilot and the supervisor’s advice. Participants will use standardized devices and input methods to complete Conditions A and B for the same image, following a balanced order and consistent time limits. The researcher will follow standardized instructions and will not provide additional painting assistance in one condition. Oral interviews will focus on which method makes starting easier, when participants most want to stop, and which artwork gives them a stronger sense of having “painted it themselves.”",
+    "images": 0
+  },
+  {
+    "source_paragraph": 201,
+    "chinese": "分析以作品完成度与再次绘画意愿为主要指标，启动等待、任务耗时、停顿、担忧和满足感作为辅助解释。当前平台提供配对差值、方向统计和双侧精确符号检验，并对两项主要指标进行Holm校正。正式分析前将明确缺失记录、超时、退出和技术故障的处理，报告差异及不确定性，避免只选择有利指标。作品评分尽量隐藏条件信息，并检查两位评分者的分歧；界面风格仍可能暴露条件时，将如实说明盲评限制。",
+    "english": "Analysis will use artwork completion and willingness to paint again as the primary measures, with initial waiting time, task duration, pauses, concern, and satisfaction providing supporting explanations. The current platform provides paired differences, counts by direction of difference, and a two-sided exact sign test, with Holm correction for the two primary measures. Before formal analysis, procedures for handling missing records, timeouts, withdrawals, and technical failures will be specified. Differences and uncertainty will be reported, avoiding selective use of favorable measures. Condition information will be concealed as far as possible during artwork scoring, and disagreements between the two raters will be examined. If interface style can still reveal the condition, the limitations of blinded assessment will be reported.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 202,
+    "chinese": "7.3 完成论文写作与设计总结",
+    "english": "7.3 Completing the Thesis and Synthesizing Design Findings",
+    "images": 0
+  },
+  {
+    "source_paragraph": 203,
+    "chinese": "论文写作与实验执行并行推进。现阶段可以完成研究背景、相关方法、算法应用、交互设计与系统建设章节；实验结束后补充用户表现、访谈、讨论和设计建议。最终论证围绕“有序笔触引导怎样帮助绘画初学者用户开始并推进绘画”展开，将软件功能、过程证据和主观体验联系起来，研究将据此总结适用情境、局限和后续改进方向。",
+    "english": "Thesis writing will proceed alongside the experiment. At this stage, the chapters on research background, related methods, algorithm application, interaction design, and system development can be completed. After the experiment, user performance, interviews, discussion, and design recommendations will be added. The final argument will address how ordered stroke guidance helps painting beginners start and sustain painting, linking software features, evidence from the process, and subjective experience. On this basis, the research will summarize appropriate contexts of use, limitations, and directions for further improvement.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 204,
+    "chinese": "参考文献",
+    "english": "References",
+    "images": 0
+  },
+  {
+    "source_paragraph": 205,
+    "chinese": "[1] HERTZMANN A. Painterly Rendering with Curved Brush Strokes of Multiple Sizes[C]//Proceedings of SIGGRAPH 1998. 1998: 453–460. DOI: 10.1145/280814.280951.",
+    "english": "[1] HERTZMANN A. Painterly Rendering with Curved Brush Strokes of Multiple Sizes[C]//Proceedings of SIGGRAPH 1998. 1998: 453–460. DOI: 10.1145/280814.280951.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 206,
+    "chinese": "原文 / 来源：https://mrl.cs.nyu.edu/publications/painterly98/",
+    "english": "Original publication / Source: https://mrl.cs.nyu.edu/publications/painterly98/",
+    "images": 0
+  },
+  {
+    "source_paragraph": 207,
+    "chinese": "[2] HUANG Z, HENG W, ZHOU S. Learning to Paint With Model-Based Deep Reinforcement Learning[C]//Proceedings of ICCV. 2019: 8709–8718. DOI: 10.1109/ICCV.2019.00880.",
+    "english": "[2] HUANG Z, HENG W, ZHOU S. Learning to Paint With Model-Based Deep Reinforcement Learning[C]//Proceedings of ICCV. 2019: 8709–8718. DOI: 10.1109/ICCV.2019.00880.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 208,
+    "chinese": "原文 / 来源：https://arxiv.org/abs/1903.04411",
+    "english": "Original publication / Source: https://arxiv.org/abs/1903.04411",
+    "images": 0
+  },
+  {
+    "source_paragraph": 209,
+    "chinese": "[3] ZOU Z, SHI T, QIU S, et al. Stylized Neural Painting[C]//Proceedings of CVPR. 2021: 15689–15698. DOI: 10.1109/CVPR46437.2021.01543.",
+    "english": "[3] ZOU Z, SHI T, QIU S, et al. Stylized Neural Painting[C]//Proceedings of CVPR. 2021: 15689–15698. DOI: 10.1109/CVPR46437.2021.01543.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 210,
+    "chinese": "原文 / 来源：https://openaccess.thecvf.com/content/CVPR2021/html/Zou_Stylized_Neural_Painting_CVPR_2021_paper.html",
+    "english": "Original publication / Source: https://openaccess.thecvf.com/content/CVPR2021/html/Zou_Stylized_Neural_Painting_CVPR_2021_paper.html",
+    "images": 0
+  },
+  {
+    "source_paragraph": 211,
+    "chinese": "[4] HU T, YI R, ZHU H, et al. Stroke-based Neural Painting and Stylization with Dynamically Predicted Painting Region[C]//Proceedings of ACM Multimedia. 2023. DOI: 10.1145/3581783.3611766.",
+    "english": "[4] HU T, YI R, ZHU H, et al. Stroke-based Neural Painting and Stylization with Dynamically Predicted Painting Region[C]//Proceedings of ACM Multimedia. 2023. DOI: 10.1145/3581783.3611766.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 212,
+    "chinese": "原文 / 来源：https://arxiv.org/abs/2309.03504",
+    "english": "Original publication / Source: https://arxiv.org/abs/2309.03504",
+    "images": 0
+  },
+  {
+    "source_paragraph": 213,
+    "chinese": "[5] NATIONAL GALLERY. Claude Monet: The Water-Lily Pond[EB/OL]. [2026-09-16].",
+    "english": "[5] NATIONAL GALLERY. Claude Monet: The Water-Lily Pond[EB/OL]. [2026-09-16].",
+    "images": 0
+  },
+  {
+    "source_paragraph": 214,
+    "chinese": "原文 / 来源：https://www.nationalgallery.org.uk/paintings/claude-monet-the-water-lily-pond",
+    "english": "Original publication / Source: https://www.nationalgallery.org.uk/paintings/claude-monet-the-water-lily-pond",
+    "images": 0
+  },
+  {
+    "source_paragraph": 215,
+    "chinese": "[6] VAN GOGH MUSEUM. Unravel Van Gogh: Thick Brushstrokes[EB/OL]. [2026-09-16].",
+    "english": "[6] VAN GOGH MUSEUM. Unravel Van Gogh: Thick Brushstrokes[EB/OL]. [2026-09-16].",
+    "images": 0
+  },
+  {
+    "source_paragraph": 216,
+    "chinese": "原文 / 来源：https://ontrafel.vangogh.nl/en/story/29/thick-brushstrokes/",
+    "english": "Original publication / Source: https://ontrafel.vangogh.nl/en/story/29/thick-brushstrokes/",
+    "images": 0
+  },
+  {
+    "source_paragraph": 217,
+    "chinese": "[7] NATIONAL GALLERY. Paul Gauguin: Harvest, Le Pouldu[EB/OL]. [2026-09-16].",
+    "english": "[7] NATIONAL GALLERY. Paul Gauguin: Harvest, Le Pouldu[EB/OL]. [2026-09-16].",
+    "images": 0
+  },
+  {
+    "source_paragraph": 218,
+    "chinese": "原文 / 来源：https://www.nationalgallery.org.uk/paintings/paul-gauguin-harvest-le-pouldu",
+    "english": "Original publication / Source: https://www.nationalgallery.org.uk/paintings/paul-gauguin-harvest-le-pouldu",
+    "images": 0
+  },
+  {
+    "source_paragraph": 219,
+    "chinese": "[8] NATIONAL GALLERY. Rembrandt: The Late Works—A Resource for Science Teachers, What Is Paint?[EB/OL]. [2026-09-16].",
+    "english": "[8] NATIONAL GALLERY. Rembrandt: The Late Works—A Resource for Science Teachers, What Is Paint?[EB/OL]. [2026-09-16].",
+    "images": 0
+  },
+  {
+    "source_paragraph": 220,
+    "chinese": "原文 / 来源：https://www.nationalgallery.org.uk/learning/teachers-notes/rembrandt-the-late-works-a-resource-for-science-teachers?viewPage=3",
+    "english": "Original publication / Source: https://www.nationalgallery.org.uk/learning/teachers-notes/rembrandt-the-late-works-a-resource-for-science-teachers?viewPage=3",
+    "images": 0
+  },
+  {
+    "source_paragraph": 221,
+    "chinese": "[9] THE METROPOLITAN MUSEUM OF ART. Pablo Picasso (1881–1973)[EB/OL]. [2026-09-16].",
+    "english": "[9] THE METROPOLITAN MUSEUM OF ART. Pablo Picasso (1881–1973)[EB/OL]. [2026-09-16].",
+    "images": 0
+  },
+  {
+    "source_paragraph": 222,
+    "chinese": "原文 / 来源：https://www.metmuseum.org/essays/pablo-picasso-1881-1973",
+    "english": "Original publication / Source: https://www.metmuseum.org/essays/pablo-picasso-1881-1973",
+    "images": 0
+  },
+  {
+    "source_paragraph": 223,
+    "chinese": "[10] CENTENO S A, MAHON D. A Technical Study of John Singer Sargent’s Portrait of Madame Pierre Gautreau[J]. Metropolitan Museum Journal, 2005, 40: 121–129.",
+    "english": "[10] CENTENO S A, MAHON D. A Technical Study of John Singer Sargent’s Portrait of Madame Pierre Gautreau[J]. Metropolitan Museum Journal, 2005, 40: 121–129.",
+    "images": 0
+  },
+  {
+    "source_paragraph": 224,
+    "chinese": "原文 / 来源：https://www.metmuseum.org/met-publications/technical-study-sargents-madame-pierre-gautreau-the-metropolitan-museum-journal-v-40-2005",
+    "english": "Original publication / Source: https://www.metmuseum.org/met-publications/technical-study-sargents-madame-pierre-gautreau-the-metropolitan-museum-journal-v-40-2005",
+    "images": 0
+  }
+]

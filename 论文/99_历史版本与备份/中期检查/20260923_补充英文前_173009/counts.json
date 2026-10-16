@@ -1,0 +1,12 @@
+{
+  "chinese_characters": 5747,
+  "english_words": 3880,
+  "body_paragraphs_including_tables": 152,
+  "translated_paragraphs_including_references": 173,
+  "figures": 10,
+  "embedded_images_per_version": 16,
+  "tables_per_version": 3,
+  "backup": "论文/99_历史版本与备份/中期检查/20260923_补充英文前_173009/陈皓宇-硕士生中期检查.docx",
+  "output": "/tmp/startrace-bilingual-work/陈皓宇-硕士生中期检查.docx",
+  "english_word_pattern": "[A-Za-z]+(?:[’'\\-][A-Za-z]+)*"
+}
