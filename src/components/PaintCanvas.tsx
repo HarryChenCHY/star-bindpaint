@@ -471,7 +471,7 @@ export default function PaintCanvas({
   return (
     <div className="h-full w-full min-h-0 min-w-0" style={{ containerType: 'size', display: 'grid', placeItems: 'center' }}>
     <div
-      className="relative overflow-hidden"
+      className="paint-canvas-frame relative overflow-hidden"
       style={{
         width: `min(calc(100cqw - 4px), calc((100cqh - 4px) * ${width / height}))`,
         boxSizing: 'content-box',

@@ -1,5 +1,2 @@
 import { redirect } from 'next/navigation';
-
-export default function OnboardPage() {
-  redirect('/create');
-}
+export default function OnboardPage() { redirect('/create'); }

@@ -1,0 +1,26 @@
+import type { ExpressiveStroke } from './expressive-painter';
+
+export const bristleFade = (elapsed: number) => Math.max(0, Math.min(1, 1 - elapsed / 3000));
+export const lightSpeedCount = (total: number, elapsed: number) => Math.min(total, Math.max(0, Math.floor(total * elapsed / 8000)));
+
+/** Arc-length progress keeps the brush speed independent of point spacing. */
+export function strokeFrame(stroke: ExpressiveStroke, progress: number) {
+  const p = Math.max(0, Math.min(1, progress));
+  const lengths = stroke.points.slice(1).map((point, i) => Math.hypot(point.x - stroke.points[i].x, point.y - stroke.points[i].y));
+  const total = lengths.reduce((sum, length) => sum + length, 0);
+  const points = [stroke.points[0]];
+  const radii = [stroke.radii[0]];
+  let remaining = total * p;
+  let angle = 0;
+  for (let i = 0; i < lengths.length; i++) {
+    const a = stroke.points[i], b = stroke.points[i + 1];
+    if (lengths[i] === 0) continue;
+    angle = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+    const fraction = Math.min(1, remaining / lengths[i]);
+    points.push({ x: a.x + (b.x - a.x) * fraction, y: a.y + (b.y - a.y) * fraction });
+    radii.push(stroke.radii[i] + (stroke.radii[i + 1] - stroke.radii[i]) * fraction);
+    remaining -= lengths[i];
+    if (remaining <= 0) break;
+  }
+  return { stroke: p === 1 ? stroke : { ...stroke, points, radii }, tip: points.at(-1)!, angle, length: total };
+}

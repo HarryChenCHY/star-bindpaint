@@ -1,0 +1,44 @@
+/* Star = the creator's decision; moon = assisted execution. No ambient animation. */
+.night-ui .creation-roles {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 24px;
+  color: var(--st-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.night-ui .creation-roles p { display: flex; align-items: flex-start; gap: 10px; margin: 0; }
+.night-ui .creation-roles p:first-child { color: var(--st-text); }
+.night-ui .creation-roles svg { flex: none; margin-top: 2px; }
+.night-ui .artwork-credit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 16px 0;
+  color: var(--st-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.night-ui .artwork-credit span { display: flex; align-items: center; gap: 8px; min-width: 0; overflow-wrap: anywhere; }
+.night-ui .artwork-credit span:first-child { color: var(--st-text); }
+.night-ui .artwork-credit svg, .studio-state > svg { flex: none; }
+.material-confirmation {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  color: #8733ff;
+}
+.material-confirmation svg { fill: #fff; animation: material-acknowledge 1000ms ease-out both; }
+@keyframes material-acknowledge {
+  0% { opacity: 0; transform: scale(.8); }
+  20%, 55% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(.9); }
+}
+.material-confirmation[data-reduced="true"] svg { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .material-confirmation svg { animation: none; }
+}
+@media (max-width: 640px) {
+  .night-ui .creation-roles { font-size: 12px; margin-bottom: 20px; }
+}

@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, ImagePlus, LoaderCircle, RefreshCw, Upload } from 'lucide-react';
+import { Camera, Check, ImagePlus, LoaderCircle, RefreshCw, Upload } from 'lucide-react';
 
 const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
 const IMAGE_ACCEPT = '.jpg,.jpeg,.png,.webp,.gif,.bmp,.avif,image/jpeg,image/png,image/webp,image/gif,image/bmp,image/avif';
@@ -12,9 +12,18 @@ interface ImageUploaderProps {
   onImageLoaded: (img: HTMLImageElement, file: File) => void;
   onLoadingChange: (loading: boolean) => void;
   preview: string | null;
+  allowCamera?: boolean;
+  night?: boolean;
 }
 
-export default function ImageUploader({ onImageLoaded, onLoadingChange, preview }: ImageUploaderProps) {
+export default function ImageUploader({ onImageLoaded, onLoadingChange, preview, allowCamera = false, night = false }: ImageUploaderProps) {
+  const [mobileCamera, setMobileCamera] = useState(false);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const frame = requestAnimationFrame(() => setMobileCamera(allowCamera && mobile));
+    return () => cancelAnimationFrame(frame);
+  }, [allowCamera]);
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -94,6 +103,10 @@ export default function ImageUploader({ onImageLoaded, onLoadingChange, preview 
 
   return (
     <div>
+      {mobileCamera && <div className="mb-4">
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" aria-label="拍照上传" onChange={e => { if (e.target.files) handleFiles(e.target.files); e.target.value = ''; }} />
+        <button type="button" disabled={loading} onClick={() => cameraRef.current?.click()} className={night ? 'night-secondary' : 'flex items-center gap-2 rounded-xl border-2 border-[#17233F] px-4 py-3 font-bold'}><Camera size={20} />拍照上传</button>
+      </div>}
       <input
         ref={fileRef}
         type="file"
@@ -112,8 +125,9 @@ export default function ImageUploader({ onImageLoaded, onLoadingChange, preview 
         aria-label={preview ? '更换本地参考图片' : '选择本地图片或拖拽到此处'}
         aria-describedby={descriptionId}
         aria-busy={loading}
-        className="relative flex min-h-[320px] w-full flex-col items-center justify-center overflow-hidden rounded-[1.75rem] p-6 text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6558D9]"
-        style={{
+        className={night ? 'night-upload' : 'relative flex min-h-[320px] w-full flex-col items-center justify-center overflow-hidden rounded-[1.75rem] p-6 text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6558D9]'}
+        data-dragging={dragging}
+        style={night ? undefined : {
           border: `2px dashed ${dragging ? '#6558D9' : '#8E98AD'}`,
           background: dragging ? '#ECEAFE' : '#F6F7FB',
         }}
@@ -140,26 +154,26 @@ export default function ImageUploader({ onImageLoaded, onLoadingChange, preview 
         onClick={() => fileRef.current?.click()}
       >
         {preview && <span className="pointer-events-none absolute inset-0 bg-contain bg-center bg-no-repeat" style={{ backgroundImage: `url(${preview})` }} role="img" aria-label="已上传参考图预览" />}
-        {(preview || dragging) && <span className={`pointer-events-none absolute inset-0 ${preview ? 'bg-[#17233F]/65' : 'bg-[#ECEAFE]'}`} />}
-        <span className="relative flex h-16 w-16 items-center justify-center rounded-[1.4rem] text-[#17233F]" style={{ background: preview ? '#69D2C2' : '#FFD166', border: '2px solid #17233F', boxShadow: '4px 4px 0 #17233F' }}>
+        {(preview || dragging) && <span className={`pointer-events-none absolute inset-0 ${night ? 'bg-[#141414]/75' : preview ? 'bg-[#17233F]/65' : 'bg-[#ECEAFE]'}`} />}
+        <span className={night ? 'night-upload-symbol' : 'relative flex h-16 w-16 items-center justify-center rounded-[1.4rem] text-[#17233F]'} style={night ? undefined : { background: preview ? '#69D2C2' : '#FFD166', border: '2px solid #17233F', boxShadow: '4px 4px 0 #17233F' }}>
           {loading ? <LoaderCircle className="animate-spin" size={29} /> : preview ? <Check size={29} strokeWidth={3} /> : <ImagePlus size={29} strokeWidth={2.4} />}
         </span>
-        <span className={`relative mt-7 text-lg font-black ${preview ? 'text-white' : 'text-[#17233F]'}`}>
+        <span className={`relative mt-6 text-lg ${night ? 'font-medium' : preview ? 'text-white font-black' : 'text-[#17233F] font-black'}`}>
           {dragging ? '松开鼠标，使用这张图片' : loading ? '正在读取图片…' : preview ? '图片已准备好' : '拖入图片，或点击选择'}
         </span>
-        <span className={`relative mt-2 max-w-sm text-sm font-bold leading-6 ${preview ? 'text-white/90' : 'text-[#536079]'}`}>
-          {preview ? '继续设置笔触与绘画引导，也可以拖入新图片' : '照片、插画都可以，选一张你想画的图片'}
+        <span className={`relative mt-2 max-w-sm text-sm leading-6 ${night ? 'night-muted' : preview ? 'text-white/90' : 'text-[#536079]'}`}>
+          {preview ? '图片已选好，也可以拖入另一张图片' : '照片、插画都可以，选一张你想画的图片'}
         </span>
-        <span className="relative mt-6 inline-flex items-center gap-2 rounded-full bg-[#17233F] px-5 py-3 text-sm font-black text-white">
+        <span className={night ? 'night-upload-action' : 'relative mt-6 inline-flex items-center gap-2 rounded-full bg-[#17233F] px-5 py-3 text-sm font-black text-white'}>
           {preview ? <RefreshCw size={16} /> : <Upload size={16} />}{preview ? '更换图片' : '选择本地图片'}
         </span>
       </motion.button>
-      <p id={descriptionId} className="mt-3 text-xs font-bold leading-6 text-[#536079]">
+      <p id={descriptionId} className={`mt-4 text-xs leading-6 ${night ? 'night-muted' : 'font-bold text-[#536079]'}`}>
         支持 JPG、PNG、WebP、GIF、BMP、AVIF，单张小于 20 MB。动图按静态画面处理。
-        <span className="block">参考图在本机处理，用于笔触拆解和绘画指导。</span>
+        <span className="block">图片在本机处理，用于生成绘画笔触。</span>
       </p>
-      {error && <p role="alert" className="mt-3 rounded-xl bg-[#FFE3EC] px-4 py-3 text-sm font-bold text-[#9B2743]">{error}{preview && ' 当前仍保留上一张图片。'}</p>}
-      <span className="sr-only" role="status">{loading ? '正在读取图片，请稍候' : preview ? '参考图已准备好，可以设置绘画引导' : ''}</span>
+      {error && <p role="alert" className={night ? 'night-alert mt-4' : 'mt-3 rounded-xl bg-[#FFE3EC] px-4 py-3 text-sm font-bold text-[#9B2743]'}>{error}{preview && ' 当前仍保留上一张图片。'}</p>}
+      <span className="sr-only" role="status">{loading ? '正在读取图片，请稍候' : preview ? '参考图已准备好' : ''}</span>
     </div>
   );
 }

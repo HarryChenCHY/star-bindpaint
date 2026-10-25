@@ -4,6 +4,7 @@ export interface GalleryItem {
   id: string;
   imageDataUrl: string;
   title: string;
+  author?: string;       // Optional creator credit; older works have no signature.
   date: string;          // ISO date string
   strokeCount: number;
   mode: string;
@@ -32,13 +33,9 @@ export function saveToGallery(item: Omit<GalleryItem, 'id' | 'date'>): GalleryIt
     date: new Date().toISOString(),
   };
   gallery.unshift(newItem);
-  const trimmed = gallery.slice(0, 50);
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
-  } catch {
-    const half = trimmed.slice(0, Math.floor(trimmed.length / 2));
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(half));
-  }
+  // 空间不足时交由界面提示下载，不能为了保存新作静默删掉旧作品。
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(gallery));
+  window.dispatchEvent(new Event('startrace-gallery-updated'));
   return newItem;
 }
 
@@ -77,8 +74,10 @@ export function deleteFromGallery(id: string) {
   const gallery = loadGallery();
   const filtered = gallery.filter(item => item.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+  window.dispatchEvent(new Event('startrace-gallery-updated'));
 }
 
 export function clearGallery() {
   localStorage.removeItem(STORAGE_KEY);
+  window.dispatchEvent(new Event('startrace-gallery-updated'));
 }

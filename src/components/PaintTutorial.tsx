@@ -45,9 +45,13 @@ function CardDemo() {
   return <div><div className="mb-3 flex gap-2"><button className="rounded-xl border bg-white p-2" onClick={() => setLocked(v => !v)}>{locked ? <Lock size={18} /> : <Unlock size={18} />}<span className="text-xs">{locked ? '解锁示例卡' : '锁定示例卡'}</span></button><button className="rounded-xl border bg-white p-2" onClick={() => setCollapsed(v => !v)}>{collapsed ? '展开示例卡' : '收起示例卡'}</button></div><div className="rounded-2xl border-2 bg-white p-4 shadow-[4px_4px_0_#6558D9]" style={{ marginLeft: position, width: collapsed ? 64 : '75%' }}>{collapsed ? '☾' : '☾ 月亮伙伴 · 从圆圈 1 开始'}</div><label className="mt-5 block text-xs">试试移动（先解锁）<input aria-label="移动示例卡" type="range" min={0} max={50} value={position} disabled={locked} onChange={e => setPosition(Number(e.target.value))} className="mt-2 w-full" /></label></div>;
 }
 
-export default function PaintTutorial({ onOpen, Trigger }: { onOpen: () => void; Trigger: ComponentType<{ onClick: () => void }> }) {
+export default function PaintTutorial({ onOpen, Trigger, freeOnly = false }: { onOpen: () => void; Trigger: ComponentType<{ onClick: () => void }>; freeOnly?: boolean }) {
   const dialog = useRef<HTMLDialogElement>(null);
-  const [topic, setTopic] = useState<Topic>('overview');
+  const [topic, setTopic] = useState<Topic>(freeOnly ? 'free' : 'overview');
+  const availableTopics = freeOnly ? topics.filter(([id]) => id === 'free' || id === 'companion' || id === 'finish') : topics;
+  const activeTools: [LucideIcon, string, string][] = freeOnly && topic === 'finish'
+    ? [[Check, '完成并保存', '打开当前画面的预览，输入作品名称，收藏到星图或下载 PNG。'], [ArrowLeft, '继续绘画', '关闭预览，继续完善当前作品。']]
+    : freeOnly && topic === 'companion' ? tools.companion.slice(0, 2) : freeOnly && topic === 'free' ? tools.free.filter(([, title]) => title !== '风格') : tools[topic];
   const [color, setColor] = useState<BrushColor>([.4, .3, .8]);
   return <>
     <Trigger onClick={() => { onOpen(); dialog.current?.showModal(); }} />
@@ -55,7 +59,7 @@ export default function PaintTutorial({ onOpen, Trigger }: { onOpen: () => void;
       <div className="flex h-full flex-col">
         <header className="flex shrink-0 items-center justify-between gap-3 border-b-2 bg-white p-4 sm:px-8"><div><h2 className="text-xl font-black">绘画教程</h2><p className="mt-1 text-xs text-[#536079]">点击目录和示例，认识每一个工具。</p></div><button autoFocus onClick={() => dialog.current?.close()} aria-label="关闭教程返回画板" className="flex items-center gap-2 rounded-full border-2 px-3 py-2 text-sm font-bold"><X size={18} />返回画板</button></header>
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-          <nav aria-label="教程目录" className="flex shrink-0 gap-2 overflow-x-auto border-b bg-white p-3 md:w-44 md:flex-col md:border-r">{topics.map(([id, title]) => <button key={id} aria-current={topic === id ? 'page' : undefined} onClick={() => setTopic(id)} className={`shrink-0 rounded-xl px-3 py-3 text-left text-sm font-bold ${topic === id ? 'bg-[#FFD166]' : 'bg-[#F6F7FB]'}`}>{title}</button>)}</nav>
+          <nav aria-label="教程目录" className="flex shrink-0 gap-2 overflow-x-auto border-b bg-white p-3 md:w-44 md:flex-col md:border-r">{availableTopics.map(([id, title]) => <button key={id} aria-current={topic === id ? 'page' : undefined} onClick={() => setTopic(id)} className={`shrink-0 rounded-xl px-3 py-3 text-left text-sm font-bold ${topic === id ? 'bg-[#FFD166]' : 'bg-[#F6F7FB]'}`}>{title}</button>)}</nav>
           <main className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-8" key={topic}>
             <div className="mx-auto max-w-4xl"><p className="text-xs font-bold text-[#6558D9]">{topics.findIndex(([id]) => id === topic) + 1} / 6</p><h3 className="mb-5 mt-2 text-3xl font-black">{topics.find(([id]) => id === topic)?.[1]}</h3>
               <div className="mb-6 rounded-2xl border-2 bg-white p-4 sm:p-6">
@@ -67,8 +71,8 @@ export default function PaintTutorial({ onOpen, Trigger }: { onOpen: () => void;
                 {topic === 'finish' && <div className="flex flex-wrap items-center justify-center gap-3 text-sm font-bold"><span className="rounded-xl bg-[#FFD166] p-4">完成</span>→<span className="rounded-xl bg-[#ECEAFE] p-4">查看绘画记录</span>→<span className="rounded-xl bg-[#69D2C2] p-4">保存到星图</span></div>}
                 <p className="mt-4 text-xs text-[#536079]">这里的示例不会修改你的作品。按 Esc 或“返回画板”继续。</p>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">{tools[topic].map(([Icon, title, body]) => <article key={title} className="rounded-2xl border border-[#D9DDEA] bg-white p-4"><span className="mb-3 inline-flex rounded-xl bg-[#ECEAFE] p-3"><Icon size={22} /></span><h4 className="font-black">{title}</h4><p className="mt-2 text-sm leading-7 text-[#536079]">{body}</p></article>)}</div>
-              {topic === 'companion' && <p className="mt-4 rounded-xl bg-[#FFF4CF] p-4 text-sm leading-7">卡片中的色点代表当前笔触颜色；数字为当前笔触序号 / 总数；进度环为序列进度，包含自动补笔。自由模式显示亲手落笔次数。左侧星点栏也显示序列进度。</p>}
+              <div className="grid gap-3 sm:grid-cols-2">{activeTools.map(([Icon, title, body]) => <article key={title} className="rounded-2xl border border-[#D9DDEA] bg-white p-4"><span className="mb-3 inline-flex rounded-xl bg-[#ECEAFE] p-3"><Icon size={22} /></span><h4 className="font-black">{title}</h4><p className="mt-2 text-sm leading-7 text-[#536079]">{body}</p></article>)}</div>
+              {topic === 'companion' && !freeOnly && <p className="mt-4 rounded-xl bg-[#FFF4CF] p-4 text-sm leading-7">卡片中的色点代表当前笔触颜色；数字为当前笔触序号 / 总数；进度环为序列进度，包含自动补笔。自由模式显示亲手落笔次数。左侧星点栏也显示序列进度。</p>}
             </div>
           </main>
         </div>

@@ -3,27 +3,44 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check, Flame, Moon, Sparkles } from 'lucide-react';
-import { getPracticeOverview, PracticeOverview } from '@/lib/practice-store';
+import { getPracticeOverview, getLocalDateKey, PracticeOverview } from '@/lib/practice-store';
+import { loadGallery } from '@/lib/gallery-store';
 
 interface DailyWishCardProps {
   onStart: () => void;
   onOpenStarMap: () => void;
   compact?: boolean;
+  creation?: boolean;
 }
 
-export default function DailyWishCard({ onStart, onOpenStarMap, compact = false }: DailyWishCardProps) {
+export default function DailyWishCard({ onStart, onOpenStarMap, compact = false, creation = false }: DailyWishCardProps) {
   const [overview, setOverview] = useState<PracticeOverview | null>(null);
 
   useEffect(() => {
-    const refresh = () => setOverview(getPracticeOverview());
-    refresh();
+    const refresh = () => {
+      const base = getPracticeOverview();
+      if (!creation) { setOverview(base); return; }
+      const days = new Set(loadGallery().map(item => getLocalDateKey(new Date(item.date))));
+      const cursor = new Date();
+      let streak = 0;
+      if (!days.has(getLocalDateKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+      while (days.has(getLocalDateKey(cursor))) { streak++; cursor.setDate(cursor.getDate() - 1); }
+      setOverview({ ...base, todayCompleted: days.has(getLocalDateKey()), currentStreak: streak,
+        recentDays: base.recentDays.map(day => ({ ...day, active: days.has(day.dateKey) })),
+        todayWish: { ...base.todayWish, title: '给今天留下一点颜色', description: '从身边的照片出发，添一朵花、一片云，或亲手画下此刻的心情。' },
+      });
+    };
+    const frame = requestAnimationFrame(refresh);
     window.addEventListener('startrace-practice-updated', refresh);
+    window.addEventListener('startrace-gallery-updated', refresh);
     window.addEventListener('storage', refresh);
     return () => {
+      cancelAnimationFrame(frame);
       window.removeEventListener('startrace-practice-updated', refresh);
+      window.removeEventListener('startrace-gallery-updated', refresh);
       window.removeEventListener('storage', refresh);
     };
-  }, []);
+  }, [creation]);
 
   if (!overview) return <div className="h-44 animate-pulse rounded-[1.6rem]" style={{ background: '#ECEAFE' }} />;
 
@@ -50,16 +67,16 @@ export default function DailyWishCard({ onStart, onOpenStarMap, compact = false 
             {overview.todayCompleted ? '今天的星星已经点亮' : overview.todayWish.title}
           </h2>
           <p className="mt-2 text-sm font-bold leading-6" style={{ color: '#536079' }}>
-            {overview.todayCompleted ? '你已经完成今日练习，可以去星图回看这次动笔。' : overview.todayWish.description}
+            {overview.todayCompleted ? creation ? '今天已经收藏了作品，可以去星图回看这次创作。' : '你已经完成今日练习，可以去星图回看这次动笔。' : overview.todayWish.description}
           </p>
         </div>
       </div>
 
       <div className="relative mt-4 flex items-center justify-between gap-3">
-        <div className="flex gap-1.5" aria-label="最近七天动笔记录">
+        <div className="flex gap-1.5" aria-label={creation ? '最近七天作品收藏记录' : '最近七天动笔记录'}>
           {overview.recentDays.map(day => (
             <div key={day.dateKey} className="text-center">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full text-[9px] font-black" title={`${day.dateKey}${day.active ? ' 已动笔' : ' 未动笔'}`} style={{ background: day.active ? '#FFD166' : '#FFFFFF', border: `1.5px solid ${day.isToday ? '#6558D9' : '#17233F'}`, color: '#17233F' }}>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full text-[9px] font-black" title={`${day.dateKey}${creation ? day.active ? ' 已收藏作品' : ' 暂无作品' : day.active ? ' 已动笔' : ' 未动笔'}`} style={{ background: day.active ? '#FFD166' : '#FFFFFF', border: `1.5px solid ${day.isToday ? '#6558D9' : '#17233F'}`, color: '#17233F' }}>
                 {day.active ? <Sparkles size={12} /> : day.label}
               </span>
             </div>

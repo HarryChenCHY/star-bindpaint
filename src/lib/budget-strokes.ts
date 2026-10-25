@@ -2,6 +2,11 @@ import type { ImageSource, StrokeDrawData } from './stroke-engine';
 import { STROKE_CONFIG, STROKE_PASSES, allocatePassBudgets, type PlanningProgress } from './stroke-config';
 
 export const BUDGET_ENGINE_VERSION = STROKE_CONFIG.version;
+export interface ContinuationOptions {
+  initialCanvas: ImageSource;
+  priorityRegion?: { x: number; y: number; width: number; height: number };
+  onBatch?: (strokes: StrokeDrawData[]) => void;
+}
 /** Greedy full-footprint least-squares painting. No contour pass, truncation,
  * palette quantization or reference-image underlay. Matches drawStroke's .85 alpha.
  * Five fixed-width passes visit cells in row-major order and refit on the shared canvas.
@@ -14,6 +19,7 @@ export async function planBudgetStrokes(
   roughness = 2,
   opacity = 0.85,
   onProgress?: (progress: PlanningProgress) => void,
+  continuation?: ContinuationOptions,
 ): Promise<StrokeDrawData[]> {
   void roughness; // Retained for historical API compatibility; five fixed widths now define detail.
   if (
@@ -61,6 +67,23 @@ export async function planBudgetStrokes(
       for (let c = 0; c < 3; c++) target[(y * w + x) * 3 + c] /= count;
     }
   const canvas = new Float32Array(target.length).fill(1);
+  if (continuation) {
+    const initial = continuation.initialCanvas;
+    if (!Number.isInteger(initial.width) || !Number.isInteger(initial.height) || initial.width < 1 || initial.height < 1 || initial.data.length !== initial.width * initial.height * 4)
+      throw new Error('续绘画布像素无效');
+    // Both target and actual canvas are sampled onto the same analysis grid.
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const rgb = [0, 0, 0];
+      let count = 0;
+      for (let sy = Math.floor(y * initial.height / h); sy < Math.ceil((y + 1) * initial.height / h); sy++)
+        for (let sx = Math.floor(x * initial.width / w); sx < Math.ceil((x + 1) * initial.width / w); sx++) {
+          const i = (sy * initial.width + sx) * 4, a = initial.data[i + 3] / 255;
+          for (let c = 0; c < 3; c++) rgb[c] += initial.data[i + c] / 255 * a + 1 - a;
+          count++;
+        }
+      for (let c = 0; c < 3; c++) canvas[(y * w + x) * 3 + c] = rgb[c] / count;
+    }
+  }
   const weights = new Float32Array(w * h).fill(1);
   for (let y = 1; y < h - 1; y++)
     for (let x = 1; x < w - 1; x++) {
@@ -76,6 +99,14 @@ export async function planBudgetStrokes(
           );
       weights[y * w + x] = 1 + Math.min(2, edge);
     }
+  const region = continuation?.priorityRegion;
+  // 新素材使用与其尺寸匹配的笔宽，避免全画幅的大笔触溢到周围空白。
+  const widthScale = region ? Math.min(1, Math.max(.2, Math.min(region.width, region.height) / Math.min(canvasW, canvasH))) : 1;
+  const inPriority = (x: number, y: number) => region !== undefined &&
+    x * canvasW / w >= region.x && x * canvasW / w <= region.x + region.width &&
+    y * canvasH / h >= region.y && y * canvasH / h <= region.y + region.height;
+  if (region) for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)
+    if (inPriority(x, y)) weights[y * w + x] *= 6;
   let seed = 74921;
   const random = () => {
     seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
@@ -171,6 +202,7 @@ export async function planBudgetStrokes(
     };
   }
   const strokes: StrokeDrawData[] = [];
+  let emitted = 0;
   const quotasByPass = allocatePassBudgets(budget);
   const tasks = STROKE_PASSES.map((pass, passIndex) => ({ ...pass, passIndex, count: quotasByPass[passIndex] }));
   const cumulative = new Float64Array(w * h);
@@ -190,7 +222,15 @@ export async function planBudgetStrokes(
     const quotas = raw.map(Math.floor);
     const remainder = task.count - quotas.reduce((a, b) => a + b, 0);
     raw.map((v, i) => ({ i, fraction: v - quotas[i] })).sort((a, b) => b.fraction - a.fraction).slice(0, remainder).forEach(({ i }) => quotas[i]++);
-    for (let cell = 0; cell < quotas.length; cell++) for (let slot = 0; slot < quotas[cell]; slot++, n++) {
+    const cells = quotas.map((_, i) => i);
+    if (region) cells.sort((a, b) => {
+      const distance = (cell: number) => Math.hypot(
+        ((cell % task.grid) + .5) / task.grid * canvasW - (region.x + region.width / 2),
+        (Math.floor(cell / task.grid) + .5) / task.grid * canvasH - (region.y + region.height / 2),
+      );
+      return distance(a) - distance(b);
+    });
+    for (const cell of cells) for (let slot = 0; slot < quotas[cell]; slot++, n++) {
       const inCell = (x: number, y: number) => {
         if (x < 0 || x >= w || y < 0 || y >= h) return false;
         return Math.min(task.grid - 1, Math.floor(y / h * task.grid)) * task.grid + Math.min(task.grid - 1, Math.floor(x / w * task.grid)) === cell;
@@ -216,7 +256,7 @@ export async function planBudgetStrokes(
           if (cumulative[mid] < choice) lo = mid + 1;
           else hi = mid;
         }
-        const width = Math.max(1 / Math.min(canvasW / w, canvasH / h), task.width * Math.min(w, h) / 200);
+        const width = Math.max(1 / Math.min(canvasW / w, canvasH / h), task.width * widthScale * Math.min(w, h) / 200);
         const p: Candidate = {
           x: (lo % w) + 0.5,
           y: Math.floor(lo / w) + 0.5,
@@ -274,8 +314,13 @@ export async function planBudgetStrokes(
           y: (p.y * canvasH) / h,
         })),
       });
+      if (continuation?.onBatch && strokes.length - emitted >= 8) {
+        continuation.onBatch(strokes.slice(emitted));
+        emitted = strokes.length;
+      }
     }
   }
   onProgress?.({ completed: budget, total: budget, strokes: strokes.length });
+  if (continuation?.onBatch && emitted < strokes.length) continuation.onBatch(strokes.slice(emitted));
   return strokes;
 }

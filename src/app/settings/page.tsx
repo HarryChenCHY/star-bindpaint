@@ -1,31 +1,21 @@
 'use client';
 
-/* eslint-disable react-hooks/set-state-in-effect */
-
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Brush, Cloud, Database, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
+import { ArrowLeft, Brush, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
 import { useAppSettings } from '@/contexts/AppContext';
 import {
   clearLocalStarTraceData,
   loadPrivacyPreferences,
-  updatePrivacyPreferences,
   type PrivacyPreferences,
 } from '@/lib/privacy-settings';
 
 export default function SettingsPage() {
   const router = useRouter();
   const { settings, updateSettings } = useAppSettings();
-  const [privacy, setPrivacy] = useState<PrivacyPreferences>(() => loadPrivacyPreferences());
+  const [privacy] = useState<PrivacyPreferences>(() => loadPrivacyPreferences());
   const [deleting, setDeleting] = useState(false);
   const [notice, setNotice] = useState('');
-
-  useEffect(() => setPrivacy(loadPrivacyPreferences()), []);
-
-  const updatePrivacy = (patch: Partial<Pick<PrivacyPreferences, 'researchConsent' | 'artworkCloudUpload'>>) => {
-    setPrivacy(updatePrivacyPreferences(patch));
-    setNotice('设置已保存在当前浏览器。');
-  };
 
   const deleteAllData = async () => {
     const confirmed = window.confirm('这会删除当前浏览器中的作品、练习记录和偏好；若你已同意研究，也会申请删除对应匿名云端记录。此操作无法撤销，是否继续？');
@@ -52,55 +42,23 @@ export default function SettingsPage() {
     }
   };
 
-  return (
-    <main className="min-h-screen bg-[#F6F7FB] px-4 pb-28 pt-5 sm:px-8 sm:pt-8">
-      <div className="mx-auto max-w-4xl">
-        <header className="flex items-center justify-between rounded-[1.6rem] border-2 border-[#17233F] bg-white px-4 py-3 shadow-[5px_5px_0_#FFD166] sm:px-6">
-          <button type="button" onClick={() => router.push('/')} className="flex items-center gap-2 text-sm font-black text-[#17233F]"><ArrowLeft size={17} /> 返回首页</button>
-          <div className="text-right"><p className="text-[10px] font-black tracking-[0.14em] text-[#6558D9]">YOUR CONTROLS</p><h1 className="text-lg font-black text-[#17233F]">设置与隐私</h1></div>
-        </header>
-
-        <section className="mt-6 rounded-[1.7rem] border-2 border-[#17233F] bg-white p-5 shadow-[6px_6px_0_#69D2C2] sm:p-7">
-          <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border-2 border-[#17233F] bg-[#E4F7F2]"><Brush size={21} strokeWidth={2.8} /></span><div><p className="text-[10px] font-black tracking-[0.12em] text-[#13786B]">DRAWING PREFERENCES</p><h2 className="mt-1 text-xl font-black text-[#17233F]">默认绘画体验</h2><p className="mt-1 text-xs font-bold leading-5 text-[#65708A]">这些偏好只保存在当前浏览器，可以随时更改。</p></div></div>
-          <p className="mt-5 text-sm font-bold">默认使用完整引导与细节更多的笔触，画板内可随时调整提示显示。</p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <ToggleCard title="减少动态效果" description="减少装饰动画，保留必要的笔触演示。" checked={settings.reducedMotion} onChange={checked => updateSettings({ reducedMotion: checked })} />
-          </div>
-        </section>
-
-        <section className="mt-6 rounded-[1.7rem] border-2 border-[#17233F] bg-white p-5 shadow-[6px_6px_0_#B8ADF3] sm:p-7">
-          <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border-2 border-[#17233F] bg-[#ECEAFE]"><ShieldCheck size={21} strokeWidth={2.8} /></span><div><p className="text-[10px] font-black tracking-[0.12em] text-[#6558D9]">PRIVACY & RESEARCH</p><h2 className="mt-1 text-xl font-black text-[#17233F]">由你决定是否参与</h2><p className="mt-1 text-xs font-bold leading-5 text-[#65708A]">两项授权默认关闭、彼此独立。关闭不会影响临摹、自由画布和本地画廊。</p></div></div>
-          <div className="mt-5 space-y-3">
-            <ConsentCard icon={Database} color="#E4F7F2" title="匿名研究数据" description="允许记录会话时长、首次动笔时间、亲手/AI 笔触数量、引导等级和完成状态。不会上传姓名、原图、作品图片、笔触坐标或颜色。" checked={privacy.researchConsent} onChange={checked => updatePrivacy({ researchConsent: checked })} />
-            <ConsentCard icon={Cloud} color="#FFF7D9" title="作品云端保存" description="允许将完成作品保存为云端链接，以减少浏览器本地空间占用。关闭时作品只保存在当前浏览器；主动点击 AI 风格生成时，当前画布仍需临时发送给生成服务。" checked={privacy.artworkCloudUpload} onChange={checked => updatePrivacy({ artworkCloudUpload: checked })} />
-          </div>
-          {privacy.researchConsent && privacy.participantId && (
-            <div className="mt-4 rounded-2xl border-2 border-dashed border-[#9EA7B9] bg-[#F6F7FB] p-4"><p className="text-[10px] font-black tracking-[0.1em] text-[#65708A]">匿名参与编号</p><p className="mt-1 break-all font-mono text-xs font-bold text-[#17233F]">{privacy.participantId}</p><p className="mt-2 text-[10px] font-bold leading-4 text-[#8E98AD]">该编号随机生成，只用于关联同一浏览器的研究会话，不要求填写身份信息。</p></div>
-          )}
-          <p className="mt-4 text-[10px] font-bold leading-5 text-[#8E98AD]">正式研究开始前，研究人员仍需提供包含负责人、保存期限、风险与退出方式的完整知情同意书；本页开关不替代伦理审查流程。</p>
-          <div className="mt-5 rounded-2xl border-2 border-[#17233F] bg-[#FFF0F5] p-4 sm:flex sm:items-center sm:justify-between sm:gap-5">
-            <div><div className="flex items-center gap-2"><Trash2 size={17} /><h3 className="text-sm font-black text-[#17233F]">删除我的数据</h3></div><p className="mt-2 text-[11px] font-bold leading-5 text-[#65708A]">删除当前浏览器中的作品、练习、偏好及匿名编号，并申请删除与该编号关联的研究记录和云端作品。</p></div>
-            <button type="button" disabled={deleting} onClick={deleteAllData} className="mt-3 w-full shrink-0 rounded-full border-2 border-[#17233F] bg-white px-5 py-2.5 text-xs font-black text-[#A61E55] shadow-[3px_3px_0_#FF8FAB] disabled:opacity-50 sm:mt-0 sm:w-auto">{deleting ? '正在删除…' : '删除全部数据'}</button>
-          </div>
-          {notice && <p className="mt-4 text-center text-xs font-black text-[#4D5870]">{notice}</p>}
-        </section>
-
-        <section className="mt-6 rounded-[1.5rem] border-2 border-[#17233F] bg-[#17233F] p-5 text-white">
-          <div className="flex items-center gap-2"><Sparkles size={17} className="text-[#FFD166]" /><h2 className="text-sm font-black">数据使用边界</h2></div><p className="mt-2 text-xs font-bold leading-6 text-[#DDE1EA]">研究数据只用于评估笔触拆解引导对零基础绘画者开始动笔、完成练习与持续练习的帮助。学习反馈描述交互事实，不进行心理、健康、天赋或人格推断。</p>
-        </section>
-      </div>
+  return <div className="night-page">
+    <header className="night-header"><button type="button" onClick={() => router.push('/')}><ArrowLeft size={18} />返回首页</button><span className="night-muted">设置与隐私</span></header>
+    <main className="night-settings">
+      <p className="night-eyebrow">YOUR SPACE</p><h1 className="mt-3 text-3xl">让创作更自在</h1>
+      <section className="night-card">
+        <Brush size={24} className="mb-4 text-[var(--st-primary)]" /><h2>绘画体验</h2><p>这些偏好只保存在当前浏览器。</p>
+        <div className="night-setting-row"><div><h3>减少动态效果</h3><p>减少装饰动画，保留必要的笔触演示。</p></div>
+          <button type="button" role="switch" aria-label="减少动态效果" aria-checked={settings.reducedMotion} onClick={() => updateSettings({ reducedMotion: !settings.reducedMotion })} className="night-switch"><span /></button>
+        </div>
+      </section>
+      <section className="night-card"><ShieldCheck size={24} className="mb-4 text-[var(--st-primary)]" /><h2>作品留在你的浏览器</h2><p>自由画布与 AI 共创在浏览器内处理图片和素材，不上传照片或作品。下载图片可保留独立副本，清理浏览器数据会影响本地收藏。</p>
+        <div className="night-setting-row"><div className="flex-1"><h3>删除我的数据</h3><p>删除本地作品、练习、偏好及匿名编号，并申请删除与该编号关联的研究记录和云端作品。此操作不可撤销。</p></div>
+          <button type="button" disabled={deleting} onClick={deleteAllData} className="night-danger shrink-0 disabled:opacity-50"><Trash2 size={18} />{deleting ? '正在删除…' : '删除全部数据'}</button>
+        </div>
+        {notice && <p className="mt-4" role="status">{notice}</p>}
+      </section>
+      <section className="night-card"><div className="flex items-center gap-3"><Sparkles size={20} className="text-[var(--st-primary)]" /><h3>数据使用边界</h3></div><p className="mt-3">当前创作过程不收集研究数据。若你曾参与旧版研究，删除全部数据时会同时申请删除与原匿名编号关联的云端记录。</p></section>
     </main>
-  );
-}
-
-function ToggleCard({ title, description, checked, onChange }: { title: string; description: string; checked: boolean; onChange: (checked: boolean) => void }) {
-  return <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-[#C8CEDA] p-4"><div><p className="text-sm font-black text-[#17233F]">{title}</p><p className="mt-1 text-[11px] font-bold leading-5 text-[#65708A]">{description}</p></div><Toggle checked={checked} onChange={onChange} /></div>;
-}
-
-function ConsentCard({ icon: Icon, color, title, description, checked, onChange }: { icon: typeof Database; color: string; title: string; description: string; checked: boolean; onChange: (checked: boolean) => void }) {
-  return <div className="flex items-start gap-3 rounded-2xl border-2 border-[#C8CEDA] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-2 border-[#17233F]" style={{ background: color }}><Icon size={17} strokeWidth={2.7} /></span><div className="min-w-0 flex-1"><p className="text-sm font-black text-[#17233F]">{title}</p><p className="mt-1 text-[11px] font-bold leading-5 text-[#65708A]">{description}</p></div><Toggle checked={checked} onChange={onChange} /></div>;
-}
-
-function Toggle({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) {
-  return <button type="button" role="switch" aria-checked={checked} aria-label={checked ? '关闭此选项' : '开启此选项'} onClick={() => onChange(!checked)} className="relative mt-0.5 h-8 w-14 shrink-0 rounded-full border-2 border-[#17233F] transition-colors" style={{ background: checked ? '#69D2C2' : '#DDE1EA' }}><span className="absolute top-[3px] h-[22px] w-[22px] rounded-full border-2 border-[#17233F] bg-white transition-all" style={{ left: checked ? 27 : 3 }} /></button>;
+  </div>;
 }

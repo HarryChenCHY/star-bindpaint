@@ -29,6 +29,7 @@ import PaintTutorial from '@/components/PaintTutorial';
 type PaintMode = 'follow' | 'auto' | 'free';
 
 interface Props {
+  freeOnly?: boolean;
   mode: PaintMode;
   onModeChange: (m: PaintMode) => void;
   autoPaused?: boolean;
@@ -163,7 +164,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
         style={{ border: '2px solid #1A1A1A', boxShadow: '4px 4px 0 #1A1A1A' }}
       >
         {/* 模式入口始终可见，允许返回当前星迹。 */}
-        {MODES.map(m => (
+        {MODES.filter(m => !p.freeOnly || m.id === 'free').map(m => (
           <ModeBtn
             key={m.id}
             icon={m.icon}
@@ -374,6 +375,7 @@ export default function PaintBottomBar({ eraserMode, onToggleEraser, sprayMode, 
           hoverBg="#7DC353"
         />
         <PaintTutorial
+          freeOnly={p.freeOnly}
           onOpen={() => { close(); if (p.mode === 'auto') p.onPauseAuto?.(); }}
           Trigger={TutorialButton}
         />
@@ -527,6 +529,7 @@ function ToolBtn({
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            data-paint-popover
             initial={POPOVER_INITIAL}
             animate={POPOVER_ANIMATE}
             exit={POPOVER_EXIT}

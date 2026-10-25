@@ -1,0 +1,54 @@
+StarTrace UI refinement — 2026-10-25
+Direction: true-black-flat, seed 1649175278. Retained existing app layout and data.
+Brief takes precedence: #141414 instead of pure black; saturated purple primary actions;
+92% neutral frosted floating panels instead of the skill default ban on glass.
+
+Inventory: actual local artworks, artwork titles and dates, co-creation/free mode,
+photo input, editable vector materials, stroke playback, drawing controls, save/download,
+local preferences, product introduction and separate historical study entry.
+Home question: which work do I want to view, or shall I start a new one?
+Creation question: which photo shall I start with?
+Canvas question: what do I want to add or change while the picture develops?
+Settings question: what drawing preference or local-data action do I need?
+Product identity: actual works dominate the gallery; SVG material controls and progressive
+brush strokes distinguish the studio. No invented artwork or data introduced.
+
+Before findings (source and user screenshot, not a browser audit):
+- Purple-tinted backgrounds and decorative gradients competed with artwork.
+- 24–32px frames and pill-shaped navigation repeated throughout the UI.
+- Inset selection shadows created the curved border highlighted by the user.
+- Panels were opaque; control borders and hard shadows added visual clutter.
+
+Implemented:
+- Achromatic #141414/#1c1c1c/#282828 surfaces, #8733ff primary with white labels.
+- Neutral navigation selection, no inset bar, no resting button outlines.
+- 6px controls / 8px inner surfaces / 12px outer panels. Round toggles remain semantic.
+- SVG icons, system UI typography, no decorative starfield, orbit or glowing artwork.
+- Floating panels use rgba(38,38,38,.92) + 24px backdrop blur, solid fallback and
+  prefers-reduced-transparency handling; children are transparent to preserve the glass.
+- Existing mobile layouts, focus indicators, picture pixels and research routes retained.
+
+Validation:
+53 existing/updated unit checks passed, including intended text contrast and neutral surfaces.
+TypeScript and targeted ESLint passed. Taste source lint: 0 FAIL, 45 WARN.
+Warnings reviewed: glass is expressly requested; real overlays may cast shadows;
+source lint also flags box-shadow:none and overridden legacy rules; monospace is used
+for actual algorithm formulae in the product explanation.
+Browser observation is blocked by a saved permission/managed policy for 127.0.0.1:3001.
+No alternate browser, raw CDP or indirect execution used. No screenshot score claimed.
+The earlier thesis blueprint still describes the previous palette/radius draft; update it
+when this design direction is accepted rather than presenting it as the current final UI.
+
+Star/moon role refinement — 2026-10-25
+Kept direction true-black-flat, seed 1649175278, existing brand overrides; no redraw.
+Scope: creation entry, commit acknowledgement, status symbol, optional artwork credit.
+Signature: user decisions are the star; algorithm execution is the moon.
+Entry explains the roles in two lines; no extra card, modal, hero or primary action.
+One 24px star acknowledges a committed batch for 1 second; no repeating animation.
+Reduced motion shows it statically; cleanup cancels its timeout on reset/unmount.
+The acknowledgement means committed, not rendered or semantically understood.
+Creator name stays optional and local, appears in gallery preview, never in image pixels.
+Old gallery items remain compatible. Actual drawing and historical study remain unchanged.
+Source lint of the five narrative UI files: 0 FAIL, 0 WARN.
+Browser/screenshot check remains blocked by the previously reported tool access policy;
+source review and build checks do not constitute a visual or click-through acceptance.

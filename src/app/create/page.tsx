@@ -1,418 +1,67 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  ArrowLeft,
-  ArrowRight,
-  Brush,
-  Check,
-  CircleDot,
-  Image as ImageIcon,
-  Layers3,
-  Moon,
-  Palette,
-  Route,
-  Sparkles,
-  Upload,
-  Wand2,
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, Palette, Sparkles, Sparkle, Moon } from 'lucide-react';
+import { useSceneTransition } from '@/components/motion/SceneTransition';
 import ImageUploader from '@/components/ImageUploader';
-import { MASTER_ARTISTS, MasterArtist, Masterwork } from '@/lib/masterworks';
-import { MASTER_STYLES } from '@/lib/style-transfer';
-
-type SourceMode = 'examples' | 'upload' | 'free';
-type PreparedSource = {
-  kind: 'example' | 'upload';
-  title: string;
-  subtitle: string;
-  preview: string;
-};
-
-const COLORS = {
-  ink: '#17233F',
-  inkSoft: '#536079',
-  purple: '#6558D9',
-  purpleSoft: '#ECEAFE',
-  yellow: '#FFD166',
-  mint: '#69D2C2',
-  pink: '#FF8FAB',
-  paper: '#F6F7FB',
-  white: '#FFFFFF',
-};
-
-function cacheImage(img: HTMLImageElement) {
-  const canvas = document.createElement('canvas');
-  const maxSize = 512;
-  let width = img.naturalWidth;
-  let height = img.naturalHeight;
-
-  if (Math.max(width, height) > maxSize) {
-    const scale = maxSize / Math.max(width, height);
-    width = Math.max(1, Math.round(width * scale));
-    height = Math.max(1, Math.round(height * scale));
-  }
-
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext('2d');
-  if (!context || !width || !height) throw new Error('无法处理图片，请换一张重试。');
-  // 透明参考图与白色画布保持一致，避免转为 JPEG 后出现黑底。
-  context.fillStyle = '#FFFFFF';
-  context.fillRect(0, 0, width, height);
-  context.drawImage(img, 0, 0, width, height);
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-  sessionStorage.setItem('star-bindpaint-source-w', String(width));
-  sessionStorage.setItem('star-bindpaint-source-h', String(height));
-  sessionStorage.setItem('star-bindpaint-source', dataUrl);
-  return dataUrl;
-}
 
 export default function CreatePage() {
   const router = useRouter();
-  const [sourceMode, setSourceMode] = useState<SourceMode>('upload');
-  const [preparedSource, setPreparedSource] = useState<PreparedSource | null>(null);
+  const { begin, isTransitioning } = useSceneTransition();
+  const [mode, setMode] = useState<'co-create' | 'free'>('co-create');
+  const [source, setSource] = useState<string | null>(null);
+  const [sourceTitle, setSourceTitle] = useState('');
   const [preparing, setPreparing] = useState(false);
-  const [prepareError, setPrepareError] = useState('');
-  const [selectedFreeStyle, setSelectedFreeStyle] = useState('vangogh');
-  const sourceRequestRef = useRef(0);
+  const [error, setError] = useState('');
 
-  useEffect(() => () => { sourceRequestRef.current += 1; }, []);
-
-  const curatedWorks = useMemo(
-    () => MASTER_ARTISTS.flatMap(artist => artist.works.slice(0, 2).map(work => ({ artist, work }))),
-    [],
-  );
-
-  const resetPreparedSource = () => {
-    sourceRequestRef.current += 1;
-    setPreparing(false);
-    setPreparedSource(null);
-    setPrepareError('');
-    sessionStorage.removeItem('star-bindpaint-source');
-    sessionStorage.removeItem('star-bindpaint-source-w');
-    sessionStorage.removeItem('star-bindpaint-source-h');
-    sessionStorage.removeItem('star-bindpaint-master');
-  };
-
-  const changeMode = (mode: SourceMode) => {
-    if (mode === sourceMode) return;
-    setSourceMode(mode);
-    resetPreparedSource();
-  };
-
-  const handleSelectWork = (artist: MasterArtist, work: Masterwork) => {
-    const request = ++sourceRequestRef.current;
-    setPreparing(true);
-    setPrepareError('');
-
-    const image = new window.Image();
-    image.crossOrigin = 'anonymous';
-    image.onload = () => {
-      if (request !== sourceRequestRef.current) return;
-      try {
-        cacheImage(image);
-        sessionStorage.setItem('star-bindpaint-master', JSON.stringify({
-          id: work.id,
-          title: work.title,
-          artist: artist.name,
-        }));
-        sessionStorage.removeItem('star-bindpaint-free-style');
-        setPreparedSource({
-          kind: 'example',
-          title: `《${work.title}》`,
-          subtitle: `${artist.name} · ${work.year}`,
-          preview: work.image,
-        });
-      } catch {
-        setPrepareError('图片准备失败，请换一幅作品重试。');
-      } finally {
-        setPreparing(false);
-      }
-    };
-    image.onerror = () => {
-      if (request !== sourceRequestRef.current) return;
-      setPreparing(false);
-      setPrepareError('图片加载失败，请换一幅作品重试。');
-    };
-    image.src = work.image;
-  };
-
-  const handleImageUploaded = (image: HTMLImageElement, file: File) => {
-    setPrepareError('');
+  function start() {
+    if (isTransitioning) return;
+    if (preparing || (mode === 'co-create' && !source)) { setError('请先上传一张照片。'); return; }
     try {
-      const dataUrl = cacheImage(image);
-      sessionStorage.removeItem('star-bindpaint-master');
-      sessionStorage.removeItem('star-bindpaint-free-style');
-      setPreparedSource({
-        kind: 'upload',
-        title: file.name,
-        subtitle: `${image.naturalWidth} × ${image.naturalHeight} · ${file.size < 1024 * 1024 ? `${Math.max(1, Math.ceil(file.size / 1024))} KB` : `${(file.size / 1024 / 1024).toFixed(1)} MB`} · 本地图片`,
-        preview: dataUrl,
-      });
-    } catch {
-      throw new Error('图片准备失败，浏览器存储可能不足或不可用，请释放空间后重试。');
-    }
-  };
+      sessionStorage.setItem('startrace-creation-mode', mode);
+      if (source && mode === 'co-create') sessionStorage.setItem('startrace-creation-source', source);
+      else sessionStorage.removeItem('startrace-creation-source');
+      begin(mode === 'co-create' ? 'paint' : 'free');
+    } catch { setError('浏览器存储空间不足，请释放空间后重试。'); }
+  }
 
-  const handleStartGuided = () => {
-    if (!preparedSource || preparing) return;
-    sessionStorage.setItem('star-bindpaint-roughness', '1');
-    sessionStorage.setItem('startrace-guidance-level', 'full');
-    sessionStorage.setItem('startrace-entry-mode', preparedSource.kind);
-    sessionStorage.removeItem('star-bindpaint-free-style');
-    router.push('/paint');
-  };
-
-  const handleStartFree = () => {
-    sessionStorage.setItem('star-bindpaint-free-style', selectedFreeStyle);
-    sessionStorage.setItem('star-bindpaint-difficulty', 'free');
-    sessionStorage.setItem('startrace-entry-mode', 'free');
-    sessionStorage.setItem('startrace-guidance-level', 'full');
-    sessionStorage.removeItem('star-bindpaint-source');
-    sessionStorage.removeItem('star-bindpaint-master');
-    router.push('/paint');
-  };
-
-  return (
-    <div className="min-h-screen overflow-x-hidden pb-28" style={{ background: COLORS.paper, color: COLORS.ink }}>
-      <div className="flex flex-wrap items-center justify-center gap-3 border-b border-[#17233F] bg-[#ECEAFE] px-5 py-3 text-sm">
-        <span>已支持 1000 笔预算，按笔触序列引导绘画</span>
-        <button onClick={() => router.push('/simplify')} className="rounded-xl border-2 border-[#17233F] bg-white px-3 py-2 font-bold">预览笔触效果</button>
-        <button onClick={() => router.push('/study')} className="font-bold underline">参与绘画测试</button>
+  function prepare(image: HTMLImageElement, file: File) {
+    const scale = Math.min(1, 640 / Math.max(image.naturalWidth, image.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    setSource(canvas.toDataURL('image/png')); setSourceTitle(file.name);
+    setError('');
+  }
+  return <div className="night-page">
+    <header className="night-header">
+      <button onClick={() => router.push('/')} className="flex items-center gap-2 text-sm"><ArrowLeft size={18} />返回首页</button>
+      <button onClick={() => router.push('/study')}>用户测试</button>
+    </header>
+    <main className="night-create">
+      <h1>开始创作</h1>
+      <p className="night-muted mt-3 text-center text-sm">让日常的画面，成为你的作品。</p>
+      <div className="night-tabs" role="group" aria-label="创作方式">
+        {([['co-create', Sparkles, 'AI 共创'], ['free', Palette, '自由画布']] as const).map(([id, Icon, label]) => <button key={id} aria-pressed={mode === id} onClick={() => setMode(id)}><Icon size={18} />{label}</button>)}
       </div>
-      <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur" style={{ borderColor: '#D9DDEA' }}>
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-10">
-          <button onClick={() => router.push('/')} className="flex items-center gap-2 text-sm font-black">
-            <ArrowLeft size={18} strokeWidth={2.8} />
-            <span className="hidden sm:inline">返回首页</span>
-          </button>
-          <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: COLORS.yellow, border: `2px solid ${COLORS.ink}` }}>
-              <Moon size={19} strokeWidth={2.6} />
-            </span>
-            <div>
-              <p className="text-sm font-black tracking-[-0.03em]">开始一条新星迹</p>
-              <p className="text-[9px] font-extrabold tracking-[0.14em]" style={{ color: COLORS.inkSoft }}>CREATE WITH STARTRACE</p>
-            </div>
+      <section className="night-card motion-swap" key={mode}>
+        {mode === 'co-create' ? <>
+          <div className="creation-roles" aria-label="星月共创分工">
+            <p><Sparkle size={16} strokeWidth={1.6} aria-hidden="true" /><span>贴图如星，点点缀于夜空；</span></p>
+            <p><Moon size={16} strokeWidth={1.6} aria-hidden="true" /><span>AI 笔触似月华，在夜幕画布之上指引前路，照亮落笔的轨迹。</span></p>
+            <p><svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 20h18M4 16a8 8 0 0 1 16 0M12 3v4M10 5h4M5 7v2M4 8h2M19 7v2M18 8h2" /></svg><span>星月偕行，共绘这一幅夜色长卷。</span></p>
           </div>
-          <button onClick={() => router.push('/intro')} className="hidden text-sm font-black sm:block" style={{ color: COLORS.purple }}>
-            产品说明
-          </button>
-          <div className="w-[18px] sm:hidden" />
-        </div>
-      </header>
-
-      <main className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 lg:px-10 lg:py-14">
-        <section className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black tracking-[0.1em]" style={{ background: COLORS.purpleSoft, color: COLORS.purple }}>
-              <Sparkles size={15} strokeWidth={2.6} />
-              第一步不是画得好，而是选一幅想画的
-            </div>
-            <h1 className="mt-6 max-w-4xl text-[clamp(2.7rem,6vw,5.4rem)] font-black leading-[0.98] tracking-[-0.06em]">
-              今天想沿着哪条
-              <span className="block" style={{ color: COLORS.purple }}>星迹开始？</span>
-            </h1>
-            <p className="mt-6 max-w-2xl text-base font-bold leading-8" style={{ color: COLORS.inkSoft }}>
-              选择一幅示例作品，或上传你真正想画的图片。系统会先拆解画面，再把复杂任务变成眼前的一笔。
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-extrabold" style={{ color: COLORS.inkSoft }}>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ background: COLORS.yellow, color: COLORS.ink }}>1</span>
-            选画面
-            <ArrowRight size={14} />
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">2</span>
-            生成星迹
-            <ArrowRight size={14} />
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">3</span>
-            开始画
-          </div>
-        </section>
-
-        <div className="mt-10 flex flex-wrap gap-2" role="tablist" aria-label="创作方式">
-          {([
-            ['upload', Upload, '上传图片', '本地选图 · 小于 20 MB'],
-            ['examples', ImageIcon, '精选临摹', '零基础推荐'],
-            ['free', Palette, '自由画布', '不使用拆解路径'],
-          ] as const).map(([id, Icon, title, detail]) => {
-            const active = sourceMode === id;
-            return (
-              <button
-                key={id}
-                role="tab"
-                aria-selected={active}
-                onClick={() => changeMode(id)}
-                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-left transition-transform hover:-translate-y-0.5 sm:px-5"
-                style={{
-                  background: active ? COLORS.ink : COLORS.white,
-                  color: active ? COLORS.white : COLORS.ink,
-                  border: `2px solid ${COLORS.ink}`,
-                  boxShadow: active ? `4px 4px 0 ${COLORS.yellow}` : 'none',
-                }}
-              >
-                <Icon size={20} strokeWidth={2.5} />
-                <span>
-                  <span className="block text-sm font-black">{title}</span>
-                  <span className="mt-0.5 block text-[10px] font-bold" style={{ color: active ? 'rgba(255,255,255,0.62)' : COLORS.inkSoft }}>{detail}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {sourceMode !== 'free' ? (
-          <div className="mt-8 grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-start">
-            <section className="rounded-[2rem] bg-white p-5 sm:p-7" style={{ border: `2px solid ${COLORS.ink}` }}>
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>
-                    {sourceMode === 'examples' ? '选择参考画面' : '上传参考画面'}
-                  </p>
-                  <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">
-                    {sourceMode === 'examples' ? '从适合拆解的作品开始' : '把喜欢的图片变成绘画步骤'}
-                  </h2>
-                </div>
-                <span className="hidden rounded-full px-3 py-2 text-xs font-black sm:inline-flex" style={{ background: COLORS.yellow }}>
-                  {sourceMode === 'examples' ? `${curatedWorks.length} 幅精选` : '小于 20 MB'}
-                </span>
-              </div>
-
-              {sourceMode === 'examples' ? (
-                <div className="mt-7 grid grid-cols-2 gap-4 md:grid-cols-3">
-                  {curatedWorks.map(({ artist, work }) => {
-                    const selected = preparedSource?.kind === 'example' && preparedSource.title === `《${work.title}》`;
-                    return (
-                      <motion.button
-                        key={`${artist.id}-${work.id}`}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleSelectWork(artist, work)}
-                        className="overflow-hidden rounded-[1.4rem] text-left"
-                        style={{
-                          background: COLORS.white,
-                          border: `2px solid ${selected ? COLORS.purple : COLORS.ink}`,
-                          boxShadow: selected ? `5px 5px 0 ${COLORS.purple}` : `3px 3px 0 ${COLORS.ink}`,
-                        }}
-                      >
-                        <div className="relative aspect-[4/3] overflow-hidden" style={{ background: COLORS.paper }}>
-                          <Image src={work.image} alt={work.title} fill sizes="(max-width: 768px) 50vw, 28vw" className="object-cover transition-transform duration-300 hover:scale-105" />
-                          {selected && <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full" style={{ background: COLORS.yellow, border: `2px solid ${COLORS.ink}` }}><Check size={17} strokeWidth={3} /></span>}
-                        </div>
-                        <div className="p-4">
-                          <p className="text-sm font-black">《{work.title}》</p>
-                          <p className="mt-1 text-xs font-bold" style={{ color: COLORS.inkSoft }}>{artist.name} · {artist.style}</p>
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="mt-7">
-                  <ImageUploader
-                    onImageLoaded={handleImageUploaded}
-                    onLoadingChange={setPreparing}
-                    preview={preparedSource?.kind === 'upload' ? preparedSource.preview : null}
-                  />
-                  <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                    {[
-                      ['画面清晰', '主体轮廓越明确，星迹越容易跟随'],
-                      ['内容适中', '第一次建议选择一个主体的画面'],
-                      ['尊重隐私', '避免上传含敏感个人信息的图片'],
-                    ].map(([title, body], index) => (
-                      <div key={title} className="rounded-2xl p-4" style={{ background: [COLORS.yellow, '#E5F5F1', COLORS.purpleSoft][index] }}>
-                        <p className="text-xs font-black">{title}</p>
-                        <p className="mt-2 text-xs font-bold leading-5" style={{ color: COLORS.inkSoft }}>{body}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {preparing && <p role="status" className="mt-5 text-center text-sm font-black" style={{ color: COLORS.purple }}>正在准备参考图…</p>}
-              {prepareError && <p role="alert" className="mt-5 rounded-xl px-4 py-3 text-sm font-bold" style={{ background: '#FFE3EC', color: '#9B2743' }}>{prepareError}</p>}
-            </section>
-
-            <aside className="rounded-[2rem] bg-white p-5 sm:p-6 lg:sticky lg:top-24" style={{ border: `2px solid ${COLORS.ink}`, boxShadow: `6px 6px 0 ${preparedSource ? COLORS.mint : '#D9DDEA'}` }}>
-              {preparedSource ? (
-                <>
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl" style={{ border: `2px solid ${COLORS.ink}` }}>
-                    <Image src={preparedSource.preview} alt={preparedSource.title} fill sizes="(max-width: 1024px) 100vw, 32vw" unoptimized={preparedSource.preview.startsWith('data:')} className="bg-[#F6F7FB] object-contain" />
-                  </div>
-                  <div className="mt-4 flex items-start justify-between gap-3">
-                    <div className="min-w-0"><p className="line-clamp-2 break-words text-base font-black" title={preparedSource.title}>{preparedSource.title}</p><p className="mt-1 text-xs font-bold" style={{ color: COLORS.inkSoft }}>{preparedSource.subtitle}</p></div>
-                    <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full" style={{ background: COLORS.mint }}><Check size={17} strokeWidth={3} /></span>
-                  </div>
-
-                  <div className="my-6 h-px" style={{ background: '#D9DDEA' }} />
-                  <p className="mt-5 text-xs font-bold leading-6" style={{ color: COLORS.inkSoft }}>准备好后，系统会在 1000 笔以内分配笔触，保留整体色彩和主要形状，并逐笔提示起点、方向与颜色。</p>
-                  <button onClick={handleStartGuided} disabled={preparing} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-base font-black text-white disabled:cursor-wait disabled:opacity-50" style={{ background: COLORS.ink, boxShadow: `4px 4px 0 ${COLORS.yellow}` }}>
-                    {preparing ? '正在准备图片…' : '生成星迹并开始'} <ArrowRight size={18} strokeWidth={2.8} />
-                  </button>
-                </>
-              ) : (
-                <div className="flex min-h-[390px] flex-col items-center justify-center text-center">
-                  <span className="flex h-16 w-16 items-center justify-center rounded-[1.4rem]" style={{ background: COLORS.purpleSoft }}><Route size={30} color={COLORS.purple} strokeWidth={2.4} /></span>
-                  <h3 className="mt-6 text-xl font-black">先选择一幅画面</h3>
-                  <p className="mt-3 max-w-[240px] text-sm font-bold leading-6" style={{ color: COLORS.inkSoft }}>选好图片后，即可生成星迹，按完整引导逐笔绘画。</p>
-                  <div className="mt-7 flex items-center gap-2 text-xs font-black" style={{ color: COLORS.purple }}><CircleDot size={15} /> 星点 <ArrowRight size={14} /> <Route size={15} /> 星迹 <ArrowRight size={14} /> <Brush size={15} /> 动笔</div>
-                </div>
-              )}
-            </aside>
-          </div>
-        ) : (
-          <section className="mt-8 grid gap-7 rounded-[2rem] bg-white p-5 sm:p-8 lg:grid-cols-[1fr_0.72fr]" style={{ border: `2px solid ${COLORS.ink}` }}>
-            <div>
-              <p className="text-xs font-black tracking-[0.12em]" style={{ color: COLORS.purple }}>自由画布</p>
-              <h2 className="mt-3 text-3xl font-black tracking-[-0.04em]">不跟参考图，直接表达自己的想法</h2>
-              <p className="mt-4 max-w-2xl text-sm font-bold leading-7" style={{ color: COLORS.inkSoft }}>自由模式保留实时笔触风格化，但不生成星点和星迹，不作为笔触拆解研究的核心练习路径。</p>
-              <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {MASTER_STYLES.map(style => {
-                  const selected = selectedFreeStyle === style.id;
-                  return (
-                    <button key={style.id} onClick={() => setSelectedFreeStyle(style.id)} className="rounded-2xl p-4 text-left" style={{ background: selected ? `${style.color}22` : COLORS.paper, border: `2px solid ${selected ? style.color : 'transparent'}` }}>
-                      <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: style.color }}><Wand2 size={18} color="white" /></span>
-                      <p className="mt-5 text-sm font-black">{style.name}风格</p>
-                      <p className="mt-1 text-[10px] font-bold leading-4" style={{ color: COLORS.inkSoft }}>{style.description}</p>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <aside className="flex flex-col justify-between rounded-[1.6rem] p-6" style={{ background: COLORS.ink, color: COLORS.white }}>
-              <div>
-                <Palette size={32} color={COLORS.yellow} />
-                <h3 className="mt-8 text-2xl font-black">一张空白画布</h3>
-                <div className="mt-5 space-y-3 text-sm font-bold text-white/65">
-                  <p className="flex gap-2"><Check size={17} color={COLORS.mint} /> 自主选择颜色和画笔</p>
-                  <p className="flex gap-2"><Check size={17} color={COLORS.mint} /> 实时笔触风格化</p>
-                  <p className="flex gap-2"><Check size={17} color={COLORS.mint} /> 完成后保存到星图</p>
-                </div>
-              </div>
-              <button onClick={handleStartFree} className="mt-10 flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-base font-black" style={{ background: COLORS.yellow, color: COLORS.ink }}>
-                打开自由画布 <ArrowRight size={18} strokeWidth={2.8} />
-              </button>
-            </aside>
-          </section>
-        )}
-
-        <section className="mt-10 grid gap-3 sm:grid-cols-3">
-          {[
-            [Layers3, '先拆解', '系统先处理结构，不要求你先懂理论'],
-            [CircleDot, '再落笔', '每次只关注当前这一颗星点'],
-            [Route, '可退出', '熟悉以后逐渐减少轨迹辅助'],
-          ].map(([Icon, title, body], index) => {
-            const TipIcon = Icon as typeof Layers3;
-            return (
-              <div key={title as string} className="flex gap-4 rounded-2xl p-4" style={{ background: [COLORS.yellow, '#E5F5F1', COLORS.purpleSoft][index] }}>
-                <TipIcon className="flex-none" size={22} strokeWidth={2.5} />
-                <div><p className="text-sm font-black">{title as string}</p><p className="mt-1 text-xs font-bold leading-5" style={{ color: COLORS.inkSoft }}>{body as string}</p></div>
-              </div>
-            );
-          })}
-        </section>
-      </main>
-    </div>
-  );
+          <ImageUploader night allowCamera preview={source} onLoadingChange={setPreparing} onImageLoaded={prepare} />
+          {source && <div className="night-muted mt-4 flex items-center justify-between gap-4 text-xs"><span className="truncate">{sourceTitle}</span><button className="min-h-11 shrink-0 underline underline-offset-4" onClick={() => setSource(null)}>移除照片</button></div>}
+          {source && <button disabled={preparing || isTransitioning} onClick={start} className="night-primary mt-6 w-full">{preparing ? '正在读取图片…' : '开始共创'}<ArrowRight size={18} /></button>}
+        </> : <div className="py-10 text-center"><Palette size={32} className="night-muted mx-auto mb-6" /><h2 className="text-2xl">从一张白纸开始</h2><p className="night-muted mt-3 text-sm">选一种颜色，自由落笔。</p><button disabled={isTransitioning} onClick={start} className="night-primary mt-8">打开自由画布</button></div>}
+        {error && <p role="alert" className="night-alert mt-4">{error}</p>}
+      </section>
+      <p className="night-muted mt-4 text-center text-xs">照片仅在当前设备处理</p>
+    </main>
+  </div>;
 }

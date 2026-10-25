@@ -14,7 +14,7 @@ const lines = [
   { d: 'M177 105L183 105', color: '#805333', width: 36, x: 183, y: 105 },
 ];
 
-export default function HomePaintingDemo() {
+export default function HomePaintingDemo({ coCreation = false }: { coCreation?: boolean }) {
   const svg = useRef<SVGSVGElement>(null);
   const [tick, setTick] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -30,14 +30,17 @@ export default function HomePaintingDemo() {
   const stage = tick < 4 ? 0 : tick < 8 ? 1 : 2;
   const count = Math.min(lines.length, Math.max(0, tick - 7));
   return <div className="rounded-[2rem] border-2 border-[#17233F] bg-white p-4 shadow-[8px_8px_0_#6558D9]" data-testid="home-painting-demo">
-    <div className="flex items-center justify-between gap-2 pb-3"><div><p className="text-xs font-bold text-[#6558D9]">从一张图片，到亲手完成</p><p className="mt-1 font-black">{['① 上传想画的图片', '② 转为有序笔触', '③ 跟着轨迹，一笔一笔画'][stage]}</p></div><button onClick={() => setPaused(p => !p)} aria-label={paused ? '播放流程演示' : '暂停流程演示'} className="rounded-full border-2 p-2">{paused ? <Play size={18} /> : <Pause size={18} />}</button></div>
-    <svg ref={svg} viewBox="0 0 360 290" className="w-full rounded-2xl border-2 border-[#17233F] bg-[#FFF9E8]" role="img" aria-label="上传、笔触拆解、画笔沿轨迹绘画的循环示意">
+    <div className="flex items-center justify-between gap-2 pb-3"><div><p className="text-xs font-bold text-[#6558D9]">{coCreation ? '从一个想法，到一幅自己的画' : '从一张图片，到亲手完成'}</p><p className="mt-1 font-black">{(coCreation ? ['① 选择并安排素材', '② 确认，等待笔触接续', '③ 系统把素材逐笔画出'] : ['① 上传想画的图片', '② 转为有序笔触', '③ 跟着轨迹，一笔一笔画'])[stage]}</p></div><button onClick={() => setPaused(p => !p)} aria-label={paused ? '播放流程演示' : '暂停流程演示'} className="rounded-full border-2 p-2">{paused ? <Play size={18} /> : <Pause size={18} />}</button></div>
+    <svg ref={svg} viewBox="0 0 360 290" className="w-full rounded-2xl border-2 border-[#17233F] bg-[#FFF9E8]" role="img" aria-label={coCreation ? "安排素材、确认、逐笔绘制的循环示意" : "上传、笔触拆解、画笔沿轨迹绘画的循环示意"}>
       {stage === 0 && <g opacity=".8">{lines.map((l, i) => <path key={i} d={l.d} stroke={l.color} strokeWidth={l.width} strokeLinecap="round" />)}</g>}
-      {stage > 0 && lines.map((l, i) => <g key={`${stage}-${i}`}><path d={l.d} stroke={stage === 1 || i >= (tick < 20 ? count - 1 : count) ? '#6558D9' : l.color} strokeWidth={stage === 1 || i >= (tick < 20 ? count - 1 : count) ? 2 : l.width} strokeDasharray={stage === 1 || i >= (tick < 20 ? count - 1 : count) ? '5 6' : undefined} strokeLinecap="round" opacity={stage === 1 || i >= (tick < 20 ? count - 1 : count) ? .35 : 1} />{stage === 1 && <text x={l.x} y={l.y} fontSize="12" fill="#17233F">{i + 1}</text>}</g>)}
+      {stage > 0 && !coCreation && lines.map((l, i) => <g key={`${stage}-${i}`}><path d={l.d} stroke={stage === 1 || i >= (tick < 20 ? count - 1 : count) ? '#6558D9' : l.color} strokeWidth={stage === 1 || i >= (tick < 20 ? count - 1 : count) ? 2 : l.width} strokeDasharray={stage === 1 || i >= (tick < 20 ? count - 1 : count) ? '5 6' : undefined} strokeLinecap="round" opacity={stage === 1 || i >= (tick < 20 ? count - 1 : count) ? .35 : 1} />{stage === 1 && <text x={l.x} y={l.y} fontSize="12" fill="#17233F">{i + 1}</text>}</g>)}
+      {coCreation && stage === 0 && <rect x="105" y="38" width="150" height="200" rx="12" fill="none" stroke="#6558D9" strokeWidth="2" strokeDasharray="5 6" />}
+      {coCreation && stage === 1 && <text x="180" y="145" textAnchor="middle" fill="#6558D9" fontSize="14">预览已收起，正在准备新笔触…</text>}
+      {coCreation && stage === 2 && lines.slice(0, tick < 20 ? Math.max(0, count - 1) : count).map((l, i) => <path key={i} d={l.d} stroke={l.color} strokeWidth={l.width} strokeLinecap="round" />)}
       {stage === 2 && count > 0 && count <= lines.length && tick < 20 && <g key={count}><path d={lines[count - 1].d} fill="none" stroke={lines[count - 1].color} strokeWidth={lines[count - 1].width} strokeLinecap="round" pathLength="1" strokeDasharray="1" strokeDashoffset="1"><animate attributeName="stroke-dashoffset" from="1" to="0" dur=".6s" fill="freeze" /></path><g><animateMotion path={lines[count - 1].d} dur=".6s" fill="freeze" /><path d="M0 0L8 -23L17 -18L0 0Z" fill="#17233F" stroke="white" strokeWidth="2" /></g></g>}
       {stage === 0 && <g transform="translate(275 24)"><rect width="60" height="48" rx="12" fill="#FFD166" /><foreignObject x="18" y="12" width="24" height="24"><Upload size={24} /></foreignObject></g>}
     </svg>
-    <div className="mt-3 grid grid-cols-3 gap-2">{['上传图片', '笔触序列', '跟随绘画'].map((s, i) => <button key={s} onClick={() => setTick([0, 4, 8][i])} aria-pressed={stage === i} className="rounded-xl p-3 text-xs font-bold" style={{ background: stage === i ? '#FFD166' : '#ECEAFE' }}>{s}</button>)}</div>
-    <p className="mt-3 text-xs text-[#536079]">流程示意 · 选好自己的图片，就能开始。</p>
+    <div className="mt-3 grid grid-cols-3 gap-2">{(coCreation ? ['安排素材', '确认想法', '逐笔出现'] : ['上传图片', '笔触序列', '跟随绘画']).map((s, i) => <button key={s} onClick={() => setTick([0, 4, 8][i])} aria-pressed={stage === i} className="rounded-xl p-3 text-xs font-bold" style={{ background: stage === i ? '#FFD166' : '#ECEAFE' }}>{s}</button>)}</div>
+    <p className="mt-3 text-xs text-[#536079]">{coCreation ? '共创流程示意 · 实际绘制由照片与所选素材计算。' : '流程示意 · 选好自己的图片，就能开始。'}</p>
   </div>;
 }

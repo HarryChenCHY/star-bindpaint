@@ -1,0 +1,14 @@
+.scene-route-content { display: contents; }
+.star-scene { position: fixed; inset: 0; z-index: 10000; background: #141414; color: #f5f5f5; isolation: isolate; overflow: hidden; }
+.scene-art { display: block; width: 100%; height: 100%; }
+.scene-skip { position: absolute; z-index: 2; right: max(20px,env(safe-area-inset-right)); bottom: max(16px,env(safe-area-inset-bottom)); min-height: 44px; padding: 0 16px; border: 0; border-radius: 6px; background: #282828; color: #ddd; font: inherit; font-size: 12px; cursor: pointer; }
+.scene-skip:hover { background: #333; color: #fff; }
+.scene-skip:focus-visible { outline: 2px solid #c69aff; outline-offset: 3px; }
+.scene-caption { position: absolute; bottom: max(92px,15vh); left: 20px; right: 20px; text-align: center; pointer-events: none; }
+.scene-line { overflow: hidden; }
+.scene-verse { margin: 0; font-size: clamp(14px,1.5vw,20px); line-height: 1.8; font-weight: 400; letter-spacing: .02em; }
+.scene-line:last-child:not(:first-child) { margin-top: 12px; }
+.scene-line:last-child:not(:first-child) .scene-verse { font-weight: 500; }
+.scene-wait { position: absolute; left: 20px; right: 20px; bottom: 72px; display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: center; font-size: 14px; }
+.scene-wait a { color: #c69aff; text-decoration: underline; text-underline-offset: 4px; padding: 12px; }
+@media(max-height:540px) { .scene-caption { bottom: 56px; }.scene-verse { font-size: 13px; line-height: 1.5; }.scene-line:last-child:not(:first-child) { margin-top: 4px; } }

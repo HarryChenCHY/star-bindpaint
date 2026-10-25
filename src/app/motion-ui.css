@@ -1,0 +1,87 @@
+/* App motion: CSS owns controls/panels; GSAP owns SVG groups and the explicit star/moon route transitions. */
+.night-ui {
+  --st-ease-enter: cubic-bezier(.22,1,.36,1);
+  --st-ease-move: cubic-bezier(.25,1,.5,1);
+  position: relative;
+  isolation: isolate;
+}
+.star-field { position: absolute; top: 0; left: 0; right: 0; height: min(840px,100dvh); overflow: hidden; pointer-events: none; z-index: -1; }
+.star-field svg { display: block; width: 100%; height: 100%; }
+.star-orbits { color: #a487dc; opacity: .12; }
+.star-dust { color: #ededed; opacity: .22; }
+.star-violet { color: #ac80ff; }
+.star-white { color: #ededed; }
+.star-glyph { opacity: .24; transform-box: fill-box; transform-origin: center; }
+.star-field[data-quiet=true] { opacity: .45; }
+.night-ui[data-ui-motion] :is(.star-workspace,.night-page,.intro-page,.studio-page) { background: transparent; }
+
+.night-ui :is(.night-primary,.night-secondary,.night-danger,.night-header button,.star-workspace nav button,.studio-tool-buttons button,.studio-panel-heading button,.creation-actions button,.studio-choices button,.material-categories button,.material-favorite,.creation-playbar button,.night-tabs button) {
+  transition: transform 140ms var(--st-ease-enter), background-color 140ms ease, color 140ms ease, opacity 140ms ease;
+}
+.night-ui :is(.night-primary,.night-secondary,.night-danger,.night-header button,.star-workspace nav button,.studio-tool-buttons button,.studio-panel-heading button,.creation-actions button,.studio-choices button,.material-categories button,.material-favorite,.creation-playbar button,.night-tabs button):active:not(:disabled) {
+  transform: scale(.97);
+  transition-duration: 0ms;
+  opacity: 1;
+}
+@media(hover:hover) and (pointer:fine) {
+  .night-ui :is(.night-primary,.night-secondary):hover:not(:disabled) { transform: translateY(-1px); }
+  .night-ui .star-workspace header a:first-child svg { transition: transform 200ms var(--st-ease-enter); }
+  .night-ui .star-workspace header a:first-child:hover svg { transform: rotate(12deg); }
+}
+.night-ui .material-favorite[aria-pressed=true] svg { animation: star-confirm 260ms var(--st-ease-enter); }
+@keyframes star-confirm { 0% { transform: scale(.8) rotate(-12deg); } 65% { transform: scale(1.18) rotate(6deg); } 100% { transform: scale(1) rotate(0); } }
+.motion-swap { animation: state-fade 140ms ease-out; }
+@keyframes state-fade { from { opacity: .65; } to { opacity: 1; } }
+
+/* Retain panel contents on close, but make them inert immediately. */
+.night-ui .studio-page .studio-panel {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  transform-origin: top left;
+  transition: opacity 160ms var(--st-ease-enter), transform 160ms var(--st-ease-enter), display 160ms allow-discrete;
+}
+.night-ui .studio-page .studio-workspace:is([data-panel=save],[data-panel=reference],[data-panel=expression]) .studio-panel { transform-origin: top right; }
+.night-ui .studio-page .studio-panel[hidden] { display: none; opacity: 0; transform: scale(.98); pointer-events: none; }
+@starting-style {
+  .night-ui .studio-page .studio-panel:not([hidden]) { opacity: 0; transform: scale(.98); }
+}
+
+/* Native dialog keeps Escape, focus trapping and focus restoration. */
+.night-ui .motion-dialog {
+  opacity: 0;
+  transform: translateY(8px) scale(.98);
+  transition: opacity 200ms var(--st-ease-enter), transform 200ms var(--st-ease-enter), display 200ms allow-discrete, overlay 200ms allow-discrete;
+}
+.night-ui .motion-dialog[open] { opacity: 1; transform: translateY(0) scale(1); }
+.night-ui .motion-dialog:not([open]) { transition-duration: 160ms; pointer-events: none; }
+.night-ui .motion-dialog::backdrop {
+  opacity: 0;
+  transition: opacity 200ms var(--st-ease-enter), display 200ms allow-discrete, overlay 200ms allow-discrete;
+}
+.night-ui .motion-dialog[open]::backdrop { opacity: 1; }
+.night-ui .motion-dialog:not([open])::backdrop { transition-duration: 160ms; }
+@starting-style {
+  .night-ui .motion-dialog[open] { opacity: 0; transform: translateY(8px) scale(.98); }
+  .night-ui .motion-dialog[open]::backdrop { opacity: 0; }
+}
+@media(max-width:680px) { .star-field { opacity: .7; } .star-field[data-quiet=true] { opacity: .3; } }
+
+/* OS preference and in-app setting both disable spatial/ambient motion. */
+.night-ui[data-ui-motion=reduced] :is(.motion-swap,.material-favorite svg,.studio-panel-scroll > div) { animation: none; }
+.night-ui[data-ui-motion=reduced] :is(button,a,.studio-panel,.motion-dialog) { transition-duration: 0ms; }
+.night-ui[data-ui-motion=reduced] :is(button,a,.studio-panel,.motion-dialog):not(.material-move):not(.material-handle) { transform: none; }
+.night-ui[data-ui-motion=reduced] .motion-dialog::backdrop { transition-duration: 0ms; }
+@media(prefers-reduced-motion:reduce) {
+  .night-ui :is(.motion-swap,.material-favorite svg,.studio-panel-scroll > div) { animation: none; }
+  .night-ui :is(button,a,.studio-panel,.motion-dialog) { transition-duration: 0ms; }
+  .night-ui .motion-dialog::backdrop { transition-duration: 0ms; }
+}
+
+.night-ui[data-ui-motion=reduced] .star-workspace header a:first-child svg { transform: none; transition-duration: 0ms; }
+
+.motion-play-icon { display: inline-grid; width: 17px; height: 17px; }
+.motion-play-icon svg { grid-area: 1/1; transition: opacity 120ms ease-out, transform 140ms var(--st-ease-enter); }
+.motion-play-icon[data-playing=false] .motion-pause,.motion-play-icon[data-playing=true] .motion-play { opacity: 0; transform: scale(.8); }
+.motion-play-icon[data-playing=false] .motion-play,.motion-play-icon[data-playing=true] .motion-pause { opacity: 1; transform: scale(1); }
+.night-ui[data-ui-motion=reduced] .motion-play-icon svg { transition: none; }
+@media(prefers-reduced-motion:reduce) { .motion-play-icon svg { transition: none; } }
