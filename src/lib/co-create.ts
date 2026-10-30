@@ -5,7 +5,14 @@ export const CO_CREATE_MATERIALS = [
   { id: 'cloud', label: '云朵', src: '/materials/cloud.svg', ratio: 1.4, color: '#E8F2FF' },
   { id: 'sun', label: '太阳', src: '/materials/sun.svg', ratio: 1, color: '#FFF2C5' },
 ] as const;
-export type Material = typeof CO_CREATE_MATERIALS[number];
+export interface Material {
+  id: string;
+  label: string;
+  src: string;
+  ratio: number;
+  color: string;
+  kind?: 'uploaded';
+}
 export interface MaterialPlacement {
   material: Material;
   x: number;

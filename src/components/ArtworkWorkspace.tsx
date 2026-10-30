@@ -127,7 +127,7 @@ export default function ArtworkWorkspace({ gallery = false }: { gallery?: boolea
         </div> : <div className={styles.empty}>
           <div className={styles.emptyArt} aria-hidden="true"><Brush size={35} strokeWidth={1.2} /></div>
           <h2>{query ? '没有找到这幅作品' : works.length ? '这里还没有作品' : '从一幅新作品开始'}</h2>
-          <p>{query ? '试试其他名字，或清空搜索。' : '用一张照片开始共创，或打开自由画布。'}</p>
+          <p>{query ? '试试其他名字，或清空搜索。' : '从照片或素材开始共创，也可以打开自由画布。'}</p>
           {query ? <button type="button" className={styles.emptyButton} onClick={() => setQuery('')}>清空搜索</button>
             : <Link href="/create" onClick={openCreation} className={styles.emptyButton}><Plus size={17} />新建作品</Link>}
         </div>}

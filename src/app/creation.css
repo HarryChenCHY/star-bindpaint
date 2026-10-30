@@ -314,4 +314,37 @@
 .night-ui .studio-page .material-empty button{border:0;background:var(--st-raised);color:var(--st-text);border-radius:var(--st-radius-control)}
 .night-ui .studio-page .studio-panel .creation-card .creation-primary:hover:not(:disabled){background:var(--st-primary-hover);color:var(--st-on-primary)}
 .night-ui .studio-page .creation-completion{background:var(--st-glass);backdrop-filter:var(--st-glass-blur);-webkit-backdrop-filter:var(--st-glass-blur);color:var(--st-text);border:0;border-radius:var(--st-radius-xl);box-shadow:0 16px 48px #0006}
+
+/* 触控素材必须覆盖全局按钮的 manipulation，避免手势被页面滚动接管。 */
+.night-ui .studio-page .co-canvas-wrap{overflow:visible}
+.night-ui .studio-page .material-layout{z-index:4}
+.night-ui .studio-page .material-instance{z-index:1;touch-action:none;user-select:none;-webkit-user-select:none}
+.night-ui .studio-page .material-instance[data-selected=true]{z-index:2}
+.night-ui .studio-page :is(.material-move,.material-handle){touch-action:none;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+.night-ui .studio-page .material-move img{-webkit-user-drag:none}
+.night-ui .studio-page .material-delete{left:100%;top:0;color:#a32349;cursor:pointer}
+.night-ui .studio-page .material-duplicate{left:0;top:0;color:var(--st-primary);cursor:pointer}
+.night-ui .studio-page :is(.material-delete,.material-duplicate)::after{display:none}
+.night-ui .studio-page :is(.material-delete,.material-duplicate)::before{content:'';position:absolute;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 5px #0003}
+.night-ui .studio-page :is(.material-delete,.material-duplicate) svg{position:relative;z-index:1}
+.studio-workspace[data-panel=materials] .studio-panel{height:min(560px,calc(100dvh - 180px))}
+.studio-workspace[data-panel=materials] .studio-panel-scroll{display:flex;flex:1;overflow:hidden;min-height:0}
+.studio-workspace[data-panel=materials] .studio-panel-scroll>div:not([hidden]){flex:1;min-height:0;min-width:0}
+.studio-page .material-library{height:100%;min-height:0;overflow:hidden}
+.studio-page .material-categories,.studio-page .material-library-body{overflow-y:auto;min-height:0;overscroll-behavior:contain;scrollbar-width:thin}
+.studio-page .material-categories{align-self:stretch}
+.studio-page .material-categories button{flex-shrink:0}
+.material-import-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.night-ui .studio-page .material-import-actions button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;flex:1;padding:8px;background:var(--st-raised);color:var(--st-text);border:0;border-radius:var(--st-radius-control);font-size:12px;white-space:nowrap}
+.night-ui .studio-page .material-import-actions button:hover:not(:disabled){background:var(--st-hover)}
+.studio-page .material-library-add>span{overflow-wrap:anywhere;gap:8px}
+.night-ui .studio-exit-dialog{position:fixed;inset:0;margin:auto;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 48px);overflow:auto;padding:24px;border:0;border-radius:var(--st-radius-xl);background:var(--st-glass);backdrop-filter:var(--st-glass-blur);-webkit-backdrop-filter:var(--st-glass-blur);color:var(--st-text);box-shadow:0 16px 48px #0006}
+.studio-exit-dialog::backdrop{background:#0009}
+.studio-exit-dialog h2{font-size:20px;margin:16px 0 12px}
+.studio-exit-dialog p{font-size:14px;line-height:1.8;color:var(--st-muted)}
+.studio-exit-dialog .creation-note{font-size:12px;margin-top:12px}
+.studio-exit-actions{display:flex;flex-direction:column;gap:8px;margin-top:24px}
+.studio-exit-actions button{width:100%;min-height:44px}
+@media(pointer:coarse){.night-ui .studio-page .material-handle{width:44px;height:44px}.night-ui .studio-page .material-rotate{transform:translate(-50%,4px)}}
+@media(max-width:640px){.studio-workspace[data-panel=materials] .studio-panel{height:min(560px,calc(100dvh - 165px))}.night-ui .studio-page .material-categories button{min-height:44px;line-height:1.4}.night-ui .studio-page .material-categories button span{overflow-wrap:anywhere}.studio-exit-dialog{padding:20px}}
 .night-ui .studio-page .creation-completion .creation-card{background:transparent;color:inherit}

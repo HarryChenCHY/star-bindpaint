@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Download, ImagePlus, Check } from 'lucide-react';
 import ArtworkCredit from './ArtworkCredit';
 import { saveToGallery } from '@/lib/gallery-store';
+import { useStudioSession } from './StudioSession';
 
 export default function ArtworkSave({ getCanvas, mode, disabled = false, strokeCount = 0 }: {
   getCanvas: () => HTMLCanvasElement | null;
@@ -11,10 +12,12 @@ export default function ArtworkSave({ getCanvas, mode, disabled = false, strokeC
   disabled?: boolean;
   strokeCount?: number;
 }) {
+  const session = useStudioSession();
   const [title, setTitle] = useState('今天的小小创作');
   const [author, setAuthor] = useState('');
   const [notice, setNotice] = useState('');
   function save(download: boolean) {
+    session.pause();
     const original = getCanvas();
     if (!original) return;
     try {
@@ -30,6 +33,7 @@ export default function ArtworkSave({ getCanvas, mode, disabled = false, strokeC
         setNotice('图片已准备下载。');
       } else {
         saveToGallery({ title: name, author: author.trim() || undefined, imageDataUrl, mode, strokeCount, userStrokeCount: mode === 'co-create' ? 0 : strokeCount });
+        session.markSaved();
         setNotice('已保存到当前浏览器的「我的星图」。');
       }
     } catch { setNotice('保存失败，浏览器空间可能不足，请尝试下载图片。'); }

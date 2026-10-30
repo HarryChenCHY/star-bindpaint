@@ -6,12 +6,14 @@ import PaintCanvas from '@/components/PaintCanvas';
 import StudioWorkspace from './StudioWorkspace';
 import ArtworkSave from './ArtworkSave';
 import type { StrokeDrawData } from '@/lib/stroke-engine';
+import { useStudioSession } from './StudioSession';
 
 const EMPTY: StrokeDrawData[] = [];
 type CanvasAPI = { commitUserToBase: () => void; getBaseCanvas: () => HTMLCanvasElement | null; saveUndoSnapshot: () => void; undo: () => void; clearAll: () => void };
 function api(): CanvasAPI | undefined { return (window as unknown as { __paintCanvas?: CanvasAPI }).__paintCanvas; }
 
 export default function FreeDrawingStudio({ onReset }: { onReset: () => void }) {
+  const session = useStudioSession();
   const [color, setColor] = useState<[number, number, number]>([.1, .3, .7]);
   const [width, setWidth] = useState(6);
   const [saturation, setSaturation] = useState(1);
@@ -20,8 +22,8 @@ export default function FreeDrawingStudio({ onReset }: { onReset: () => void }) 
   const [spray, setSpray] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [drawn, setDrawn] = useState(0);
-  const commit = useCallback(() => { api()?.commitUserToBase(); setDrawn(n => n + 1); }, []);
-  const begin = useCallback(() => { api()?.saveUndoSnapshot(); }, []);
+  const commit = useCallback(() => { api()?.commitUserToBase(); session.markChanged(); setDrawn(n => n + 1); }, [session]);
+  const begin = useCallback(() => { api()?.saveUndoSnapshot(); session.markChanged(); }, [session]);
   const getCanvas = useCallback(() => api()?.getBaseCanvas() ?? null, []);
 
   return <div className="free-studio"><StudioWorkspace onReset={onReset} state={eraser ? '橡皮擦' : spray ? '喷绘' : '自由绘画'} panels={[
@@ -34,7 +36,7 @@ export default function FreeDrawingStudio({ onReset }: { onReset: () => void }) 
       <label className="creation-label">饱和度<input aria-label="画笔饱和度" type="range" min={0} max={1} step={0.01} value={saturation} onChange={e => setSaturation(Number(e.target.value))} /></label>
       <label className="creation-label">明度<input aria-label="画笔明度" type="range" min={0} max={1} step={0.01} value={value} onChange={e => setValue(Number(e.target.value))} /></label>
     </section> },
-    { id: 'history', title: '编辑', icon: Undo2, content: <section className="creation-card"><h2>编辑画布</h2><div className="creation-actions"><button disabled={!canUndo} onClick={() => api()?.undo()}>撤销上一笔</button><button onClick={() => { api()?.clearAll(); setDrawn(0); }}>清空画布</button></div></section> },
+    { id: 'history', title: '编辑', icon: Undo2, content: <section className="creation-card"><h2>编辑画布</h2><div className="creation-actions"><button disabled={!canUndo} onClick={() => { api()?.undo(); session.markChanged(); }}>撤销上一笔</button><button onClick={() => { api()?.clearAll(); session.markChanged(); setDrawn(0); }}>清空画布</button></div></section> },
     { id: 'save', title: '保存', icon: Save, content: <ArtworkSave getCanvas={getCanvas} mode="free" strokeCount={drawn} /> },
   ]}>
     <section className="creation-main">

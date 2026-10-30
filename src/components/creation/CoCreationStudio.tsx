@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LoaderCircle, Pause, Play, Shapes, Move, Palette, Timer, Image, Save, Gauge, Zap, ChevronsRight, Sun, Flame, Flower2, Sparkles, Sunset, Sparkle, Moon } from 'lucide-react';
 import { drawExpressiveStroke, DEFAULT_EXPRESSION, type ExpressionSettings, type ExpressiveStroke } from '@/lib/expressive-painter';
-import { CO_CREATE_MATERIALS, loadLocalImage, readCanvas, whiteCanvas } from '@/lib/co-create';
+import { CO_CREATE_MATERIALS, loadLocalImage, readCanvas, whiteCanvas, type Material } from '@/lib/co-create';
 import ArtworkSave from './ArtworkSave';
 import StudioWorkspace from './StudioWorkspace';
 import useMaterialLayout from './useMaterialLayout';
@@ -12,12 +12,14 @@ import { startAnimationLoop } from '@/lib/animation-loop';
 import MaterialLibrary from './MaterialLibrary';
 import MaterialConfirmation from './MaterialConfirmation';
 import ReferencePreview from '@/components/ReferencePreview';
+import { useStudioSession } from './StudioSession';
 
 const W = 640, H = 480;
 const PAINTING_PHASES = ['正在铺出整体轮廓与大色块', '正在塑造中等形体与色彩关系', '正在完善局部结构', '正在做少量强调与收束'];
 type WorkerMessage = { type: 'batch'; strokes: ExpressiveStroke[] } | { type: 'progress'; progress: { completed: number; total: number } } | { type: 'done' } | { type: 'error'; message: string };
 
 export default function CoCreationStudio({ source, onReset, autoStart = true }: { source: string | null; onReset: () => void; autoStart?: boolean }) {
+  const session = useStudioSession();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const targetRef = useRef<HTMLCanvasElement | null>(null);
   const workerRef = useRef<Worker | null>(null);
@@ -46,6 +48,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
   const [hasPending, setHasPending] = useState(false);
   const [error, setError] = useState('');
   const [confirmed, setConfirmed] = useState<string[]>([]);
+  const [uploads, setUploads] = useState<Material[]>([]);
   const [expression, setExpression] = useState<ExpressionSettings>({ ...DEFAULT_EXPRESSION });
   const [appliedExpression, setAppliedExpression] = useState<ExpressionSettings>({ ...DEFAULT_EXPRESSION });
   const [drawn, setDrawn] = useState(0);
@@ -67,6 +70,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
     playingRef.current = false; setPlaying(false);
     setStatus('已暂停。可以继续绘制，也可以加入新的素材。');
   }, [setStatus]);
+  useEffect(() => session.registerPause(pause), [session, pause]);
 
   const plan = useCallback((priority?: { x: number; y: number; width: number; height: number }) => {
     const canvas = canvasRef.current, target = targetRef.current;
@@ -130,7 +134,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
         readyRef.current = true; setReady(true);
         if (source && autoStart) plan();
         else if (source) setStatus('画布已准备好。');
-        else setStatus('从一朵花、一片云或一轮太阳开始。');
+        else setStatus('从素材库添加素材，编排并确认后，笔触会逐步画出你的想法。');
       } catch { if (!cancelled) { setError('底图加载失败，请返回创作入口重新选择。'); setStatus('画布尚未准备好。'); } }
     }
     void initialize();
@@ -184,6 +188,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
           if (next.planning && fullPaintingPendingRef.current) fullPaintingPassRef.current = next.planning.pass;
         }
         if (indexRef.current > before) {
+          session.markChanged();
           const completed = indexRef.current - before;
           setDrawn(n => n + completed);
           if (brushRef.current && brushTipRef.current) {
@@ -216,6 +221,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
           // Restore the same baseline each frame: translucent paint must not accumulate.
           ctx.putImageData(active.base, 0, 0);
           drawExpressiveStroke(ctx, sample.stroke);
+          session.markChanged();
           drawExpressiveStroke(texture, sample.stroke, true);
           tip = sample.tip; angle = sample.angle;
         }
@@ -240,7 +246,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
       }
     }
     return startAnimationLoop(tick);
-  }, [speed]);
+  }, [speed, session]);
 
   function applyExpression() {
     expressionRef.current = { ...expression }; setAppliedExpression({ ...expression });
@@ -272,7 +278,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
       <div className="co-canvas-wrap" onDragOver={e => {
         if (ready && !materials.busy && e.dataTransfer.types.includes('application/x-startrace-material')) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }
       }} onDrop={e => {
-        const material = CO_CREATE_MATERIALS.find(m => m.id === e.dataTransfer.getData('application/x-startrace-material'));
+        const material = [...CO_CREATE_MATERIALS, ...uploads].find(m => m.id === e.dataTransfer.getData('application/x-startrace-material'));
         if (!material || !ready || materials.busy) return;
         e.preventDefault();
         const bounds = canvasRef.current!.getBoundingClientRect();
@@ -308,7 +314,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
       ? <Moon size={15} strokeWidth={1.6} aria-hidden="true" />
       : <Sparkle size={15} strokeWidth={1.6} aria-hidden="true" />
   } panels={[
-    { id: 'materials', title: '素材库', icon: Shapes, content: <MaterialLibrary disabled={!ready || materials.busy} onAdd={(material, variation) => materials.add(material, undefined, variation)} /> },
+    { id: 'materials', title: '素材库', icon: Shapes, content: <MaterialLibrary disabled={!ready || materials.busy} uploads={uploads} onUpload={material => { setUploads(items => [...items, material]); materials.add(material); }} onAdd={(material, variation) => materials.add(material, undefined, variation)} /> },
     { id: 'layout', title: '素材调整', icon: Move, content: <section className="creation-card"><h2>素材布局</h2>{materials.pending ? null : <p className="creation-note">从素材库添加素材，再在画布上调整。</p>}{materials.controls}</section> },
     { id: 'tempo', title: '绘画速度', icon: Timer, content: <section className="creation-card"><h2>绘画速度</h2><div className="studio-choices" role="group" aria-label="绘画速度">{([{ value: 140, label: '默认', icon: Gauge }, { value: 65, label: '快速', icon: ChevronsRight }, { value: 20, label: '极速', icon: Zap }, { value: 0, label: '光速', icon: Sparkles }] as const).map(({ value, label, icon: Icon }) => <button key={value} aria-pressed={speed === value} onClick={() => setSpeed(value)}><Icon size={20} />{label}</button>)}</div><p className="creation-note">默认适合慢慢观看；光速在计算完成后约 8 秒绘完（暂停时间不计）。已绘制 {drawn} 笔。</p></section> },
     { id: 'expression', title: '表现', icon: Palette, content: <section className="creation-card co-expression"><h2>画面表现</h2>
