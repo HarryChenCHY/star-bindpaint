@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "text": "SCAIFE M, ROGERS Y. External cognition: How do graphical representations work?[J]. International Journal of Human-Computer Studies, 1996, 45(2): 185–213. DOI: 10.1006/ijhc.1996.0048.",
+    "url": "https://www.sussex.ac.uk/informatics/cogslib/reports/csrp/csrp335.pdf"
+  },
+  {
+    "id": 2,
+    "text": "SCHÖN D A, WIGGINS G. Kinds of seeing and their functions in designing[J]. Design Studies, 1992, 13(2): 135–156. DOI: 10.1016/0142-694X(92)90268-F.",
+    "url": "https://doi.org/10.1016/0142-694X(92)90268-F"
+  },
+  {
+    "id": 3,
+    "text": "RYAN R M, DECI E L. Self-determination theory and the facilitation of intrinsic motivation, social development, and well-being[J]. American Psychologist, 2000, 55(1): 68–78. DOI: 10.1037/0003-066X.55.1.68.",
+    "url": "https://selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_SDT.pdf"
+  },
+  {
+    "id": 4,
+    "text": "HERTZMANN A. Painterly rendering with curved brush strokes of multiple sizes[C]//Proceedings of SIGGRAPH 98. New York: ACM, 1998: 453–460. DOI: 10.1145/280814.280951.",
+    "url": "https://mrl.cs.nyu.edu/publications/painterly98/"
+  },
+  {
+    "id": 5,
+    "text": "LEE Y J, ZITNICK C L, COHEN M F. ShadowDraw: Real-time user guidance for freehand drawing[J]. ACM Transactions on Graphics, 2011, 30(4): 27:1–27:10. DOI: 10.1145/2010324.1964922.",
+    "url": "https://www.microsoft.com/en-us/research/publication/shadowdraw-real-time-user-guidance-for-freehand-drawing/"
+  },
+  {
+    "id": 6,
+    "text": "CHEN T, CHENG M M, TAN P, et al. Sketch2Photo: Internet image montage[J]. ACM Transactions on Graphics, 2009, 28(5): 124:1–124:10. DOI: 10.1145/1618452.1618470.",
+    "url": "https://cg.cs.tsinghua.edu.cn/papers/SiggraphAsia_2009_sketch2photo.pdf"
+  },
+  {
+    "id": 7,
+    "text": "ZIMMERMAN J, FORLIZZI J, EVENSON S. Research through design as a method for interaction design research in HCI[C]//Proceedings of CHI 2007. New York: ACM, 2007: 493–502. DOI: 10.1145/1240624.1240704.",
+    "url": "https://doi.org/10.1145/1240624.1240704"
+  },
+  {
+    "id": 8,
+    "text": "CENTER FOR SELF-DETERMINATION THEORY. Intrinsic Motivation Inventory (IMI)[EB/OL]. [2026-10-27]. https://selfdeterminationtheory.org/intrinsic-motivation-inventory/.",
+    "url": "https://selfdeterminationtheory.org/intrinsic-motivation-inventory/"
+  },
+  {
+    "id": 9,
+    "text": "BROOKE J. SUS: A quick and dirty usability scale[M]//JORDAN P W, THOMAS B, WEERDMEESTER B A, et al. Usability evaluation in industry. London: Taylor & Francis, 1996: 189–194.",
+    "url": "https://digital.ahrq.gov/sites/default/files/docs/survey/systemusabilityscale%2528sus%2529_comp%255B1%255D.pdf"
+  },
+  {
+    "id": 10,
+    "text": "陈奕扬. 促进音乐要素理解的增强现实应用交互设计[D]. 上海: 上海交通大学, 2023.",
+    "url": "local"
+  }
+]

@@ -1,0 +1,26 @@
+import { createRequire } from 'node:module';
+import { readFile, writeFile } from 'node:fs/promises';
+import { performance } from 'node:perf_hooks';
+import { planExpressivePainting, drawExpressiveStroke } from '/Users/harrychen/Desktop/startrace/src/lib/expressive-painter.ts';
+const req=createRequire('/Users/harrychen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json');
+const { createCanvas,loadImage }=req('@napi-rs/canvas');
+const out='/tmp/startrace-paint-order-20261030',root='/Users/harrychen/Desktop/startrace';
+const base=createCanvas(640,480),ctx=base.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,640,480);
+const source=createCanvas(640,480),sc=source.getContext('2d');sc.fillStyle='#fff';sc.fillRect(0,0,640,480);
+const photo=await loadImage(root+'/public/masterworks/monet/impression_sunrise.jpg');const scale=Math.min(640/photo.width,480/photo.height);sc.drawImage(photo,(640-photo.width*scale)/2,(480-photo.height*scale)/2,photo.width*scale,photo.height*scale);
+const initial=JSON.parse(await readFile(out+'/coherent-impression_sunrise-strokes.json','utf8'));
+for(const s of initial) drawExpressiveStroke(ctx,s);
+const prior=ctx.getImageData(0,0,640,480),r={x:390,y:265,width:130,height:130};
+const material=await loadImage(root+'/public/materials/flower.svg');sc.drawImage(material,r.x,r.y,r.width,r.height);
+const begin=performance.now();const strokes=await planExpressivePainting(sc.getImageData(0,0,640,480),prior,{abstraction:60,mood:'original'},{priority:r,origin:initial.at(-1).points.at(-1)});const elapsed=performance.now()-begin;
+const strip=createCanvas(640*3,480),st=strip.getContext('2d');st.drawImage(base,0,0);let index=0;
+for(const pct of [.5,1]){while(index<Math.round(strokes.length*pct))drawExpressiveStroke(ctx,strokes[index++]);st.drawImage(base,pct===.5?640:1280,0);}
+const after=ctx.getImageData(0,0,640,480);let changedFarPixels=0;
+for(let y=0;y<480;y++)for(let x=0;x<640;x++){
+ if(x>=r.x-50&&x<r.x+r.width+50&&y>=r.y-50&&y<r.y+r.height+50)continue;
+ const i=(y*640+x)*4;if([0,1,2].some(c=>after.data[i+c]!==prior.data[i+c]))changedFarPixels++;
+}
+if(changedFarPixels)throw Error('Continuation modified distant completed pixels: '+changedFarPixels);
+await writeFile(out+'/continuation.png',strip.toBuffer('image/png'));
+await writeFile(out+'/continuation-metrics.json',JSON.stringify({elapsed,strokes:strokes.length,changedFarPixels,passCounts:[0,1,2,3].map(p=>strokes.filter(s=>s.planning?.pass===p).length)},null,2));
+console.log(JSON.stringify({elapsed,strokes:strokes.length,changedFarPixels}));

@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-30",
+  "canvas": {
+    "width": 640,
+    "height": 480
+  },
+  "attemptBudget": 2000,
+  "settings": {
+    "abstraction": 60,
+    "mood": "original"
+  },
+  "notes": [
+    "三个仓库既有图像的离线工程比较，非用户研究。",
+    "meanTravel和p95按画布对角线归一化；longJumps为距离超过对角线四分之一的比例。",
+    "elapsed单位为毫秒，为本机单次规划记录；不是浏览器或移动性能结论。",
+    "rgbRmse为相对输入图的终图RGB像素误差，不能用于判断艺术质量或个人表达。",
+    "进度图按已接受笔触计数，不表示相同播放时长或精确的阶段边界。"
+  ],
+  "records": [
+    {
+      "image": "impression_sunrise",
+      "baseline": {
+        "name": "baseline",
+        "key": "impression_sunrise",
+        "elapsed": 10312.790208,
+        "strokes": 1240,
+        "meanTravel": 0.3839866818832858,
+        "p95": 0.7473361676699681,
+        "longJumps": 0.7070217917675545,
+        "rgbRmse": 11.982086283696441
+      },
+      "coherent": {
+        "name": "coherent",
+        "key": "impression_sunrise",
+        "elapsed": 9541.610708999999,
+        "strokes": 1340,
+        "meanTravel": 0.09439983657680964,
+        "p95": 0.22442042372455584,
+        "longJumps": 0.040328603435399554,
+        "rgbRmse": 12.080624067674435
+      },
+      "meanTravelReduction": 0.754158565828846
+    },
+    {
+      "image": "self_portrait",
+      "baseline": {
+        "name": "baseline",
+        "key": "self_portrait",
+        "elapsed": 6208.412,
+        "strokes": 1185,
+        "meanTravel": 0.2838550830236111,
+        "p95": 0.5190195083038787,
+        "longJumps": 0.5777027027027027,
+        "rgbRmse": 14.766917638895228
+      },
+      "coherent": {
+        "name": "coherent",
+        "key": "self_portrait",
+        "elapsed": 4974.3270840000005,
+        "strokes": 1427,
+        "meanTravel": 0.0863517038750888,
+        "p95": 0.20381629145287253,
+        "longJumps": 0.030855539971949508,
+        "rgbRmse": 14.66248982458294
+      },
+      "meanTravelReduction": 0.6957894748430273
+    },
+    {
+      "image": "flower_still_life",
+      "baseline": {
+        "name": "baseline",
+        "key": "flower_still_life",
+        "elapsed": 5807.153416999998,
+        "strokes": 1543,
+        "meanTravel": 0.3393283822066686,
+        "p95": 0.6430256597987467,
+        "longJumps": 0.6504539559014267,
+        "rgbRmse": 18.97028229212363
+      },
+      "coherent": {
+        "name": "coherent",
+        "key": "flower_still_life",
+        "elapsed": 7857.995416,
+        "strokes": 1384,
+        "meanTravel": 0.09199021318816311,
+        "p95": 0.22531592083977017,
+        "longJumps": 0.038322487346348515,
+        "rgbRmse": 19.350181516962234
+      },
+      "meanTravelReduction": 0.7289050429853631
+    }
+  ]
+}

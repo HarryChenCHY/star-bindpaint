@@ -5,6 +5,8 @@ type Request = {
   target: ImageSource;
   current: ImageSource;
   priority?: { x: number; y: number; width: number; height: number };
+  origin?: { x: number; y: number };
+  resumePass?: number;
   settings?: ExpressionSettings;
 };
 self.onmessage = async ({ data }: MessageEvent<Request>) => {
@@ -12,6 +14,8 @@ self.onmessage = async ({ data }: MessageEvent<Request>) => {
     await planExpressivePainting(data.target, data.current, data.settings ?? DEFAULT_EXPRESSION, {
         budget: CO_CREATION_BUDGET,
         priority: data.priority,
+        origin: data.origin,
+        resumePass: data.resumePass,
         onProgress: progress => self.postMessage({ type: 'progress', progress }),
         onBatch: strokes => self.postMessage({ type: 'batch', strokes }),
       });

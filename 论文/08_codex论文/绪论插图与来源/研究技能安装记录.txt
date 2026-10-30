@@ -1,0 +1,17 @@
+安装日期：2026-10-26
+
+craft-of-research
+来源：https://github.com/ctfysh/craft-of-research
+安装目录：/Users/harrychen/.codex/skills/craft-of-research
+
+academic-research-skills
+来源：https://github.com/Imbad0202/academic-research-skills
+源代码目录：/Users/harrychen/.codex/skill-sources/academic-research-skills
+固定提交：1ec249df98728682dfbbdfb940a658338bfd6f80
+已安装技能：academic-paper、deep-research、academic-paper-reviewer、academic-pipeline、sr-screener。
+安装位置：/Users/harrychen/.codex/skills/各技能名
+共享资源与脚本链接到保留的完整源码，已保留LICENSE。这里只安装了技能及资源，没有配置外部模型、密钥或插件钩子。
+
+Attribution: Based on Academic Research Skills by Cheng-I Wu
+https://github.com/Imbad0202/academic-research-skills
+License: CC BY-NC 4.0；以源码仓库LICENSE为准。

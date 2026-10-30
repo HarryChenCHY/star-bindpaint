@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { strokeFrame, bristleFade, lightSpeedCount } from '../../src/lib/stroke-playback';
+import { strokeFrame, bristleFade, lightSpeedCount, brushTravelDuration, brushTravelFrame } from '../../src/lib/stroke-playback';
 import type { ExpressiveStroke } from '../../src/lib/expressive-painter';
 
 const stroke: ExpressiveStroke = { points: [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 30 }], radii: [2, 4, 10], color: [.3, .4, .5], opacity: .6 };
@@ -38,4 +38,22 @@ test('duplicate path points do not cause non-finite brush positions', () => {
     assert.deepEqual(strokeFrame(duplicate, progress).tip, { x: 3, y: 4 });
     assert.ok(Number.isFinite(strokeFrame(duplicate, progress).angle));
   }
+});
+
+test('pen travel grows with distance, respects speed and stays bounded', () => {
+  assert.ok(brushTravelDuration(12, 140) < brushTravelDuration(500, 140));
+  assert.ok(brushTravelDuration(500, 20) < brushTravelDuration(500, 140));
+  assert.ok(brushTravelDuration(0, 140) >= 20);
+  assert.ok(brushTravelDuration(100000, 140) <= 320);
+});
+
+test('lifted brush connects exact endpoints and takes the short turn across angle wraparound', () => {
+  const from = { x: 5, y: 10 }, to = { x: 105, y: 50 };
+  assert.deepEqual(brushTravelFrame(from, to, 170, -170, 0).tip, from);
+  assert.deepEqual(brushTravelFrame(from, to, 170, -170, 1).tip, to);
+  const middle = brushTravelFrame(from, to, 170, -170, .5);
+  assert.deepEqual(middle.tip, { x: 55, y: 30 });
+  assert.equal(middle.angle, 180);
+  assert.equal(middle.lift, 1);
+  assert.ok(Math.abs(brushTravelFrame(from, to, 170, -170, 1).lift) < 1e-12);
 });

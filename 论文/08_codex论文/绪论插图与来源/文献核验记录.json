@@ -1,0 +1,225 @@
+[
+  {
+    "id": "shneiderman2007",
+    "title": "Creativity Support Tools: Accelerating Discovery and Innovation",
+    "authors": [
+      "Ben Shneiderman"
+    ],
+    "year": 2007,
+    "venue": "Communications of the ACM, 50(12):20–32",
+    "doi": "10.1145/1323688.1323689",
+    "url": "https://www.cs.umd.edu/~ben/papers/Shneiderman2007Creativity.pdf",
+    "version": "作者站点正式论文 PDF；出版者 DOI、卷期页码核验",
+    "locator": "pp.20–22，创造力支持工具的研究对象与评价问题；全文后续关于工具设计的讨论",
+    "supported_claim": "创造力支持工具关注帮助使用者探索、形成、修改和表达想法。评价不能仅沿用完成速度等常规生产率指标，还需要考虑开放性创作任务的过程和成果。",
+    "limitations": "属于研究议程与综合讨论，不是本项目工具或特定功能有效性的实证证明。不能仅凭该文宣称素材功能必然提高创造力。",
+    "本文编号": 1
+  },
+  {
+    "id": "shadowdraw2011",
+    "title": "ShadowDraw: Real-Time User Guidance for Freehand Drawing",
+    "authors": [
+      "Yong Jae Lee",
+      "C. Lawrence Zitnick",
+      "Michael F. Cohen"
+    ],
+    "year": 2011,
+    "venue": "ACM Transactions on Graphics, 30(4), Article 27, 1–10",
+    "doi": "10.1145/2010324.1964922",
+    "url": "https://www.microsoft.com/en-us/research/publication/shadowdraw-real-time-user-guidance-for-freehand-drawing/",
+    "version": "研究机构作者版全文 PDF（9页）与正式出版元数据（10页）交叉核验；本次读取摘要、引言及 Figure 1",
+    "locator": "作者 PDF 第1页 Figure 1、Abstract、Introduction；第2页引言结尾明确不主张提高绘画技能或艺术性。原始文件 /tmp/startrace-intro-20261026/ShadowDrawSiggraph11.pdf",
+    "supported_claim": "ShadowDraw 根据当前线条检索并混合图像轮廓，将动态阴影提示置于用户绘制区域，以引导手绘形态和比例；说明绘画辅助可以嵌入执行过程而不只生成最终图片。",
+    "limitations": "作者在第2页明确不主张系统使用户成为更熟练的绘画者或产生更具艺术性的绘画。研究涉及线描与比例引导，尤其适用于具有一定技能但尚不熟练者；不得推广为个人表达、长期学习或普遍创造力改善。",
+    "本文编号": 2
+  },
+  {
+    "id": "haeberli1990",
+    "title": "Paint by Numbers: Abstract Image Representations",
+    "authors": [
+      "Paul Haeberli"
+    ],
+    "year": 1990,
+    "venue": "Proceedings of the 17th Annual Conference on Computer Graphics and Interactive Techniques (SIGGRAPH '90), 207–214",
+    "doi": "10.1145/97879.97902",
+    "url": "https://graphics.stanford.edu/courses/cs248-06/haeberli-paint-by-numbers-sig90.pdf",
+    "version": "正式论文 PDF；会议信息及 DOI 由出版者 Crossref 元数据交叉核验",
+    "locator": "p.207 Abstract / A Simple Painting Technique；pp.208–209 Brush stroke attributes / Figure 2–4",
+    "supported_claim": "画面可表示为有序笔触集合，位置、色彩、大小、方向和形状可独立控制。原始工作已让用户借助鼠标选择性转移图像信息并改变笔触属性，支持同一源图的多种抽象表现。",
+    "limitations": "不得把传统笔触算法概括成只能机械复现、完全没有用户控制。论文未验证绘画初学者的表达实现、长期学习或本系统交互有效性。扫描件页眉显示 Computer Graphics 24(4)，参考文献宜采用已核验会议版，避免混用其他 DOI 与卷期。",
+    "本文编号": 3
+  },
+  {
+    "id": "hertzmann1998",
+    "title": "Painterly Rendering with Curved Brush Strokes of Multiple Sizes",
+    "authors": [
+      "Aaron Hertzmann"
+    ],
+    "year": 1998,
+    "venue": "Proceedings of the 25th Annual Conference on Computer Graphics and Interactive Techniques (SIGGRAPH '98), 453–460",
+    "doi": "10.1145/280814.280951",
+    "url": "https://mrl.cs.nyu.edu/publications/painterly98/",
+    "version": "作者项目页与正式论文对应；DOI 和页码由出版者 Crossref 元数据核验",
+    "locator": "作者项目页 Abstract；全文入口 https://mrl.cs.nyu.edu/publications/painterly98/hertzmann-siggraph98.pdf",
+    "supported_claim": "采用不同尺度的曲线笔触分层组织画面：先大笔触铺色，再在相对参考图仍有明显差异的区域补充小笔触；笔触沿图像梯度的法线方向延伸，并以风格参数组织表现变化。",
+    "limitations": "支撑算法谱系与技术可行性，不直接证明新手创作体验改善；不能声称本文首创曲线笔触、多尺度绘制或风格参数。",
+    "本文编号": 4
+  },
+  {
+    "id": "procreate_manual",
+    "title": "Procreate Handbook: Transform",
+    "authors": [
+      "Procreate"
+    ],
+    "year": null,
+    "venue": "Procreate 官方手册 5.2，访问日期 2026-10-26",
+    "doi": null,
+    "url": "https://help.procreate.com/procreate/handbook/5.2/transform",
+    "version": "明确版本 5.2 官方页面；不将此视为所有后续版本完全相同",
+    "locator": "官方5.2手册Transform页面；正文未引用笔刷库描述。",
+    "supported_claim": "Procreate Transform支持移动、缩放与旋转，作为素材编排直接操作的产品参照。",
+    "limitations": "产品机制的存在不等于对零基础用户有效的实验证据，也不能将官方手册写成学术理论。",
+    "本文编号": 5
+  },
+  {
+    "id": "peng2025",
+    "title": "Exploring Opportunities to Support Novice Visual Artists' Inspiration and Ideation with Generative AI",
+    "authors": [
+      "Cindy Peng",
+      "Alice Qian",
+      "Linghao Jin",
+      "Jieneng Chen",
+      "Evans Xu Han",
+      "Paul Pu Liang",
+      "Hong Shen",
+      "Haiyi Zhu",
+      "Jane Hsieh"
+    ],
+    "year": 2025,
+    "venue": "arXiv:2509.24167v2 [cs.HC]",
+    "doi": "10.48550/arXiv.2509.24167",
+    "url": "https://arxiv.org/abs/2509.24167v2",
+    "version": "2025-09-30 v2 预印本；本次读取摘要，未核验正式发表版本",
+    "locator": "Abstract：13 artists 的访谈；6 个交互原型；13 novice visual artists 的共同设计",
+    "supported_claim": "探索性研究提出新手视觉艺术家的支持需求，包括寻找参考、将参考组合可视化、获得作品反馈，以及面向个人情况的风格与技术学习；可支持从创作过程而不仅从生成结果组织辅助功能。",
+    "limitations": "预印本；需求与共同设计研究，不是已证实提升表达或绘画水平的实验。不要把文中两次 13 人未经核对地相加称 26 个独立参与者；novice visual artists 不等同全部没有美术训练的公众。",
+    "本文编号": 6
+  },
+  {
+    "id": "scaife1996",
+    "title": "External Cognition: How Do Graphical Representations Work?",
+    "authors": [
+      "Mike Scaife",
+      "Yvonne Rogers"
+    ],
+    "year": 1996,
+    "venue": "International Journal of Human-Computer Studies, 45(2):185–213",
+    "doi": "10.1006/ijhc.1996.0048",
+    "url": "https://www.sciencedirect.com/science/article/pii/S1071581996900488",
+    "version": "出版者摘要与作者所在大学存档稿交叉阅读；大学稿 https://www.sussex.ac.uk/informatics/cogslib/reports/csrp/csrp335.pdf（45页，非期刊最终分页）",
+    "locator": "出版者 Abstract；Sussex 存档稿 Summary、Introduction、关于 computational offloading / re-representation / graphical constraining 的讨论",
+    "supported_claim": "理解图形工具需要考察外部表征与内部认知的关系，不能仅凭图形、动画或交互形式更新就推定认知收益。可将素材与布局视为供用户外化、比较和调整想法的表征资源。",
+    "limitations": "后半句是面向本项目的理论推导，需明确不是原论文对素材拼贴系统的实证结论；不能声称所有视觉化均降低认知负荷。",
+    "本文编号": 7
+  },
+  {
+    "id": "cofi2022",
+    "title": "Designing Creative AI Partners with COFI: A Framework for Modeling Interaction in Human-AI Co-Creative Systems",
+    "authors": [
+      "Jeba Rezwana",
+      "Mary Lou Maher"
+    ],
+    "year": 2022,
+    "venue": "arXiv:2204.07666v1 [cs.HC]",
+    "doi": "10.48550/arXiv.2204.07666",
+    "url": "https://arxiv.org/abs/2204.07666v1",
+    "version": "本次实际读取为 2022-04-15 arXiv v1 摘要；出版者元数据确认另有 TOCHI 30(5), 1–28, 2023, DOI 10.1145/3519026，但未读正式期刊全文",
+    "locator": "Abstract：turn-taking, contribution type, communication；92 co-creative systems",
+    "supported_claim": "共创系统的差异不只来自算法输出，还涉及轮次组织、贡献类型以及人机通信；COFI 提供分析交互组织的框架。 框架名称Co-Creative Framework for Interaction design已按arXiv v1摘要再次核对。",
+    "limitations": "按实际读取版本引用，不把 2022 预印本直接写成已读 2023 期刊全文；92 是所分析系统数，不是被试人数。框架分类不构成特定交互设计提高创造力的因果证据。",
+    "本文编号": 8
+  },
+  {
+    "id": "jansen2021",
+    "title": "Exploring Co-creative Drawing Workflows",
+    "authors": [
+      "Chipp Jansen",
+      "Elizabeth Sklar"
+    ],
+    "year": 2021,
+    "venue": "Frontiers in Robotics and AI, 8:577770",
+    "doi": "10.3389/frobt.2021.577770",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8160468/",
+    "version": "正式开放获取论文；本次检索器读取 PMC 全文段落，直接页面偶遇验证页",
+    "locator": "Sections 3–5：21 名绘画实践者；Observation / Recollection / Imagination 绘画任务；结论关于绘画工作流与协作",
+    "supported_claim": "以绘画实践者的实际工作方式为出发点研究共创系统，结合访谈、问卷和绘画过程观察；观察、回忆和想象任务呈现不同的绘制活动。可据此论证交互设计需要理解绘画过程和用户工作方式。",
+    "limitations": "21 人是绘画实践者，不可转述为 21 名零基础用户；研究为探索性工作流研究，不是对星迹智绘或某种 AI 辅助方案的效果检验。",
+    "本文编号": 9
+  },
+  {
+    "id": "schon1992",
+    "title": "Kinds of Seeing and Their Functions in Designing",
+    "authors": [
+      "Donald A. Schön",
+      "Glenn Wiggins"
+    ],
+    "year": 1992,
+    "venue": "Design Studies, 13(2):135–156",
+    "doi": "10.1016/0142-694X(92)90268-F",
+    "url": "https://www.sciencedirect.com/science/article/pii/0142694X9290268F",
+    "version": "本次读取出版者书目信息和摘要；全文未取得",
+    "locator": "Abstract：drawing as conversation with materials；literal visual apprehension / appreciative judgments / spatial gestalts",
+    "supported_claim": "设计中的绘图可被理解为与材料进行对话的过程，观看既包含辨识视觉痕迹，也包含判断和整体关系理解；为观察已形成画面后继续调整创作决定提供理论视角。",
+    "limitations": "后半句为本研究设计推导；原文背景为设计活动，不能直接证明算法逐笔播放会提高新手创造力。不要与同年另一篇 Kinds of Seeing in Designing, Creativity and Innovation Management 1:68–74 混为一文。",
+    "本文编号": 10
+  },
+  {
+    "id": "ryandeci2000",
+    "title": "Self-Determination Theory and the Facilitation of Intrinsic Motivation, Social Development, and Well-Being",
+    "authors": [
+      "Richard M. Ryan",
+      "Edward L. Deci"
+    ],
+    "year": 2000,
+    "venue": "American Psychologist, 55(1):68–78",
+    "doi": "10.1037/0003-066X.55.1.68",
+    "url": "https://selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_SDT.pdf",
+    "version": "理论官方站点正式论文 PDF",
+    "locator": "p.68 摘要；关于 autonomy, competence, relatedness 及社会情境支持/削弱内在动机的讨论",
+    "supported_claim": "自我决定理论将自主、胜任和关系需要作为理解动机的重要条件。可据此关注辅助系统是否保留用户有意义的选择和对创作结果的掌握感。",
+    "limitations": "本项目设计联系是理论推导，不是该文对绘画辅助工具的实验结果；自主性不等于完全独立执行，也不等于可选按钮数量。",
+    "本文编号": 11
+  },
+  {
+    "id": "imi",
+    "title": "Intrinsic Motivation Inventory (IMI)",
+    "authors": [
+      "Center for Self-Determination Theory"
+    ],
+    "year": null,
+    "venue": "Self-Determination Theory 官方量表说明，访问日期 2026-10-26",
+    "doi": null,
+    "url": "https://selfdeterminationtheory.org/intrinsic-motivation-inventory/",
+    "version": "官方现行网页；未注明固定发布日期",
+    "locator": "Scale Description；22-item task evaluation questionnaire 的维度说明；自陈量表使用注意事项",
+    "supported_claim": "IMI 可按研究目标选用兴趣/愉悦、感知胜任、感知选择、压力/紧张等子量表。官方明确兴趣/愉悦维度是直接的内在动机自陈指标，其余维度须分别解释。",
+    "limitations": "不能把所有子量表简单相加当作内在动机总分；IMI 不是作品创造力、表达实现或综合任务负担量表。中文条目翻译与使用应检查适配与可靠性，不能凭引用就宣称自编中文版已验证。",
+    "本文编号": 12
+  },
+  {
+    "id": "sus1996",
+    "title": "SUS: A Quick and Dirty Usability Scale",
+    "authors": [
+      "John Brooke"
+    ],
+    "year": 1996,
+    "venue": "In: Jordan P W, Thomas B, Weerdmeester B A, McClelland I L (eds.). Usability Evaluation in Industry. London: Taylor & Francis, 189–194",
+    "doi": null,
+    "url": "https://digital.ahrq.gov/sites/default/files/docs/survey/systemusabilityscale%2528sus%2529_comp%255B1%255D.pdf",
+    "version": "原作者章节的公开 PDF，由美国 AHRQ 托管；PDF 版式页数与书中页码不同",
+    "locator": "Introduction / System Usability Scale / Scoring SUS",
+    "supported_claim": "SUS 以十道条目提供总体感知可用性的评价，按指定规则转换为 0–100 分；适合用于不同交互条件下的系统可用性比较。",
+    "limitations": "0–100 不是百分比；不直接测量作品质量、个人表达或任务负担。不能在未施测前报告分数、信度或差异。",
+    "本文编号": 13
+  }
+]

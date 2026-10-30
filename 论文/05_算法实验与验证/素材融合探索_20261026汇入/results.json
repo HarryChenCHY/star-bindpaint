@@ -1,0 +1,99 @@
+{
+  "settings": {
+    "abstraction": 60,
+    "mood": "original"
+  },
+  "budget": 2000,
+  "sourceHashesBefore": {
+    "src/lib/expressive-painter.ts": "723b5b14d78edf273c1e0f63403085b77ef7ba931d369d0754b33a4a97e22166",
+    "src/lib/creative-material.ts": "fee82e7f8fad5135ae1eb4e96de583b4350b5261a989276c5c28911086ccd01f",
+    "src/components/creation/CoCreationStudio.tsx": "8973adf1269d1a29726c19667c0d6bd7a06f478c06fea8aebf2a952e04f3bb03",
+    "src/workers/co-create.worker.ts": "59cdfbc7bc083acd09de2deea6f7e424853e4f55058b3b31ebbb2dc0c35066cd"
+  },
+  "sourceHashesAfter": {
+    "src/lib/expressive-painter.ts": "723b5b14d78edf273c1e0f63403085b77ef7ba931d369d0754b33a4a97e22166",
+    "src/lib/creative-material.ts": "fee82e7f8fad5135ae1eb4e96de583b4350b5261a989276c5c28911086ccd01f",
+    "src/components/creation/CoCreationStudio.tsx": "8973adf1269d1a29726c19667c0d6bd7a06f478c06fea8aebf2a952e04f3bb03",
+    "src/workers/co-create.worker.ts": "59cdfbc7bc083acd09de2deea6f7e424853e4f55058b3b31ebbb2dc0c35066cd"
+  },
+  "results": [
+    {
+      "case": "花朵与花田",
+      "source": "public/masterworks/monet/poppy_field.jpg",
+      "strength": 0,
+      "initialStrokes": 1447,
+      "continuationStrokes": 775,
+      "priority": {
+        "x": 318,
+        "y": 238,
+        "width": 184,
+        "height": 184
+      }
+    },
+    {
+      "case": "花朵与花田",
+      "source": "public/masterworks/monet/poppy_field.jpg",
+      "strength": 1,
+      "initialStrokes": 1447,
+      "continuationStrokes": 738,
+      "priority": {
+        "x": 282,
+        "y": 202,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "case": "花朵与花田",
+      "source": "public/masterworks/monet/poppy_field.jpg",
+      "strength": 1.6,
+      "initialStrokes": 1447,
+      "continuationStrokes": 720,
+      "priority": {
+        "x": 282,
+        "y": 202,
+        "width": 256,
+        "height": 256
+      }
+    },
+    {
+      "case": "太阳与晨景",
+      "source": "public/masterworks/monet/impression_sunrise.jpg",
+      "strength": 0,
+      "initialStrokes": 1240,
+      "continuationStrokes": 641,
+      "priority": {
+        "x": 363,
+        "y": 73,
+        "width": 154,
+        "height": 154
+      }
+    },
+    {
+      "case": "太阳与晨景",
+      "source": "public/masterworks/monet/impression_sunrise.jpg",
+      "strength": 1,
+      "initialStrokes": 1240,
+      "continuationStrokes": 587,
+      "priority": {
+        "x": 327,
+        "y": 37,
+        "width": 226,
+        "height": 226
+      }
+    },
+    {
+      "case": "太阳与晨景",
+      "source": "public/masterworks/monet/impression_sunrise.jpg",
+      "strength": 1.6,
+      "initialStrokes": 1240,
+      "continuationStrokes": 640,
+      "priority": {
+        "x": 327,
+        "y": 37,
+        "width": 226,
+        "height": 226
+      }
+    }
+  ]
+}

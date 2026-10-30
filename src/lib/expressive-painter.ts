@@ -1,6 +1,7 @@
 import type { ImageSource, Vec2 } from './stroke-engine';
+import { blurPaintingReference, PaintingNeighborhoods, type PaintingBounds } from './expressive-scheduling';
 
-export const EXPRESSIVE_VERSION = 'local-curved-painter-2';
+export const EXPRESSIVE_VERSION = 'local-curved-painter-3-coherent';
 export const CO_CREATION_BUDGET = 2000;
 export type ColorMood = 'original' | 'sunlit' | 'dusk' | 'vivid' | 'morandi' | 'dopamine';
 export interface ExpressionSettings { abstraction: number; mood: ColorMood }
@@ -10,6 +11,7 @@ export interface ExpressiveStroke {
   radii: number[];
   color: [number, number, number];
   opacity: number;
+  planning?: { pass: number; region: number; visit: number };
 }
 export interface PaintRegion { x: number; y: number; width: number; height: number }
 const clamp = (n: number, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, n));
@@ -153,6 +155,8 @@ export function drawExpressiveStroke(ctx: CanvasRenderingContext2D, stroke: Expr
 export async function planExpressivePainting(source: ImageSource, current: ImageSource, settings: ExpressionSettings, options: {
   budget?: number;
   priority?: PaintRegion;
+  origin?: Vec2;
+  resumePass?: number;
   onBatch?: (strokes: ExpressiveStroke[]) => void;
   onProgress?: (progress: { completed: number; total: number }) => void;
 }) {
@@ -163,53 +167,95 @@ export async function planExpressivePainting(source: ImageSource, current: Image
   const canvas = resize(current, w, h), sx = current.width / w, sy = current.height / h;
   const amount = clamp(Number.isFinite(settings.abstraction) ? settings.abstraction / 100 : .6);
   const gx = new Float32Array(w * h), gy = new Float32Array(w * h), edges = new Float32Array(w * h);
-  for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
-    const p = y * w + x;
-    let strongest = 0;
-    for (let c = 0; c < 3; c++) {
-      const dx = target[(p + 1) * 3 + c] - target[(p - 1) * 3 + c];
-      const dy = target[(p + w) * 3 + c] - target[(p - w) * 3 + c];
-      const strength = dx * dx + dy * dy;
-      if (strength > strongest) { gx[p] = dx; gy[p] = dy; strongest = strength; }
-    }
-    edges[p] = Math.sqrt(strongest);
-  }
   let seed = 19790517;
   const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
   const index = (x: number, y: number) => Math.round(clamp(y, 0, h - 1)) * w + Math.round(clamp(x, 0, w - 1));
-  const priority = (p: number) => {
-    const r = options.priority;
-    return r && p % w * sx >= r.x && p % w * sx <= r.x + r.width && Math.floor(p / w) * sy >= r.y && Math.floor(p / w) * sy <= r.y + r.height ? 4 : 1;
-  };
+  const region = options.priority;
+  if (region && (![region.x, region.y, region.width, region.height].every(Number.isFinite) || region.width <= 0 || region.height <= 0)) throw new Error('续绘区域无效');
+  if (options.resumePass !== undefined && (!Number.isInteger(options.resumePass) || options.resumePass < 0 || options.resumePass > 3)) throw new Error('续绘阶段无效');
+  const widths = [25, 14, 7, 3.8].map(v => Math.max(1.2, v * Math.min(w, h) / 240));
+  const startPass = region ? options.resumePass ?? (Math.min(region.width / sx, region.height / sy) < widths[1] * 2 ? 2 : 1) : 0;
+  const padding = Math.ceil(Math.max(widths[startPass] * 1.5, Math.min(w, h) * .035));
+  const focus: PaintingBounds | undefined = region ? {
+    left: clamp(Math.floor(region.x / sx) - padding, 0, w), top: clamp(Math.floor(region.y / sy) - padding, 0, h),
+    right: clamp(Math.ceil((region.x + region.width) / sx) + padding, 0, w), bottom: clamp(Math.ceil((region.y + region.height) / sy) + padding, 0, h),
+  } : undefined;
+  // 已完成的画只局部续绘；中途介入则在原尺度上接着完成全图。
+  const scope: PaintingBounds = focus && options.resumePass === undefined ? focus : { left: 0, top: 0, right: w, bottom: h };
+  let reference: Float32Array = target;
+  const priority = (p: number) => region && p % w * sx >= region.x && p % w * sx <= region.x + region.width
+    && Math.floor(p / w) * sy >= region.y && Math.floor(p / w) * sy <= region.y + region.height ? 4 : 1;
   const error = (p: number) => {
     let e = 0;
-    for (let c = 0; c < 3; c++) e += (target[p * 3 + c] - canvas[p * 3 + c]) ** 2;
+    for (let c = 0; c < 3; c++) e += (reference[p * 3 + c] - canvas[p * 3 + c]) ** 2;
     return e;
   };
   const strokes: ExpressiveStroke[] = [], batch: ExpressiveStroke[] = [];
-  const residual = new Float32Array(w * h);
-  // Spend most of the budget on coherent color masses; keep final accents sparse.
-  const passEnds = [.22, .52, .82, 1];
-  const widths = [25, 14, 7, 3.8].map(v => Math.max(1.2, v * Math.min(w, h) / 240));
+  let initialError = 0;
+  for (let y = scope.top; y < scope.bottom; y++) for (let x = scope.left; x < scope.right; x++) initialError += error(y * w + x);
+  if (initialError < .00001) { options.onProgress?.({ completed: budget, total: budget }); return strokes; }
+  const residual = new Float64Array(w * h), sampleIndices = new Int32Array(w * h);
+  const passShares = [.25, .45, .25, .05];
+  const totalShare = passShares.slice(startPass).reduce((sum, v) => sum + v, 0);
+  let share = 0;
+  let lastTip: Vec2 | null = options.origin && Number.isFinite(options.origin.x) && Number.isFinite(options.origin.y)
+    ? { x: options.origin.x / sx, y: options.origin.y / sy } : null;
+  let lastColor: number[] | null = null;
+  let lastAngle: number | null = null;
   let cursor = 0;
-  for (let pass = 0; pass < passEnds.length; pass++) {
-    const end = Math.round(budget * passEnds[pass]);
-    for (; cursor < end; cursor++) {
-      // One residual scan per stroke replaces the legacy 100-candidate stochastic fit.
-      let total = 0;
-      for (let p = 0; p < residual.length; p++) {
-        total += error(p) * (1 + edges[p] * (pass > 1 ? 2 : .5)) * priority(p);
-        residual[p] = total;
+  for (let pass = startPass; pass < passShares.length; pass++) {
+    share += passShares[pass];
+    const end = pass === passShares.length - 1 ? budget : Math.round(budget * share / totalShare);
+    reference = blurPaintingReference(target, w, h, pass < 2 ? Math.max(1, Math.round(widths[pass] * .18)) : pass === 2 ? Math.floor(widths[pass] * .15) : 0);
+    if (reference !== target) for (let p = 0; p < w * h; p++) {
+      // 参考尺度不向未着色的纸面扩散颜色，避免照片留白出现模糊光晕。
+      if (Math.min(target[p * 3], target[p * 3 + 1], target[p * 3 + 2]) > .985) reference.fill(1, p * 3, p * 3 + 3);
+    }
+    gx.fill(0); gy.fill(0); edges.fill(0);
+    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+      const p = y * w + x;
+      let strongest = 0;
+      for (let c = 0; c < 3; c++) {
+        const dx = reference[(p + 1) * 3 + c] - reference[(p - 1) * 3 + c];
+        const dy = reference[(p + w) * 3 + c] - reference[(p - w) * 3 + c];
+        const strength = dx * dx + dy * dy;
+        if (strength > strongest) { gx[p] = dx; gy[p] = dy; strongest = strength; }
       }
-      if (total < .00001) break;
-      let best: { stroke: ExpressiveStroke; indices: number[]; alphas: number[]; gain: number } | undefined;
+      edges[p] = Math.sqrt(strongest);
+    }
+    const weights = new Float64Array(w * h);
+    const weightAt = (p: number) => {
+      const x = p % w, y = Math.floor(p / w);
+      if (x < scope.left || x >= scope.right || y < scope.top || y >= scope.bottom) return 0;
+      const e = error(p);
+      return e < .0003 ? 0 : e * (1 + edges[p] * (pass > 1 ? 2 : .5)) * priority(p);
+    };
+    for (let p = 0; p < weights.length; p++) weights[p] = weightAt(p);
+    const neighborhoods = new PaintingNeighborhoods(w, h, weights, scope, focus);
+    for (; cursor < end; cursor++) {
+      const window = neighborhoods.window(end - cursor, lastTip);
+      if (!window) break;
+      let total = 0, count = 0;
+      for (let y = window.top; y < window.bottom; y++) for (let x = window.left; x < window.right; x++) {
+        const p = y * w + x;
+        if (!weights[p]) continue;
+        total += weights[p]; residual[count] = total; sampleIndices[count++] = p;
+      }
+      if (total < .00001) { neighborhoods.recordAttempt(false); continue; }
+      let best: { stroke: ExpressiveStroke; indices: number[]; alphas: number[]; gain: number; score: number } | undefined;
       for (let trial = 0; trial < 10; trial++) {
         const pick = random() * total;
-        let lo = 0, hi = residual.length - 1;
+        let lo = 0, hi = count - 1;
         while (lo < hi) { const mid = (lo + hi) >>> 1; if (residual[mid] < pick) lo = mid + 1; else hi = mid; }
-        const x = lo % w, y = Math.floor(lo / w), center = index(x, y);
+        let x = sampleIndices[lo] % w, y = Math.floor(sampleIndices[lo] / w);
+        let center = index(x, y);
         const width = widths[pass] * (edges[center] > .15 ? .65 : 1) * (.85 + random() * .3);
-        const color = [target[center * 3], target[center * 3 + 1], target[center * 3 + 2]] as [number, number, number];
+        const margin = Math.min(width / 2 + 1, Math.max(0, (Math.min(scope.right - scope.left, scope.bottom - scope.top) - 1) / 2));
+        const left = scope.left > 0 ? scope.left + margin : 0, right = scope.right < w ? scope.right - 1 - margin : w - 1;
+        const top = scope.top > 0 ? scope.top + margin : 0, bottom = scope.bottom < h ? scope.bottom - 1 - margin : h - 1;
+        x = clamp(x, left, right); y = clamp(y, top, bottom);
+        center = index(x, y);
+        const color = [reference[center * 3], reference[center * 3 + 1], reference[center * 3 + 2]] as [number, number, number];
         const opacity = Math.min(...color) > .985 ? 1 : .94;
         const fallback = .6 * Math.sin(x / 48) + .5 * Math.cos(y / 57) + .4;
         const angle = edges[center] > .015 ? Math.atan2(gy[center], gx[center]) + Math.PI / 2 : fallback;
@@ -225,16 +271,17 @@ export async function planExpressivePainting(source: ImageSource, current: Image
             }
             const norm = Math.hypot(dx, dy); dx /= norm; dy /= norm;
             const nx = px + dx * Math.max(.7, width * .48), ny = py + dy * Math.max(.7, width * .48);
-            if (nx < 0 || ny < 0 || nx >= w - 1 || ny >= h - 1) break;
+            if (nx < left || ny < top || nx > right || ny > bottom) break;
             const next = index(nx, ny);
-            const diff = color.reduce((s, v, c) => s + (v - target[next * 3 + c]) ** 2, 0);
+            const diff = color.reduce((s, v, c) => s + (v - reference[next * 3 + c]) ** 2, 0);
             if (diff > .035 + amount * .055) break;
             points.push({ x: nx, y: ny }); px = nx; py = ny;
           }
           return points;
         };
         const points = [...trace(-1).reverse(), { x, y }, ...trace(1)];
-        if (points.length < 2) points.push({ x: clamp(x + .5, 0, w - .001), y: clamp(y + .5, 0, h - .001) });
+        if (points.length < 2) points.push({ x: clamp(x + .5, left, right), y: clamp(y + .5, top, bottom) });
+        if (lastTip && Math.hypot(points.at(-1)!.x - lastTip.x, points.at(-1)!.y - lastTip.y) < Math.hypot(points[0].x - lastTip.x, points[0].y - lastTip.y)) points.reverse();
         const radii = points.map((_, i) => width / 2 * (.68 + .32 * Math.sin(Math.PI * i / (points.length - 1))));
         const indices: number[] = [], alphas: number[] = [];
         const minX = Math.max(0, Math.floor(Math.min(...points.map(p => p.x)) - width / 2 - 1));
@@ -254,18 +301,29 @@ export async function planExpressivePainting(source: ImageSource, current: Image
           if (!alpha) continue;
           const p = yy * w + xx;
           for (let c = 0; c < 3; c++) {
-            const before = target[p * 3 + c] - canvas[p * 3 + c];
-            const after = target[p * 3 + c] - (canvas[p * 3 + c] * (1 - alpha) + color[c] * alpha);
+            const before = reference[p * 3 + c] - canvas[p * 3 + c];
+            const after = reference[p * 3 + c] - (canvas[p * 3 + c] * (1 - alpha) + color[c] * alpha);
             gain += (before * before - after * after) * priority(p);
           }
           indices.push(p); alphas.push(alpha);
         }
-        if (!best || gain > best.gain) best = { stroke: { points, radii, color, opacity }, indices, alphas, gain };
+        const distance = lastTip ? Math.hypot(points[0].x - lastTip.x, points[0].y - lastTip.y) / neighborhoods.cellSize : 0;
+        const colorChange = lastColor ? Math.hypot(...color.map((v, c) => v - lastColor![c])) : 0;
+        const startAngle = Math.atan2(points[1].y - points[0].y, points[1].x - points[0].x);
+        const directionChange = lastAngle === null ? 0 : (1 - Math.cos(startAngle - lastAngle)) / 2;
+        const score = gain / (1 + distance * .55 + colorChange * .2 + directionChange * .12);
+        if (!best || score > best.score) best = { stroke: { points, radii, color, opacity, planning: { pass, region: window.region, visit: window.visit } }, indices, alphas, gain, score };
       }
+      neighborhoods.recordAttempt(!!best && best.gain > .000001);
       if (best && best.gain > .000001) {
         best.indices.forEach((p, j) => {
           for (let c = 0; c < 3; c++) canvas[p * 3 + c] = canvas[p * 3 + c] * (1 - best!.alphas[j]) + best!.stroke.color[c] * best!.alphas[j];
+          neighborhoods.update(p, weightAt(p));
         });
+        lastTip = best.stroke.points.at(-1)!;
+        lastColor = best.stroke.color;
+        const previous = best.stroke.points.at(-2)!;
+        lastAngle = Math.atan2(lastTip.y - previous.y, lastTip.x - previous.x);
         const stroke = { ...best.stroke, points: best.stroke.points.map(p => ({ x: p.x * sx, y: p.y * sy })), radii: best.stroke.radii.map(r => r * Math.min(sx, sy)) };
         strokes.push(stroke); batch.push(stroke);
       }
@@ -274,6 +332,6 @@ export async function planExpressivePainting(source: ImageSource, current: Image
     }
   }
   if (batch.length) options.onBatch?.(batch);
-  options.onProgress?.({ completed: 1, total: 1 });
+  options.onProgress?.({ completed: budget, total: budget });
   return strokes;
 }

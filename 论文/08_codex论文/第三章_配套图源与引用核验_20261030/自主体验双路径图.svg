@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="274" viewBox="0 0 620 274">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="196" y="5" width="228" height="44" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="310.0" y="32.12" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="16" fill="#111111">系统承担笔触执行</text>
+<path d="M310,53 L310,65" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M160,65 L460,65" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M160,65 L160,83" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="160,83 157.60287230697898,78.61208719054814 162.39712769302102,78.61208719054814" fill="#404040"/>
+<path d="M460,65 L460,83" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="460,83 457.602872306979,78.61208719054814 462.397127693021,78.61208719054814" fill="#404040"/>
+<rect x="20" y="87" width="280" height="59" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="160.0" y="109.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">表达决定可以实施</text>
+<text x="160.0" y="131.98000000000002" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">决定与成画的联系可辨认</text>
+<rect x="320" y="87" width="280" height="59" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="460.0" y="109.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">布局影响不清或被淹没</text>
+<text x="460.0" y="131.98000000000002" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">结果难预测、介入受限制</text>
+<path d="M160,150 L160,173" fill="none" stroke="#404040" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polygon points="160,173 157.60287230697898,168.61208719054812 162.39712769302102,168.61208719054812" fill="#404040"/>
+<path d="M460,150 L460,173" fill="none" stroke="#404040" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polygon points="460,173 457.602872306979,168.61208719054812 462.397127693021,168.61208719054812" fill="#404040"/>
+<rect x="20" y="177" width="280" height="49" fill="#F2F2F2" stroke="#555555" stroke-width="0.8"/>
+<text x="160.0" y="206.14" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#111111">可能保留自主与胜任体验</text>
+<rect x="320" y="177" width="280" height="49" fill="#F2F2F2" stroke="#555555" stroke-width="0.8"/>
+<text x="460.0" y="206.14" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#111111">可能产生旁观感与疏离</text>
+<text x="310" y="259" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12.8" fill="#555555">两条路径均待检验；作品满意、贡献辨认与自主体验分别评价。</text>
+</svg>

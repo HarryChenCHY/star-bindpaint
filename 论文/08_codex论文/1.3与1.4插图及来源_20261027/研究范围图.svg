@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="285" viewBox="0 0 620 285">
+<rect width="100%" height="100%" fill="white"/>
+<text x="310" y="23" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="17" fill="#1A1A1A">用户的表达决定如何进入绘画结果</text>
+<rect x="12" y="66" width="88" height="76" fill="#F4F4F4" stroke="#404040" stroke-width="0.85"/>
+<text x="56.0" y="98.82" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#1A1A1A">照片与</text>
+<text x="56.0" y="117.82" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#1A1A1A">可用素材</text>
+<rect x="122" y="66" width="150" height="76" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="197.0" y="89.32" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="13.5" fill="#1A1A1A">用户编排</text>
+<text x="197.0" y="108.32" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="13.5" fill="#1A1A1A">选择、位置、尺度</text>
+<text x="197.0" y="127.32" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="13.5" fill="#1A1A1A">与组合关系</text>
+<rect x="294" y="66" width="150" height="76" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="369.0" y="89.32" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="13.5" fill="#1A1A1A">系统执行</text>
+<text x="369.0" y="108.32" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="13.5" fill="#1A1A1A">目标更新、笔触规划</text>
+<text x="369.0" y="127.32" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="13.5" fill="#1A1A1A">与渐进绘制</text>
+<rect x="466" y="66" width="142" height="76" fill="#F4F4F4" stroke="#404040" stroke-width="0.85"/>
+<text x="537.0" y="89.32" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#1A1A1A">共同画面</text>
+<text x="537.0" y="108.32" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#1A1A1A">布局决定的落实</text>
+<text x="537.0" y="127.32" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#1A1A1A">及其绘画表现</text>
+<path d="M102,104 L119,104" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="119,104 114.61208719054814,106.39712769302102 114.61208719054814,101.60287230697898" fill="#404040"/>
+<path d="M274,104 L291,104" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="291,104 286.61208719054815,106.39712769302102 286.61208719054815,101.60287230697898" fill="#404040"/>
+<path d="M446,104 L463,104" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="463,104 458.61208719054815,106.39712769302102 458.61208719054815,101.60287230697898" fill="#404040"/>
+<text x="197" y="54" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11" fill="#555555">内容与关系判断</text>
+<text x="369" y="54" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11" fill="#555555">笔迹执行</text>
+<path d="M537,142 L537,173" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M537,173 L197,173" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M197,173 L197,145" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="197,145 199.39712769302102,149.38791280945188 194.60287230697898,149.38791280945188" fill="#404040"/>
+<text x="367" y="195" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="13" fill="#1A1A1A">观察画面后继续判断与编排</text>
+<rect x="12" y="216" width="596" height="55" fill="#F4F4F4" stroke="#A0A0A0" stroke-width="0.7"/>
+<text x="310" y="237" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12" fill="#1A1A1A">评价范围：意图与作品对应、感知选择、操作过程及可用性</text>
+<text x="310" y="257" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.5" fill="#555555">过程研究：观察、判断与后续编排的事件联系</text>
+</svg>

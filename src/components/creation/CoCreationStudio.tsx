@@ -7,13 +7,14 @@ import { CO_CREATE_MATERIALS, loadLocalImage, readCanvas, whiteCanvas } from '@/
 import ArtworkSave from './ArtworkSave';
 import StudioWorkspace from './StudioWorkspace';
 import useMaterialLayout from './useMaterialLayout';
-import { strokeFrame, bristleFade, lightSpeedCount } from '@/lib/stroke-playback';
+import { strokeFrame, bristleFade, lightSpeedCount, brushTravelDuration, brushTravelFrame } from '@/lib/stroke-playback';
 import { startAnimationLoop } from '@/lib/animation-loop';
 import MaterialLibrary from './MaterialLibrary';
 import MaterialConfirmation from './MaterialConfirmation';
 import ReferencePreview from '@/components/ReferencePreview';
 
 const W = 640, H = 480;
+const PAINTING_PHASES = ['正在铺出整体轮廓与大色块', '正在塑造中等形体与色彩关系', '正在完善局部结构', '正在做少量强调与收束'];
 type WorkerMessage = { type: 'batch'; strokes: ExpressiveStroke[] } | { type: 'progress'; progress: { completed: number; total: number } } | { type: 'done' } | { type: 'error'; message: string };
 
 export default function CoCreationStudio({ source, onReset, autoStart = true }: { source: string | null; onReset: () => void; autoStart?: boolean }) {
@@ -27,9 +28,12 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
   const lightRef = useRef<{ start: number; elapsed: number; total: number } | null>(null);
   const brushRef = useRef<SVGGElement>(null);
   const brushTipRef = useRef<{ x: number; y: number } | null>(null);
-  const playbackRef = useRef<{ stroke: ExpressiveStroke; base: ImageData; progress: number; travel: number; from: { x: number; y: number } } | null>(null);
+  const brushAngleRef = useRef(-45);
+  const playbackRef = useRef<{ stroke: ExpressiveStroke; base: ImageData; progress: number; travel: number; from: { x: number; y: number }; fromAngle: number } | null>(null);
   const versionRef = useRef(0);
   const planningRef = useRef(false);
+  const fullPaintingPendingRef = useRef(false);
+  const fullPaintingPassRef = useRef(0);
   const playingRef = useRef(false);
   const readyRef = useRef(false);
   const dirtyRef = useRef(false);
@@ -67,6 +71,8 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
   const plan = useCallback((priority?: { x: number; y: number; width: number; height: number }) => {
     const canvas = canvasRef.current, target = targetRef.current;
     if (!canvas || !target) return;
+    const resumePass = priority && fullPaintingPendingRef.current ? Math.min(2, fullPaintingPassRef.current) : undefined;
+    if (!priority) { fullPaintingPendingRef.current = true; fullPaintingPassRef.current = 0; }
     stopWorker();
     playbackRef.current = null;
     lightRef.current = null;
@@ -100,7 +106,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
           timerRef.current = null;
         }
       };
-      worker.postMessage({ target: readCanvas(target), current: readCanvas(canvas), priority, settings: expressionRef.current });
+      worker.postMessage({ target: readCanvas(target), current: readCanvas(canvas), priority, resumePass, origin: brushTipRef.current ?? undefined, settings: expressionRef.current });
     } catch { fail('无法启动绘制，请重试。'); }
   }, [stopWorker, setStatus]);
 
@@ -109,6 +115,8 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext('2d')!;
     ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+    fullPaintingPendingRef.current = false; fullPaintingPassRef.current = 0;
+    brushTipRef.current = null; brushAngleRef.current = -45;
     targetRef.current = whiteCanvas(W, H);
     async function initialize() {
       try {
@@ -153,6 +161,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
         return;
       }
       const stroke = queueRef.current[indexRef.current];
+      if (stroke?.planning && fullPaintingPendingRef.current) fullPaintingPassRef.current = stroke.planning.pass;
       if (speed === 0 && stroke) {
         if (planningRef.current) {
           if (brushRef.current) brushRef.current.style.opacity = '0';
@@ -172,13 +181,15 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
           drawExpressiveStroke(ctx, next);
           fadingRef.current.push({ stroke: next, end: now });
           brushTipRef.current = next.points.at(-1)!;
+          if (next.planning && fullPaintingPendingRef.current) fullPaintingPassRef.current = next.planning.pass;
         }
         if (indexRef.current > before) {
           const completed = indexRef.current - before;
           setDrawn(n => n + completed);
           if (brushRef.current && brushTipRef.current) {
+            brushAngleRef.current = strokeFrame(queueRef.current[indexRef.current - 1], 1).angle;
             brushRef.current.style.opacity = '1';
-            brushRef.current.setAttribute('transform', `translate(${brushTipRef.current.x} ${brushTipRef.current.y})`);
+            brushRef.current.setAttribute('transform', `translate(${brushTipRef.current.x} ${brushTipRef.current.y}) rotate(${brushAngleRef.current + 45})`);
           }
         }
         return;
@@ -186,16 +197,18 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
       if (speed !== 0) lightRef.current = null;
       if (stroke) {
         if (!playbackRef.current) {
-          playbackRef.current = { stroke, base: ctx.getImageData(0, 0, W, H), progress: 0, travel: 0, from: brushTipRef.current ?? stroke.points[0] };
-          setStatus('正在绘制。随时选择素材，加入你的新想法。');
+          playbackRef.current = { stroke, base: ctx.getImageData(0, 0, W, H), progress: 0, travel: 0, from: brushTipRef.current ?? stroke.points[0], fromAngle: brushAngleRef.current };
+          setStatus(`${stroke.planning ? PAINTING_PHASES[stroke.planning.pass] : '正在绘制'}。随时选择素材，加入你的新想法。`);
         }
         const active = playbackRef.current;
         let tip = stroke.points[0];
         let angle = -45;
+        let lift = 0;
         if (active.travel < 1) {
-          active.travel = Math.min(1, active.travel + delta / Math.max(45, speed));
-          const t = active.travel * active.travel * (3 - 2 * active.travel);
-          tip = { x: active.from.x + (tip.x - active.from.x) * t, y: active.from.y + (tip.y - active.from.y) * t };
+          const distance = Math.hypot(tip.x - active.from.x, tip.y - active.from.y);
+          active.travel = Math.min(1, active.travel + delta / brushTravelDuration(distance, speed));
+          const frame = brushTravelFrame(active.from, tip, active.fromAngle, strokeFrame(stroke, 0).angle, active.travel);
+          tip = frame.tip; angle = frame.angle; lift = frame.lift;
         } else {
           const length = strokeFrame(stroke, 0).length;
           active.progress = Math.min(1, active.progress + delta / (Math.max(90, speed * 3) * Math.max(.6, Math.min(2, length / 80))));
@@ -207,9 +220,10 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
           tip = sample.tip; angle = sample.angle;
         }
         brushTipRef.current = tip;
+        brushAngleRef.current = angle;
         if (brushRef.current) {
-          brushRef.current.style.opacity = '1';
-          brushRef.current.setAttribute('transform', `translate(${tip.x} ${tip.y}) rotate(${angle + 45})`);
+          brushRef.current.style.opacity = String(1 - lift * .25);
+          brushRef.current.setAttribute('transform', `translate(${tip.x} ${tip.y - lift * 5}) rotate(${angle + 45}) scale(${1 + lift * .06})`);
         }
         if (active.progress === 1) {
           fadingRef.current.push({ stroke, end: now });
@@ -217,6 +231,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
           indexRef.current++; setDrawn(n => n + 1);
         }
       } else if (!planningRef.current) {
+        fullPaintingPendingRef.current = false;
         if (brushRef.current) brushRef.current.style.opacity = '0';
         playingRef.current = false; setPlaying(false); setHasPending(false);
         setStatus('这一轮绘制完成。可以保存，也可以继续加入素材。');

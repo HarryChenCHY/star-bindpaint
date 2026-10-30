@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="778" viewBox="0 0 620 778">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="72" y="5" width="536" height="39" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="340.0" y="29.94" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="17" fill="#1A1A1A">基于图像笔触拆解计算的创作表达工具交互设计</text>
+<path d="M340,44 L340,61" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="340,61 337.602872306979,56.61208719054814 342.397127693021,56.61208719054814" fill="#404040"/>
+<rect x="72" y="65" width="536" height="23" fill="#111111" stroke="#111111" stroke-width="0.85"/>
+<text x="340" y="81" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#FFFFFF">第一章  绪论</text>
+<rect x="12" y="65" width="48" height="95" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="0.65"/>
+<text x="36" y="98.00999999999999" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">文</text>
+<text x="36" y="109.80999999999999" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">献</text>
+<text x="36" y="121.60999999999999" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">研</text>
+<text x="36" y="133.41" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">究</text>
+<rect x="72" y="95" width="155" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="149.5" y="110" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输入</text>
+<text x="149.5" y="129" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">日常表达场景</text>
+<text x="149.5" y="146" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">相关工具与算法研究</text>
+<rect x="239" y="95" width="179" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="328.5" y="110" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">研究内容</text>
+<text x="328.5" y="129" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">比较相关研究</text>
+<text x="328.5" y="146" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">界定问题与适用范围</text>
+<rect x="430" y="95" width="178" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="519.0" y="110" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输出</text>
+<text x="519.0" y="129" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">RQ1—RQ3</text>
+<text x="519.0" y="146" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">后续证据需求</text>
+<path d="M228,129 L237,129" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="237,129 232.61208719054812,131.39712769302102 232.61208719054812,126.60287230697898" fill="#404040"/>
+<path d="M419,129 L428,129" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="428,129 423.61208719054815,131.39712769302102 423.61208719054815,126.60287230697898" fill="#404040"/>
+<path d="M340,161 L340,177" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="340,177 337.602872306979,172.61208719054812 342.397127693021,172.61208719054812" fill="#404040"/>
+<rect x="72" y="181" width="536" height="23" fill="#111111" stroke="#111111" stroke-width="0.85"/>
+<text x="340" y="197" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#FFFFFF">第二章  表达需求与创作阻力</text>
+<rect x="12" y="181" width="48" height="95" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="0.65"/>
+<text x="36" y="208.11" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">访</text>
+<text x="36" y="219.91000000000003" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">谈</text>
+<text x="36" y="231.71" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">与</text>
+<text x="36" y="243.51000000000002" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">观</text>
+<text x="36" y="255.31" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">察</text>
+<rect x="72" y="211" width="155" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="149.5" y="226" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输入</text>
+<text x="149.5" y="245" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">RQ1与目标用户</text>
+<text x="149.5" y="262" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">既有原型背景</text>
+<rect x="239" y="211" width="179" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="328.5" y="226" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">研究内容</text>
+<text x="328.5" y="245" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">核查创作经历</text>
+<text x="328.5" y="262" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">观察普通画布任务</text>
+<rect x="430" y="211" width="178" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="519.0" y="226" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输出</text>
+<text x="519.0" y="245" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">表达需求</text>
+<text x="519.0" y="262" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">执行与操作阻力</text>
+<path d="M228,245 L237,245" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="237,245 232.61208719054812,247.39712769302102 232.61208719054812,242.60287230697898" fill="#404040"/>
+<path d="M419,245 L428,245" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="428,245 423.61208719054815,247.39712769302102 423.61208719054815,242.60287230697898" fill="#404040"/>
+<path d="M340,277 L340,293" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="340,293 337.602872306979,288.61208719054815 342.397127693021,288.61208719054815" fill="#404040"/>
+<rect x="72" y="297" width="536" height="23" fill="#111111" stroke="#111111" stroke-width="0.85"/>
+<text x="340" y="313" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#FFFFFF">第三章  理论与交互设计原则</text>
+<rect x="12" y="297" width="48" height="95" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="0.65"/>
+<text x="36" y="330.01" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">理</text>
+<text x="36" y="341.81" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">论</text>
+<text x="36" y="353.61" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">推</text>
+<text x="36" y="365.40999999999997" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">导</text>
+<rect x="72" y="327" width="155" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="149.5" y="342" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输入</text>
+<text x="149.5" y="361" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">需求与阻力</text>
+<text x="149.5" y="378" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">认知、设计及动机理论</text>
+<rect x="239" y="327" width="179" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="328.5" y="342" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">研究内容</text>
+<text x="328.5" y="361" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">解释素材与过程反馈</text>
+<text x="328.5" y="378" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">建立交互设计原则</text>
+<rect x="430" y="327" width="178" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="519.0" y="342" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输出</text>
+<text x="519.0" y="361" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">原则及要素映射</text>
+<text x="519.0" y="378" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">对应评价要求</text>
+<path d="M228,361 L237,361" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="237,361 232.61208719054812,363.397127693021 232.61208719054812,358.602872306979" fill="#404040"/>
+<path d="M419,361 L428,361" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="428,361 423.61208719054815,363.397127693021 423.61208719054815,358.602872306979" fill="#404040"/>
+<path d="M340,393 L340,409" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="340,409 337.602872306979,404.61208719054815 342.397127693021,404.61208719054815" fill="#404040"/>
+<rect x="72" y="413" width="536" height="23" fill="#111111" stroke="#111111" stroke-width="0.85"/>
+<text x="340" y="429" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#FFFFFF">第四章  交互机制与视觉设计实践</text>
+<rect x="12" y="413" width="48" height="95" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="0.65"/>
+<text x="36" y="446.01" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">设</text>
+<text x="36" y="457.81" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">计</text>
+<text x="36" y="469.61" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">实</text>
+<text x="36" y="481.40999999999997" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">践</text>
+<rect x="72" y="443" width="155" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="149.5" y="458" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输入</text>
+<text x="149.5" y="477" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">原则及要素映射</text>
+<text x="149.5" y="494" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">既有笔触方法</text>
+<rect x="239" y="443" width="179" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="328.5" y="458" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">研究内容</text>
+<text x="328.5" y="477" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">编排、续绘与状态提示</text>
+<text x="328.5" y="494" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">算法适配与界面设计</text>
+<rect x="430" y="443" width="178" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="519.0" y="458" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输出</text>
+<text x="519.0" y="477" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">定稿产品及设计取舍</text>
+<text x="519.0" y="494" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">受控算法效果比较</text>
+<path d="M228,477 L237,477" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="237,477 232.61208719054812,479.397127693021 232.61208719054812,474.602872306979" fill="#404040"/>
+<path d="M419,477 L428,477" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="428,477 423.61208719054815,479.397127693021 423.61208719054815,474.602872306979" fill="#404040"/>
+<path d="M340,509 L340,525" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="340,525 337.602872306979,520.6120871905481 342.397127693021,520.6120871905481" fill="#404040"/>
+<rect x="72" y="529" width="536" height="23" fill="#111111" stroke="#111111" stroke-width="0.85"/>
+<text x="340" y="545" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#FFFFFF">第五章  实验评价与讨论</text>
+<rect x="12" y="529" width="48" height="95" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="0.65"/>
+<text x="36" y="550.21" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">定</text>
+<text x="36" y="562.01" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">性</text>
+<text x="36" y="573.8100000000001" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">定</text>
+<text x="36" y="585.61" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">量</text>
+<text x="36" y="597.4100000000001" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">实</text>
+<text x="36" y="609.21" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">验</text>
+<rect x="72" y="559" width="155" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="149.5" y="574" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输入</text>
+<text x="149.5" y="593" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">RQ3与定稿产品</text>
+<text x="149.5" y="610" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">实验专用适配</text>
+<rect x="239" y="559" width="179" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="328.5" y="574" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">研究内容</text>
+<text x="328.5" y="593" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">2×2预试与正式实验</text>
+<text x="328.5" y="610" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">作品、量表、日志访谈</text>
+<rect x="430" y="559" width="178" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="519.0" y="574" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输出</text>
+<text x="519.0" y="593" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">主效应与交互作用</text>
+<text x="519.0" y="610" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">过程解释及适用边界</text>
+<path d="M228,593 L237,593" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="237,593 232.61208719054812,595.397127693021 232.61208719054812,590.602872306979" fill="#404040"/>
+<path d="M419,593 L428,593" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="428,593 423.61208719054815,595.397127693021 423.61208719054815,590.602872306979" fill="#404040"/>
+<path d="M340,625 L340,641" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="340,641 337.602872306979,636.6120871905481 342.397127693021,636.6120871905481" fill="#404040"/>
+<rect x="72" y="645" width="536" height="23" fill="#111111" stroke="#111111" stroke-width="0.85"/>
+<text x="340" y="661" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#FFFFFF">第六章  结论与展望</text>
+<rect x="12" y="645" width="48" height="95" fill="#EEEEEE" stroke="#D0D0D0" stroke-width="0.65"/>
+<text x="36" y="678.01" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">证</text>
+<text x="36" y="689.81" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">据</text>
+<text x="36" y="701.61" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">综</text>
+<text x="36" y="713.41" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.7" fill="#1A1A1A">合</text>
+<rect x="72" y="675" width="155" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="149.5" y="690" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输入</text>
+<text x="149.5" y="709" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">需求、设计和评价证据</text>
+<text x="149.5" y="726" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">与研究问题的对应</text>
+<rect x="239" y="675" width="179" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="328.5" y="690" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">研究内容</text>
+<text x="328.5" y="709" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">回应研究问题</text>
+<text x="328.5" y="726" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">审视贡献及局限</text>
+<rect x="430" y="675" width="178" height="65" fill="#FFFFFF" stroke="#404040" stroke-width="0.85"/>
+<text x="519.0" y="690" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="10.6" fill="#555555">输出</text>
+<text x="519.0" y="709" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">设计认识与贡献范围</text>
+<text x="519.0" y="726" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11.4" fill="#1A1A1A">后续研究方向</text>
+<path d="M228,709 L237,709" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="237,709 232.61208719054812,711.397127693021 232.61208719054812,706.602872306979" fill="#404040"/>
+<path d="M419,709 L428,709" fill="none" stroke="#404040" stroke-width="0.8"/>
+<polygon points="428,709 423.61208719054815,711.397127693021 423.61208719054815,706.602872306979" fill="#404040"/>
+<text x="340" y="772" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="10.2" fill="#555555">箭头表示章节间的论证承接与证据传递。</text>
+</svg>

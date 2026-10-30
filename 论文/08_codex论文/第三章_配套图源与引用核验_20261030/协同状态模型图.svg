@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="326" viewBox="0 0 620 326">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="181" y="8" width="258" height="43" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="310.0" y="34.46" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="15.5" fill="#111111">用户表达意图与完成判断</text>
+<path d="M310,55 L310,75" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M100,75 L310,75" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M100,75 L100,99" fill="none" stroke="#404040" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polygon points="100,99 97.60287230697898,94.61208719054814 102.39712769302102,94.61208719054814" fill="#404040"/>
+<path d="M520,99 L520,30" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M520,30 L443,30" fill="none" stroke="#404040" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polygon points="443,30 447.38791280945185,27.602872306978984 447.38791280945185,32.39712769302101" fill="#404040"/>
+<text x="565" y="69" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12" fill="#555555">反馈判断</text>
+<rect x="10" y="104" width="180" height="97" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<rect x="10" y="104" width="180" height="29" fill="#F0F0F0" stroke="#555555" stroke-width="0.8"/>
+<text x="100" y="125" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="15" fill="#111111">待确认素材</text>
+<text x="100" y="159" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.2" fill="#111111">独立对象与控制框</text>
+<text x="100" y="181" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.2" fill="#111111">可移动、缩放、旋转</text>
+<rect x="220" y="104" width="180" height="97" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<rect x="220" y="104" width="180" height="29" fill="#F0F0F0" stroke="#555555" stroke-width="0.8"/>
+<text x="310" y="125" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="15" fill="#111111">已确认目标</text>
+<text x="310" y="159" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.2" fill="#111111">照片与素材合并</text>
+<text x="310" y="181" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.2" fill="#111111">作为笔触计算的依据</text>
+<rect x="430" y="104" width="180" height="97" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<rect x="430" y="104" width="180" height="29" fill="#F0F0F0" stroke="#555555" stroke-width="0.8"/>
+<text x="520" y="125" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="15" fill="#111111">当前成画</text>
+<text x="520" y="159" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.2" fill="#111111">已实际绘出的像素</text>
+<text x="520" y="181" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.2" fill="#111111">逐笔变化，可观察</text>
+<path d="M193,155 L218,155" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="218,155 213.61208719054812,157.39712769302102 213.61208719054812,152.60287230697898" fill="#404040"/>
+<path d="M403,155 L428,155" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="428,155 423.61208719054815,157.39712769302102 423.61208719054815,152.60287230697898" fill="#404040"/>
+<text x="204" y="143" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11" fill="#555555">确认</text>
+<text x="416" y="143" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="11" fill="#555555">续绘</text>
+<path d="M520,207 L520,233" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M100,233 L520,233" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M100,233 L100,207" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="100,207 102.39712769302102,211.38791280945188 97.60287230697898,211.38791280945188" fill="#404040"/>
+<text x="310" y="257" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#111111">用户观看后判断 → 暂停并再次编排，或继续／结束</text>
+<text x="310" y="294" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12.3" fill="#555555">确认后不再保留素材的独立对象身份；当前成画与目标图像并不相同。</text>
+</svg>

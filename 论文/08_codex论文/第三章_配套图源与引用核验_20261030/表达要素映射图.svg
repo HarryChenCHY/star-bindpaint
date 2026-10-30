@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="300" viewBox="0 0 620 300">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="12" y="14" width="106" height="39" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="65.0" y="38.46" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="15.5" fill="#111111">内容</text>
+<path d="M65,57 L65,78" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="65,78 62.60287230697899,73.61208719054814 67.39712769302102,73.61208719054814" fill="#404040"/>
+<rect x="12" y="82" width="106" height="43" fill="#F3F3F3" stroke="#555555" stroke-width="0.8"/>
+<text x="65.0" y="108.076" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14.3" fill="#111111">素材选择</text>
+<rect x="135" y="14" width="106" height="39" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="188.0" y="38.46" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="15.5" fill="#111111">位置</text>
+<path d="M188,57 L188,78" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="188,78 185.60287230697898,73.61208719054814 190.39712769302102,73.61208719054814" fill="#404040"/>
+<rect x="135" y="82" width="106" height="43" fill="#F3F3F3" stroke="#555555" stroke-width="0.8"/>
+<text x="188.0" y="108.076" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14.3" fill="#111111">移动</text>
+<rect x="258" y="14" width="106" height="39" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="311.0" y="38.46" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="15.5" fill="#111111">尺度</text>
+<path d="M311,57 L311,78" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="311,78 308.602872306979,73.61208719054814 313.397127693021,73.61208719054814" fill="#404040"/>
+<rect x="258" y="82" width="106" height="43" fill="#F3F3F3" stroke="#555555" stroke-width="0.8"/>
+<text x="311.0" y="108.076" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14.3" fill="#111111">缩放</text>
+<rect x="381" y="14" width="106" height="39" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="434.0" y="38.46" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="15.5" fill="#111111">方向</text>
+<path d="M434,57 L434,78" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="434,78 431.602872306979,73.61208719054814 436.397127693021,73.61208719054814" fill="#404040"/>
+<rect x="381" y="82" width="106" height="43" fill="#F3F3F3" stroke="#555555" stroke-width="0.8"/>
+<text x="434.0" y="108.076" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14.3" fill="#111111">旋转</text>
+<rect x="504" y="14" width="106" height="39" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="557.0" y="38.46" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="15.5" fill="#111111">数量</text>
+<path d="M557,57 L557,78" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="557,78 554.602872306979,73.61208719054814 559.397127693021,73.61208719054814" fill="#404040"/>
+<rect x="504" y="82" width="106" height="43" fill="#F3F3F3" stroke="#555555" stroke-width="0.8"/>
+<text x="557.0" y="108.076" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14.3" fill="#111111">重复与删减</text>
+<path d="M65,129 L65,152" fill="none" stroke="#777777" stroke-width="0.7"/>
+<path d="M188,129 L188,152" fill="none" stroke="#777777" stroke-width="0.7"/>
+<path d="M311,129 L311,152" fill="none" stroke="#777777" stroke-width="0.7"/>
+<path d="M434,129 L434,152" fill="none" stroke="#777777" stroke-width="0.7"/>
+<path d="M557,129 L557,152" fill="none" stroke="#777777" stroke-width="0.7"/>
+<path d="M65,152 L557,152" fill="none" stroke="#777777" stroke-width="0.7"/>
+<path d="M105,153 L105,180" fill="none" stroke="#404040" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polygon points="105,180 102.60287230697898,175.61208719054812 107.39712769302102,175.61208719054812" fill="#404040"/>
+<path d="M310,153 L310,180" fill="none" stroke="#404040" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polygon points="310,180 307.602872306979,175.61208719054812 312.397127693021,175.61208719054812" fill="#404040"/>
+<path d="M515,153 L515,180" fill="none" stroke="#404040" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polygon points="515,180 512.602872306979,175.61208719054812 517.397127693021,175.61208719054812" fill="#404040"/>
+<rect x="12" y="184" width="186" height="66" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="105.0" y="209.82" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#111111">主次与视觉重点</text>
+<text x="105.0" y="232.82" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#111111">由尺度、位置等共同形成</text>
+<rect x="217" y="184" width="186" height="66" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="310.0" y="209.82" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#111111">疏密与构图节奏</text>
+<text x="310.0" y="232.82" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#111111">由数量、间距等共同形成</text>
+<rect x="422" y="184" width="186" height="66" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="515.0" y="209.82" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#111111">朝向与对象联系</text>
+<text x="515.0" y="232.82" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="13.5" fill="#111111">由方向、并置等共同形成</text>
+<text x="310" y="283" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12.6" fill="#555555">关系与操作为多对多映射；表达意义结合具体情境及用户说明判断。</text>
+</svg>

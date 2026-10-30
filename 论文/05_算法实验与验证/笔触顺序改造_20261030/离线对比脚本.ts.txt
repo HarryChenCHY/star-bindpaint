@@ -1,0 +1,26 @@
+import { createRequire } from 'node:module';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { performance } from 'node:perf_hooks';
+const req = createRequire('/Users/harrychen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json');
+const { createCanvas, loadImage } = req('@napi-rs/canvas');
+const root='/Users/harrychen/Desktop/startrace';
+const name=process.argv[2]||'baseline';
+const painter=await import(name==='baseline' ? './baseline.ts' : root+'/src/lib/expressive-painter.ts');
+const files=process.argv.slice(3);
+const output='/tmp/startrace-paint-order-20261030'; await mkdir(output,{recursive:true});
+const records=[];
+for(const file of files){
+ const sourceCanvas=createCanvas(640,480),sc=sourceCanvas.getContext('2d');sc.fillStyle='#fff';sc.fillRect(0,0,640,480);
+ const img=await loadImage(root+'/'+file);const scale=Math.min(640/img.width,480/img.height);sc.drawImage(img,(640-img.width*scale)/2,(480-img.height*scale)/2,img.width*scale,img.height*scale);
+ const source=sc.getImageData(0,0,640,480),canvas=createCanvas(640,480),ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,640,480);
+ const current=ctx.getImageData(0,0,640,480);const start=performance.now();
+ const strokes=await painter.planExpressivePainting(source,current,{abstraction:60,mood:'original'},{});const elapsed=performance.now()-start;
+ const key=file.split('/').pop()!.replace(/\.[^.]+$/,'');const jumps=strokes.slice(1).map((s:any,i:number)=>Math.hypot(s.points[0].x-strokes[i].points.at(-1).x,s.points[0].y-strokes[i].points.at(-1).y)/800);
+ const sorted=[...jumps].sort((a,b)=>a-b);let i=0;const strip=createCanvas(640*4,480),st=strip.getContext('2d');
+ for(const pct of [.25,.5,.75,1]){while(i<Math.round(strokes.length*pct)){painter.drawExpressiveStroke(ctx,strokes[i++]);}st.drawImage(canvas,Math.round(pct*4-1)*640,0);}
+ await writeFile(output+'/'+name+'-'+key+'.png',strip.toBuffer('image/png'));
+ const a=ctx.getImageData(0,0,640,480).data,b=source.data;let mse=0;for(let j=0;j<a.length;j+=4)for(let c=0;c<3;c++)mse+=(a[j+c]-b[j+c])**2/(3*640*480);
+ const r={name,key,elapsed,strokes:strokes.length,meanTravel:jumps.reduce((a,b)=>a+b,0)/Math.max(1,jumps.length),p95:sorted[Math.floor(sorted.length*.95)],longJumps:jumps.filter(x=>x>.25).length/Math.max(1,jumps.length),rgbRmse:Math.sqrt(mse)};records.push(r);console.log(JSON.stringify(r));
+ await writeFile(output+'/'+name+'-'+key+'-strokes.json',JSON.stringify(strokes));
+}
+await writeFile(output+'/'+name+'-metrics.json',JSON.stringify(records,null,2));

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="284" viewBox="0 0 620 284">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="10" y="19" width="132" height="70" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="76.0" y="46.980000000000004" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">中间画面</text>
+<text x="76.0" y="69.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">已出现哪些关系</text>
+<text x="76" y="111" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12" fill="#111111"></text>
+<rect x="166" y="19" width="132" height="70" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="232.0" y="46.980000000000004" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">辨认与判断</text>
+<text x="232.0" y="69.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">与意图是否相符</text>
+<text x="232" y="111" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12" fill="#111111"></text>
+<rect x="322" y="19" width="132" height="70" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="388.0" y="46.980000000000004" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">意图的处理</text>
+<text x="388.0" y="69.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">保留或发展想法</text>
+<text x="388" y="111" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12" fill="#111111"></text>
+<rect x="478" y="19" width="132" height="70" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="544.0" y="46.980000000000004" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">后续行动</text>
+<text x="544.0" y="69.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">继续、加入或结束</text>
+<text x="544" y="111" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12" fill="#111111"></text>
+<path d="M144,54 L163,54" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="163,54 158.61208719054812,56.39712769302101 158.61208719054812,51.60287230697899" fill="#404040"/>
+<path d="M300,54 L319,54" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="319,54 314.61208719054815,56.39712769302101 314.61208719054815,51.60287230697899" fill="#404040"/>
+<path d="M456,54 L475,54" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="475,54 470.61208719054815,56.39712769302101 470.61208719054815,51.60287230697899" fill="#404040"/>
+<path d="M544,94 L544,128" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M76,128 L544,128" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M76,128 L76,94" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="76,94 78.39712769302102,98.38791280945186 73.60287230697898,98.38791280945186" fill="#404040"/>
+<text x="310" y="151" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14" fill="#111111">回顾中区分过程性质</text>
+<rect x="10" y="167" width="186" height="59" fill="#F4F4F4" stroke="#555555" stroke-width="0.8"/>
+<text x="103.0" y="189.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">原计划推进</text>
+<text x="103.0" y="211.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">保留既有关系</text>
+<rect x="217" y="167" width="186" height="59" fill="#F4F4F4" stroke="#555555" stroke-width="0.8"/>
+<text x="310.0" y="189.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">产生新想法</text>
+<text x="310.0" y="211.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">更新内容或构图</text>
+<rect x="424" y="167" width="186" height="59" fill="#F4F4F4" stroke="#555555" stroke-width="0.8"/>
+<text x="517.0" y="189.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">修正系统偏差</text>
+<text x="517.0" y="211.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">恢复预期表现</text>
+<text x="310" y="265" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12.6" fill="#555555">辨认依据：画面变化、用户解释与后续操作；单独的停顿不等于反思。</text>
+</svg>

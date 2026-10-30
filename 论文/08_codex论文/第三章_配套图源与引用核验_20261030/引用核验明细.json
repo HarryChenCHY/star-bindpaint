@@ -1,0 +1,410 @@
+[
+  {
+    "id": 1,
+    "former_id": 1,
+    "key": "scaife1996",
+    "text": "SCAIFE M, ROGERS Y. External cognition: how do graphical representations work?[J]. International Journal of Human-Computer Studies, 1996, 45(2): 185–213. DOI: 10.1006/ijhc.1996.0048.",
+    "url": "https://www.sussex.ac.uk/informatics/cogslib/reports/csrp/csrp335.pdf",
+    "locator": "作者公开稿第7—9页，1.1与1.2节",
+    "support": "内部、外部表征及交互加工；计算卸载、重新表征、图形约束",
+    "scope": "综述及理论框架；不证明初学者绘画效果。",
+    "citing_sections": [
+      "3.1.1 外部表征参与构思的理论依据",
+      "3.1.2 空间操作与表达关系的形成",
+      "3.1.3 素材编排的设计命题与验证边界",
+      "3.6.1 面向表达支持的六项交互原则",
+      "3.6.2 内容与构图向操作的映射",
+      "第3章 面向表达支持的协同绘画理论与交互设计原则"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "1148fe5c076057d816f7982aeb58e821c4e74cee2c7916bc30ad1cf5478aef82"
+  },
+  {
+    "id": 2,
+    "former_id": 2,
+    "key": "kirsh2010",
+    "text": "KIRSH D. Thinking with external representations[J]. AI & Society, 2010, 25(4): 441–454. DOI: 10.1007/s00146-010-0272-8.",
+    "url": "https://link.springer.com/article/10.1007/s00146-010-0272-8",
+    "locator": "正式第441—444页，1节及图1；PDF第1—4页",
+    "support": "稳定外部参照、显化关系、协调思考；几何表征示例",
+    "scope": "关系显化迁移到编排是本文推导；不报告创造力的已有效果。",
+    "citing_sections": [
+      "3.1.1 外部表征参与构思的理论依据",
+      "3.1.2 空间操作与表达关系的形成",
+      "3.1.3 素材编排的设计命题与验证边界",
+      "3.6.1 面向表达支持的六项交互原则",
+      "3.6.2 内容与构图向操作的映射",
+      "第3章 面向表达支持的协同绘画理论与交互设计原则"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "b8b738646360522f0b0404de265717cd93191593b7805d8305f27a83590ed4b6"
+  },
+  {
+    "id": 3,
+    "former_id": 3,
+    "key": "risko2016",
+    "text": "RISKO E F, GILBERT S J. Cognitive offloading[J]. Trends in Cognitive Sciences, 2016, 20(9): 676–688. DOI: 10.1016/j.tics.2016.07.002.",
+    "url": "https://samgilbert.net/pubs/Risko2016TiCS.pdf",
+    "locator": "正式第676—679页，定义及外部行动讨论；PDF第1—4页",
+    "support": "认知卸载改变任务信息加工要求",
+    "scope": "综述；自动绘制和美化不能按名称直接视作认知卸载。",
+    "citing_sections": [
+      "3.1.1 外部表征参与构思的理论依据",
+      "第3章 面向表达支持的协同绘画理论与交互设计原则"
+    ],
+    "topic_score": 0.8,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "a7aeb66d2155b76415c51e79c7fe4c78c077b18a3693f5ea0596285c2bedb8bd"
+  },
+  {
+    "id": 4,
+    "former_id": 6,
+    "key": "schon1992",
+    "text": "SCHÖN D A, WIGGINS G. Kinds of seeing and their functions in designing[J]. Design Studies, 1992, 13(2): 135–156. DOI: 10.1016/0142-694X(92)90268-F.",
+    "url": "https://www.sciencedirect.com/science/article/pii/0142694X9290268F",
+    "locator": "出版社Abstract；正式卷13期2、页135—156的元数据",
+    "support": "三类观看：视觉辨认、质量判断、空间整体关系",
+    "scope": "本次仅核对到出版社摘要；未取得22页全文。下载到的同名2页PDF只是网页快照，不能算全文。详细Petra案例另据Schön反思性对话论文。",
+    "citing_sections": [
+      "3.2.1 观看与行动的相互作用",
+      "3.6.1 面向表达支持的六项交互原则",
+      "第3章 面向表达支持的协同绘画理论与交互设计原则"
+    ],
+    "topic_score": 0.8,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "abstract_only",
+    "crossref_verified": true,
+    "pdf_sha256": null
+  },
+  {
+    "id": 5,
+    "former_id": 7,
+    "key": "schon_reflective1992",
+    "text": "SCHÖN D A. Designing as reflective conversation with the materials of a design situation[J]. Research in Engineering Design, 1992, 3(3): 131–147. DOI: 10.1007/BF01580516.",
+    "url": "https://creativetech.mat.ucsb.edu/readings/Schon1992_Article_DesigningAsReflectiveConversat.pdf",
+    "locator": "正式第133—136页，尤其第134—135页；PDF第3—6页",
+    "support": "Petra教室单元改为L形；观看—行动—再观看；意图及未预期后果",
+    "scope": "建筑教学案例；向非专业者自动绘画迁移须保留判断及再介入条件。",
+    "citing_sections": [
+      "3.1.3 素材编排的设计命题与验证边界",
+      "3.2.1 观看与行动的相互作用",
+      "3.6.1 面向表达支持的六项交互原则",
+      "第3章 面向表达支持的协同绘画理论与交互设计原则"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "2c0c97f14ba43c8faab925d5323fe9dc296deacde86bdade1ca8bbe6b82838f5"
+  },
+  {
+    "id": 6,
+    "former_id": 10,
+    "key": "ryan2000",
+    "text": "RYAN R M, DECI E L. Self-determination theory and the facilitation of intrinsic motivation, social development, and well-being[J]. American Psychologist, 2000, 55(1): 68–78. DOI: 10.1037/0003-066X.55.1.68.",
+    "url": "https://selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_SDT.pdf",
+    "locator": "正式第68、70、74页；PDF第1、3、7页",
+    "support": "自主、胜任及关系需要；自主不等于独立；自愿性",
+    "scope": "一般心理理论，不直接验证本工具或IMI中文译本。",
+    "citing_sections": [
+      "3.1.3 素材编排的设计命题与验证边界",
+      "3.3.1 自主性与胜任感的概念",
+      "3.3.2 执行分工与用户贡献的辨认",
+      "第3章 面向表达支持的协同绘画理论与交互设计原则"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "e14779081a999b49dfdde8fe7078fcef65a282d4e6374a037269083d063a1ec3"
+  },
+  {
+    "id": 7,
+    "former_id": 4,
+    "key": "kirsh1994",
+    "text": "KIRSH D, MAGLIO P. On distinguishing epistemic from pragmatic action[J]. Cognitive Science, 1994, 18(4): 513–549. DOI: 10.1207/s15516709cog1804_1.",
+    "url": "https://adrenaline.ucsd.edu/kirsh/Articles/CogsciJournal/cogsci-journal.pdf",
+    "locator": "作者稿PDF第2—4页，Abstract与开篇定义",
+    "support": "区分实践性行动与认识性行动；俄罗斯方块旋转及移动",
+    "scope": "原任务为俄罗斯方块；同类空间动作不等于绘画效果。PDF文本提取含字码，另据可视页面及出版社摘要交叉核对。",
+    "citing_sections": [
+      "3.1.2 空间操作与表达关系的形成",
+      "3.1.3 素材编排的设计命题与验证边界"
+    ],
+    "topic_score": 0.8,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "b4cb9c954681266b7f2e19b41a10b8c6c0450565f7d4fb2dc383e77397208b4f"
+  },
+  {
+    "id": 8,
+    "former_id": 5,
+    "key": "procreate-transform",
+    "text": "SAVAGE INTERACTIVE. Procreate handbook: Transform—Interface and gestures[EB/OL]. [2026-10-30]. https://help.procreate.com/procreate/handbook/transform/transform-interface-gestures.",
+    "url": "https://help.procreate.com/procreate/handbook/transform/transform-interface-gestures",
+    "locator": "Bounding Box、Transformation Nodes、Rotation Node、Commit小节",
+    "support": "包围框、节点、移动、缩放、旋转及确认",
+    "scope": "官方手册，说明功能，不是初学者有效性实验。",
+    "citing_sections": [
+      "3.1.2 空间操作与表达关系的形成",
+      "3.6.2 内容与构图向操作的映射"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": false,
+    "pdf_sha256": null
+  },
+  {
+    "id": 9,
+    "former_id": 13,
+    "key": "cofi2023",
+    "text": "REZWANA J, MAHER M L. Designing creative AI partners with COFI: A framework for modeling interaction in human-AI co-creative systems[J]. ACM Transactions on Computer-Human Interaction, 2023, 30(5): 1–28. DOI: 10.1145/3519026.",
+    "url": "https://arxiv.org/pdf/2204.07666",
+    "locator": "公开稿第6—11页，3节、3.1.1、3.1.2及3.2.2",
+    "support": "共享产物、协作风格、通信、贡献类型、交接时机",
+    "scope": "引用正式2023期刊信息；定位依据2022公开稿（27页），不混作期刊28页的页码。仅迁移分析维度。",
+    "citing_sections": [
+      "3.1.3 素材编排的设计命题与验证边界",
+      "3.4.1 贡献类型与控制交接",
+      "3.4.2 用户主导的协同绘画模型",
+      "3.6.1 面向表达支持的六项交互原则"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "54bbc7479ebdf10320db218e82206217eb995c3974a48e5b920574441db7be50"
+  },
+  {
+    "id": 10,
+    "former_id": 8,
+    "key": "promptpaint2023",
+    "text": "CHUNG J J Y, ADAR E. PromptPaint: Steering text-to-image generation through paint medium-like interactions[C]//Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology. New York: ACM, 2023: 1–17. DOI: 10.1145/3586183.3606777.",
+    "url": "https://www.cond.org/PromptPaint.pdf",
+    "locator": "第1—2页、Prompt intervention说明；8.3与8.4节",
+    "support": "生成途中修改提示及区域；中间表征难理解与自动化/控制取舍",
+    "scope": "扩散模型工具，仅作为持续干预的交互案例；本文不复用其模型能力。",
+    "citing_sections": [
+      "3.2.2 中间画面与表达意图的发展"
+    ],
+    "topic_score": 0.8,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "c504797ee4ba50a4117161858bf72e35ac011012676353f01ee74ef768b9586a"
+  },
+  {
+    "id": 11,
+    "former_id": 9,
+    "key": "tversky2002",
+    "text": "TVERSKY B, MORRISON J B, BÉTRANCOURT M. Animation: can it facilitate?[J]. International Journal of Human-Computer Studies, 2002, 57(4): 247–262. DOI: 10.1006/ijhc.2002.1017.",
+    "url": "https://www.tc.columbia.edu/faculty/bt2158/faculty-profile/files/_Morrison_Betrancourt_AnimationCanitfacilitate.pdf",
+    "locator": "正式第255—258页，3节及3.3节Interactivity；PDF第9—12页",
+    "support": "动画过快或复杂时的可理解性；交互控制及其条件",
+    "scope": "原研究为动画理解与学习，不直接推导创作最佳速度。",
+    "citing_sections": [
+      "3.2.3 持续介入的条件及节奏取舍",
+      "3.6.1 面向表达支持的六项交互原则"
+    ],
+    "topic_score": 0.8,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "9b02208a40b33b177bdd0e726b2917d8dfbe7257e22b2d832dcc8a4ecf06a865"
+  },
+  {
+    "id": 12,
+    "former_id": 11,
+    "key": "bob2014",
+    "text": "BENEDETTI L, WINNEMÖLLER H, CORSINI M, et al. Painting with Bob: Assisted creativity for novices[C]//Proceedings of the 27th Annual ACM Symposium on User Interface Software and Technology. New York: ACM, 2014: 419–428. DOI: 10.1145/2642918.2647415.",
+    "url": "https://purehost.bath.ac.uk/ws/files/124955645/Benedetti_UIST_2015.pdf",
+    "locator": "作者公开稿Study Design、Results及Discussion；文件含机构封页",
+    "support": "手动辅助笔刷；画面偏好与控制体验分别评价；归属与选图限制",
+    "scope": "原文有Assisted Creativity for Novices副标题，Crossref登记主标题Painting with Bob；文件名2015不改变论文发表于2014这一元数据。",
+    "citing_sections": [
+      "3.3.2 执行分工与用户贡献的辨认"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "fb2a996827ee9c588000901eded7d5251b550f1733526de419335cacd0c4be0e"
+  },
+  {
+    "id": 13,
+    "former_id": 12,
+    "key": "imi",
+    "text": "CENTER FOR SELF-DETERMINATION THEORY. Intrinsic Motivation Inventory (IMI)[EB/OL]. [2026-10-30]. https://selfdeterminationtheory.org/intrinsic-motivation-inventory/.",
+    "url": "https://selfdeterminationtheory.org/wp-content/uploads/2022/02/IMI_Complete.pdf",
+    "locator": "官方PDF第1—2页Scale Description；各分量表题项",
+    "support": "兴趣/愉悦、感知能力、感知选择、压力/紧张构念及不同版本",
+    "scope": "不将各维度汇总为创造力；未确认中文版效度，不擅改选择构念为细节控制。官方PDF中的旧参考年份笔误不予继承。",
+    "citing_sections": [
+      "3.3.3 主观体验与测量概念的对应",
+      "3.6.3 笔触与反馈向评价的映射"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": false,
+    "pdf_sha256": "0affd9e36cd756a106435004f3ae2b0b9226ea242b770be9cfd7ce0a7e00dce7"
+  },
+  {
+    "id": 14,
+    "former_id": 21,
+    "key": "sus1996",
+    "text": "BROOKE J. SUS: A quick and dirty usability scale[M]//JORDAN P W, THOMAS B, WEERDMEESTER B A, et al. Usability Evaluation in Industry. London: Taylor & Francis, 1996: 189–194.",
+    "url": "https://hci-studies.org/methods-and-measures/downloads/SUS_Brooke1996.pdf",
+    "locator": "公开原文章节PDF第1页Abstract、第3页SUS说明、第5页Scoring SUS",
+    "support": "整体主观可用性",
+    "scope": "以原文及作者上传版本书目交叉核对；不把SUS解释为创造力或表达指标。",
+    "citing_sections": [
+      "3.3.3 主观体验与测量概念的对应"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": false,
+    "pdf_sha256": "c04fe6139b1f2c3650f497e3d139e7b0f9b112c79beec7c53f7573e9c9a003a4"
+  },
+  {
+    "id": 15,
+    "former_id": 14,
+    "key": "amershi2019",
+    "text": "AMERSHI S, WELD D, VORVOREANU M, et al. Guidelines for human-AI interaction[C]//Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems. New York: ACM, 2019: 1–13. DOI: 10.1145/3290605.3300233.",
+    "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2019/01/Guidelines-for-Human-AI-Interaction-camera-ready.pdf",
+    "locator": "作者稿PDF第3页Table1，G1/G7/G9/G16",
+    "support": "能力说明、调用、纠正及行动后果",
+    "scope": "本PDF含附录共19页；正文会议论文元数据为13页。并非所有学习型AI指南均适用于程序化工具。",
+    "citing_sections": [
+      "3.4.1 贡献类型与控制交接",
+      "3.6.1 面向表达支持的六项交互原则"
+    ],
+    "topic_score": 0.8,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "82fff584c6b986f573608361478e93447538c6ce707e4b9b04d45d584272ea03"
+  },
+  {
+    "id": 16,
+    "former_id": 15,
+    "key": "gestalt2012",
+    "text": "WAGEMANS J, ELDER J H, KUBOVY M, et al. A century of Gestalt psychology in visual perception: I. Perceptual grouping and figure–ground organization[J]. Psychological Bulletin, 2012, 138(6): 1172–1217. DOI: 10.1037/a0029333.",
+    "url": "https://dev.ipol.im/~blusseau/biblio/psychophysics/2012-wagemans--A-century-of-Gestalt-I.pdf",
+    "locator": "公开PDF第10—11页接近/相似/共同区域；第24—29页图底组织",
+    "support": "知觉分组与图底组织",
+    "scope": "检索目标为Part I，未混入Part II；借用分组依据，不推导紫色或圆角最优。原作者机构链接TLS失败后用同一原文的公开副本交叉核对DOI、作者及正文。",
+    "citing_sections": [
+      "3.5.1 知觉分组与画布层级",
+      "3.6.1 面向表达支持的六项交互原则"
+    ],
+    "topic_score": 0.8,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": true,
+    "pdf_sha256": "7ea5e885d720be18247296bcaec8bc6f51abd7b6a97397085a51e5677b3724c0"
+  },
+  {
+    "id": 17,
+    "former_id": 16,
+    "key": "wcag22",
+    "text": "WORLD WIDE WEB CONSORTIUM. Web Content Accessibility Guidelines (WCAG) 2.2[EB/OL]. (2024-12-12)[2026-10-30]. https://www.w3.org/TR/2024/REC-WCAG22-20241212/.",
+    "url": "https://www.w3.org/TR/2024/REC-WCAG22-20241212/",
+    "locator": "1.4.1、1.4.3、1.4.10、1.4.11、2.1.1、2.5.7、2.5.8",
+    "support": "对比、状态非仅色彩、重排、键盘、非拖拽和最低目标尺寸",
+    "scope": "24×24 CSS像素及例外；不误写成所有网页必须44px，不宣称原型已整体合规。",
+    "citing_sections": [
+      "3.5.2 一致性与可访问性的规范依据",
+      "3.6.1 面向表达支持的六项交互原则"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": false,
+    "pdf_sha256": null
+  },
+  {
+    "id": 18,
+    "former_id": 17,
+    "key": "apple-accessibility",
+    "text": "APPLE. Human interface guidelines: Accessibility[EB/OL]. [2026-10-30]. https://developer.apple.com/design/human-interface-guidelines/accessibility.",
+    "url": "https://developer.apple.com/design/human-interface-guidelines/accessibility",
+    "locator": "官方Accessibility：Visual design、Interaction、Motion相关小节",
+    "support": "可读性、对比、熟悉一致的操作及减少动态效果",
+    "scope": "网页依赖JS，实际从官方同页面JSON读取正文。原生平台单位和建议不替代WCAG网页要求。",
+    "citing_sections": [
+      "3.5.2 一致性与可访问性的规范依据",
+      "3.6.1 面向表达支持的六项交互原则"
+    ],
+    "topic_score": 0.8,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": false,
+    "pdf_sha256": null
+  },
+  {
+    "id": 19,
+    "former_id": 18,
+    "key": "procreate-interface",
+    "text": "SAVAGE INTERACTIVE. Procreate handbook: Interface[EB/OL]. [2026-10-30]. https://help.procreate.com/procreate/handbook/interface-gestures/interface.",
+    "url": "https://help.procreate.com/procreate/handbook/interface-gestures/interface",
+    "locator": "Interface Layout及顶部菜单/侧栏说明",
+    "support": "画布优先，主要工具位于画面边缘",
+    "scope": "功能组织的实践参照，不是专业产品对本样本的测试结果。",
+    "citing_sections": [
+      "3.5.3 绘画产品案例的迁移条件"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": false,
+    "pdf_sha256": null
+  },
+  {
+    "id": 20,
+    "former_id": 19,
+    "key": "feather-interface",
+    "text": "SKETCHSOFT. Feather documentation: Interface[EB/OL]. [2026-10-30]. https://support.feather.art/docs/interfaceandgestures/interface.",
+    "url": "https://support.feather.art/docs/interfaceandgestures/interface",
+    "locator": "Top Menu、Sidebar Menu、Bottom Context Menu",
+    "support": "顶部工具、左侧面板与底部情境菜单",
+    "scope": "二维网页不照搬三维导航，也未错误声称Feather没有底部工具。",
+    "citing_sections": [
+      "3.5.3 绘画产品案例的迁移条件"
+    ],
+    "topic_score": 1.0,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": false,
+    "pdf_sha256": null
+  },
+  {
+    "id": 21,
+    "former_id": 20,
+    "key": "huashijie",
+    "text": "SHIJIAZHUANG HUANCI NETWORK TECHNOLOGY CO., LTD. 画世界[EB/OL]. [2026-10-30]. https://apps.apple.com/cn/app/%E7%94%BB%E4%B8%96%E7%95%8C/id1450111327.",
+    "url": "https://apps.apple.com/cn/app/%E7%94%BB%E4%B8%96%E7%95%8C/id1450111327",
+    "locator": "开发者提供的App描述及开发者身份",
+    "support": "图片导入、图层、过程回看、画集整理",
+    "scope": "引用画世界（1450111327），未混入画世界Pro（1574797598）；开发者以商店当前原文Shijiazhuang huanci Network Technology Co., Ltd记载。",
+    "citing_sections": [
+      "3.5.3 绘画产品案例的迁移条件"
+    ],
+    "topic_score": 0.8,
+    "semantic_score": 1.0,
+    "fulltext_coverage": "readable",
+    "crossref_verified": false,
+    "pdf_sha256": null
+  }
+]

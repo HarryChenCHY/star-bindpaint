@@ -43,7 +43,7 @@ export default function StarField({ quiet = false }: { quiet?: boolean }) {
         <path d="M490 90 L635 27 L786 74 L940 31" strokeDasharray="2 7" />
       </g>
       <g fill="currentColor" className="star-dust">{dust.map(([x, y]) => <circle key={`${x}-${y}`} cx={x} cy={y} r="1.3" />)}</g>
-      {stars.map(([x, y, size], index) => <g key={x} transform={`translate(${x} ${y})`} className={index % 3 === 0 ? 'star-violet' : 'star-white'}>
+      {stars.map(([x, y, size], index) => <g key={`${x}-${y}`} transform={`translate(${x} ${y})`} className={index % 3 === 0 ? 'star-violet' : 'star-white'}>
         <g data-star-pulse={index < 8 ? '' : undefined} className="star-glyph">
           <path d={`M0 ${-size} Q${size * .17} ${-size * .17} ${size} 0 Q${size * .17} ${size * .17} 0 ${size} Q${-size * .17} ${size * .17} ${-size} 0 Q${-size * .17} ${-size * .17} 0 ${-size}Z`} fill="currentColor" />
         </g>

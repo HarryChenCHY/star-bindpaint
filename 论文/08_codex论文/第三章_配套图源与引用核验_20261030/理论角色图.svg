@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="310" viewBox="0 0 620 310">
+<rect width="100%" height="100%" fill="white"/>
+<text x="310" y="22" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="17" fill="#111111">理论解释与设计推导</text>
+<rect x="10" y="43" width="186" height="65" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="103.0" y="68.64" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#111111">外部认知</text>
+<text x="103.0" y="91.64" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#111111">想法与可见图形的关系</text>
+<path d="M103,112 L103,139" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="103,139 100.60287230697898,134.61208719054812 105.39712769302102,134.61208719054812" fill="#404040"/>
+<rect x="217" y="43" width="186" height="65" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="310.0" y="68.64" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#111111">设计中的反思</text>
+<text x="310.0" y="91.64" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#111111">观看、判断与再次行动</text>
+<path d="M310,112 L310,139" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="310,139 307.602872306979,134.61208719054812 312.397127693021,134.61208719054812" fill="#404040"/>
+<rect x="424" y="43" width="186" height="65" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="517.0" y="68.64" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#111111">自我决定</text>
+<text x="517.0" y="91.64" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="14.5" fill="#111111">自愿选择与有效影响</text>
+<path d="M517,112 L517,139" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="517,139 514.602872306979,134.61208719054812 519.397127693021,134.61208719054812" fill="#404040"/>
+<rect x="10" y="143" width="186" height="60" fill="#F3F3F3" stroke="#555555" stroke-width="0.8"/>
+<text x="103.0" y="165.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">素材关系可比较</text>
+<text x="103.0" y="188.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">D1  编排与表达落实</text>
+<rect x="217" y="143" width="186" height="60" fill="#F3F3F3" stroke="#555555" stroke-width="0.8"/>
+<text x="310.0" y="165.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">中间画面可判断</text>
+<text x="310.0" y="188.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">D2  反馈与持续介入</text>
+<rect x="424" y="143" width="186" height="60" fill="#F3F3F3" stroke="#555555" stroke-width="0.8"/>
+<text x="517.0" y="165.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">个人贡献可辨认</text>
+<text x="517.0" y="188.98" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="14" fill="#111111">D3  分工与自主体验</text>
+<path d="M103,207 L103,222" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M310,207 L310,222" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M517,207 L517,222" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M103,222 L517,222" fill="none" stroke="#404040" stroke-width="0.85"/>
+<path d="M310,223 L310,238" fill="none" stroke="#404040" stroke-width="0.9"/>
+<polygon points="310,238 307.602872306979,233.61208719054812 312.397127693021,233.61208719054812" fill="#404040"/>
+<rect x="150" y="240" width="320" height="42" fill="#FFFFFF" stroke="#555555" stroke-width="0.8"/>
+<text x="310.0" y="265.8" text-anchor="middle" font-family="Heiti SC, SimHei, sans-serif" font-size="15" fill="#111111">P1—P6交互原则及第四章设计</text>
+<text x="310" y="303" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="12.7" fill="#555555">COFI限定分工与交接；视觉规范限定可辨认与可操作的条件。</text>
+</svg>
