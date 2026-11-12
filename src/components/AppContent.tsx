@@ -9,6 +9,7 @@ import { useInterfaceMotion } from '@/components/motion/useInterfaceMotion';
 export default function AppContent({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const reduced = useInterfaceMotion();
-  const themed = ['/', '/create', '/paint', '/gallery', '/intro', '/settings'].includes(pathname);
-  return <SceneTransitionProvider><div className={`flex-1 flex flex-col${themed ? ' night-ui' : ''}`} data-ui-motion={reduced ? 'reduced' : 'full'}>{themed && <StarField quiet={pathname === '/paint'} />}{children}</div></SceneTransitionProvider>;
+  const study = pathname === '/study' || pathname === '/rater' || pathname.startsWith('/admin/studies');
+  const themed = study || ['/', '/create', '/paint', '/gallery', '/intro', '/settings'].includes(pathname);
+  return <SceneTransitionProvider><div className={`flex-1 flex flex-col${themed ? ' night-ui' : ''}`} data-ui-motion={reduced ? 'reduced' : 'full'}>{themed && <StarField quiet={pathname === '/paint' || study} />}{children}</div></SceneTransitionProvider>;
 }

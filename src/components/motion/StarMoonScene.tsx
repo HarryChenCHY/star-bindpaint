@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { ArrowLeft, Images, Shapes, Move, Timer, RotateCcw, Palette, Image, Save } from 'lucide-react';
+import { ArrowLeft, Images, Shapes, Eraser, Paintbrush, Timer, RotateCcw, Palette, Image, Save } from 'lucide-react';
 import { createSceneExitGate } from '@/lib/scene-exit-gate';
 import type { SceneKind } from './SceneTransition';
 
@@ -19,6 +19,7 @@ const positions = [[.12,.24],[.82,.19],[.67,.38],[.27,.45],[.89,.58],[.38,.14],[
 export default function StarMoonScene({ kind, reduced, routeReady, destination, onCovered, onFinish }: {
   kind: SceneKind; reduced: boolean; routeReady: boolean; destination: string; onCovered: () => void; onFinish: () => void;
 }) {
+  const [hasSource] = useState(() => { try { return Boolean(sessionStorage.getItem('startrace-creation-source')); } catch { return false; } });
   const root = useRef<HTMLDivElement>(null);
   const skip = useRef<HTMLButtonElement>(null);
   const timeline = useRef<gsap.core.Timeline | null>(null);
@@ -46,6 +47,12 @@ export default function StarMoonScene({ kind, reduced, routeReady, destination, 
   const cx = w / 2, cy = h * .35;
   const edge = mobile ? 8 : 14;
   const sideY = mobile ? 72 : 86;
+  const toolPadding = mobile ? 3 : 5, toolStep = mobile ? 45 : 47;
+  const toolWidth = 44 + toolPadding * 2;
+  const sideIcons = [Shapes, Eraser, Paintbrush, Timer, RotateCcw];
+  const topIcons = hasSource ? [Palette, Image, Save] : [Palette, Save];
+  const topWidth = topIcons.length * 44 + (topIcons.length - 1) * (toolStep - 44) + toolPadding * 2;
+  const topY = mobile ? 8 : 14;
   const sweep = Math.min(210, w * .34);
   const freePath = `M${cx-sweep} ${cy+20} C${cx-sweep*.55} ${cy-90} ${cx+sweep*.55} ${cy+115} ${cx+sweep*.2} ${cy+10} S${cx-sweep*.2} ${cy-100} ${cx+sweep} ${cy+5}`;
   const caption = kind === 'paint' ? verses : kind === 'free'
@@ -137,7 +144,7 @@ export default function StarMoonScene({ kind, reduced, routeReady, destination, 
       sequence.to(select('.scene-moon'), { x: 55, y: 24, duration: .65, ease: 'sine.inOut' }, 1.55);
       sequence.fromTo(select('.scene-brush-line'), { strokeDashoffset: 1, opacity: 0 }, { strokeDashoffset: 0, opacity: 1, duration: .65, ease: 'sine.inOut' }, 1.55);
       const stars = select('.scene-star');
-      const targets = [[edge + 26, sideY + 26], [edge + 26, sideY + 71], [edge + 26, sideY + 116], [edge + 26, sideY + 161], [edge + 30, 36], [edge + 116, 36], [w-edge-116,36], [w-edge-71,36], [w-edge-26,36]];
+      const targets = [...sideIcons.map((_, i) => [edge + toolPadding + 22, sideY + toolPadding + 22 + i * toolStep]), [edge + 30, topY + 22], [edge + 116, topY + 22], ...topIcons.map((_, i) => [w - edge - topWidth + toolPadding + 22 + i * toolStep, topY + toolPadding + 22])];
       stars.forEach((element, i) => {
         const [tx, ty] = targets[i % targets.length];
         sequence.to(element, { x: tx - positions[i][0] * w, y: ty - positions[i][1] * h, scale: .65, opacity: 1, duration: .65 }, 1.35 + i * .035);
@@ -179,10 +186,10 @@ export default function StarMoonScene({ kind, reduced, routeReady, destination, 
       {kind !== 'free' && <g transform={`translate(${cx} ${cy})`}><g className="scene-moon"><path className="scene-moon-shape" d={moon} fill="#eeeae3" /></g></g>}
       {positions.map(([x,y],i) => <g key={i} transform={`translate(${x*w} ${y*h})`}><g className="scene-star"><circle r="1.4" fill="#fff" /><path className="scene-glint" d={star} fill={i%4===0?'#b296e2':'#f3f1ec'} opacity=".4" /></g></g>)}
       {kind === 'paint' && <g strokeWidth="1.6" color="#ddd">
-        <g className="scene-material-tool"><rect x={edge} y={sideY} width="52" height="52" rx="8" fill="#282828" /><Shapes x={edge+16} y={sideY+16} size={20} /></g>
-        <g className="scene-tool-rest"><rect x={edge} y={sideY+52} width="52" height="138" rx="8" fill="#282828" />{[Move,Timer,RotateCcw].map((Icon,i)=><Icon key={i} x={edge+16} y={sideY+61+i*45} size={20} />)}</g>
-        <g className="scene-tool-rest"><rect x={edge} y="14" width={mobile?Math.min(174,w-177):214} height="44" rx="8" fill="#282828" /><ArrowLeft x={edge+12} y="27" size={18}/><text x={edge+38} y="42" fill="currentColor" stroke="none" fontSize="12">创作入口</text><Images x={edge+112} y="27" size={18}/>{!mobile&&<text x={edge+138} y="42" fill="currentColor" stroke="none" fontSize="12">我的星图</text>}</g>
-        <g className="scene-tool-rest"><rect x={w-edge-145} y="14" width="145" height="52" rx="8" fill="#282828" />{[Palette,Image,Save].map((Icon,i)=><Icon key={i} x={w-edge-128+i*45} y="30" size={20}/>)}</g>
+        <g className="scene-tool-rest"><rect x={edge} y={sideY} width={toolWidth} height={toolPadding * 2 + 44 * sideIcons.length + (toolStep - 44) * (sideIcons.length - 1)} rx="12" fill="#1c1c1c" /></g>
+        {sideIcons.map((Icon, i) => <g key={i} className={i === 0 ? 'scene-material-tool' : 'scene-tool-rest'}><Icon x={edge + toolPadding + 12} y={sideY + toolPadding + 12 + i * toolStep} size={20} /></g>)}
+        <g className="scene-tool-rest"><rect x={edge} y={topY} width={mobile?Math.min(174,w-177):214} height="44" rx="8" fill="#282828" /><ArrowLeft x={edge+12} y={topY+13} size={18}/><text x={edge+38} y={topY+28} fill="currentColor" stroke="none" fontSize="12">创作入口</text><Images x={edge+112} y={topY+13} size={18}/>{!mobile&&<text x={edge+138} y={topY+28} fill="currentColor" stroke="none" fontSize="12">我的星图</text>}</g>
+        <g className="scene-tool-rest"><rect x={w-edge-topWidth} y={topY} width={topWidth} height={toolWidth} rx="12" fill="#1c1c1c" />{topIcons.map((Icon,i)=><Icon key={i} x={w-edge-topWidth+toolPadding+12+i*toolStep} y={topY+toolPadding+12} size={20}/>)}</g>
       </g>}
     </svg>
     <div className="scene-caption" aria-hidden="true">{caption.map(line=><div className="scene-line" key={line}><p className="scene-verse">{line}</p></div>)}</div>

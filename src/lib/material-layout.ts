@@ -7,6 +7,7 @@ export interface MaterialInstance extends MaterialPlacement {
   harmonize: boolean;
   softEdges?: boolean;
   src: string;
+  mask?: import('./material-editing').MaskStroke[];
 }
 
 export function materialBounds(p: MaterialPlacement & { rotation: number }) {

@@ -11,7 +11,8 @@ export interface Material {
   src: string;
   ratio: number;
   color: string;
-  kind?: 'uploaded';
+  kind?: 'uploaded' | 'library';
+  svg?: string;
 }
 export interface MaterialPlacement {
   material: Material;

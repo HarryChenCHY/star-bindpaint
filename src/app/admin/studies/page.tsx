@@ -1,565 +1,176 @@
 'use client';
-/* eslint-disable @next/next/no-img-element */
-import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
-import { STROKE_CONFIG } from '@/lib/stroke-config';
-import { api, preparePlan } from '@/lib/study/client';
-import { PROTOCOL, RUBRIC, STUDY_IDS, type StrokePlan } from '@/lib/study/protocol';
-import type { StudyConfig } from '@/lib/study/types';
-import type { report } from '@/lib/study/server/service';
-import { GroupReport, PairReport } from '@/components/study/StudyReport';
-import { ResearcherInterview } from '@/components/study/ResearcherInterview';
-import ImageUploader from '@/components/ImageUploader';
-import '../../study/study.css';
-type Data = { enrollmentTarget: string; config: StudyConfig; report: ReturnType<typeof report>; tests: Array<{ pairId: string; researchCode: string; studyId: string; createdAt: string; withdrawnAt: string | null }>; handoffs: Array<{ id: string; createdAt: string; status: string; sha256: string }> };
-export default function StudyAdminPage() {
-  const preparation = useRef<AbortController | null>(null);
-  const [preparationStatus, setPreparationStatus] = useState('');
-  useEffect(() => () => preparation.current?.abort(), []);
-  const [token, setToken] = useState(''),
-    [studyId, setStudyId] = useState<string>(STUDY_IDS.pilot),
-    [data, setData] = useState<Data | null>(null);
-  const [error, setError] = useState(''),
-    [busy, setBusy] = useState(false),
-    [prepared, setPrepared] = useState<{
-      plan: StrokePlan;
-      material: string;
-    } | null>(null);
-  const [rubric, setRubric] = useState<string[]>([...RUBRIC]),
-    [reviewed, setReviewed] = useState(false),
-    [governance, setGovernance] = useState<StudyConfig['governance']>({
-      researcherContact: '', compensation: '', ethicsStatement: '',
-    }),
-    [selected, setSelected] = useState(''),
-    [exportId, setExportId] = useState('');
-  const [checks, setChecks] = useState<Record<string, boolean>>({});
-  async function load(targetStudyId = studyId) {
-    const d = await api<Data>(
-      undefined,
-      token,
-      `?action=admin&studyId=${encodeURIComponent(targetStudyId)}`,
-    );
-    setData(d);
-    setRubric(d.config.rubric);
-    setGovernance(d.config.governance);
-  }
-  async function run(fn: () => Promise<unknown>) {
-    setBusy(true);
-    setError('');
-    try {
-      await fn();
-      await load();
-    } catch (e) {
-      setError(String(e));
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function prepare(url: string) {
-    preparation.current?.abort();
-    const controller = new AbortController();
-    preparation.current = controller;
-    setBusy(true);
-    setError('');
-    setPrepared(null);
-    setPreparationStatus('正在读取图片…');
-    try {
-      const result = await preparePlan(url, controller.signal, p => {
-        setPreparationStatus(`画面优化 ${Math.round(p.completed / p.total * 100)}% · 已规划 ${p.strokes} 笔`);
-      });
-      if (controller.signal.aborted) return;
-      setPrepared(result);
-      setReviewed(false);
-    } catch (e) {
-      if (preparation.current === controller) setError(String(e));
-    } finally {
-      if (preparation.current === controller) { setBusy(false); setPreparationStatus(''); }
-    }
-  }
-  async function download(format: string) {
-    const r = await fetch(
-      `/api/studies?action=download&id=${exportId}&format=${format}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
-    if (!r.ok) {
-      setError('导出读取失败');
-      return;
-    }
-    const url = URL.createObjectURL(await r.blob()),
-      a = document.createElement('a');
-    a.href = url;
-    a.download = `startrace-${exportId}.${format}`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-  const pair = data?.report.pairs.find((p) => p.pairId === selected);
-  async function downloadHandoff(id: string) {
-    const response = await fetch(`/api/studies?action=handoffDownload&id=${id}`, { headers: { Authorization: `Bearer ${token}` } });
-    if (!response.ok) throw new Error('交接包下载或完整性校验失败，请刷新后重试');
-    const url = URL.createObjectURL(await response.blob());
-    const a = document.createElement('a'); a.href = url; a.download = `研究版本交接-${id}.json`; a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-  return (
-    <div className="study-shell">
-      <div className="study-wrap">
-        <nav className="study-row mb-6">
-          <Link href="/study">← 测试入口</Link>
-          <Link href="/rater">匿名评分工作台</Link>
-          <Link href="/admin/studies/materials">P6 材料质量检查</Link>
-          <Link href="/admin/studies/pilot">六人预试看板</Link>
-          <Link href="/admin/analytics">体验统计</Link>
-        </nav>
-        <h1>研究工作台</h1>
-        <p className="study-muted">
-          协议 {PROTOCOL.version} · 每轮 12 分钟 · 原图笔触预算 ≤ 1000 笔 ·
-          预试与正式研究独立保存
-        </p>
-        <section className="study-card study-row">
-          <label>
-            研究者口令{' '}
-            <input
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              autoComplete="off"
-            />
-          </label>
-          <select
-            value={studyId}
-            onChange={(e) => {
-              setStudyId(e.target.value);
-              setData(null);
-              setPrepared(null);
-            }}
-          >
-            <option value={STUDY_IDS.pilot}>v2 预试（6 人）</option>
-            <option value={STUDY_IDS.formal}>v2 正式研究</option>
-            <option value={STUDY_IDS.legacyPilot}>v1 历史预试（只读/续测）</option>
-            <option value={STUDY_IDS.legacyFormal}>v1 历史正式研究（只读/续测）</option>
-          </select>
-          <button disabled={busy || !token} onClick={() => void run(load)}>
-            读取 / 刷新
-          </button>
-        </section>
-        {error && (
-          <p role="alert" className="study-error">
-            {error}
-          </p>
-        )}
-        {data && (
-          <>
-            <section className="study-card">
-              <h2>已有研究测试（{data.tests.length}）</h2>
-              <p className="study-muted">按自定义研究码管理，每份测试包含同一人的两轮绘画。这里显示全部批次，包括尚未完成的测试。</p>
-              {!data.tests.length && <p>尚未创建测试。参与者在已开放的批次输入新研究码并同意参与后，会显示在这里。</p>}
-              <div className="study-scroll"><table>
-                <thead><tr><th>研究码</th><th>批次</th><th>创建时间</th><th>操作</th></tr></thead>
-                <tbody>{data.tests.map(test => <tr key={test.pairId}>
-                  <td className="break-all">{test.researchCode}{test.withdrawnAt ? '（已撤回）' : ''}</td>
-                  <td>{test.studyId.includes('pilot') ? '预试' : '正式测试'}</td>
-                  <td>{new Date(test.createdAt).toLocaleString('zh-CN')}</td>
-                  <td><button disabled={busy} onClick={async () => {
-                    setBusy(true); setError('');
-                    try {
-                      await load(test.studyId); setStudyId(test.studyId); setSelected(test.pairId); setPrepared(null);
-                      setTimeout(() => document.getElementById('pair-detail')?.scrollIntoView({ behavior: 'smooth' }), 0);
-                    } catch (e) { setError(String(e)); } finally { setBusy(false); }
-                  }}>查看测试</button></td>
-                </tr>)}</tbody>
-              </table></div>
-            </section>
-            <section className="study-card">
-              <h2>材料与发布</h2>
-              <p className="study-muted">当前采用算法：{STROKE_CONFIG.version} · 预算 {STROKE_CONFIG.defaultBudget} 笔</p>
-              {data.config.plan && <div className="my-3 rounded-xl border p-3">
-                <p>已存材料版本：{data.config.plan.version} · {data.config.plan.strokes.length} 笔</p>
-                <p>{data.config.plan.version === `${STROKE_CONFIG.version}-opaque` ? '该材料使用当前算法。' : '这是历史材料；若要使用新算法，请在尚未入组的批次重新生成并审核。'}</p>
-                <p className="break-all study-muted">计划哈希：{data.config.planHash}</p>
-                <button onClick={() => {
-                  const card = { generatedAt: new Date().toISOString(), studyId, stage: data.config.stage,
-                    published: data.config.published, materialReviewed: data.config.materialReviewed,
-                    governance: data.config.governance,
-                    algorithmVersion: data.config.plan!.version, planHash: data.config.planHash,
-                    materialHash: data.config.materialHash, plannedStrokes: data.config.plan!.strokes.length,
-                    timeLimitMs: PROTOCOL.timeLimitMs, rubric: data.config.rubric,
-                    instructions: ['同一参与者使用同一材料，遵循系统 AB/BA 分配', '完成统一练习、两轮前后测、休息和访谈', '两位评分者独立评分后核对报告', '记录真实预试问题；执行卡不代表已完成预试'] };
-                  const url = URL.createObjectURL(new Blob([JSON.stringify(card, null, 2)], { type: 'application/json' }));
-                  const a = document.createElement('a'); a.href = url; a.download = `${studyId}-预试执行卡.json`; a.click();
-                  setTimeout(() => URL.revokeObjectURL(url), 1000);
-                }}>下载预试执行卡</button>
-              </div>}
-              {preparationStatus && <div role="status" className="study-row my-3"><p>{preparationStatus}</p><button onClick={() => preparation.current?.abort()}>取消规划</button></div>}
-              <p>
-                当前状态：
-                {data.config.published ? '已开放入组，材料冻结' : '未发布'}
-                。入组后不能修改本批次材料和协议。
-              </p>
-              {!data.report.totalParticipants && (
-                <>
-                  <div className="study-row my-4">
-                    <button
-                      disabled={busy}
-                      onClick={() => void prepare('/study/plant.svg')}
-                    >
-                      准备盆栽候选图
-                    </button>
-                    <button
-                      disabled={busy || !data.config.plan}
-                      onClick={() => {
-                        setPrepared({
-                          plan: data.config.plan!,
-                          material: data.config.material!,
-                        });
-                      }}
-                    >
-                      查看已存材料
-                    </button>
-                  </div>
-                  <ImageUploader
-                    preview={null}
-                    onLoadingChange={() => {}}
-                    onImageLoaded={async (_img, file) => {
-                      const url = URL.createObjectURL(file);
-                      try {
-                        await prepare(url);
-                      } finally {
-                        URL.revokeObjectURL(url);
-                      }
-                    }}
-                  />
-                </>
-              )}
-              {prepared && (
-                <div className="my-5">
-                  <p className="mb-3">绘画负担核对：{prepared.plan.strokes.length} 笔 / {PROTOCOL.timeLimitMs / 60000} 分钟。若跟完全部指导，平均每笔仅有 {(PROTOCOL.timeLimitMs / 1000 / Math.max(1, prepared.plan.strokes.length)).toFixed(2)} 秒（包括观察、换色和操作）。这是任务算术，不是完成能力的预测；请据真实预试决定材料是否适用。</p>
-                  <div className="study-grid">
-                    <div>
-                      <h3 className="font-bold">两条件共用的参考图</h3>
-                      <img
-                        src={prepared.material}
-                        alt="待审核任务图"
-                        className="max-h-72 mx-auto border"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-bold">计划回放预览</h3>
-                      <svg
-                        viewBox={`0 0 ${prepared.plan.width} ${prepared.plan.height}`}
-                        className="mx-auto max-h-72 border bg-white"
-                        role="img"
-                        aria-label="全部规划笔触预览"
-                      >
-                        {[
-                          ...prepared.plan.strokes.filter(
-                            (s) => s.phase !== 'outline',
-                          ),
-                          ...prepared.plan.strokes.filter(
-                            (s) => s.phase === 'outline',
-                          ),
-                        ].map((s) => (
-                          <polyline
-                            key={s.id}
-                            points={s.points
-                              .map((p) => `${p.x},${p.y}`)
-                              .join(' ')}
-                            stroke={s.color}
-                            strokeWidth={s.width}
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            fill="none"
-                          />
-                        ))}
-                      </svg>
-                    </div>
-                  </div>
-                  <p>
-                    最终 {prepared.plan.strokes.length} 笔：
-                    {['outline', 'large_color', 'small_color', 'paint']
-                      .map(
-                        (phase, i) =>
-                          `${['轮廓', '大色块', '小色块', '顺序笔触'][i]} ${prepared.plan.strokes.filter((s) => s.phase === phase).length}`,
-                      )
-                      .join(' / ')}
-                  </p>
-                  <p className="study-muted">
-                    {prepared.plan.quality.notes.join(' ')}
-                  </p>
-                  <h3 className="my-3 font-bold">
-                    10 项共同完成标准（第 1、4 项为主体必需项）
-                  </h3>
-                  <div className="rounded-xl border p-3 my-4">
-                    <h3 className="font-bold">研究治理与知情同意必填信息</h3>
-                    <label className="my-2 flex-col !items-start">研究负责人及联系方式
-                      <textarea maxLength={500} value={governance.researcherContact} onChange={e => setGovernance(v => ({ ...v, researcherContact: e.target.value }))} />
-                    </label>
-                    <label className="my-2 flex-col !items-start">参与补偿办法
-                      <textarea maxLength={500} value={governance.compensation} onChange={e => setGovernance(v => ({ ...v, compensation: e.target.value }))} />
-                    </label>
-                    <label className="my-2 flex-col !items-start">导师 / 伦理审批状态
-                      <textarea maxLength={500} value={governance.ethicsStatement} onChange={e => setGovernance(v => ({ ...v, ethicsStatement: e.target.value }))} />
-                    </label>
-                    <p className="study-muted">这些内容会展示给参与者。不得填写口令、身份证号或其他敏感凭据。</p>
-                  </div>
-                  {rubric.map((r, i) => (
-                    <label key={i} className="mb-2">
-                      {i + 1}
-                      <input
-                        className="w-full"
-                        value={r}
-                        maxLength={120}
-                        onChange={(e) =>
-                          setRubric((old) =>
-                            old.map((v, j) => (i === j ? e.target.value : v)),
-                          )
-                        }
-                      />
-                    </label>
-                  ))}
-                  <label className="my-4">
-                    <input
-                      type="checkbox"
-                      checked={reviewed}
-                      onChange={(e) => setReviewed(e.target.checked)}
-                    />
-                    已核对任务图、完整预览、关键主体、单笔可执行性与独立评分清单
-                  </label>
-                  <button
-                    disabled={
-                      busy || !reviewed || !!data.report.totalParticipants
-                    }
-                    onClick={() =>
-                      void run(() =>
-                        api(
-                          {
-                            action: 'configure',
-                            studyId,
-                            ...prepared,
-                            rubric,
-                            governance,
-                            materialReviewed: reviewed,
-                          },
-                          token,
-                        ),
-                      )
-                    }
-                  >
-                    保存材料与计划
-                  </button>
-                </div>
-              )}
-              {!data.config.published && (
-                <div className="mt-4">
-                  {studyId.includes('formal') &&
-                    Object.entries({
-                      pilotReviewed: '6 人预试已复核，问题已处理',
-                      backupRestored: '已实际执行备份恢复验证',
-                      deviceChecked: '正式设备输入与两条件工具已核对',
-                      protocolApproved: '导师/研究负责人已审核协议、题文和评分',
-                      consentApproved: '知情同意书、负责人联系方式、补偿与审批信息已补齐并审核',
-                      instrumentApproved: 'IMI/SUS 译文、呈现顺序与计分程序已复核',
-                      analysisFrozen: '主要结局、排除规则和统计方案已在正式采集前冻结',
-                    }).map(([k, label]) => (
-                      <label key={k} className="my-2">
-                        <input
-                          type="checkbox"
-                          checked={checks[k] || false}
-                          onChange={(e) =>
-                            setChecks((v) => ({ ...v, [k]: e.target.checked }))
-                          }
-                        />
-                        {label}
-                      </label>
-                    ))}
-                  <button
-                    className="primary"
-                    disabled={busy || !data.config.materialReviewed}
-                    onClick={() =>
-                      void run(() =>
-                        api({ action: 'publish', studyId, checks }, token),
-                      )
-                    }
-                  >
-                    发布此研究批次
-                  </button>
-                </div>
-              )}
-            </section>
-            <section className="study-card">
-              <h2>参与测试入口</h2>
-              <p>首页“参与测试”当前进入：{data.enrollmentTarget.includes('formal') ? '正式测试' : '预试'}（{data.enrollmentTarget}）。参与者无需选择批次；已有参与者继续原批次。</p>
-              <button disabled={busy || !data.config.published || data.enrollmentTarget === studyId} onClick={() => void run(() => api({ action: 'enrollmentTarget', studyId }, token))}>将当前批次设为参与测试入口</button>
-              {!data.config.published && <p className="study-muted">请先完成材料审核并发布当前批次。</p>}
-            </section>
-            <GroupReport data={data.report} />
-            <section className="study-card">
-              <h2>配对、质量与纳入管理</h2>
-              <div className="study-scroll">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>编号 / 顺序</th>
-                      <th>A / B 状态</th>
-                      <th>质量</th>
-                      <th>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.report.pairs.map((p) => (
-                      <tr key={p.pairId}>
-                        <td>
-                          {p.researchCode} / {p.order}
-                          {p.withdrawnAt && '（已撤回）'}
-                        </td>
-                        <td>
-                          {p.control?.state || '缺轮'} /{' '}
-                          {p.guided?.state || '缺轮'}
-                        </td>
-                        <td>
-                          {[
-                            ...(p.control?.quality || []),
-                            ...(p.guided?.quality || []),
-                          ].join('、') || '未发现事件质量标记'}
-                        </td>
-                        <td>
-                          <button onClick={() => setSelected(p.pairId)}>
-                            查看配对
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-            {pair && (
-              <>
-                <PairReport pair={pair} token={token} />
-                <ResearcherInterview key={`${pair.pairId}-${pair.interviewRecordedAt ?? ''}`} pairId={pair.pairId} code={pair.researchCode} answers={pair.interview} token={token} available={!pair.withdrawnAt && !!pair.control?.post && !!pair.guided?.post} onSaved={() => load()} />
-                {pair.interview && <p className="study-muted">访谈来源：{pair.interviewSource === 'researcher' ? '研究者口头访谈录入' : '参与者填写（历史流程）'}{pair.interviewRecordedAt ? ` · ${new Date(pair.interviewRecordedAt).toLocaleString()}` : ''}</p>}
+/* eslint-disable @next/next/no-img-element -- Private JPEGs require the browser session cookie. */
 
-                <section className="study-card">
-                  <h2>按预设规则处理记录</h2>
-                  {pair.withdrawnAt && (
-                    <button
-                      disabled={busy}
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            '删除此撤回者的在线作品、会话和关联批次导出？离线备份仍需人工处理。',
-                          )
-                        )
-                          void run(() =>
-                            api(
-                              {
-                                action: 'purge_withdrawal',
-                                pairId: pair.pairId,
-                              },
-                              token,
-                            ),
-                          );
-                      }}
-                    >
-                      处理撤回并清除在线副本
-                    </button>
-                  )}
-                  {[pair.control, pair.guided].map(
-                    (s, i) =>
-                      s && (
-                        <div key={s.id} className="study-row my-3">
-                          <span>
-                            {i ? 'B' : 'A'} · 尝试 {s.attempt} · {s.inclusion}
-                          </span>
-                          {[
-                            'include',
-                            'exclude',
-                            ...(s.state === 'technical_error'
-                              ? ['retest']
-                              : []),
-                          ].map((action) => (
-                            <button
-                              key={action}
-                              disabled={busy || !!pair.withdrawnAt}
-                              onClick={() => {
-                                const reason =
-                                  window.prompt('请填写依据既定协议的处理原因');
-                                if (reason)
-                                  void run(() =>
-                                    api(
-                                      {
-                                        action:
-                                          action === 'retest'
-                                            ? 'retest'
-                                            : 'include',
-                                        sessionId: s.id,
-                                        decision: action,
-                                        reason,
-                                      },
-                                      token,
-                                    ),
-                                  );
-                              }}
-                            >
-                              {action === 'include'
-                                ? '纳入'
-                                : action === 'exclude'
-                                  ? '排除'
-                                  : '安排技术重测'}
-                            </button>
-                          ))}
-                        </div>
-                      ),
-                  )}
-                </section>
-              </>
-            )}
-            <section className="study-card">
-              <h2>研究版本与材料交接</h2>
-              <p>保存当前材料原图、完整笔触计划、问卷、评分规则与能力配置。交接包不含参与者记录和口令，不替代数据备份，也不会自动发布研究。</p>
-              <button disabled={busy || !data.config.plan || !data.config.material} onClick={() => void run(async () => {
-                const item = await api<{ id: string }>({ action: 'handoffExport', studyId }, token);
-                await load(); await downloadHandoff(item.id);
-              })}>保存并下载版本交接包</button>
-              {data.handoffs.map(item => <div className="my-3 rounded-xl border p-3" key={item.id}>
-                <p>{item.status === 'draft' ? '草稿（不能作为正式冻结证明）' : item.status === 'published-pilot' ? '已发布预试配置' : '已发布正式配置'} · {item.createdAt}</p>
-                <p className="break-all study-muted">文件 SHA-256：{item.sha256}</p>
-                <button disabled={busy} onClick={() => void run(() => downloadHandoff(item.id))}>重新下载交接包</button>
-              </div>)}
-            </section>
-            <section className="study-card">
-              <h2>冻结分析快照与导出</h2>
-              <p>
-                保存版本化数据集、每条件“编号—时间—模式.json”、配对 JSON、CSV
-                和文件哈希清单。未纳入与缺失情况仍保留供审计。
-              </p>
-              <button
-                disabled={busy}
-                onClick={() =>
-                  void run(async () => {
-                    const result = await api<{ exportId: string }>(
-                      { action: 'freeze', studyId },
-                      token,
-                    );
-                    setExportId(result.exportId);
-                  })
-                }
-              >
-                冻结并生成后端导出文件
-              </button>
-              {exportId && (
-                <div className="study-row mt-3">
-                  <button onClick={() => void download('json')}>
-                    下载完整 JSON
-                  </button>
-                  <button onClick={() => void download('csv')}>
-                    下载一人一行 CSV
-                  </button>
-                </div>
-              )}
-            </section>
-          </>
-        )}
-      </div>
-    </div>
-  );
+import Link from 'next/link';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { EXPRESSION_API, ExpressionRequestError, expressionRequest } from '@/lib/study/expression-client';
+import { DEFAULT_SETUP, GROUP_LABEL, LIMITS, VERSION, describeRound, studyAssignments, type DrawingStep, type Mode, type RecordState, type RecruitmentStage, type StudyAssignment, type StudySetup } from '@/lib/study/expression';
+import type { roundExperience } from '@/lib/study/server/expression';
+import '../../study/study.css';
+import '../../study/expression.css';
+
+type Entry = Pick<RecordState,'id'|'version'|'mode'|'assignment'|'rounds'|'status'|'step'|'updatedAt'|'profile'|'artwork'|'draftArtwork'> & { name?:string; roundExperience: ReturnType<typeof roundExperience> };
+const stages = { pilot:'预试',formal:'正式测试',demo:'演示' } as const;
+const statuses = { active:'进行中',completed:'已完成',exited:'已保存并退出' } as const;
+const labels = { practice:'练习',round1:'第一轮',round2:'第二轮' } as const;
+const formatScore = (score: number | null | undefined) => score == null ? '—' : Number(score.toFixed(2));
+
+export default function ResearchDashboard() {
+  const [rows,setRows] = useState<Entry[]|null>(null);
+  const [setup,setSetup] = useState<StudySetup>(DEFAULT_SETUP);
+  const [loading,setLoading] = useState(true);
+  const [busy,setBusy] = useState(false);
+  const [notice,setNotice] = useState('');
+  const [error,setError] = useState('');
+  const [filter,setFilter] = useState<Mode|'all'>('all');
+  const [allocationStage, setAllocationStage] = useState<RecruitmentStage>('formal');
+  const refresh = useCallback(async () => {
+    try {
+      const data = await expressionRequest<{ records:Entry[];setup:StudySetup }>('?action=list');
+      setRows(data.records); setSetup(data.setup);
+    } catch (failure) {
+      if (failure instanceof ExpressionRequestError && failure.status === 401) setRows(null);
+      else setError((failure as Error).message);
+    } finally { setLoading(false); }
+  },[]);
+  useEffect(() => { const task=window.setTimeout(() => void refresh(),0); return () => window.clearTimeout(task); },[refresh]);
+  async function login(event:FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const values = new FormData(event.currentTarget);
+    setBusy(true); setError('');
+    try { await expressionRequest('',{action:'login',password:values.get('password')}); await refresh(); }
+    catch (failure) { setError((failure as Error).message); }
+    finally { setBusy(false); }
+  }
+  async function saveSetup(event:FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget, values = new FormData(form);
+    setBusy(true); setError(''); setNotice('');
+    try {
+      const response = await expressionRequest<{setup:StudySetup}>('',{
+        action:'setup', researcher:values.get('researcher'),contact:values.get('contact'),ethics:values.get('ethics'),compensation:values.get('compensation'),
+        retentionDays:Number(values.get('retentionDays')),reviewConfirmed:values.get('reviewConfirmed')==='on',
+      });
+      setSetup(response.setup); setNotice('知情同意书设置已保存。');
+    } catch (failure) { setError((failure as Error).message); }
+    finally { setBusy(false); }
+  }
+  async function remove(id:string) {
+    if (!window.confirm('确认删除本次身份信息、作答、评分和作品？此操作用于处理撤回或到期清理。')) return;
+    setBusy(true); setError(''); setNotice('');
+    try { await expressionRequest('',{action:'admin-delete',id}); await refresh(); setNotice('服务器上的本次记录已删除。'); }
+    catch (failure) { setError((failure as Error).message); }
+    finally { setBusy(false); }
+  }
+  async function logout() {
+    try { await expressionRequest('',{action:'logout'}); setRows(null); setError(''); setNotice(''); }
+    catch (failure) { setError((failure as Error).message); }
+  }
+  async function copyAssignment(slot: StudyAssignment) {
+    const instructions = [
+      `${stages[slot.stage]} · 参与者编号 ${slot.code} · ${GROUP_LABEL[slot.group]}`,
+      ...slot.rounds.map((round, index) => `第 ${index + 1} 轮：${describeRound(round)}`),
+      '打开测试页，选择上面的阶段和组别，从下拉列表选择参与者编号。线上登记还需要研究者提供的招募码。',
+    ].join('\n');
+    try {
+      await navigator.clipboard.writeText(instructions);
+      setNotice(`已复制 ${slot.code} 的测试通知。`);
+    } catch {
+      setError('浏览器无法访问剪贴板，可以手动复制该行分配信息。');
+    }
+  }
+
+  const shown=rows?.filter(row => filter === 'all' || row.mode === filter) ?? [];
+  return <main className="study-shell expression-study"><div className="study-wrap">
+    <header className="expression-header"><div><Link href="/">星迹智绘</Link><h1>创作表达研究后台</h1></div><div className="study-tools"><Link className="study-link" href="/study">测试入口</Link>{rows && <button onClick={() => void logout()}>退出后台</button>}</div></header>
+    {error && <p role="alert" className="study-error">{error}</p>}
+    {notice && rows && <p role="status">{notice}</p>}
+    {loading ? <p>正在读取登录状态…</p> : !rows ? <section className="study-card"><h2>研究者登录</h2><form className="expression-fields" onSubmit={login}><label>管理员密码<input name="password" type="password" required maxLength={256} autoComplete="current-password" /></label><div><button className="primary" disabled={busy}>{busy ? '正在登录…':'登录'}</button></div></form></section> : <>
+      <section className="study-card">
+        <h2>知情同意书</h2>
+        <p className="study-muted">在组织线上测试前填写经核准的真实信息。已经签署的记录保留当时的同意书版本及设置。</p>
+        <form key={JSON.stringify(setup)} className="expression-fields" onSubmit={saveSetup}>
+          <label>研究者与所属单位<input name="researcher" defaultValue={setup.researcher} maxLength={120}/></label>
+          <label>联系及撤回方式<input name="contact" defaultValue={setup.contact} maxLength={200}/></label>
+          <label>伦理审查信息<input name="ethics" defaultValue={setup.ethics} maxLength={300}/></label>
+          <label>补偿说明<input name="compensation" defaultValue={setup.compensation} maxLength={300}/></label>
+          <label>保存期限（天）<input name="retentionDays" defaultValue={setup.retentionDays} type="number" min={1} max={3650} required/></label>
+          <label className="expression-consent-check"><input type="checkbox" name="reviewConfirmed"/>我已取得适用的伦理审核决定，并核对以上信息及同意书内容。</label>
+          <div className="study-tools"><button className="primary" disabled={busy}>保存设置</button><Link className="study-link" href="/study?mode=demo">演示入口</Link><Link className="study-link" href="/study?mode=pilot">预试入口</Link><Link className="study-link" href="/study?mode=formal">正式测试入口</Link></div>
+        </form>
+      </section>
+      <section className="study-card">
+        <div className="expression-header">
+          <h2>参与者分配表</h2>
+          <div className="study-tools" role="group" aria-label="分配表阶段">
+            {(['formal','pilot'] as const).map(stage => <button key={stage} type="button" className={allocationStage === stage ? 'primary' : ''} aria-pressed={allocationStage === stage}
+              onClick={() => setAllocationStage(stage)}>{stages[stage]} · {LIMITS[stage]} 个编号</button>)}
+          </div>
+        </div>
+        <p className="study-muted">每人固定一个绘制组别。正式阶段每组有四种顺序，每种顺序分配三个编号。</p>
+        <div className="expression-allocation-scroll">
+          <table className="expression-allocation" aria-label={stages[allocationStage]+'参与者分配表'}>
+            <thead><tr><th scope="col">编号</th><th scope="col">组别 / 顺序</th><th scope="col">第一轮</th><th scope="col">第二轮</th><th scope="col">登记状态</th><th scope="col">通知</th></tr></thead>
+            <tbody>{studyAssignments(allocationStage).map(slot => {
+              const registered = rows.find(row => row.assignment?.code === slot.code);
+              return <tr key={slot.code}>
+                <th scope="row">{slot.code}</th>
+                <td>{GROUP_LABEL[slot.group]} · {slot.groupSequence}</td>
+                {slot.rounds.map(round => <td key={round.photo}>{round.materials ? '有素材' : '无素材'} · 照片 {round.photo.toUpperCase()}</td>)}
+                <td>{registered ? statuses[registered.status] : '待登记'}</td>
+                <td><button type="button" onClick={() => void copyAssignment(slot)} aria-label={`复制 ${slot.code} 测试通知`}>复制</button></td>
+              </tr>;
+            })}</tbody>
+          </table>
+        </div>
+      </section>
+      <section className="study-card">
+        <div className="expression-header"><h2>测试记录</h2><button type="button" onClick={() => void refresh()}>刷新</button></div>
+        <p>当前版本 · {(Object.keys(stages) as Mode[]).map(m=>`${stages[m]} ${rows.filter(r=>r.version===VERSION && r.mode===m && r.status==='completed').length} 人完成`).join(' · ')}</p>
+        <div className="study-tools">
+          <label>筛选 <select value={filter} onChange={e=>setFilter(e.target.value as typeof filter)}><option value="all">全部记录</option><option value="pilot">预试</option><option value="formal">正式测试</option><option value="demo">演示</option></select></label>
+          <a className="expression-download" href={EXPRESSION_API+'?action=export-all'+(filter==='all' ? '' : '&mode='+filter)}>导出{filter==='all' ? '研究记录（不含演示）' : stages[filter]} JSON</a>
+          {filter==='all' && <a className="expression-download" href={EXPRESSION_API+'?action=export-all&mode=all'}>导出全部（含演示）</a>}
+        </div>
+        {!shown.length && <p>此筛选下没有记录。</p>}
+        {shown.length > 0 && <p className="study-muted">创作体验按轮次展示。完整的 IMI 分量表和原始作答可查看 JSON。</p>}
+        {shown.map(row => <article className="expression-record" key={row.id}>
+          <div className="expression-header"><h3>{row.name || '未登记姓名'} · {stages[row.mode]} · {statuses[row.status]}</h3><small>{new Date(row.updatedAt).toLocaleString()}</small></div>
+          <p className="study-muted">{row.assignment?.code ?? row.id} · {row.version} · {row.profile.age} 岁 · {row.profile.device}</p>
+          {row.assignment && <p className="study-muted">{GROUP_LABEL[row.assignment.group]} · 顺序 {row.assignment.groupSequence} · {row.rounds.map(describeRound).join(' → ')}</p>}
+          <div className="study-tools">
+            <a className="expression-download" href={EXPRESSION_API+`?action=json&id=${row.id}&view=1`} target="_blank" rel="noreferrer">查看 JSON</a>
+            <a className="expression-download" href={EXPRESSION_API+`?action=json&id=${row.id}`}>下载 JSON</a>
+            <button type="button" disabled={busy} onClick={() => void remove(row.id)}>删除记录</button>
+          </div>
+          <div className="expression-allocation-scroll">
+            <table className="expression-allocation" aria-label="两轮创作体验">
+              <thead><tr>
+                <th scope="col">轮次与条件</th><th scope="col">确认素材布局</th>
+                <th scope="col">表达实现 / 7</th><th scope="col">创作掌控 / 7</th>
+                <th scope="col">操作负担 / 7</th><th scope="col">IMI 兴趣 / 7</th><th scope="col">SUS / 100</th>
+              </tr></thead>
+              <tbody>{row.roundExperience.map(round => <tr key={round.round}>
+                <th scope="row">第 {round.round} 轮 · {describeRound(round)}</th>
+                <td>{!round.materials ? '未提供' : round.materialLayoutConfirmed === null ? '—' : round.materialLayoutConfirmed ? '已确认' : '未确认'}</td>
+                <td>{formatScore(round.expressionRealized)}</td>
+                <td>{formatScore(round.creativeControl)}</td>
+                <td>{formatScore(round.interactionEffort)}</td>
+                <td>{formatScore(round.imi.interestEnjoyment)}</td>
+                <td>{formatScore(round.sus)}</td>
+              </tr>)}</tbody>
+            </table>
+          </div>
+          <div className="expression-artworks">{(Object.keys(labels) as DrawingStep[]).filter(key=>row.artwork[key]).map(key=><figure key={key}>
+            <img loading="lazy" src={EXPRESSION_API+`?action=artwork&id=${row.id}&file=${key}&view=1`} alt={labels[key]+'作品'}/>
+            <figcaption><a className="expression-download" href={EXPRESSION_API+`?action=artwork&id=${row.id}&file=${key}`}>下载{labels[key]} JPG</a></figcaption>
+          </figure>)}
+          {(Object.keys(labels) as DrawingStep[]).filter(key=>row.draftArtwork?.[key]).map(key=><figure key={key+'-draft'}>
+            <img loading="lazy" src={EXPRESSION_API+`?action=draft&id=${row.id}&file=${key}&view=1`} alt={labels[key]+'待确认布局'}/>
+            <figcaption><a className="expression-download" href={EXPRESSION_API+`?action=draft&id=${row.id}&file=${key}`}>下载{labels[key]}布局草稿 JPG</a></figcaption>
+          </figure>)}</div>
+        </article>)}
+      </section>
+    </>}
+  </div></main>;
 }

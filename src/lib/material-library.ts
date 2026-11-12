@@ -1,16 +1,12 @@
-import { CO_CREATE_MATERIALS, type Material } from './co-create';
-import { creativeMaterialSvg } from './creative-material';
-
+import type { Material } from './co-create';
+import defaults from './default-materials.json';
+import { MATERIAL_CATEGORIES } from './material-categories';
 export interface LibraryItem { key: string; material: Material; variation: number; label: string; category: string; keywords: string; preview: string }
-export const MATERIAL_LIBRARY: LibraryItem[] = CO_CREATE_MATERIALS.flatMap(material => Array.from({ length: 4 }, (_, variation) => ({
-  key: `${material.id}:${variation}`,
-  material,
-  variation,
-  label: `${material.label} · ${variation === 0 ? '基础' : `变化 ${variation}`}`,
-  category: material.id === 'flower' ? 'plants' : 'sky',
-  keywords: material.id === 'flower' ? '花卉 植物 花草 flower plant' : material.id === 'sun' ? '太阳 阳光 日光 sun sunshine' : '云朵 天空 云 cloud sky',
-  preview: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(creativeMaterialSvg(material.id, variation))}`,
-})));
+export const MATERIAL_LIBRARY: LibraryItem[] = defaults.map(item => ({
+  key: `${item.id}:0`, variation: 0, label: item.label, category: item.category, keywords: item.keywords,
+  preview: item.path,
+  material: { id: item.id, kind: 'library', label: item.label, src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(item.svg)}`, svg: item.svg, ratio: 1, color: '#282828' },
+}));
 export type LibraryPreferences = { favorites: string[]; recent: string[] };
 export const MATERIAL_PREFERENCES_KEY = 'startrace-material-library-v1';
 export const MATERIAL_PREFERENCES_EVENT = 'startrace-material-library-updated';
@@ -19,8 +15,10 @@ const validKey = (key: string) => MATERIAL_LIBRARY.some(item => item.key === key
 export function parseMaterialPreferences(raw: string | null): LibraryPreferences {
   try {
     const value = JSON.parse(raw ?? '{}');
-    const valid = (items: unknown) => Array.isArray(items) ? [...new Set(items.filter((id): id is string => typeof id === 'string' && validKey(id)))].slice(0, 40) : [];
-    return { favorites: valid(value?.favorites), recent: valid(value?.recent) };
+    const aliases: Record<string,string> = { flower: 'twemoji-1f33c:0', cloud: 'twemoji-2601:0', sun: 'twemoji-2600:0' };
+    const migrate = (id: unknown) => typeof id === 'string' ? aliases[id.split(':')[0]] ?? id : id;
+    const valid = (items: unknown) => Array.isArray(items) ? [...new Set(items.map(migrate).filter((id): id is string => typeof id === 'string' && validKey(id)))] : [];
+    return { favorites: valid(value?.favorites), recent: valid(value?.recent).slice(0, 40) };
   } catch { return { favorites: [], recent: [] }; }
 }
 let fallback: LibraryPreferences = { favorites: [], recent: [] };
@@ -47,6 +45,6 @@ export function filterMaterials(category: string, query: string, preferences: Li
   const source = category === 'recent' ? preferences.recent.flatMap(key => library.filter(item => item.key === key)) : library;
   const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
   return source.filter(item => (category !== 'favorites' || preferences.favorites.includes(item.key))
-    && (!['plants', 'sky', 'uploaded'].includes(category) || item.category === category)
+    && (![...MATERIAL_CATEGORIES.map(item => item.id), 'uploaded'].includes(category) || item.category === category)
     && terms.every(term => `${item.label} ${item.keywords}`.toLowerCase().includes(term)));
 }

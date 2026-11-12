@@ -1,25 +1,32 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { LoaderCircle, Pause, Play, Shapes, Move, Palette, Timer, Image, Save, Gauge, Zap, ChevronsRight, Sun, Flame, Flower2, Sparkles, Sunset, Sparkle, Moon } from 'lucide-react';
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
+import { LoaderCircle, Pause, Play, Shapes, Palette, Timer, Image, Save, Gauge, Zap, ChevronsRight, Sun, Flame, Flower2, Sparkles, Sunset, Sparkle, Moon, Eraser, Paintbrush } from 'lucide-react';
 import { drawExpressiveStroke, DEFAULT_EXPRESSION, type ExpressionSettings, type ExpressiveStroke } from '@/lib/expressive-painter';
-import { CO_CREATE_MATERIALS, loadLocalImage, readCanvas, whiteCanvas, type Material } from '@/lib/co-create';
+import { readCanvas, whiteCanvas, type Material } from '@/lib/co-create';
+import CanvasViewport from './CanvasViewport';
 import ArtworkSave from './ArtworkSave';
 import StudioWorkspace from './StudioWorkspace';
 import useMaterialLayout from './useMaterialLayout';
 import { strokeFrame, bristleFade, lightSpeedCount, brushTravelDuration, brushTravelFrame } from '@/lib/stroke-playback';
 import { startAnimationLoop } from '@/lib/animation-loop';
+import { MATERIAL_LIBRARY } from '@/lib/material-library';
 import MaterialLibrary from './MaterialLibrary';
 import MaterialConfirmation from './MaterialConfirmation';
 import ReferencePreview from '@/components/ReferencePreview';
 import { useStudioSession } from './StudioSession';
+import StudyArtworkSave from './StudyArtworkSave';
+import useStudyStudio, { loadStudyCanvas, type StudyStudioOptions } from './useStudyStudio';
 
 const W = 640, H = 480;
 const PAINTING_PHASES = ['正在铺出整体轮廓与大色块', '正在塑造中等形体与色彩关系', '正在完善局部结构', '正在做少量强调与收束'];
 type WorkerMessage = { type: 'batch'; strokes: ExpressiveStroke[] } | { type: 'progress'; progress: { completed: number; total: number } } | { type: 'done' } | { type: 'error'; message: string };
 
-export default function CoCreationStudio({ source, onReset, autoStart = true }: { source: string | null; onReset: () => void; autoStart?: boolean }) {
+export default function CoCreationStudio({ source, onReset, study }: { source: string | null; onReset: () => void; study?: StudyStudioOptions }) {
   const session = useStudioSession();
+  const allowLayout = study?.allowLayout ?? true;
+  const { photo, resumeImage, resumeReference, resumeLayout, onEvent } = study ?? {};
+  const studySession = Boolean(study);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const targetRef = useRef<HTMLCanvasElement | null>(null);
   const workerRef = useRef<Worker | null>(null);
@@ -42,10 +49,12 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const expressionRef = useRef<ExpressionSettings>({ ...DEFAULT_EXPRESSION });
   const priorityRef = useRef<{ x: number; y: number; width: number; height: number } | undefined>(undefined);
+  const [navigating, setNavigating] = useState(false);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [planning, setPlanning] = useState(false);
   const [hasPending, setHasPending] = useState(false);
+  const [hasStarted, setHasStarted] = useState(Boolean(resumeImage));
   const [error, setError] = useState('');
   const [confirmed, setConfirmed] = useState<string[]>([]);
   const [uploads, setUploads] = useState<Material[]>([]);
@@ -67,9 +76,10 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
   }, []);
 
   const pause = useCallback(() => {
+    if (playingRef.current) onEvent?.('auto_pause');
     playingRef.current = false; setPlaying(false);
-    setStatus('已暂停。可以继续绘制，也可以加入新的素材。');
-  }, [setStatus]);
+    setStatus(allowLayout ? '已暂停。可以继续绘制，也可以加入新的素材。' : '已暂停，可以继续绘制。');
+  }, [allowLayout, onEvent]);
   useEffect(() => session.registerPause(pause), [session, pause]);
 
   const plan = useCallback((priority?: { x: number; y: number; width: number; height: number }) => {
@@ -86,11 +96,13 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
     queueRef.current = []; indexRef.current = 0;
     dirtyRef.current = true;
     planningRef.current = true; playingRef.current = true;
-    setPlanning(true); setPlaying(true); setHasPending(true); setError(''); setProgress(0);
+    setHasStarted(true); setPlanning(true); setPlaying(true); setHasPending(true); setError(''); setProgress(0);
+    onEvent?.('auto_planning');
     setStatus(priority ? '素材已确认，正在准备新的笔触…' : '正在准备笔触，画面会逐渐出现…');
     function fail(message: string) {
       if (version !== versionRef.current) return;
       stopWorker(); playingRef.current = false; setPlanning(false); setPlaying(false);
+      onEvent?.('auto_error');
       setError(message); setStatus('已保留当前画面和确认的素材，可以重试续绘。');
     }
     try {
@@ -112,34 +124,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
       };
       worker.postMessage({ target: readCanvas(target), current: readCanvas(canvas), priority, resumePass, origin: brushTipRef.current ?? undefined, settings: expressionRef.current });
     } catch { fail('无法启动绘制，请重试。'); }
-  }, [stopWorker, setStatus]);
-
-  useEffect(() => {
-    let cancelled = false;
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext('2d')!;
-    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
-    fullPaintingPendingRef.current = false; fullPaintingPassRef.current = 0;
-    brushTipRef.current = null; brushAngleRef.current = -45;
-    targetRef.current = whiteCanvas(W, H);
-    async function initialize() {
-      try {
-        if (source) {
-          const img = await loadLocalImage(source);
-          if (cancelled) return;
-          const s = Math.min(W / img.naturalWidth, H / img.naturalHeight);
-          targetRef.current!.getContext('2d')!.drawImage(img, (W - img.naturalWidth * s) / 2, (H - img.naturalHeight * s) / 2, img.naturalWidth * s, img.naturalHeight * s);
-        }
-        if (cancelled) return;
-        readyRef.current = true; setReady(true);
-        if (source && autoStart) plan();
-        else if (source) setStatus('画布已准备好。');
-        else setStatus('从素材库添加素材，编排并确认后，笔触会逐步画出你的想法。');
-      } catch { if (!cancelled) { setError('底图加载失败，请返回创作入口重新选择。'); setStatus('画布尚未准备好。'); } }
-    }
-    void initialize();
-    return () => { cancelled = true; readyRef.current = false; playingRef.current = false; stopWorker(); };
-  }, [source, plan, stopWorker, autoStart]);
+  }, [stopWorker, onEvent]);
 
   useEffect(() => {
     let last = 0;
@@ -188,6 +173,7 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
           if (next.planning && fullPaintingPendingRef.current) fullPaintingPassRef.current = next.planning.pass;
         }
         if (indexRef.current > before) {
+          if (before === 0) onEvent?.('auto_playing');
           session.markChanged();
           const completed = indexRef.current - before;
           setDrawn(n => n + completed);
@@ -202,8 +188,9 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
       if (speed !== 0) lightRef.current = null;
       if (stroke) {
         if (!playbackRef.current) {
+          if (indexRef.current === 0) onEvent?.('auto_playing');
           playbackRef.current = { stroke, base: ctx.getImageData(0, 0, W, H), progress: 0, travel: 0, from: brushTipRef.current ?? stroke.points[0], fromAngle: brushAngleRef.current };
-          setStatus(`${stroke.planning ? PAINTING_PHASES[stroke.planning.pass] : '正在绘制'}。随时选择素材，加入你的新想法。`);
+          setStatus(`${stroke.planning ? PAINTING_PHASES[stroke.planning.pass] : '正在绘制'}。${allowLayout ? '随时选择素材，加入你的新想法。' : ''}`);
         }
         const active = playbackRef.current;
         let tip = stroke.points[0];
@@ -240,13 +227,14 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
         fullPaintingPendingRef.current = false;
         if (brushRef.current) brushRef.current.style.opacity = '0';
         playingRef.current = false; setPlaying(false); setHasPending(false);
-        setStatus('这一轮绘制完成。可以保存，也可以继续加入素材。');
+        onEvent?.('auto_done');
+        setStatus(allowLayout ? '这一轮绘制完成。可以保存，也可以继续加入素材。' : '这一轮绘制完成，可以提交作品。');
       } else if (brushRef.current) {
         brushRef.current.style.opacity = '0';
       }
     }
     return startAnimationLoop(tick);
-  }, [speed, session]);
+  }, [speed, session, allowLayout, onEvent]);
 
   function applyExpression() {
     expressionRef.current = { ...expression }; setAppliedExpression({ ...expression });
@@ -256,34 +244,81 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
   const expressionChanged = expression.abstraction !== appliedExpression.abstraction || expression.mood !== appliedExpression.mood;
 
   const materials = useMaterialLayout({
-    canvas: canvasRef, target: targetRef, pause,
-    onConfirm: (bounds, labels) => {
+    canvas: canvasRef, target: targetRef, pause, initialPhoto: allowLayout && !resumeLayout && !resumeReference ? source : null,
+    onConfirm: (bounds, labels, placements) => {
+      studyStudio.confirmLayout(labels, placements);
       setConfirmed(items => [...items, ...labels]);
       setConfirmation({ id: ++confirmationId.current, x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 });
       plan(bounds);
     },
   });
 
+  const getCanvas = useCallback(() => canvasRef.current, []);
+  const studyStudio = useStudyStudio(study, materials, () => readyRef.current ? canvasRef.current : null, () => confirmed.length || resumeReference ? targetRef.current : null, pause);
+  const restoreStudyLayout = useEffectEvent(() => studyStudio.restoreLayout());
+
+  useEffect(() => {
+    let cancelled = false;
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+    fullPaintingPendingRef.current = false; fullPaintingPassRef.current = 0;
+    brushTipRef.current = null; brushAngleRef.current = -45;
+    targetRef.current = whiteCanvas(W, H);
+    async function initialize() {
+      try {
+        if (studySession) {
+          const fixedPhoto = !allowLayout ? photo : undefined;
+          const [artwork, target] = await Promise.all([
+            resumeImage ? loadStudyCanvas(resumeImage) : undefined,
+            loadStudyCanvas(resumeReference ?? fixedPhoto),
+          ]);
+          if (cancelled) return;
+          if (artwork) ctx.drawImage(artwork, 0, 0);
+          targetRef.current = target;
+          restoreStudyLayout();
+          if (resumeImage) onEvent?.('resume_snapshot');
+          if (resumeReference || fixedPhoto) {
+            dirtyRef.current = true;
+            setHasPending(true);
+          }
+        }
+        if (cancelled) return;
+        readyRef.current = true; setReady(true);
+        if (!allowLayout) setStatus('参考图已就绪。点击开始绘制。');
+        else if (source) setStatus(resumeReference ? '已恢复画面。你可以继续绘制或调整素材。' : '照片可以移动、缩放和擦除。编排后确认，开始绘制。');
+        else setStatus('从素材库添加素材，编排并确认后，笔触会逐步画出你的想法。');
+      } catch { if (!cancelled) { setError('底图加载失败，请返回创作入口重新选择。'); setStatus('画布尚未准备好。'); } }
+    }
+    void initialize();
+    return () => { cancelled = true; readyRef.current = false; playingRef.current = false; stopWorker(); };
+  }, [source, stopWorker, studySession, allowLayout, photo, resumeImage, resumeReference, onEvent]);
+
+  function addMaterial(material: Material, variation: number, position?: { x: number; y: number }) {
+    materials.add(material, position, variation);
+    onEvent?.('material_add', material.id);
+  }
+
   function resume() {
+    onEvent?.('auto_requested');
     if (dirtyRef.current && !planningRef.current) plan(priorityRef.current);
     else if (indexRef.current < queueRef.current.length || planningRef.current) { playingRef.current = true; setPlaying(true); setStatus('正在继续绘制…'); }
   }
-  const getCanvas = useCallback(() => canvasRef.current, []);
   const canResume = !playing && (materials.pending || hasPending);
 
-  const workspaceState = error ? '需要处理' : !ready ? '准备画布' : materials.pending ? '调整素材' : playing ? (planning && !drawn ? '准备笔触' : '正在绘制') : hasPending ? '已暂停' : '等待你的想法';
-  const main = <section className="creation-main">
+  const workspaceState = navigating ? '移动画布 · 素材手势已关闭' : error ? '需要处理' : !ready ? '准备画布' : materials.pending ? '调整素材' : playing ? (planning && !drawn ? '准备笔触' : '正在绘制') : hasPending ? (hasStarted ? '已暂停' : '参考图已就绪') : '等待你的想法';
+  const main = <section className="creation-main co-creation-main">
       <div className="creation-canvas-heading"><h1>共创画布</h1><span className="creation-note">{confirmed.length} 个素材 · {drawn} 笔</span></div>
-      <div className="studio-canvas-area">
+      <div className="studio-canvas-area"><CanvasViewport onDeselect={materials.deselect} onNavigationChange={setNavigating}>
       <div className="co-canvas-wrap" onDragOver={e => {
-        if (ready && !materials.busy && e.dataTransfer.types.includes('application/x-startrace-material')) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }
+        if (allowLayout && ready && !materials.busy && e.dataTransfer.types.includes('application/x-startrace-material')) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }
       }} onDrop={e => {
-        const material = [...CO_CREATE_MATERIALS, ...uploads].find(m => m.id === e.dataTransfer.getData('application/x-startrace-material'));
-        if (!material || !ready || materials.busy) return;
+        const material = [...MATERIAL_LIBRARY.map(item => item.material), ...uploads].find(m => m.id === e.dataTransfer.getData('application/x-startrace-material'));
+        if (!allowLayout || !material || !ready || materials.busy) return;
         e.preventDefault();
         const bounds = canvasRef.current!.getBoundingClientRect();
         const variation = Number(e.dataTransfer.getData('application/x-startrace-variation'));
-        materials.add(material, { x: (e.clientX - bounds.left) * W / bounds.width, y: (e.clientY - bounds.top) * H / bounds.height }, Number.isInteger(variation) && variation >= 0 && variation < 4 ? variation : 0);
+        addMaterial(material, Number.isInteger(variation) && variation >= 0 && variation < 4 ? variation : 0, { x: (e.clientX - bounds.left) * W / bounds.width, y: (e.clientY - bounds.top) * H / bounds.height });
       }}>
         <canvas ref={canvasRef} width={W} height={H} aria-label="AI共创画布" data-testid="co-canvas" />
         <canvas ref={textureRef} width={W} height={H} className="stroke-texture-overlay" aria-hidden="true" />
@@ -295,16 +330,19 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
         {materials.overlay}
         {confirmation && <MaterialConfirmation key={confirmation.id} x={confirmation.x} y={confirmation.y} />}
       </div>
-      </div>
+      </CanvasViewport></div>
+      <div className="creation-bottom-overlay">
+      {!navigating && materials.contextual}
+      <p role="status" className="creation-status">{navigating ? '移动画布：单指平移、双指缩放；素材暂不响应手势' : <>{planning && !materials.pending && <LoaderCircle size={16} className="animate-spin" />}{materials.pending ? '调整好素材后，点击下方按钮确认并继续绘制。' : status}{planning && !materials.pending && <span className="creation-note"> {progress}%</span>}</>}</p>
       <div className="creation-playbar">
         <button className="creation-primary" disabled={!ready || materials.busy || (!playing && !canResume)} onClick={() => {
           if (materials.pending) void materials.confirm();
           else if (playing) pause();
           else resume();
-        }}>{materials.busy ? <LoaderCircle size={17} className="animate-spin" /> : <span className="motion-play-icon" data-playing={playing} aria-hidden="true"><Play size={17} className="motion-play" /><Pause size={17} className="motion-pause" /></span>}{materials.busy ? '正在确认…' : materials.pending ? '确认并继续绘制' : playing ? '暂停绘制' : hasPending ? '继续绘制' : drawn ? '本轮绘制完成' : '请先添加素材'}</button>
+        }}>{materials.busy ? <LoaderCircle size={17} className="animate-spin" /> : <span className="motion-play-icon" data-playing={playing} aria-hidden="true"><Play size={17} className="motion-play" /><Pause size={17} className="motion-pause" /></span>}{materials.busy ? '正在确认…' : materials.pending ? '确认并继续绘制' : playing ? '暂停绘制' : hasPending ? (!allowLayout && !hasStarted ? '开始绘制' : '继续绘制') : drawn ? '本轮绘制完成' : '请先添加素材'}</button>
 
       </div>
-      <p role="status" className="creation-status">{planning && !materials.pending && <LoaderCircle size={16} className="animate-spin" />}{materials.pending ? '调整好素材后，点击下方按钮确认并继续绘制。' : status}{planning && !materials.pending && <span className="creation-note"> {progress}%</span>}</p>
+      </div>
       {materials.error && <div role="alert" className="creation-error">{materials.error}</div>}
       {error && <div role="alert" className="creation-error">{error}{ready && !materials.pending && <button onClick={() => plan(priorityRef.current)}>重试续绘</button>}</div>}
     </section>;
@@ -314,8 +352,9 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
       ? <Moon size={15} strokeWidth={1.6} aria-hidden="true" />
       : <Sparkle size={15} strokeWidth={1.6} aria-hidden="true" />
   } panels={[
-    { id: 'materials', title: '素材库', icon: Shapes, content: <MaterialLibrary disabled={!ready || materials.busy} uploads={uploads} onUpload={material => { setUploads(items => [...items, material]); materials.add(material); }} onAdd={(material, variation) => materials.add(material, undefined, variation)} /> },
-    { id: 'layout', title: '素材调整', icon: Move, content: <section className="creation-card"><h2>素材布局</h2>{materials.pending ? null : <p className="creation-note">从素材库添加素材，再在画布上调整。</p>}{materials.controls}</section> },
+    ...(allowLayout ? [{ id: 'materials', title: '素材库', icon: Shapes, onActivate: () => { materials.setBrushMode('move'); onEvent?.('layout_open'); }, content: <MaterialLibrary disabled={!ready || materials.busy} uploads={uploads} pendingCount={materials.count} controls={materials.pending ? materials.controls : undefined} onUpload={study ? undefined : material => { setUploads(items => [...items, material]); materials.add(material); }} onAdd={addMaterial} /> },
+    { id: 'erase', title: '擦除画笔', icon: Eraser, disabled: !materials.selected || materials.busy || navigating, pressed: materials.tool === 'erase' && !navigating, onActivate: () => materials.setBrushMode(materials.tool === 'erase' ? 'move' : 'erase'), content: materials.brushControls },
+    { id: 'restore', title: '恢复画笔', icon: Paintbrush, disabled: !materials.selected || materials.busy || navigating, pressed: materials.tool === 'restore' && !navigating, onActivate: () => materials.setBrushMode(materials.tool === 'restore' ? 'move' : 'restore'), content: materials.brushControls }] : []),
     { id: 'tempo', title: '绘画速度', icon: Timer, content: <section className="creation-card"><h2>绘画速度</h2><div className="studio-choices" role="group" aria-label="绘画速度">{([{ value: 140, label: '默认', icon: Gauge }, { value: 65, label: '快速', icon: ChevronsRight }, { value: 20, label: '极速', icon: Zap }, { value: 0, label: '光速', icon: Sparkles }] as const).map(({ value, label, icon: Icon }) => <button key={value} aria-pressed={speed === value} onClick={() => setSpeed(value)}><Icon size={20} />{label}</button>)}</div><p className="creation-note">默认适合慢慢观看；光速在计算完成后约 8 秒绘完（暂停时间不计）。已绘制 {drawn} 笔。</p></section> },
     { id: 'expression', title: '表现', icon: Palette, content: <section className="creation-card co-expression"><h2>画面表现</h2>
         <label className="creation-label">色块概括 <output>{expression.abstraction}%</output><input aria-label="色块概括" type="range" min={0} max={100} step={10} value={expression.abstraction} onChange={e => setExpression(p => ({ ...p, abstraction: Number(e.target.value) }))} /></label>
@@ -325,6 +364,6 @@ export default function CoCreationStudio({ source, onReset, autoStart = true }: 
         <p className="creation-note">用连贯的曲线和统一配色重新表达画面。调整后点击应用，已有画面会逐步变化。</p>
       </section> },
     ...(source ? [{ id: 'reference', title: '参考图', icon: Image, content: <section className="creation-card"><ReferencePreview src={source} /></section> }] : []),
-    { id: 'save', title: '保存', icon: Save, content: <ArtworkSave getCanvas={getCanvas} mode="co-create" disabled={!ready} strokeCount={drawn} /> },
+    { id: 'save', title: '保存', icon: Save, content: study ? <StudyArtworkSave save={study.onSave} /> : <ArtworkSave getCanvas={getCanvas} mode="co-create" disabled={!ready || materials.busy} strokeCount={drawn} /> },
   ]}>{main}</StudioWorkspace>;
 }

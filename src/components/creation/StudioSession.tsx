@@ -17,7 +17,7 @@ const noop = () => {};
 const SessionContext = createContext<Session>({ pause: noop, markChanged: noop, markSaved: noop, setPending: noop, registerPause: () => noop, registerSavePanel: () => noop });
 export const useStudioSession = () => useContext(SessionContext);
 
-export default function StudioSession({ children }: { children: ReactNode }) {
+export default function StudioSession({ children, study = false }: { children: ReactNode; study?: boolean }) {
   const router = useRouter();
   const state = useRef({ dirty: false, pending: false, pause: noop, openSave: noop });
   const dialog = useRef<HTMLDialogElement>(null);
@@ -32,6 +32,7 @@ export default function StudioSession({ children }: { children: ReactNode }) {
     registerSavePanel: open => { state.current.openSave = open; return () => { if (state.current.openSave === open) state.current.openSave = noop; }; },
   }), []);
   useEffect(() => {
+    if (study) return;
     const dirty = () => state.current.dirty || state.current.pending;
     function request(action: () => void) {
       if (!dirty()) { action(); return; }
@@ -60,7 +61,7 @@ export default function StudioSession({ children }: { children: ReactNode }) {
     document.addEventListener('click', click, true);
     window.addEventListener('beforeunload', unload);
     return () => { history.dispose(); document.removeEventListener('click', click, true); window.removeEventListener('beforeunload', unload); requested.current = null; };
-  }, [router]);
+  }, [router, study]);
   function stay() {
     requested.current = null; dialog.current?.close();
     focusBefore.current?.focus();

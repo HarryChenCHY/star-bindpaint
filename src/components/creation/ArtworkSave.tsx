@@ -49,6 +49,7 @@ export default function ArtworkSave({ getCanvas, mode, disabled = false, strokeC
     </div>
     <p id="artwork-credit-note" className="creation-note">署名保存在星图中，下载图片不添加水印。</p>
     <p className="creation-note">{mode === 'co-create' ? '保存当前已画出的内容，未确认的素材预览不会保存。' : '作品保存在当前浏览器，下载图片可单独留存。'}</p>
+    {mode === 'co-create' && <p className="creation-note material-attribution">若作品使用了默认素材：图形来自 Twemoji，© Twitter, Inc. 及其他贡献者，采用 <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a> 许可。公开使用时请注明来源及编排、擦除或笔触改编情况。<a href="/materials/twemoji/ATTRIBUTION.md" download="星迹智绘-默认素材署名说明.md">下载署名说明</a></p>}
     {notice && <p role="status" className="creation-notice"><Check size={15} />{notice}</p>}
   </section>;
 }

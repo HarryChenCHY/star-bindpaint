@@ -1,183 +1,81 @@
 'use client';
+
+/* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
-import { useState } from 'react';
-import { api } from '@/lib/study/client';
-import { Artwork } from '@/components/study/StudyReport';
-import type { Rating } from '@/lib/study/types';
-import { STUDY_IDS } from '@/lib/study/protocol';
+import { useEffect, useState, type FormEvent } from 'react';
+import { EXPRESSION_API, expressionRequest } from '@/lib/study/expression-client';
+import { RUBRIC } from '@/lib/study/expression';
 import '../study/study.css';
-type RaterView = {
-  rater: string;
-  rubric: string[];
-  artworks: { id: string; label: string; rating: Rating | null }[];
-};
-export default function RaterPage() {
-  const [token, setToken] = useState(''),
-    [studyId, setStudyId] = useState<string>(STUDY_IDS.pilot),
-    [data, setData] = useState<RaterView | null>(null);
-  const [index, setIndex] = useState(0),
-    [scores, setScores] = useState<number[]>(Array(10).fill(-1)),
-    [reason, setReason] = useState(''),
-    [error, setError] = useState(''),
-    [busy, setBusy] = useState(false);
-  async function load() {
-    const result = await api<RaterView>(
-      undefined,
-      token,
-      `?action=ratings&studyId=${studyId}`,
-    );
-    setData(result);
-    const i = Math.max(
-      0,
-      result.artworks.findIndex((a) => !a.rating),
-    );
-    setIndex(i);
-    setScores(result.artworks[i]?.rating?.scores || Array(10).fill(-1));
+import '../study/expression.css';
+
+type Rating = { scores:number[];note:string };
+type Work = { id:string;photo:string;intent?:string;rating?:Rating };
+export default function Rater() {
+  const [token,setToken]=useState('');
+  const [works,setWorks]=useState<Work[]>([]);
+  const [index,setIndex]=useState(0);
+  const [image,setImage]=useState<{id:string;url:string}|null>(null);
+  const [error,setError]=useState('');
+  const [busy,setBusy]=useState(false);
+  const [notice,setNotice]=useState('');
+  const work=works[index];
+
+  useEffect(() => {
+    if (!token || !work?.id) return;
+    const controller=new AbortController();
+    let url='';
+    const [id, file] = [work.id.slice(0,-7),work.id.slice(-6)];
+    fetch(`${EXPRESSION_API}?action=rater-art&id=${id}&file=${file}`,{headers:{Authorization:`Bearer ${token}`},cache:'no-store',signal:controller.signal})
+      .then(response => { if (!response.ok) throw new Error('作品暂时无法打开。'); return response.blob(); })
+      .then(blob=>{if (!controller.signal.aborted) {url=URL.createObjectURL(blob);setImage({id:work.id,url});}})
+      .catch(failure=>{if (!controller.signal.aborted) setError(failure.message);});
+    return ()=>{controller.abort(); if (url) URL.revokeObjectURL(url);};
+  },[token,work?.id]);
+
+  async function login(event:FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setBusy(true); setError('');
+    const value=String(new FormData(event.currentTarget).get('token') || '');
+    try {
+      const result=await expressionRequest<{items:Work[]}>('?action=rater-list',undefined,value);
+      setWorks(result.items); setToken(value); setIndex(0);
+    } catch (failure) { setError((failure as Error).message); }
+    finally { setBusy(false); }
   }
-  const item = data?.artworks[index];
-  return (
-    <div className="study-shell">
-      <div className="study-wrap">
-        <Link href="/study">← 星迹智绘研究</Link>
-        <h1 className="mt-5">匿名作品评分</h1>
-        <p>
-          按共同清单独立评分：0 缺失，1 部分呈现，2
-          清楚呈现。此处不显示绘画条件、顺序或用时。
-        </p>
-        <section className="study-card study-row">
-          <label>
-            评分者口令{' '}
-            <input
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              autoComplete="off"
-            />
-          </label>
-          <select
-            value={studyId}
-            onChange={(e) => {
-              setStudyId(e.target.value);
-              setData(null);
-            }}
-          >
-            <option value={STUDY_IDS.pilot}>v2 预试</option>
-            <option value={STUDY_IDS.formal}>v2 正式</option>
-            <option value={STUDY_IDS.legacyPilot}>v1 历史预试</option>
-            <option value={STUDY_IDS.legacyFormal}>v1 历史正式</option>
-          </select>
-          <button
-            disabled={busy}
-            onClick={async () => {
-              setBusy(true);
-              try {
-                await load();
-                setError('');
-              } catch (e) {
-                setError(String(e));
-              } finally {
-                setBusy(false);
-              }
-            }}
-          >
-            读取分配作品
-          </button>
-        </section>
-        {error && (
-          <p className="study-error" role="alert">
-            {error}
-          </p>
-        )}
-        {data && !item && <p>暂无可评分作品。</p>}
-        {item && data && (
-          <section className="study-card">
-            <div className="study-row">
-              <h2>{item.label}</h2>
-              <select
-                aria-label="选择匿名作品"
-                value={index}
-                onChange={(e) => {
-                  const i = +e.target.value;
-                  setIndex(i);
-                  setScores(
-                    data.artworks[i].rating?.scores || Array(10).fill(-1),
-                  );
-                  setReason('');
-                }}
-              >
-                {data.artworks.map((a, i) => (
-                  <option key={a.id} value={i}>
-                    {a.label}
-                    {a.rating ? ' · 已评分' : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="study-grid my-4">
-              <Artwork id={item.id} token={token} />
-              <div>
-                {data.rubric.map((r, i) => (
-                  <fieldset key={i} className="mb-3">
-                    <legend>
-                      {i + 1}. {r}
-                    </legend>
-                    <div className="study-row">
-                      {[0, 1, 2].map((v) => (
-                        <label key={v}>
-                          <input
-                            type="radio"
-                            name={`score-${i}`}
-                            checked={scores[i] === v}
-                            onChange={() =>
-                              setScores((old) =>
-                                old.map((s, j) => (i === j ? v : s)),
-                              )
-                            }
-                          />
-                          {v}
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-                ))}
-              </div>
-            </div>
-            {item.rating && (
-              <label className="mb-4">
-                修订原因
-                <textarea
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                />
-              </label>
-            )}
-            <button
-              className="primary"
-              disabled={
-                busy || scores.includes(-1) || (!!item.rating && !reason.trim())
-              }
-              onClick={async () => {
-                setBusy(true);
-                try {
-                  await api(
-                    { action: 'rate', sessionId: item.id, scores, reason },
-                    token,
-                  );
-                  await load();
-                  setReason('');
-                  setError('');
-                } catch (e) {
-                  setError(String(e));
-                } finally {
-                  setBusy(false);
-                }
-              }}
-            >
-              独立提交评分
-            </button>
-          </section>
-        )}
-      </div>
-    </div>
-  );
+  async function submit(event:FormEvent<HTMLFormElement>) {
+    event.preventDefault(); if (!work) return;
+    setBusy(true);setError('');setNotice('');
+    const data=new FormData(event.currentTarget);
+    try {
+      const result=await expressionRequest<{rating:Rating}>('',{action:'rate',id:work.id,scores:RUBRIC.map(r=>Number(data.get(r.id))),note:String(data.get('note') || '')},token);
+      setWorks(current=>current.map(row=>row.id===work.id ? {...row,rating:result.rating} : row)); setNotice('本件评分已保存。');
+    } catch (failure) { setError((failure as Error).message); }
+    finally { setBusy(false); }
+  }
+
+  return <main className="study-shell expression-study"><div className="study-wrap">
+    <header className="expression-header"><h1>历史作品评分</h1><Link className="study-link" href="/">返回首页</Link></header>
+    {error && <p role="alert" className="study-error">{error}</p>}
+    {!token ? <section className="study-card"><h2>评分者登录</h2><form className="expression-fields" onSubmit={login}><label>评分口令<input name="token" type="password" required maxLength={256}/></label><div><button className="primary" disabled={busy}>登录</button></div></form></section> : <>
+      <p>{works.filter(row=>row.rating).length} / {works.length} 件已评分</p>
+      {!work ? <p>当前没有可评分的历史作品。</p> : <section className="study-card">
+        <div className="expression-header"><h2>作品 {index+1} / {works.length}</h2><div className="study-tools">
+          <button type="button" disabled={busy || index===0} onClick={()=>{setIndex(i=>i-1);setNotice('');setError('');}}>上一件</button>
+          <button type="button" disabled={busy || index>=works.length-1} onClick={()=>{setIndex(i=>i+1);setNotice('');setError('');}}>下一件</button>
+        </div></div>
+        <p>初始表达意图：{work.intent || '没有可用的意图记录'}</p>
+        <p className="study-muted">按意图落实情况评分。不要根据照片相似度、笔法熟练程度或推测的制作方式直接给分。2、4 分为相邻锚点之间的表现。</p>
+        <div className="expression-artworks">
+          <figure><img src={work.photo} alt="参考照片"/><figcaption>参考照片</figcaption></figure>
+          <figure>{image?.id===work.id && <img src={image.url} alt="匿名作品"/>}<figcaption>匿名作品</figcaption></figure>
+        </div>
+        <form className="expression-fields" key={work.id} onSubmit={submit}>
+          {RUBRIC.map((item,i)=><div key={item.id}><label>{item.title}<select name={item.id} required defaultValue={work.rating?.scores[i] ?? ''}><option value="" disabled>请选择</option>{[1,2,3,4,5].map(n=><option key={n}>{n}</option>)}</select></label><p className="study-muted">{item.anchors}</p></div>)}
+          <label>备注（选填）<textarea name="note" maxLength={1600} defaultValue={work.rating?.note ?? ''}/></label>
+          <div><button className="primary" disabled={busy || image?.id!==work.id}>保存评分</button></div>
+          {notice && <p role="status">{notice}</p>}
+        </form>
+      </section>}
+      <button type="button" onClick={()=>{setToken('');setWorks([]);setNotice('');}}>退出评分</button>
+    </>}
+  </div></main>;
 }

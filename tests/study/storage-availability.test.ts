@@ -35,7 +35,7 @@ test('生产存储未配置或不可写时返回安全的 503，修复后恢复�
     process.env.STUDY_DATA_DIR = join(dir, 'persistent');
     const response = await GET(new NextRequest('http://localhost/api/studies'));
     assert.equal(response.status, 200);
-    assert.equal((await response.json()).participant, null);
+    assert.equal((await response.json()).record, null);
     repo = getRepository();
     repo.put('storage-check', 'restart', { retained: true });
     repo.db.close();

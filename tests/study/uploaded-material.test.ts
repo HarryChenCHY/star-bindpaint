@@ -17,7 +17,7 @@ test('uploaded materials can be reused, searched and resolved through favorites 
   const prefs = parseMaterialPreferences(JSON.stringify({ favorites: [key], recent: [key, 'flower:0'] }));
   assert.equal(filterMaterials('uploaded', '猫', prefs, [material])[0].material, material);
   assert.equal(filterMaterials('favorites', '', prefs, [material])[0].key, key);
-  assert.deepEqual(filterMaterials('recent', '', prefs, [material]).map(item => item.key), [key, 'flower:0']);
-  assert.deepEqual(filterMaterials('recent', '', prefs).map(item => item.key), ['flower:0']);
+  assert.deepEqual(filterMaterials('recent', '', prefs, [material]).map(item => item.key), [key, 'twemoji-1f33c:0']);
+  assert.deepEqual(filterMaterials('recent', '', prefs).map(item => item.key), ['twemoji-1f33c:0']);
   assert.equal(filterMaterials('plants', '', prefs, [material]).some(item => item.key === key), false);
 });

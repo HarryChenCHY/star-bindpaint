@@ -1,11 +1,21 @@
 import type { ImageSource } from './stroke-engine';
 import type { MaterialPlacement } from './co-create';
 
+/** Keep library shapes intact while borrowing a little of the surrounding palette. */
+export function harmonizeMaterialSvg(svg: string, ambient?: [number, number, number]) {
+  if (!ambient) return svg;
+  return svg.replace(/(fill|stroke)="#([\da-f]{6}|[\da-f]{3})"/gi, (_, attribute: string, hex: string) => {
+    const full = hex.length === 3 ? [...hex].map(c => c + c).join('') : hex;
+    const channels = [0, 2, 4].map((offset, i) => Math.round(parseInt(full.slice(offset, offset + 2), 16) * .82 + ambient[i] * .18));
+    return `${attribute}="rgb(${channels.join(',')})"`;
+  });
+}
+
 /** Feather only silhouette alpha. Pigment and the opaque center stay unchanged. */
-export function softenMaterialSvg(svg: string) {
+export function softenMaterialSvg(svg: string, amount = 2) {
   const opening = svg.indexOf('>') + 1;
   const closing = svg.lastIndexOf('</svg>');
-  return `${svg.slice(0, opening)}<defs><filter id="soft-edge" filterUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="2" result="edge"/><feComposite in="SourceAlpha" in2="edge" operator="arithmetic" k1="0" k2="0.4" k3="0.6" k4="0" result="mask"/><feComposite in="SourceGraphic" in2="mask" operator="in"/></filter></defs><g filter="url(#soft-edge)">${svg.slice(opening, closing)}</g></svg>`;
+  return `${svg.slice(0, opening)}<defs><filter id="soft-edge" filterUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="${amount}" result="edge"/><feComposite in="SourceAlpha" in2="edge" operator="arithmetic" k1="0" k2="0.4" k3="0.6" k4="0" result="mask"/><feComposite in="SourceGraphic" in2="mask" operator="in"/></filter></defs><g filter="url(#soft-edge)">${svg.slice(opening, closing)}</g></svg>`;
 }
 
 /** A deterministic variation of the selected motif, never an inferred/new object. */

@@ -449,6 +449,7 @@ export default function PaintCanvas({
       },
       setAutoIdx,
       getBaseCanvas: () => baseCanvasRef.current,
+      getUserCanvas: () => userCanvasRef.current,
       saveUndoSnapshot,
       undo,
       canUndo,
