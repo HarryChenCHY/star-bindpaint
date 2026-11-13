@@ -206,10 +206,6 @@ export async function POST(req: NextRequest) {
       const setup = setupFor(repo);
       return cookie(reply({ record:null, now, setup, setupSignature:hash(JSON.stringify(setup)) }),req,participantCookie,'',0);
     }
-    if (data.action === 'withdraw') {
-      removeExpression(repo,existing.id);
-      return cookie(reply({ record:null, now }),req,participantCookie,'',0);
-    }
     if (data.action !== 'checkpoint' && data.action !== 'next' && data.action !== 'exit') throw new StudyError('测试操作无效。');
     return reply({ record:saveExpression(repo,existing.id,data,now), now });
   } catch (error) { return problem(error); }

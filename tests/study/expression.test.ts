@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { StudyRepository, hash } from '../../src/lib/study/server/repository';
 import { AUTH_KIND, IDENTITY_KIND, RECORD_KIND, SETUP_KIND, enrollExpression, removeExpression, roundExperience, saveExpression, savedPath, setupFrom } from '../../src/lib/study/server/expression';
-import { FORMAL_SLOTS, IMI, LIMITS, PILOT_SLOTS, PRACTICE_MS, REST_MS, ROUND_MS, SUS, VERSION, roundsFor, scoreSurveys, studyAssignments, type RecordState } from '../../src/lib/study/expression';
+import { FORMAL_SLOTS, IMI, LIMITS, OUTCOME_QUESTIONS, PILOT_SLOTS, PRACTICE_MS, REST_MS, ROUND_MS, SUS, VERSION, roundsFor, scoreSurveys, studyAssignments, type RecordState } from '../../src/lib/study/expression';
 
 function storage(t: TestContext) {
   const dir=mkdtempSync(join(tmpdir(),'startrace-expression-test-'));
@@ -13,7 +13,7 @@ function storage(t: TestContext) {
   t.after(()=>{db.db.close();rmSync(dir,{recursive:true,force:true});});
   return db;
 }
-const entrant = {accepted:true,version:VERSION,name:'Test Fixture',age:26,experience:'没有经验',device:'电脑鼠标',group:'manual'};
+const entrant = {accepted:true,version:VERSION,name:'Test Fixture',age:26,experience:'没有经验',device:'电脑鼠标',gender:'其他',group:'manual'};
 const jpeg=readFileSync('public/study/expression/park-a.jpg');
 const image='data:image/jpeg;base64,'+jpeg.toString('base64');
 const move = (db:StudyRepository,p:RecordState, now:number, data:Record<string,unknown>={}) =>
@@ -60,22 +60,27 @@ test('timeout, rest, draft, JPG checkpoints, and withdrawal preserve the intende
   const db=storage(t);
   let p=enrollExpression(db,entrant,'demo','participant',1);
   assert.throws(()=>move(db,p,2,{form:{a:'想法A'}}),/分别/);
-  p=move(db,p,3,{form:{a:'想法A',b:'想法B'}});
+  assert.throws(()=>move(db,p,3,{form:{a:'想法A',b:'想法B',aFeeling:'平静',bFeeling:'  '}}),/看图感受/);
+  p=move(db,p,3,{form:{a:'想法A',b:'想法B',aFeeling:'平静',bFeeling:'开阔'}});
+  assert.equal(p.forms.intent?.bFeeling,'开阔');
   assert.equal(p.step,'practice');
   assert.throws(()=>move(db,p,4,{image:'data:image/jpeg;base64,c2hvcnQ='}),/JPEG/);
   p=move(db,p,3+PRACTICE_MS,{action:'checkpoint',image});
   assert.equal(p.ended.practice?.reason,'timeout');
-  p=move(db,p,p.enteredAt+1);
+  assert.throws(()=>move(db,p,p.enteredAt+1,{form:{plan:'  '}}),/创作计划/);
+  p=move(db,p,p.enteredAt+1,{form:{plan:'突出主体'}});
   const stale=p;
   p=move(db,p,p.enteredAt+4,{action:'checkpoint',image,layout:'{"pending":[]}',events:[{type:'help',at:p.enteredAt+1}]});
   assert.throws(()=>move(db,stale,stale.enteredAt+5),/刷新/);
   p=move(db,p,p.enteredAt+ROUND_MS,{image});
   assert.equal(p.ended.round1?.reason,'timeout');
   assert.equal(p.events.round1?.[0].type,'help');
-  p=move(db,p,p.enteredAt+1,{form:{imi01:6,sus01:5,expressionRealized:7,creativeControl:5}});
+  assert.throws(()=>move(db,p,p.enteredAt+1,{form:{imi01:6}}),/全部题目/);
+  const answers = Object.fromEntries([...IMI,...SUS,...OUTCOME_QUESTIONS].map(q=>[q.id,3]));
+  p=move(db,p,p.enteredAt+1,{form:{...answers,imi01:6,sus01:5,expressionRealized:7,creativeControl:5}});
   p=move(db,p,p.enteredAt+REST_MS-1);
   assert.deepEqual(p.rest,{elapsedMs:REST_MS-1,endedEarly:true});
-  p=move(db,p,p.enteredAt+1);
+  p=move(db,p,p.enteredAt+1,{form:{plan:'调整构图'}});
   assert.equal(p.step,'round2');
   p=move(db,p,p.enteredAt+42,{action:'exit',image,draftImage:image,layout:'{"pending":[{"materialId":"test"}]}'});
   assert.equal(p.status,'exited');

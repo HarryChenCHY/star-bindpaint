@@ -20,7 +20,6 @@ import './expression.css';
 
 type StudyState = { record: RecordState | null; now: number; setup?: StudySetup; setupSignature?: string };
 const modeLabel = { demo:'功能演示',pilot:'预试',formal:'正式测试' } as const;
-const has = (form: Form, id: string) => Object.hasOwn(form,id);
 const countdown = (ms: number) => {
   const seconds = Math.max(0,Math.ceil(ms/1000));
   return `${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
@@ -40,8 +39,7 @@ export default function StudyPage() {
   const [busy,setBusy] = useState(false);
   const [error,setError] = useState('');
   const [saved,setSaved] = useState<number|null>(null);
-  const [dialog,setDialog] = useState<'home'|'exit'|'withdraw'|null>(null);
-  const [left,setLeft] = useState(false);
+  const [dialog,setDialog] = useState<'home'|'exit'|null>(null);
 
   const current = useRef<RecordState|null>(null);
   const draft = useRef<Form>({});
@@ -149,8 +147,16 @@ export default function StudyPage() {
       const payload={ action:'checkpoint', step:active.step, revision:active.revision, form:draft.current, events:events.current.slice(0,50) };
       const snapshot = drawingStep(active.step) ? canvas.current?.captureQuick() : undefined;
       const full = JSON.stringify({...payload,...snapshot});
-      const body = new Blob([new Blob([full]).size <= 60_000 ? full : JSON.stringify(payload)],{type:'application/json'});
-      navigator.sendBeacon(EXPRESSION_API,body);
+      const beacon = (data: string) => {
+        const body = new Blob([data], { type: 'application/json' });
+        return body.size <= 60_000 && navigator.sendBeacon(EXPRESSION_API, body);
+      };
+      if (beacon(full)) return;
+      if (snapshot?.image) {
+        const compact = canvas.current?.captureQuick(.35);
+        if (compact?.image && beacon(JSON.stringify({...payload, image:compact.image}))) return;
+      }
+      beacon(JSON.stringify(payload));
     }
     document.addEventListener('visibilitychange',visibility);
     window.addEventListener('pagehide',pagehide);
@@ -188,16 +194,6 @@ export default function StudyPage() {
     } catch (failure) { setError((failure as Error).message); }
     finally { setBusy(false); }
   }
-  async function withdraw() {
-    actionPending.current=true; setBusy(true);
-    try {
-      await queued.current;
-      const data=await expressionRequest<StudyState>('',{action:'withdraw'});
-      events.current=[]; setLeft(true); accept(data,true); setDialog(null);
-    } catch (failure) { setError((failure as Error).message); setDialog(null); }
-    finally { actionPending.current=false; setBusy(false); }
-  }
-
   async function release() {
     setBusy(true);
     try {
@@ -217,27 +213,30 @@ export default function StudyPage() {
   const r=record?.rounds[record.step.endsWith('2') ? 1 : 0];
   const remain=record && limitFor(record.step) ? record.enteredAt+limitFor(record.step)-clock : 0;
   const taskPhoto=r ? PHOTOS[r.photo] : null;
-  const questions = experienceQuestions(record?.version ?? VERSION);
+  const questions = experienceQuestions(record?.version ?? VERSION, record?.interviewVersion, record?.rounds[0].auto);
   const practicePrompt = record?.rounds[0].auto
     ? '试着调整参考图或添加素材，再点「确认并继续绘制」，观察系统转绘。'
-    : '试着在画布上落笔，再打开素材库并确认一份构图参考。';
+    : '试画几笔，再把一个素材贴到作品画布，熟悉手绘和拼贴。';
+  const materialPrompt = r?.materials
+    ? r.auto
+      ? '请打开素材库，使用素材拼贴功能。至少选一个素材，调整好位置后点击「确认并继续绘制」。'
+      : '请从素材库选至少一个素材，调整位置后点「贴到画布」。你可以在同一张画布上继续手绘。'
+    : null;
   const timerDone=Boolean(record && drawingStep(record.step) && remain <= 0);
   const proceed=(label:string,disabled=false) => <button type="button" className="primary" disabled={busy || disabled} onClick={() => void persist('next')}>{busy ? '正在保存…' : label}</button>;
 
   const confirmation = <dialog ref={confirmDialog} className="studio-exit-dialog expression-modal" role="alertdialog" aria-modal="true" aria-labelledby="expression-exit-title" aria-describedby="expression-exit-description" onCancel={e => { e.preventDefault(); if (!busy) setDialog(null); }}>
     {dialog && <>
-      <h2 id="expression-exit-title">{dialog === 'home' ? '保存进度并返回主页？' : dialog === 'exit' ? '保存并退出测试？' : '撤回本次数据？'}</h2>
+      <h2 id="expression-exit-title">{dialog === 'home' ? '保存进度并返回主页？' : '保存并退出测试？'}</h2>
       <p id="expression-exit-description">
         {dialog === 'home' ? (record && drawingStep(record.step) ? '重新打开测试页即可继续。离开期间，创作倒计时照常运行。' : '重新打开测试页即可继续。')
-          : dialog === 'exit' ? '会保存当前已填写内容、操作记录，以及可取得的当前画面。'
-          : '将清除系统中本次身份、测试记录与画面。已经导出的副本请联系研究者处理。'}
+          : '会保存当前已填写内容、操作记录，以及可取得的当前画面。'}
       </p>
       <div className="studio-exit-actions">
         <button type="button" autoFocus disabled={busy} onClick={() => setDialog(null)}>返回</button>
         <button type="button" className="night-primary" disabled={busy} onClick={() => {
           if (dialog === 'home') void persist('checkpoint', () => router.push('/'));
-          else if (dialog === 'exit') void persist('exit');
-          else void withdraw();
+          else void persist('exit');
         }}>{busy ? '正在处理…' : '确认'}</button>
       </div>
     </>}
@@ -249,6 +248,10 @@ export default function StudyPage() {
     const photo = practice ? PRACTICE_PHOTO : PHOTOS[r.photo].path;
     const allowLayout = practice || r.materials;
     const condition = practice ? `${GROUP_LABEL[r.auto ? 'auto' : 'manual']} · 练习参考图` : describeRound(r);
+    const taskInstruction = practice ? practicePrompt : materialPrompt ?? (r.auto
+      ? '点击「开始绘制」，观察系统怎样把参考图逐步转成笔触。'
+      : '参考照片，在空白画布上手绘你想表达的内容。');
+    const nextInstruction = practice ? '熟悉工具后，结束练习即可进入第一轮准备。' : '创作结束后，填写本轮体验问卷。';
     const resumeImage = record.artwork[step] ? `${EXPRESSION_API}?action=resume-image&file=${step}` : undefined;
     const resumeReference = record.reference[step]
       ? `${EXPRESSION_API}?action=resume-image&file=${step}-reference`
@@ -260,29 +263,30 @@ export default function StudyPage() {
         <h1><button type="button" onClick={() => taskDialog.current?.showModal()} aria-label={`${STEP_LABEL[step]}：查看任务`}><FlaskConical size={16} aria-hidden="true" />{STEP_LABEL[step]}</button></h1>
         <span className="study-studio-timer" aria-label="剩余时间"><Clock3 size={14} aria-hidden="true" />{countdown(remain)}</span>
       </>}>
+      <aside className="study-task-banner" aria-label="当前测试任务">
+        <strong>{practice ? '练习 · 熟悉创作工具' : `${STEP_LABEL[step]} · ${condition}`}</strong>
+        <p>{taskInstruction}</p>
+        <p className="study-task-next">{nextInstruction}</p>
+      </aside>
       <FloatingStudyReference src={photo} title={practice ? '练习参考图' : `参考图 ${r.photo.toUpperCase()}`} />
       <div className="study-studio-controls" role="region" aria-label="测试操作">
         {error && <p role="alert" className="night-alert">{error}</p>}
         {timerDone && !error && <p role="status" className="study-studio-message">时间到，正在保存画面</p>}
-        <p className="study-round-condition">{condition}</p>
         <div className="study-studio-buttons">
           <button type="button" className="night-secondary study-studio-home" aria-label="返回主页" title="返回主页" disabled={busy} onClick={() => setDialog('home')}>
             <ArrowLeft size={16} aria-hidden="true" /><span>返回主页</span>
           </button>
-          <button type="button" className="night-secondary" disabled={busy} onClick={() => { log('help','参与者请求协助'); void persist('checkpoint'); }}>记录一次求助</button>
-          <button type="button" className="night-secondary" disabled={busy} onClick={() => setDialog('exit')}>保存并退出</button>
           <button type="button" className="night-primary" disabled={busy} onClick={() => void persist('next')}>{busy ? '正在保存…' : timerDone ? '保存画面' : practice ? '结束练习' : '结束本轮创作'}</button>
         </div>
       </div>
       <dialog ref={taskDialog} className="studio-exit-dialog" aria-labelledby="study-task-title">
         <h2 id="study-task-title">{STEP_LABEL[step]}</h2>
-        <p>{practice ? practicePrompt : TASK_PROMPT}</p>
+        {!practice && <p>{TASK_PROMPT}</p>}
         <p className="night-muted">{condition}</p>
         {!practice && <p>你最初的想法：{record.forms.intent?.[r.photo]}</p>}
-        <p>{allowLayout ? (r.auto ? '可用素材库编排画面，确认后由系统绘制。' : '可编排参考图，最后在自由画布手绘。') : '本轮使用指定参考图。'}</p>
+        <p>{taskInstruction} {nextInstruction}</p>
         {saved && <p className="night-muted">最近保存 {new Date(saved).toLocaleTimeString()}</p>}
         <div className="studio-exit-actions">
-          <button type="button" disabled={busy} onClick={() => { taskDialog.current?.close(); setDialog('withdraw'); }}>撤回本次数据</button>
           <button type="button" className="night-primary" autoFocus onClick={() => taskDialog.current?.close()}>回到画布</button>
         </div>
       </dialog>
@@ -302,8 +306,7 @@ export default function StudyPage() {
     </header>
     {error && <p role="alert" className="study-error">{error}</p>}
     {!loaded && !error && <p role="status">正在读取测试进度…</p>}
-    {loaded && left && <section className="study-card"><h2>数据已撤回</h2><p>本次在线身份、测试记录和画面已清除。</p><Link className="study-link" href="/">返回首页</Link></section>}
-    {loaded && !record && !left && <section className="study-card">
+    {loaded && !record && <section className="study-card">
       <h2>选择测试阶段</h2>
       <p className="study-muted">请按研究者通知选择阶段，再核对绘制组别与编号。</p>
       <div className="study-tools expression-stage-picker" role="group" aria-label="选择测试阶段">
@@ -311,7 +314,7 @@ export default function StudyPage() {
           aria-pressed={mode === stage} className={mode === stage ? 'primary' : ''} onClick={() => chooseStage(stage)}>{modeLabel[stage]}</button>)}
       </div>
     </section>}
-    {loaded && !record && !left && mode && <section className="study-card">
+    {loaded && !record && mode && <section className="study-card">
       <h2>参与者知情同意书 · {modeLabel[mode]}</h2>
       {mode === 'demo' && <p>这是功能演示。请使用虚构姓名，演示记录会单独标记。</p>}
         <form onSubmit={enroll} className="expression-fields" key={mode}>
@@ -341,7 +344,7 @@ export default function StudyPage() {
           <label className="expression-consent-check"><input type="checkbox" name="accepted" required />我已阅读以上信息，年满18岁，并自愿同意参加及按上述方式处理本次数据。</label>
           <label>姓名<input name="name" required maxLength={80} autoComplete="off" placeholder={mode === 'demo' ? '演示化名' : '用于签署同意与联系研究者核对'} /></label>
           <label>年龄<input name="age" type="number" min={18} max={120} required /></label>
-          <label>性别（选填）<select name="gender" defaultValue=""><option value="">不回答</option><option>女</option><option>男</option><option>其他</option></select></label>
+          <label>性别<select name="gender" defaultValue="" required><option value="" disabled>请选择</option><option>女</option><option>男</option><option>其他</option></select></label>
           <label>数字绘画经验<select name="experience" defaultValue="" required><option value="" disabled>请选择</option><option>没有经验</option><option>偶尔尝试</option><option>经常使用</option><option>有专业学习或从业经历</option></select></label>
           <label>主要操作设备<select name="device" defaultValue="" required><option value="" disabled>请选择</option><option>电脑鼠标</option><option>电脑触控板</option><option>数位板或手写笔</option><option>手机或平板触屏</option></select></label>
           {mode !== 'demo' && process.env.NODE_ENV === 'production' && <label>研究招募码<input name="enrollmentCode" type="password" required maxLength={128} autoComplete="off" /></label>}
@@ -356,40 +359,43 @@ export default function StudyPage() {
       {saved && <p className="study-muted" role="status">最近保存 {new Date(saved).toLocaleTimeString()}</p>}
       {active && record.step === 'intent' && <>
         <div className="expression-assignment-preview">{record.rounds.map((round, i) => <p key={round.photo}>第 {i + 1} 轮　{describeRound(round)}</p>)}</div>
-        <p>{TASK_PROMPT} 请先为两张图各写一句初始想法，例如希望突出什么、保留什么，或怎样安排画面关系。</p>
-        <div className="expression-photo-pair">{record.rounds.map(({photo}) => <label key={photo}><img src={PHOTOS[photo].path} alt={PHOTOS[photo].title}/><span>{PHOTOS[photo].title} · 我想表达什么</span><textarea maxLength={1600} value={String(form[photo] ?? '')} onChange={e=>answer(photo,e.target.value)} /></label>)}</div>
+        <p>{TASK_PROMPT} 请先分别写下看到两张照片时的感受，以及你想在作品里表达什么。</p>
+        <div className="expression-photo-pair">{record.rounds.map(({photo}) => <div key={photo}>
+          <img src={PHOTOS[photo].path} alt={PHOTOS[photo].title}/>
+          <label className="expression-stacked">{PHOTOS[photo].title} · 看图感受（必填）<textarea required maxLength={1600} value={String(form[`${photo}Feeling`] ?? '')} onChange={e=>answer(`${photo}Feeling`,e.target.value)} /></label>
+          <label className="expression-stacked">{PHOTOS[photo].title} · 我想表达什么（必填）<textarea required maxLength={1600} value={String(form[photo] ?? '')} onChange={e=>answer(photo,e.target.value)} /></label>
+        </div>)}</div>
         <p className="study-muted">练习提示：{practicePrompt}</p>
-        {proceed('保存想法，进入练习',!String(form.a ?? '').trim() || !String(form.b ?? '').trim())}
+        {proceed('保存想法，进入练习',!['a','b','aFeeling','bFeeling'].every(key => String(form[key] ?? '').trim()))}
       </>}
       {active && (record.step === 'plan1' || record.step === 'plan2') && r && taskPhoto && <>
         <p>{TASK_PROMPT}</p>
         <p><strong>{describeRound(r)}</strong></p>
-        <p>{r.auto ? r.materials ? '进入画布后编排照片与素材，点击「确认并继续绘制」，系统会开始转绘。' : '进入画布后点击「开始绘制」，系统会把参考照片转绘为笔触。' : r.materials ? '使用自由画布手绘。你可以先编排素材作为构图参考。' : '看着参考照片，使用自由画布手绘。'} 开始后计时 10 分钟。</p>
+        <p>{materialPrompt ?? (r.auto ? '进入画布后点击「开始绘制」，系统会把参考照片转绘为笔触。' : '看着参考照片，使用自由画布手绘。')} 开始后计时 10 分钟。</p>
         <img className="expression-plan-photo" src={taskPhoto.path} alt={taskPhoto.title}/>
         <p>你最初的想法：{record.forms.intent?.[r.photo]}</p>
-        <label className="expression-stacked">你准备怎么做？（选填）<textarea maxLength={1600} value={String(form.plan ?? '')} onChange={e=>answer('plan',e.target.value)} /></label>
-        {proceed('开始本轮计时')}
+        <label className="expression-stacked">你准备怎么做？（必填）<textarea required maxLength={1600} value={String(form.plan ?? '')} onChange={e=>answer('plan',e.target.value)} /></label>
+        {proceed('开始本轮计时',!String(form.plan ?? '').trim())}
       </>}
       {active && (record.step === 'survey1' || record.step === 'survey2') && <>
-        <p>请只按刚才这轮体验作答。每题可选「不回答」，也可以直接提交。</p>
+        <p>请按刚才这轮体验逐题作答，答完后提交。</p>
         {([{ name:'本轮创作体验',items:questions.outcomes,note:'1 完全不同意 · 7 完全同意' },{ name:'IMI 任务体验问卷',items:IMI, note:'1 完全不符合 · 4 有些符合 · 7 非常符合' },{ name:'SUS 系统可用性量表',items:SUS,note:'“系统”指刚刚使用的创作界面。1 非常不同意 · 5 非常同意' }]).map(({name,items,note}) => <section className="expression-survey" key={name}>
           <h3>{name}</h3><p className="study-muted">{note}</p>
-          {items.map((q,i) => <fieldset key={q.id}><legend>{i+1}. {q.text}</legend><div className="study-scale">{[...Array.from({length:q.max},(_,j)=>j+1),null].map(value => <label key={String(value)}><input type="radio" name={q.id} checked={has(form,q.id) && form[q.id]===value} onChange={()=>answer(q.id,value)}/>{value ?? '不回答'}</label>)}</div></fieldset>)}
+          {items.map((q,i) => <fieldset key={q.id}><legend>{i+1}. {q.text}</legend><div className="study-scale">{Array.from({length:q.max},(_,j)=>j+1).map(value => <label key={String(value)}><input type="radio" name={q.id} checked={form[q.id]===value} onChange={()=>answer(q.id,value)}/>{value}</label>)}</div></fieldset>)}
         </section>)}
-        {proceed('保存本轮问卷')}
+        {proceed('保存本轮问卷',[...questions.outcomes,...IMI,...SUS].some(q => typeof form[q.id] !== 'number'))}
       </>}
       {active && record.step === 'rest' && <><p>第一轮已保存。建议休息两分钟，准备好后可以随时结束休息。</p><p className="expression-countdown"><strong>{countdown(remain)}</strong></p>{proceed(remain > 0 ? '结束休息，继续第二轮' : '继续第二轮')}</>}
-      {active && record.step === 'interview' && <><p>请根据两轮经历回答，可自己填写，也可由研究者代为逐项记录并请你确认。可跳过任何题目。</p>
+      {active && record.step === 'interview' && <><p>请在下面逐题填写你的回答。可以先回看两轮画面，再说说哪些操作影响了你的表达。请回答全部题目。若没有相关经历，可以如实填写「没有」，并说明当时的情况。</p>
         <div className="study-tools" aria-label="创作画面回看">
           {(['round1','round2'] as const).map((step, index) => record.artwork[step] && (
             <a key={step} className="study-link" href={`${EXPRESSION_API}?action=resume-image&file=${step}`} target="_blank" rel="noreferrer">回看第 {index + 1} 轮画面</a>
           ))}
         </div>
-        {questions.interview.map(q=><label className="expression-stacked" key={q.id}>{q.text}<textarea maxLength={1600} value={String(form[q.id] ?? '')} onChange={e=>answer(q.id,e.target.value)}/></label>)}
-        {proceed('保存访谈并完成测试')}
+        {questions.interview.map((q,i)=><label className="expression-stacked" key={q.id}>{i+1}. {q.text}<textarea required maxLength={1600} value={String(form[q.id] ?? '')} onChange={e=>answer(q.id,e.target.value)}/></label>)}
+        {proceed('保存访谈并完成测试',questions.interview.some(q => !String(form[q.id] ?? '').trim()))}
       </>}
-      {!active && <><p>已保留提交的记录及已存画面。可使用上方编号向研究者核对记录。</p><div className="study-tools"><Link className="study-link" href="/">返回首页</Link><button type="button" disabled={busy} onClick={() => void release()}>结束本机测试，登记下一位</button><button type="button" disabled={busy} onClick={() => setDialog('withdraw')}>撤回本次数据</button></div></>}
-      {active && <p className="expression-withdraw"><button type="button" disabled={busy} onClick={() => setDialog('withdraw')}>撤回本次数据</button></p>}
+      {!active && <><p>已保留提交的记录及已存画面。可使用上方编号向研究者核对记录。</p><div className="study-tools"><Link className="study-link" href="/">返回首页</Link><button type="button" disabled={busy} onClick={() => void release()}>结束本机测试，登记下一位</button></div></>}
     </section>}
     {confirmation}
     <footer className="expression-sources"><a href={IMI_SOURCE} target="_blank" rel="noreferrer">IMI 原量表</a> · <a href={SUS_SOURCE} target="_blank" rel="noreferrer">SUS 原量表</a> · <a href="/study/expression/SOURCES.md" target="_blank" rel="noreferrer">任务照片来源</a> · <a href={PHOTO_LICENSE} target="_blank" rel="noreferrer">CC BY-SA 2.0</a></footer>

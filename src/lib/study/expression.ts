@@ -50,10 +50,27 @@ export const INTERVIEW_PROMPTS = [
   { id:'comparison', text:'哪一轮更容易表达你想呈现的内容，或者两轮差不多？哪些操作让你有这种感受？' },
 ] as const;
 
-export function experienceQuestions(version: string) {
-  return version === VERSION
-    ? { outcomes: OUTCOME_QUESTIONS, interview: INTERVIEW_PROMPTS }
-    : { outcomes: LEGACY_OUTCOME_QUESTIONS, interview: LEGACY_INTERVIEW_PROMPTS };
+export const INTERVIEW_VERSION = 'experience-review-v2';
+const REVIEW_PROMPTS = [
+  { id:'overall', text:'两轮做完后，你对这套工具的整体感受是什么？哪一步给你印象最深，为什么？' },
+  { id:'expression', text:'回看两轮画面，哪一轮更顺利地表达了你原先的想法，还是差不多？请指一个表达出来或没有表达出来的地方。' },
+  { id:'drawingEffort', text:'为了得到想要的画面，哪一轮更省力、更费力，还是差不多？最明显的是描画、操作工具、等待，还是别的原因？' },
+  { id:'composition', text:'比较有素材和无素材的两轮，画面中有哪些决定是你自己做的？请举一个例子，也可以说说有什么想调整却做不到。' },
+] as const;
+const REFLECTION_PROMPTS = {
+  auto: { id:'reflection', text:'看系统逐步画出画面时，你有没有改变原先的想法？如果有，你看到了什么，后来做了什么？如果没有，你当时在关注什么？' },
+  manual: { id:'reflection', text:'看着自己画的画面逐渐成形时，你有没有改变原先的想法？如果有，你看到了什么，后来做了什么？如果没有，你当时在关注什么？' },
+} as const;
+const USE_AGAIN_PROMPT = { id:'useAgain', text:'以后如果你想用图像记录或表达一件事，什么情况下你会考虑用这套工具？什么情况下不会？' } as const;
+
+export function experienceQuestions(version: string, interviewVersion?: string, automatic = false) {
+  if (version !== VERSION) return { outcomes: LEGACY_OUTCOME_QUESTIONS, interview: LEGACY_INTERVIEW_PROMPTS };
+  return {
+    outcomes: OUTCOME_QUESTIONS,
+    interview: interviewVersion === INTERVIEW_VERSION
+      ? [...REVIEW_PROMPTS, REFLECTION_PROMPTS[automatic ? 'auto' : 'manual'], USE_AGAIN_PROMPT]
+      : INTERVIEW_PROMPTS,
+  };
 }
 
 export const RUBRIC = [
@@ -75,7 +92,7 @@ export type Round = { photo: Photo; materials: boolean; auto: boolean };
 export type Artifact = { at: number; sha256: string; bytes: number };
 export type RecordState = {
   id: string; mode: Mode; sequence: number; assignment?: StudyAssignment; status: 'active' | 'completed' | 'exited';
-  version: string; createdAt: number; updatedAt: number; step: Step; enteredAt: number; revision: number;
+  version: string; interviewVersion?: string; createdAt: number; updatedAt: number; step: Step; enteredAt: number; revision: number;
   consent: { acceptedAt: number; version: string; config: StudySetup };
   profile: { age: number; experience: string; device: string; gender: string };
   rounds: [Round, Round]; forms: Partial<Record<Step, Form>>;
@@ -157,9 +174,9 @@ export function consentSections(setup: StudySetup, demo = false) {
   return [
     ['研究目的', '本研究考察不同绘制方式和素材编排条件下，参与者如何感受表达、创作决定和工具使用。参与者须年满18周岁。'],
     ['研究过程', '同意后填写基本信息与两张照片的初始构思，完成最多90秒的练习、两轮各最多10分钟的创作及每轮问卷，中间建议休息2分钟，也可提前结束。最后进行简短文字访谈。预计35至45分钟。预试和正式测试按研究者分配的编号进行，编号确定绘制组别与任务顺序。'],
-    ['可能的不适与收益', '可能出现视觉疲劳、手部疲劳、等待或对作品不满意。你可以休息、跳过问卷或访谈题目，或随时停止。研究不保证改善绘画能力，也不提供诊断。'],
+    ['可能的不适与收益', '可能出现视觉疲劳、手部疲劳、等待或对作品不满意。完成测试需要填写全部题目。你可以休息或随时停止。研究不保证改善绘画能力，也不提供诊断。'],
     ['记录与保密', '系统保存姓名、基本信息、意图、操作摘要、问卷、访谈文字及成品或未完成画面。姓名单独存放，画面可在访谈时回看。研究不采集音视频。论文使用去标识的汇总结果，公开展示个别作品须另行取得同意。'],
-    ['自愿退出与撤回', '保存并退出会保留已收集的数据及当前画面。你也可以撤回数据，系统会清除在线身份、记录和作品。已经导出的副本可通过研究者和研究编号申请清理，无法回溯个人的汇总结果可能无法撤回。退出不会受到惩罚。'],
+    ['自愿退出与撤回', '保存并退出会保留已收集的数据及当前画面。如需撤回数据，请通过下方联系方式向研究者提供研究编号，由研究者处理在线记录、作品及已导出的副本。无法回溯个人的汇总结果可能无法撤回。退出不会受到惩罚。'],
     ['保存期限与联系', `资料计划保存 ${setup.retentionDays} 天，到期由研究者清理。研究者：${setup.researcher || (demo ? '演示模式' : '由研究组织者提供')}。联系方式：${setup.contact || (demo ? '演示不招募参与者' : '由研究组织者提供')}。补偿：${setup.compensation || (demo ? '演示不涉及补偿' : '由研究组织者说明')}。伦理审核信息：${setup.ethics || (demo ? '演示不代表已获伦理审查' : '由研究组织者提供')}。`],
   ];
 }

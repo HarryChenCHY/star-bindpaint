@@ -1,7 +1,7 @@
 import { randomInt, randomUUID } from 'node:crypto';
 import { hash, type StudyRepository } from './repository';
 import {
-  DEFAULT_SETUP, IMI, STEPS, SUS, VERSION, experienceQuestions,
+  DEFAULT_SETUP, IMI, INTERVIEW_VERSION, STEPS, SUS, VERSION, experienceQuestions,
   drawingStep, findStudyAssignment, limitFor, roundsFor, scoreSurveys, REST_MS, type DrawingStep, type Form,
   type Mode, type RecordState, type StudyEvent, type StudySetup,
 } from '../expression';
@@ -75,7 +75,7 @@ export function enrollExpression(repo: StudyRepository, data: Record<string, unk
   if (data.accepted !== true || data.version !== VERSION) throw new StudyError('请先阅读并确认当前版本的知情同意书。');
   const name = str(data.name, 80), experience = str(data.experience, 80), device = str(data.device, 80), gender = str(data.gender ?? '', 80);
   const age = data.age;
-  if (!name || !experience || !device || typeof age !== 'number' || !Number.isInteger(age) || age < 18 || age > 120) throw new StudyError('请填写姓名、成年年龄、绘画经验和设备。');
+  if (!name || !experience || !device || !gender || typeof age !== 'number' || !Number.isInteger(age) || age < 18 || age > 120) throw new StudyError('请填写姓名、成年年龄、性别、绘画经验和设备。');
   return repo.transaction(() => {
     const setup = mode === 'demo' ? DEFAULT_SETUP : setupFor(repo);
     if (mode !== 'demo') {
@@ -94,7 +94,7 @@ export function enrollExpression(repo: StudyRepository, data: Record<string, unk
     const id = randomUUID();
     const sequence = assignment?.sequence ?? randomInt(4) + (group === 'auto' ? 4 : 0);
     const record: RecordState = {
-      id, mode, sequence, assignment, version: VERSION, status: 'active', step: 'intent', createdAt: now, updatedAt: now, enteredAt: now, revision: 0,
+      id, mode, sequence, assignment, version: VERSION, interviewVersion: INTERVIEW_VERSION, status: 'active', step: 'intent', createdAt: now, updatedAt: now, enteredAt: now, revision: 0,
       consent: { acceptedAt: now, version: VERSION, config: setup },
       profile: { age, experience, device, gender }, rounds: roundsFor(sequence),
       forms: {}, events: {}, artwork: {}, reference: {}, layouts: {}, ended: {},
@@ -107,10 +107,11 @@ export function enrollExpression(repo: StudyRepository, data: Record<string, unk
   });
 }
 
-function cleanForm(step: RecordState['step'], value: unknown, version: string): Form {
+function cleanForm(record: RecordState, value: unknown): Form {
   const data = input(value);
-  const questions = experienceQuestions(version);
-  const keys = step === 'intent' ? ['a','b'] : step === 'plan1' || step === 'plan2' ? ['plan'] : step === 'interview' ? questions.interview.map(q => q.id) : [];
+  const { step, version, interviewVersion, rounds } = record;
+  const questions = experienceQuestions(version, interviewVersion, rounds[0].auto);
+  const keys = step === 'intent' ? ['a','b','aFeeling','bFeeling'] : step === 'plan1' || step === 'plan2' ? ['plan'] : step === 'interview' ? questions.interview.map(q => q.id) : [];
   if (step === 'survey1' || step === 'survey2') {
     return Object.fromEntries([...IMI, ...SUS, ...questions.outcomes].filter(q => Object.hasOwn(data,q.id)).map(q => {
       const answer = data[q.id];
@@ -152,10 +153,17 @@ export function saveExpression(repo: StudyRepository, id: string, data: Record<s
     const next = data.action === 'next';
     const exit = data.action === 'exit';
     const timedOut = drawingStep(step) && now >= record.enteredAt + limitFor(step);
-    if (data.form !== undefined) record.forms[step] = cleanForm(step, data.form, record.version);
+    if (data.form !== undefined) record.forms[step] = cleanForm(record, data.form);
     const form = record.forms[step] ?? {};
     if (next) {
       if (step === 'intent' && (!form.a || !form.b)) throw new StudyError('请先分别写下两张照片的初始想法。');
+      if (step === 'intent' && (!form.aFeeling || !form.bFeeling)) throw new StudyError('请先分别填写两张照片的看图感受。');
+      if ((step === 'plan1' || step === 'plan2') && !form.plan) throw new StudyError('请填写本轮创作计划。');
+      const questions = experienceQuestions(record.version, record.interviewVersion, record.rounds[0].auto);
+      if ((step === 'survey1' || step === 'survey2') && [...IMI, ...SUS, ...questions.outcomes].some(q => typeof form[q.id] !== 'number'))
+        throw new StudyError('请回答本轮问卷的全部题目。');
+      if (step === 'interview' && questions.interview.some(q => !form[q.id]))
+        throw new StudyError('请回答全部访谈题目。');
       if (step === 'rest') {
         const elapsedMs = Math.max(0, now - record.enteredAt);
         record.rest = { elapsedMs, endedEarly: elapsedMs < REST_MS };

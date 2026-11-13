@@ -22,13 +22,12 @@ function api(): CanvasAPI | undefined { return (window as unknown as { __paintCa
 
 export default function FreeDrawingStudio({ onReset, study }: { onReset: () => void; study?: StudyStudioOptions }) {
   const session = useStudioSession();
-  const { photo, allowLayout, resumeImage, resumeReference, onEvent } = study ?? {};
-  const referenceView = useRef<HTMLCanvasElement>(null);
-  const reference = useRef<HTMLCanvasElement>(null);
+  const { photo, allowLayout, resumeImage, onEvent } = study ?? {};
+  const layoutView = useRef<HTMLCanvasElement>(null);
+  const layoutTarget = useRef<HTMLCanvasElement>(null);
   const loaded = useRef(false);
   const [ready, setReady] = useState(!study);
   const [editing, setEditing] = useState(false);
-  const [composedReference, setComposedReference] = useState(resumeReference);
   const [navigating, setNavigating] = useState(false);
   const [error, setError] = useState('');
   const [color, setColor] = useState<[number, number, number]>([.1, .3, .7]);
@@ -55,47 +54,51 @@ export default function FreeDrawingStudio({ onReset, study }: { onReset: () => v
   }
 
   const materials = useMaterialLayout({
-    canvas: referenceView,
-    target: reference,
+    canvas: layoutView,
+    target: layoutTarget,
     pause: session.pause,
     onConfirm: (_bounds, labels, placements) => {
+      const base = getCanvas();
+      const composed = layoutTarget.current;
+      if (!base || !composed) return;
+      api()?.saveUndoSnapshot();
+      base.getContext('2d')!.drawImage(composed, 0, 0);
       studyStudio.confirmLayout(labels, placements);
-      setComposedReference(reference.current?.toDataURL('image/png'));
       setEditing(false);
       setNavigating(false);
     },
-    confirmationLabel: '确认参考布局',
+    confirmationLabel: '贴到画布',
   });
-  const studyStudio = useStudyStudio(study, materials, getStudyCanvas, () => composedReference ? reference.current : null, session.pause);
+  const studyStudio = useStudyStudio(study, materials, getStudyCanvas, () => null, session.pause);
   const restoreLayout = useEffectEvent(() => studyStudio.restoreLayout());
 
   useEffect(() => {
     if (!photo) return;
     let active = true;
-    Promise.all([
-      resumeImage ? loadStudyCanvas(resumeImage) : undefined,
-      allowLayout ? loadStudyCanvas(resumeReference ?? photo) : undefined,
-    ]).then(([artwork, target]) => {
+    loadStudyCanvas(resumeImage).then(artwork => {
       if (!active) return;
       const base = getCanvas();
       if (artwork && base) base.getContext('2d')!.drawImage(artwork, 0, 0);
-      reference.current = target ?? null;
+      layoutTarget.current = artwork;
       restoreLayout();
       loaded.current = true;
       setReady(true);
       if (resumeImage) onEvent?.('resume_snapshot');
     }).catch(() => { if (active) setError('画面读取失败，请刷新后重试。'); });
     return () => { active = false; loaded.current = false; };
-  }, [photo, allowLayout, resumeImage, resumeReference, onEvent, getCanvas]);
+  }, [photo, allowLayout, resumeImage, onEvent, getCanvas]);
 
   useEffect(() => {
-    if (editing && reference.current && referenceView.current) {
-      referenceView.current.getContext('2d')!.drawImage(reference.current, 0, 0);
+    if (editing && layoutTarget.current && layoutView.current) {
+      layoutView.current.getContext('2d')!.drawImage(layoutTarget.current, 0, 0);
     }
   }, [editing]);
 
   function showLayout() {
-    if (!editing) onEvent?.('layout_open');
+    if (!editing) {
+      layoutTarget.current = getStudyCanvas();
+      onEvent?.('layout_open');
+    }
     setEditing(true);
   }
 
@@ -115,7 +118,7 @@ export default function FreeDrawingStudio({ onReset, study }: { onReset: () => v
   function drop(event: DragEvent) {
     if (!allowLayout || !ready || materials.busy) return;
     const material = MATERIAL_LIBRARY.find(item => item.material.id === event.dataTransfer.getData('application/x-startrace-material'));
-    const canvas = editing ? referenceView.current : getCanvas();
+    const canvas = editing ? layoutView.current : getCanvas();
     if (!material || !canvas) return;
     event.preventDefault();
     const bounds = canvas.getBoundingClientRect();
@@ -125,9 +128,9 @@ export default function FreeDrawingStudio({ onReset, study }: { onReset: () => v
     });
   }
 
-  return <div className="free-studio"><StudioWorkspace onReset={onReset} state={editing ? '编排参考图' : eraser ? '橡皮擦' : spray ? '喷绘' : '自由绘画'} panels={[
+  return <div className="free-studio"><StudioWorkspace onReset={onReset} state={editing ? '编排画布素材' : eraser ? '橡皮擦' : spray ? '喷绘' : '自由绘画'} panels={[
     ...(allowLayout ? [
-      { id: 'materials', title: '素材库', icon: Shapes, content: <MaterialLibrary disabled={!ready || materials.busy} pendingCount={materials.count} controls={materials.pending ? materials.controls : undefined} onAdd={addMaterial} /> },
+      { id: 'materials', title: '素材库', icon: Shapes, onActivate: () => { if (materials.pending) showLayout(); }, content: <MaterialLibrary disabled={!ready || materials.busy} pendingCount={materials.count} controls={materials.pending ? materials.controls : undefined} onAdd={addMaterial} /> },
       { id: 'erase', title: '擦除素材', icon: Eraser, disabled: !editing || !materials.selected || materials.busy || navigating, pressed: materials.tool === 'erase' && !navigating, onActivate: () => materials.setBrushMode(materials.tool === 'erase' ? 'move' : 'erase'), content: materials.brushControls },
       { id: 'restore', title: '恢复素材', icon: Paintbrush, disabled: !editing || !materials.selected || materials.busy || navigating, pressed: materials.tool === 'restore' && !navigating, onActivate: () => materials.setBrushMode(materials.tool === 'restore' ? 'move' : 'restore'), content: materials.brushControls },
     ] : []),
@@ -143,8 +146,6 @@ export default function FreeDrawingStudio({ onReset, study }: { onReset: () => v
     { id: 'history', title: '编辑', icon: Undo2, content: <section className="creation-card"><h2>编辑画布</h2><div className="creation-actions"><button disabled={!canUndo} onClick={() => { api()?.undo(); session.markChanged(); onEvent?.('manual_undo'); }}>撤销上一笔</button><button onClick={() => { api()?.clearAll(); session.markChanged(); setDrawn(0); }}>清空画布</button></div></section> },
     ...(photo ? [{ id: 'reference', title: '参考图', icon: Image, content: <section className="creation-card">
       <ReferencePreview src={photo} />
-      {composedReference && <ReferencePreview src={composedReference} label="已确认的参考布局" />}
-      {allowLayout && <button type="button" disabled={!ready || materials.busy} onClick={showLayout}>编排参考图</button>}
     </section> }] : []),
     { id: 'save', title: '保存', icon: Save, content: study ? <StudyArtworkSave save={study.onSave} /> : <ArtworkSave getCanvas={getCanvas} mode="free" strokeCount={drawn} /> },
   ]}>
@@ -153,19 +154,19 @@ export default function FreeDrawingStudio({ onReset, study }: { onReset: () => v
     <div className="free-studio-stage" hidden={editing} inert={!ready} onDragOver={dragOver} onDrop={drop}><PaintCanvas width={640} height={480} mode="free" strokes={EMPTY} currentGuideStroke={null} brushWidth={width} freeColor={color} freeSat={saturation} freeVal={value} masterStyle={null} eraserMode={eraser} sprayMode={spray} onUserStrokeDone={commit} onUserStrokeStart={begin} onUndoAvailable={setCanUndo} /></div>
     {error && <p role="alert" className="creation-error">{error}</p>}
     </section>
-    {editing && <section className="creation-main co-creation-main study-layout-main" aria-label="编排参考图">
+    {editing && <section className="creation-main co-creation-main study-layout-main" aria-label="编排画布素材">
       <div className="studio-canvas-area"><CanvasViewport onDeselect={materials.deselect} onNavigationChange={setNavigating}>
         <div className="co-canvas-wrap" onDragOver={dragOver} onDrop={drop}>
-          <canvas ref={referenceView} width={640} height={480} aria-label="参考布局画布" />
+          <canvas ref={layoutView} width={640} height={480} aria-label="作品素材编排画布" />
           {materials.overlay}
         </div>
       </CanvasViewport></div>
       <div className="creation-bottom-overlay">
         {!navigating && materials.contextual}
-        <p className="creation-status">素材布局供手绘时参考。你可以回来继续调整。</p>
+        <p className="creation-status">调整素材后贴到作品画布，再继续手绘。</p>
         <div className="creation-playbar study-layout-actions">
           <button type="button" className="night-secondary" disabled={materials.busy} onClick={() => { setEditing(false); setNavigating(false); }}>返回手绘</button>
-          <button type="button" className="creation-primary" disabled={!materials.pending || materials.busy} onClick={() => void materials.confirm()}>确认参考布局</button>
+          <button type="button" className="creation-primary" disabled={!materials.pending || materials.busy} onClick={() => void materials.confirm()}>贴到画布</button>
         </div>
       </div>
       {materials.error && <p role="alert" className="creation-error">{materials.error}</p>}

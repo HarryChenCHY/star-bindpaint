@@ -89,7 +89,7 @@
 .expression-survey legend { padding: 0 5px; font-weight: 600; }
 .expression-survey .study-scale { margin: 4px 0; }
 .expression-survey .study-scale label { justify-content: center; min-height: 44px; min-width: 40px; cursor: pointer; }
-.expression-sources, .expression-withdraw { margin-top: 14px; font-size: 13px; color: var(--st-muted); }
+.expression-sources { margin-top: 14px; font-size: 13px; color: var(--st-muted); }
 .expression-sources a, .expression-study .expression-download { color: var(--st-accent-text); text-decoration: underline; }
 .expression-modal::backdrop { background: rgb(0 0 0 / .65); }
 .expression-record { border-top: 1px solid var(--st-line); padding: 14px 0; }
@@ -139,7 +139,31 @@
 .expression-study .expression-allocation { min-width: 690px; text-align: left; }
 .expression-study .expression-allocation :is(th, td) { border-color: var(--st-line); white-space: nowrap; }
 .expression-allocation td button { min-height: 36px; padding: 4px 12px; }
-.study-round-condition { text-align: center; color: var(--st-muted); padding: 3px 8px 5px; font-size: 12px; }
+.study-task-banner {
+  position: absolute;
+  z-index: 8;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 400px));
+  padding: 8px 12px;
+  border-radius: var(--st-radius-md);
+  background: var(--st-surface);
+  color: var(--st-text);
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.45;
+  pointer-events: none;
+}
+.study-task-next { color: var(--st-muted); }
+.night-ui .study-studio .co-creation-main { --canvas-fit-top: 104px; }
+.night-ui .study-studio .free-studio .creation-main:not(.study-layout-main) { padding-top: 104px; }
+@media (max-width: 800px) {
+  .study-task-banner { top: 57px; width: calc(100% - 78px); left: auto; right: 8px; transform: none; }
+  .study-reference-float:not([data-positioned=true]) { top: 164px; }
+  .night-ui .study-studio .co-creation-main { --canvas-fit-top: 164px; }
+  .night-ui .study-studio .free-studio .creation-main:not(.study-layout-main) { padding-top: 164px; }
+}
 .night-ui .study-studio .creation-bottom-overlay { bottom: max(90px, calc(env(safe-area-inset-bottom) + 76px)); }
 .night-ui .study-studio .studio-state { bottom: max(87px, calc(env(safe-area-inset-bottom) + 73px)); }
 .night-ui .study-studio .co-creation-main { --canvas-fit-bottom: 230px; }

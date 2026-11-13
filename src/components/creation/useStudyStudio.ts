@@ -11,7 +11,7 @@ type Snapshot = { image?: string; reference?: string | null; draftImage?: string
 
 export type StudyStudioHandle = {
   pause: () => void;
-  captureQuick: () => Snapshot;
+  captureQuick: (quality?: number) => Snapshot;
   capture: () => Promise<Snapshot>;
 };
 
@@ -80,14 +80,14 @@ export default function useStudyStudio(
     }
   }
 
-  function captureQuick(): Snapshot {
+  function captureQuick(quality = .87): Snapshot {
     const canvas = getCanvas();
     if (!canvas) return {};
     const copy = whiteCanvas(640, 480);
     copy.getContext('2d')!.drawImage(canvas, 0, 0);
     const reference = getReference();
     const snapshot: Snapshot = {
-      image: copy.toDataURL('image/jpeg', .87),
+      image: copy.toDataURL('image/jpeg', quality),
       reference: reference ? reference.toDataURL('image/jpeg', .87) : null,
     };
     if (study?.allowLayout) {
