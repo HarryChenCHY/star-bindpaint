@@ -101,7 +101,7 @@ export default function IntroPage() {
       </Section>
       <Section id="data" number="10" title="每份结果，都有来处。" subtitle="研究记录保存在服务端，实际画作与操作摘要分开管理。软件提供可靠的流程，研究结论仍来自真实参与者。">
         <div className="intro-grid three"><Card title="测量与保存"><Layers3 size={26} className="mb-3 text-[#6558D9]" /><p>行为事件按序号增量保存，去重重放；绘画期间定期保存检查点，结束时保存真实 PNG 和哈希。研究操作摘要不包含完整触点轨迹。</p></Card><Card title="离线与恢复"><ShieldCheck size={26} className="mb-3 text-[#6558D9]" /><p>浏览器本地缓存未上传内容，网络恢复后补传；提供保存失败重试。活动页面保护降低多标签误操作风险，技术故障保留原尝试和恢复记录。</p></Card><Card title="导出与备份"><BookOpen size={26} className="mb-3 text-[#6558D9]" /><p>每轮文件按“研究码-时间-条件.json”命名，保留配对文件与汇总清单。服务端备份涵盖数据库、作品、原始记录和交接包，支持完整性校验。</p></Card></div>
-        <div className="intro-callout mt-6"><h3>同意、撤回与保存期限</h3><p>研究参与需明确同意行为摘要与作品保存；界面说明默认保留 {PROTOCOL.retentionDays} 天，实际清理由研究者落实。参与者可凭当前浏览器研究凭证申请撤回；后台清理在线记录和报告，已有离线副本由研究者处理。体验中的可选云端功能与本地绘画具有不同的数据流。</p></div>
+        <div className="intro-callout mt-6"><h3>同意、撤回与保存期限</h3><p>参加测试前需确认知情同意书。资料自填写日起保存 3 年，到期由研究者清理。参与者可凭编号联系研究者申请撤回，线上记录和已导出的副本由研究者处理。体验中的可选云端功能与本地绘画具有不同的数据流。</p></div>
         <p className="intro-caption">本文对应当前软件功能。算法示例与条件示意都不是用户实验结果；没有在介绍页填入模拟的效果提升百分比。</p>
       </Section>
       </details>

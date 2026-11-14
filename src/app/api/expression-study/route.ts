@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { getRepository, hash, StudyStorageUnavailableError } from '@/lib/study/server/repository';
 import {
-  AUTH_KIND, IDENTITY_KIND, ID_PATTERN, RECORD_KIND, SETUP_KIND, StudyError, enrollExpression,
-  exportRecord, input, removeExpression, roundExperience, saveExpression, savedPath, setupFor, setupFrom,
+  AUTH_KIND, IDENTITY_KIND, ID_PATTERN, RECORD_KIND, StudyError, enrollExpression,
+  consentSignature, exportRecord, input, removeExpression, roundExperience, saveExpression, savedPath,
 } from '@/lib/study/server/expression';
-import { LIMITS, PHOTOS, VERSION, drawingStep, type RecordState } from '@/lib/study/expression';
+import { DEFAULT_SETUP, LIMITS, PHOTOS, VERSION, drawingStep, type RecordState } from '@/lib/study/expression';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -63,8 +63,8 @@ export async function GET(req: NextRequest) {
     const params = req.nextUrl.searchParams;
     const action = params.get('action') ?? 'state';
     if (action === 'state') {
-      const setup = setupFor(repo);
-      return reply({ record: owner(repo,req), setup, setupSignature: hash(JSON.stringify(setup)), version: VERSION, now: Date.now() });
+      const setup = DEFAULT_SETUP;
+      return reply({ record: owner(repo,req), setup, setupSignature: consentSignature(setup), version: VERSION, now: Date.now() });
     }
     if (action === 'resume-image') {
       const record = owner(repo,req);
@@ -102,7 +102,7 @@ export async function GET(req: NextRequest) {
       } : {}),
     });
     if (action === 'list') return reply({
-      setup: setupFor(repo), limits: LIMITS,
+      setup: DEFAULT_SETUP, limits: LIMITS,
       records: records().map(p => ({ id:p.id, version:p.version, mode:p.mode, assignment:p.assignment, rounds:p.rounds, roundExperience:roundExperience(p), status:p.status, step:p.step, updatedAt:p.updatedAt, createdAt:p.createdAt, profile:p.profile, name:repo.get<{ name:string }>(IDENTITY_KIND,p.id)?.name, artwork:p.artwork, draftArtwork:p.draftArtwork })),
     });
     if (action === 'export-all') {
@@ -157,12 +157,6 @@ export async function POST(req: NextRequest) {
       if (token) repo.delete('expression-admin',hash(token));
       return cookie(reply({ ok:true }),req,adminCookie,'',0);
     }
-    if (data.action === 'setup') {
-      if (!admin(repo,req)) throw new StudyError('请先登录研究后台。',401);
-      const setup = setupFrom(data);
-      repo.put(SETUP_KIND,'current',setup);
-      return reply({ setup });
-    }
     if (data.action === 'rate') {
       const role = rater(req);
       if (!role) throw new StudyError('请输入评分者口令。',401);
@@ -202,8 +196,8 @@ export async function POST(req: NextRequest) {
     if (!existing) throw new StudyError('请先确认知情同意并登记。',401);
     if (data.action === 'release') {
       if (existing.status === 'active') throw new StudyError('请先完成或退出本次测试。',409);
-      const setup = setupFor(repo);
-      return cookie(reply({ record:null, now, setup, setupSignature:hash(JSON.stringify(setup)) }),req,participantCookie,'',0);
+      const setup = DEFAULT_SETUP;
+      return cookie(reply({ record:null, now, setup, setupSignature:consentSignature(setup) }),req,participantCookie,'',0);
     }
     if (data.action !== 'checkpoint' && data.action !== 'next' && data.action !== 'exit') throw new StudyError('测试操作无效。');
     return reply({ record:saveExpression(repo,existing.id,data,now), now });

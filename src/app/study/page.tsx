@@ -9,16 +9,16 @@ import FloatingStudyReference from '@/components/study/FloatingStudyReference';
 import PaintWorkspace from '@/components/creation/PaintWorkspace';
 import type { StudyStudioHandle } from '@/components/creation/useStudyStudio';
 import {
-  DEFAULT_SETUP, GROUP_LABEL, IMI, IMI_SOURCE, PHOTOS, PHOTO_LICENSE, PRACTICE_PHOTO,
-  STEPS, STEP_LABEL, SUS, SUS_SOURCE, TASK_PROMPT, VERSION, consentSections, describeRound, drawingStep, experienceQuestions, studyAssignments, limitFor,
-  type Form, type Mode, type RecordState, type StudyEvent, type StudyGroup, type StudySetup,
+  CONSENT_VERSION, CONSENT_CONFIRMATION, CONSENT_SECTIONS, DEFAULT_SETUP, GROUP_LABEL, IMI, IMI_SOURCE, PHOTOS, PHOTO_LICENSE, PRACTICE_PHOTO,
+  STEPS, STEP_LABEL, SUS, SUS_SOURCE, TASK_PROMPT, VERSION, consentDate, describeRound, drawingStep, experienceQuestions, studyAssignments, limitFor,
+  type Form, type Mode, type RecordState, type StudyEvent, type StudyGroup,
 } from '@/lib/study/expression';
 import { EXPRESSION_API, expressionRequest } from '@/lib/study/expression-client';
 import '../creation.css';
 import './study.css';
 import './expression.css';
 
-type StudyState = { record: RecordState | null; now: number; setup?: StudySetup; setupSignature?: string };
+type StudyState = { record: RecordState | null; now: number; setupSignature?: string };
 const modeLabel = { demo:'功能演示',pilot:'预试',formal:'正式测试' } as const;
 const countdown = (ms: number) => {
   const seconds = Math.max(0,Math.ceil(ms/1000));
@@ -28,8 +28,9 @@ const countdown = (ms: number) => {
 export default function StudyPage() {
   const router = useRouter();
   const [record,setRecord] = useState<RecordState|null>(null);
-  const [setup,setSetup] = useState<StudySetup>(DEFAULT_SETUP);
+  const [participantName,setParticipantName] = useState('');
   const [setupSignature,setSetupSignature] = useState('');
+  const [consented,setConsented] = useState(false);
   const [mode,setMode] = useState<Mode|null>(null);
   const [group, setGroup] = useState<StudyGroup | ''>('');
   const [participantCode, setParticipantCode] = useState('');
@@ -63,7 +64,6 @@ export default function StudyPage() {
       draft.current = data.record ? data.record.forms[data.record.step] ?? {} : {};
       setForm(draft.current); setRecord(data.record); lastSignature.current='';
     }
-    if (data.setup) setSetup(data.setup);
     if (data.setupSignature) setSetupSignature(data.setupSignature);
   },[]);
 
@@ -172,8 +172,16 @@ export default function StudyPage() {
     fieldTimer.current=setTimeout(() => void persist('checkpoint'),650);
   }
 
+  useEffect(() => {
+    if (!mode || record) return;
+    const update = () => setClock(Date.now() + timeOffset.current);
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, [mode, record]);
+
   function chooseStage(stage: Mode) {
     setMode(stage);
+    setConsented(false);
     setGroup('');
     setParticipantCode('');
     setError('');
@@ -186,7 +194,7 @@ export default function StudyPage() {
     const values = new FormData(event.currentTarget);
     try {
       const data = await expressionRequest<StudyState>('',{
-        action:'enroll',version:VERSION,setupSignature,mode,group,participantCode,accepted:values.get('accepted') === 'on',
+        action:'enroll',version:VERSION,consentVersion:CONSENT_VERSION,setupSignature,mode,group,participantCode,accepted:values.get('accepted') === 'on',
         name:String(values.get('name') || ''),age:Number(values.get('age')),experience:String(values.get('experience') || ''),
         device:String(values.get('device') || ''),gender:String(values.get('gender') || ''),
       });
@@ -199,7 +207,7 @@ export default function StudyPage() {
     try {
       const data=await expressionRequest<StudyState>('',{action:'release'});
       setSaved(null); setError(''); events.current=[]; accept(data,true);
-      setMode(null); setGroup(''); setParticipantCode('');
+      setMode(null); setParticipantName(''); setConsented(false); setGroup(''); setParticipantCode('');
     } catch (failure) { setError((failure as Error).message); }
     finally { setBusy(false); }
   }
@@ -337,17 +345,32 @@ export default function StudyPage() {
               {assignmentPreview.rounds.map((round, index) => <p key={round.photo}>第 {index + 1} 轮　{describeRound(round)}</p>)}
             </div>}
           </>}
-          <div className="expression-consent-details">
-        <p className="study-muted">版本 {VERSION} · 请先阅读研究信息。如有疑问，可在同意前向研究者咨询。</p>
-        {consentSections(mode === 'demo' ? DEFAULT_SETUP : setup, mode === 'demo').map(([title,body]) => <div className="expression-consent" key={title}><h3>{title}</h3><p>{body}</p></div>)}
-          </div>
-          <label className="expression-consent-check"><input type="checkbox" name="accepted" required />我已阅读以上信息，年满18岁，并自愿同意参加及按上述方式处理本次数据。</label>
-          <label>姓名<input name="name" required maxLength={80} autoComplete="off" placeholder={mode === 'demo' ? '演示化名' : '用于签署同意与联系研究者核对'} /></label>
+          <label>姓名<input id="study-participant-name" name="name" required maxLength={80} autoComplete="off" value={participantName} onChange={event => setParticipantName(event.target.value)} placeholder={mode === 'demo' ? '演示化名' : '用于签署同意与联系研究者核对'} /></label>
+          <article className="expression-consent-details" aria-label="星迹智绘用户测试知情同意书">
+            <p className="study-muted">同意书版本 {CONSENT_VERSION}</p>
+            <p><strong>研究者</strong>　陈皓宇</p>
+            <p><strong>所属单位</strong>　上海交通大学国际文化创意产业学院</p>
+            <p><strong>联系邮箱</strong>　<a href={`mailto:${DEFAULT_SETUP.contact}`}>{DEFAULT_SETUP.contact}</a></p>
+            {CONSENT_SECTIONS.map(section => <section className="expression-consent" key={section.title}>
+              <h3>{section.title}</h3>
+              {section.paragraphs?.map(paragraph => <p key={paragraph}>{paragraph}</p>)}
+              {section.steps && <ol>{section.steps.map(([label,body]) => <li key={label}><strong>{label}</strong> {body}</li>)}</ol>}
+              {section.bullets && <ul>{section.bullets.map(([label,body]) => <li key={label}><strong>{label}</strong> {body}</li>)}</ul>}
+              {section.after && <p>{section.after}</p>}
+            </section>)}
+            <section className="expression-consent">
+              <h3>七、参与者确认</h3>
+              <label className="expression-consent-check"><input type="checkbox" name="accepted" required checked={consented} onChange={event => setConsented(event.target.checked)} />{CONSENT_CONFIRMATION}</label>
+              <p><strong>参与者姓名</strong>　<output htmlFor="study-participant-name">{participantName.trim() || '填写姓名后自动显示'}</output></p>
+              <p><strong>填写日期</strong>　<time dateTime={consentDate(clock)}>{consentDate(clock).replace('-', ' 年 ').replace('-', ' 月 ')} 日</time></p>
+              <p>请勾选上述确认、填写姓名，再点击「同意并开始」。系统将记录确认时间和知情同意书版本。</p>
+            </section>
+          </article>
           <label>年龄<input name="age" type="number" min={18} max={120} required /></label>
           <label>性别<select name="gender" defaultValue="" required><option value="" disabled>请选择</option><option>女</option><option>男</option><option>其他</option></select></label>
           <label>数字绘画经验<select name="experience" defaultValue="" required><option value="" disabled>请选择</option><option>没有经验</option><option>偶尔尝试</option><option>经常使用</option><option>有专业学习或从业经历</option></select></label>
           <label>主要操作设备<select name="device" defaultValue="" required><option value="" disabled>请选择</option><option>电脑鼠标</option><option>电脑触控板</option><option>数位板或手写笔</option><option>手机或平板触屏</option></select></label>
-          <div className="study-tools"><button className="primary" disabled={busy || !group || (mode !== 'demo' && !assignmentPreview)}>{busy ? '正在登记…' : '同意并开始'}</button><Link className="study-link" href="/">不同意，返回</Link></div>
+          <div className="study-tools"><button className="primary" disabled={busy || !consented || !group || (mode !== 'demo' && !assignmentPreview)}>{busy ? '正在登记…' : '同意并开始'}</button><Link className="study-link" href="/">不同意，返回</Link></div>
         </form>
     </section>}
     {record && <section className="study-card">

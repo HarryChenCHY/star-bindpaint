@@ -25,6 +25,18 @@
 .expression-brand svg { color: var(--st-accent-text); }
 .expression-stage-heading { margin-bottom: 10px; }
 .expression-stage-heading .study-muted { overflow-wrap: anywhere; }
+.expression-consent-details {
+  max-width: 78ch;
+  line-height: 1.7;
+}
+.expression-consent-details ol, .expression-consent-details ul {
+  padding-inline-start: 1.5em;
+  margin: 8px 0;
+}
+.expression-consent-details ol { list-style: decimal; }
+.expression-consent-details ul { list-style: disc; }
+.expression-consent-details li + li { margin-top: 6px; }
+.expression-consent-details a { text-decoration: underline; }
 .expression-consent { margin: 18px 0; }
 .expression-consent p { color: var(--st-muted); margin-top: 4px; }
 .expression-fields { display: grid; gap: 14px; margin-top: 24px; }

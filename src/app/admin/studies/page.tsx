@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { EXPRESSION_API, ExpressionRequestError, expressionRequest } from '@/lib/study/expression-client';
-import { DEFAULT_SETUP, GROUP_LABEL, LIMITS, VERSION, describeRound, studyAssignments, type DrawingStep, type Mode, type RecordState, type RecruitmentStage, type StudyAssignment, type StudySetup } from '@/lib/study/expression';
+import { DEFAULT_SETUP, GROUP_LABEL, LIMITS, VERSION, describeRound, studyAssignments, type DrawingStep, type Mode, type RecordState, type RecruitmentStage, type StudyAssignment } from '@/lib/study/expression';
 import type { roundExperience } from '@/lib/study/server/expression';
 import '../../study/study.css';
 import '../../study/expression.css';
@@ -17,7 +17,6 @@ const formatScore = (score: number | null | undefined) => score == null ? '—' 
 
 export default function ResearchDashboard() {
   const [rows,setRows] = useState<Entry[]|null>(null);
-  const [setup,setSetup] = useState<StudySetup>(DEFAULT_SETUP);
   const [loading,setLoading] = useState(true);
   const [busy,setBusy] = useState(false);
   const [notice,setNotice] = useState('');
@@ -26,8 +25,8 @@ export default function ResearchDashboard() {
   const [allocationStage, setAllocationStage] = useState<RecruitmentStage>('formal');
   const refresh = useCallback(async () => {
     try {
-      const data = await expressionRequest<{ records:Entry[];setup:StudySetup }>('?action=list');
-      setRows(data.records); setSetup(data.setup);
+      const data = await expressionRequest<{ records:Entry[] }>('?action=list');
+      setRows(data.records);
     } catch (failure) {
       if (failure instanceof ExpressionRequestError && failure.status === 401) setRows(null);
       else setError((failure as Error).message);
@@ -40,19 +39,6 @@ export default function ResearchDashboard() {
     setBusy(true); setError('');
     try { await expressionRequest('',{action:'login',password:values.get('password')}); await refresh(); }
     catch (failure) { setError((failure as Error).message); }
-    finally { setBusy(false); }
-  }
-  async function saveSetup(event:FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget, values = new FormData(form);
-    setBusy(true); setError(''); setNotice('');
-    try {
-      const response = await expressionRequest<{setup:StudySetup}>('',{
-        action:'setup', researcher:values.get('researcher'),contact:values.get('contact'),ethics:values.get('ethics'),compensation:values.get('compensation'),
-        retentionDays:Number(values.get('retentionDays')),reviewConfirmed:values.get('reviewConfirmed')==='on',
-      });
-      setSetup(response.setup); setNotice('知情同意书设置已保存。');
-    } catch (failure) { setError((failure as Error).message); }
     finally { setBusy(false); }
   }
   async function remove(id:string) {
@@ -88,16 +74,9 @@ export default function ResearchDashboard() {
     {loading ? <p>正在读取登录状态…</p> : !rows ? <section className="study-card"><h2>研究者登录</h2><form className="expression-fields" onSubmit={login}><label>管理员密码<input name="password" type="password" required maxLength={256} autoComplete="current-password" /></label><div><button className="primary" disabled={busy}>{busy ? '正在登录…':'登录'}</button></div></form></section> : <>
       <section className="study-card">
         <h2>知情同意书</h2>
-        <p className="study-muted">在组织线上测试前填写经核准的真实信息。已经签署的记录保留当时的同意书版本及设置。</p>
-        <form key={JSON.stringify(setup)} className="expression-fields" onSubmit={saveSetup}>
-          <label>研究者与所属单位<input name="researcher" defaultValue={setup.researcher} maxLength={120}/></label>
-          <label>联系及撤回方式<input name="contact" defaultValue={setup.contact} maxLength={200}/></label>
-          <label>伦理审查信息<input name="ethics" defaultValue={setup.ethics} maxLength={300}/></label>
-          <label>补偿说明<input name="compensation" defaultValue={setup.compensation} maxLength={300}/></label>
-          <label>保存期限（天）<input name="retentionDays" defaultValue={setup.retentionDays} type="number" min={1} max={3650} required/></label>
-          <label className="expression-consent-check"><input type="checkbox" name="reviewConfirmed"/>我已取得适用的伦理审核决定，并核对以上信息及同意书内容。</label>
-          <div className="study-tools"><button className="primary" disabled={busy}>保存设置</button><Link className="study-link" href="/study?mode=demo">演示入口</Link><Link className="study-link" href="/study?mode=pilot">预试入口</Link><Link className="study-link" href="/study?mode=formal">正式测试入口</Link></div>
-        </form>
+        <p>{DEFAULT_SETUP.researcher} · {DEFAULT_SETUP.contact}</p>
+        <p className="study-muted">研究资料自填写同意书之日起保存 3 年。每条记录保留签署日期与同意书版本。</p>
+        <div className="study-tools"><Link className="study-link" href="/study?mode=demo">演示入口</Link><Link className="study-link" href="/study?mode=pilot">预试入口</Link><Link className="study-link" href="/study?mode=formal">正式测试入口</Link></div>
       </section>
       <section className="study-card">
         <div className="expression-header">

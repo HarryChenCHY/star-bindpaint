@@ -93,7 +93,7 @@ export type Artifact = { at: number; sha256: string; bytes: number };
 export type RecordState = {
   id: string; mode: Mode; sequence: number; assignment?: StudyAssignment; status: 'active' | 'completed' | 'exited';
   version: string; interviewVersion?: string; createdAt: number; updatedAt: number; step: Step; enteredAt: number; revision: number;
-  consent: { acceptedAt: number; version: string; config: StudySetup };
+  consent: { acceptedAt: number; signedDate?: string; version: string; config: StudySetup };
   profile: { age: number; experience: string; device: string; gender: string };
   rounds: [Round, Round]; forms: Partial<Record<Step, Form>>;
   events: Partial<Record<Step, StudyEvent[]>>;
@@ -102,8 +102,8 @@ export type RecordState = {
   rest?: { elapsedMs: number; endedEarly: boolean };
   ended: Partial<Record<DrawingStep, { at: number; reason: 'submitted' | 'timeout' | 'exited'; elapsedMs: number }>>;
 };
-export type StudySetup = { researcher: string; contact: string; ethics: string; compensation: string; retentionDays: number };
-export const DEFAULT_SETUP: StudySetup = { researcher: '', contact: '', ethics: '', compensation: '', retentionDays: 365 };
+export type StudySetup = { researcher: string; contact: string; ethics?: string; compensation?: string; retentionDays?: number; retentionYears?: number };
+export const DEFAULT_SETUP: StudySetup = { researcher: '陈皓宇｜上海交通大学国际文化创意产业学院', contact: 'haharrychen@qq.com', retentionYears: 3 };
 
 export const STEPS: Step[] = ['intent','practice','plan1','round1','survey1','rest','plan2','round2','survey2','interview','done'];
 export const STEP_LABEL: Record<Step, string> = {
@@ -170,13 +170,47 @@ export function scoreSurveys(form: Form = {}) {
   return { imi, sus };
 }
 
-export function consentSections(setup: StudySetup, demo = false) {
-  return [
-    ['研究目的', '本研究考察不同绘制方式和素材编排条件下，参与者如何感受表达、创作决定和工具使用。参与者须年满18周岁。'],
-    ['研究过程', '同意后填写基本信息与两张照片的初始构思，完成最多90秒的练习、两轮各最多10分钟的创作及每轮问卷，中间建议休息2分钟，也可提前结束。最后进行简短文字访谈。预计35至45分钟。预试和正式测试按研究者分配的编号进行，编号确定绘制组别与任务顺序。'],
-    ['可能的不适与收益', '可能出现视觉疲劳、手部疲劳、等待或对作品不满意。完成测试需要填写全部题目。你可以休息或随时停止。研究不保证改善绘画能力，也不提供诊断。'],
-    ['记录与保密', '系统保存姓名、基本信息、意图、操作摘要、问卷、访谈文字及成品或未完成画面。姓名单独存放，画面可在访谈时回看。研究不采集音视频。论文使用去标识的汇总结果，公开展示个别作品须另行取得同意。'],
-    ['自愿退出与撤回', '保存并退出会保留已收集的数据及当前画面。如需撤回数据，请通过下方联系方式向研究者提供研究编号，由研究者处理在线记录、作品及已导出的副本。无法回溯个人的汇总结果可能无法撤回。退出不会受到惩罚。'],
-    ['保存期限与联系', `资料计划保存 ${setup.retentionDays} 天，到期由研究者清理。研究者：${setup.researcher || (demo ? '演示模式' : '由研究组织者提供')}。联系方式：${setup.contact || (demo ? '演示不招募参与者' : '由研究组织者提供')}。补偿：${setup.compensation || (demo ? '演示不涉及补偿' : '由研究组织者说明')}。伦理审核信息：${setup.ethics || (demo ? '演示不代表已获伦理审查' : '由研究组织者提供')}。`],
-  ];
+export const CONSENT_VERSION = 'expression-consent-v3';
+export function consentDate(timestamp: number) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(timestamp);
 }
+
+export const CONSENT_CONFIRMATION = '我已年满 18 周岁。我已阅读并理解上述研究目的、参与过程、可能的风险与收益、资料使用方式及退出和撤回途径。我知道可以在同意前向研究者提问。我自愿参加本研究，并同意研究者按本同意书所述方式收集、保存和使用本次测试数据。';
+
+export const CONSENT_SECTIONS = [
+  { title: '一、研究邀请与目的', paragraphs: [
+    '您好！我们邀请您参加「星迹智绘」用户测试。本研究面向年满 18 周岁的参与者，了解不同绘制方式和素材编排功能对数字绘画创作体验的影响。研究关注您怎样把想法变成画面、能否决定画面中对您重要的内容，以及哪些操作让您感到轻松或困难。问卷和访谈请按实际体验填写，作品用于回看和说明创作过程。',
+  ] },
+  { title: '二、研究过程与方法', paragraphs: [
+    '测试预计用时 35 至 45 分钟，包括登记、看图、练习、两轮创作、问卷和书面访谈。',
+  ], steps: [
+    ['阅读同意书并登记。','请先阅读本同意书。如决定参加，按研究者提供的信息选择测试阶段、绘制组别和参与者编号，填写姓名、年龄、性别、数字绘画经验和本次使用的设备。'],
+    ['观看参考照片并记录初始想法。','您将看到两张参考照片，分别写下看图时的感受，以及希望在作品中呈现的内容。例如，您可以写想保留的对象、想突出的位置，或想表现的气氛。'],
+    ['熟悉创作工具。','您将使用一张单独的练习图熟悉界面。练习最多 90 秒，准备好后可提前结束练习，进入第一轮准备。'],
+    ['完成两轮创作。','您按分配顺序完成两轮，每轮使用一张不同的参考照片。每轮开始前填写简短的创作计划，每轮最多创作 10 分钟。您的绘制方式在两轮中保持一致，一轮提供素材编排功能，另一轮使用该条件下可用的工具完成创作。手绘组在画布上亲自落笔，有素材的一轮可以把图形贴入作品，与手绘笔迹一起构成画面。自动转绘组由系统逐步绘制笔触，有素材的一轮可以自行选择和调整素材，确认后由系统转绘。您可以根据自己的想法决定保留、突出或补充哪些内容。时间到时，系统将尝试保存当前画面。'],
+    ['填写每轮问卷。','每轮结束后，您将根据刚完成的那一轮作答，评价自己的表达情况、创作决定、操作负担、兴趣、压力和工具可用性。两轮之间建议休息约 2 分钟，准备好后可以提前进入第二轮。'],
+    ['回看作品并完成书面访谈。','两轮结束后，您可以回看已保存的画面，用文字说明整体感受、表达顺畅程度、遇到的困难、自己作出的创作决定，以及观察画面变化后是否改变了想法。'],
+  ], after: '按流程完成测试需要填写各阶段的题目。若有不愿回答的问题，您可以停止参与。填写看图感受、创作计划和访谈时，可以围绕作品与操作体验作答，无需写入私人经历或他人的个人信息。' },
+  { title: '三、可能的风险与不适', bullets: [
+    ['视觉和手部疲劳。','持续看屏幕、使用鼠标、触控板或触屏，可能引起眼睛疲劳或手部不适。您可以休息或停止测试。'],
+    ['任务压力或挫折感。','倒计时、陌生的操作、等待系统绘制，或画面效果与预期不一致，可能让您感到紧张、烦躁或失望。您可以提前结束当前轮次，也可以停止参与。测试关注您使用工具的体验，您可以如实报告不满意的地方。'],
+    ['网络或设备异常。','断网、浏览器异常关闭或设备故障可能中断测试。系统会保留最近一次成功保存的内容，尚未成功上传的文字或画面可能丢失。发生异常后，您可以联系研究者核对记录。'],
+    ['隐私泄露的可能性。','测试包含姓名等个人信息。未经授权的访问、导出文件误传，或在开放题和作品中写入可识别个人的内容，都可能造成隐私泄露。研究者将按第五节所述方式管理资料。'],
+  ] },
+  { title: '四、研究收益', paragraphs: [
+    '参加测试可让您体验不同的数字绘画创作方式，并通过回看两轮作品了解自己在构图、描画和使用素材时的偏好。您可能感受到某种方式更适合自己的表达，也可能觉得两轮差别不大。本研究无法保证提高个人绘画技能、改善作品质量或降低操作负担。',
+    '您的反馈将帮助研究者了解，哪些操作能支持绘画初学者表达想法，哪些操作会增加困难，并为改进素材编排、系统绘制反馈和画布交互提供依据。',
+  ] },
+  { title: '五、隐私保护与资料保存', bullets: [
+    ['收集范围。','测试记录包括姓名、年龄、性别、数字绘画经验、操作设备、参与者编号、实验组别和任务顺序。系统还会保存看图感受、创作想法、任务用时、操作记录、问卷答案、书面访谈及已保存的作品或未完成画面。测试程序不采集录音或录像。'],
+    ['身份信息与研究资料。','系统将姓名与作答记录分开存放。管理员核对或导出记录时，仍可按参与者编号关联身份与测试资料。研究分析和论文呈现将使用参与者编号，能够识别个人身份的信息将在用于分析或写作的材料中移除。'],
+    ['访问与使用。','研究后台设有登录权限，原始记录和导出文件由获授权的研究人员管理，用于本研究的数据核对、分析及学位论文写作。论文可呈现去标识的汇总结果或文字摘录。若文字摘录包含可能识别您的细节，研究者会删除或隐去这些细节。公开展示您的个别作品前，研究者将另行征得您的同意。'],
+    ['保存期限。','研究资料自您填写本同意书之日起保存 3 年。保存期限届满后，由研究者清理所掌管的原始记录、作品及导出副本。'],
+  ] },
+  { title: '六、自愿参加、退出与撤回', paragraphs: [
+    '参加本研究由您自行决定。您可以拒绝参加，也可以在测试中随时停止。拒绝或退出不会受到处罚。退出后，服务器保留此前已成功保存的记录和画面。',
+    '如希望撤回已提交的数据，请发送邮件至 haharrychen@qq.com，并提供您的参与者编号。研究者核对后，将处理可关联至该编号的测试记录、作品和已导出的副本。已纳入汇总结果且无法关联到个人的数据，可能无法单独撤回。对测试流程、个人资料使用或退出方式有疑问，也可以通过该邮箱联系研究者。',
+  ] },
+];

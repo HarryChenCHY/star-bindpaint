@@ -1,19 +1,17 @@
 import { randomInt, randomUUID } from 'node:crypto';
 import { hash, type StudyRepository } from './repository';
 import {
-  DEFAULT_SETUP, IMI, INTERVIEW_VERSION, STEPS, SUS, VERSION, experienceQuestions,
+  CONSENT_VERSION, DEFAULT_SETUP, IMI, consentDate, INTERVIEW_VERSION, STEPS, SUS, VERSION, experienceQuestions,
   drawingStep, findStudyAssignment, limitFor, roundsFor, scoreSurveys, REST_MS, type DrawingStep, type Form,
   type Mode, type RecordState, type StudyEvent, type StudySetup,
 } from '../expression';
 
 export const RECORD_KIND = 'expression-record';
-export const SETUP_KIND = 'expression-setup';
 export const IDENTITY_KIND = 'expression-identity';
 export const AUTH_KIND = 'expression-auth';
 export const ID_PATTERN = /^[a-f\d]{8}(?:-[a-f\d]{4}){3}-[a-f\d]{12}$/i;
 export const EVENT_TYPES = ['manual_stroke','manual_undo','material_add','layout_confirmed','material_layout_confirmed','layout_open','auto_requested','auto_planning','auto_playing','auto_pause','auto_done','auto_error','help','browser_hidden','browser_visible','resume_snapshot','studio_reset'] as const;
 export const savedPath = (id: string, file: string) => `expression/${id}/${file}`;
-export const setupFor = (repo: StudyRepository) => repo.get<StudySetup>(SETUP_KIND, 'current') ?? DEFAULT_SETUP;
 export class StudyError extends Error {
   constructor(message: string, readonly status = 400) { super(message); }
 }
@@ -25,19 +23,8 @@ function str(value: unknown, max: number) {
   if (typeof value !== 'string' || value.length > max) throw new StudyError('文字格式或长度有误。');
   return value.trim();
 }
-function completeConsent(setup: StudySetup) {
-  return Boolean(setup.researcher && setup.contact && setup.ethics && setup.compensation);
-}
+export const consentSignature = (setup: StudySetup) => hash(JSON.stringify({ version: CONSENT_VERSION, setup }));
 
-export function setupFrom(value: unknown): StudySetup {
-  const data = input(value);
-  const { retentionDays } = data;
-  if (typeof retentionDays !== 'number' || !Number.isInteger(retentionDays) || retentionDays < 1 || retentionDays > 3650) throw new StudyError('保存期限必须在1至3650天之间。');
-  const setup: StudySetup = { researcher: str(data.researcher, 120), contact: str(data.contact, 200), ethics: str(data.ethics, 300), compensation: str(data.compensation, 300), retentionDays };
-  if (!completeConsent(setup) || data.reviewConfirmed !== true)
-    throw new StudyError('请填写真实研究信息，确认已取得适用的伦理审核决定。');
-  return setup;
-}
 export function roundExperience(record: RecordState) {
   return ([0, 1] as const).map(index => {
     const drawing = index === 0 ? 'round1' : 'round2';
@@ -72,15 +59,14 @@ function persist(repo: StudyRepository, record: RecordState) {
   repo.put(RECORD_KIND, record.id, record);
 }
 export function enrollExpression(repo: StudyRepository, data: Record<string, unknown>, mode: Mode, token: string, now: number) {
-  if (data.accepted !== true || data.version !== VERSION) throw new StudyError('请先阅读并确认当前版本的知情同意书。');
+  if (data.accepted !== true || data.version !== VERSION || data.consentVersion !== CONSENT_VERSION) throw new StudyError('请先阅读并确认当前版本的知情同意书。');
   const name = str(data.name, 80), experience = str(data.experience, 80), device = str(data.device, 80), gender = str(data.gender ?? '', 80);
   const age = data.age;
   if (!name || !experience || !device || !gender || typeof age !== 'number' || !Number.isInteger(age) || age < 18 || age > 120) throw new StudyError('请填写姓名、成年年龄、性别、绘画经验和设备。');
   return repo.transaction(() => {
-    const setup = mode === 'demo' ? DEFAULT_SETUP : setupFor(repo);
+    const setup = DEFAULT_SETUP;
     if (mode !== 'demo') {
-      if (data.setupSignature !== hash(JSON.stringify(setup))) throw new StudyError('同意书已更新，请刷新后重新阅读。', 409);
-      if (process.env.NODE_ENV === 'production' && !completeConsent(setup)) throw new StudyError('请由研究者补齐知情同意书信息后再登记。', 409);
+      if (data.setupSignature !== consentSignature(setup)) throw new StudyError('同意书已更新，请刷新后重新阅读。', 409);
     }
     const group = data.group;
     if (group !== 'manual' && group !== 'auto') throw new StudyError('请选择研究者告知的绘制组别。');
@@ -95,7 +81,7 @@ export function enrollExpression(repo: StudyRepository, data: Record<string, unk
     const sequence = assignment?.sequence ?? randomInt(4) + (group === 'auto' ? 4 : 0);
     const record: RecordState = {
       id, mode, sequence, assignment, version: VERSION, interviewVersion: INTERVIEW_VERSION, status: 'active', step: 'intent', createdAt: now, updatedAt: now, enteredAt: now, revision: 0,
-      consent: { acceptedAt: now, version: VERSION, config: setup },
+      consent: { acceptedAt: now, signedDate: consentDate(now), version: CONSENT_VERSION, config: setup },
       profile: { age, experience, device, gender }, rounds: roundsFor(sequence),
       forms: {}, events: {}, artwork: {}, reference: {}, layouts: {}, ended: {},
     };

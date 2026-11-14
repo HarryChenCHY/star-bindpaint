@@ -4,8 +4,8 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { StudyRepository, hash } from '../../src/lib/study/server/repository';
-import { AUTH_KIND, IDENTITY_KIND, RECORD_KIND, SETUP_KIND, enrollExpression, removeExpression, roundExperience, saveExpression, savedPath, setupFrom } from '../../src/lib/study/server/expression';
-import { FORMAL_SLOTS, IMI, LIMITS, OUTCOME_QUESTIONS, PILOT_SLOTS, PRACTICE_MS, REST_MS, ROUND_MS, SUS, VERSION, roundsFor, scoreSurveys, studyAssignments, type RecordState } from '../../src/lib/study/expression';
+import { AUTH_KIND, consentSignature, IDENTITY_KIND, RECORD_KIND, enrollExpression, removeExpression, roundExperience, saveExpression, savedPath } from '../../src/lib/study/server/expression';
+import { CONSENT_VERSION, DEFAULT_SETUP, FORMAL_SLOTS, IMI, LIMITS, OUTCOME_QUESTIONS, PILOT_SLOTS, PRACTICE_MS, REST_MS, ROUND_MS, SUS, VERSION, roundsFor, scoreSurveys, studyAssignments, type RecordState } from '../../src/lib/study/expression';
 
 function storage(t: TestContext) {
   const dir=mkdtempSync(join(tmpdir(),'startrace-expression-test-'));
@@ -13,7 +13,7 @@ function storage(t: TestContext) {
   t.after(()=>{db.db.close();rmSync(dir,{recursive:true,force:true});});
   return db;
 }
-const entrant = {accepted:true,version:VERSION,name:'Test Fixture',age:26,experience:'没有经验',device:'电脑鼠标',gender:'其他',group:'manual'};
+const entrant = {accepted:true,consentVersion:CONSENT_VERSION,version:VERSION,name:'Test Fixture',age:26,experience:'没有经验',device:'电脑鼠标',gender:'其他',group:'manual'};
 const jpeg=readFileSync('public/study/expression/park-a.jpg');
 const image='data:image/jpeg;base64,'+jpeg.toString('base64');
 const move = (db:StudyRepository,p:RecordState, now:number, data:Record<string,unknown>={}) =>
@@ -40,11 +40,8 @@ test('assigned codes validate stage and group, lock sequence and reject duplicat
   const db=storage(t);
   assert.throws(()=>enrollExpression(db,{...entrant,age:17},'demo','token',0),/成年/);
   assert.throws(()=>enrollExpression(db,{...entrant,accepted:false},'demo','token',0),/同意/);
-  const setup=setupFrom({ researcher:'Test',contact:'test@example.invalid',ethics:'fixture',compensation:'none',retentionDays:10,reviewConfirmed:true });
-  assert.throws(()=>setupFrom({...setup,reviewConfirmed:false}),/伦理/);
-  db.put(SETUP_KIND,'current',setup);
   assert.throws(()=>enrollExpression(db,entrant,'pilot','token',0),/更新/);
-  const payload={...entrant,setupSignature:hash(JSON.stringify(setup))};
+  const payload={...entrant,setupSignature:consentSignature(DEFAULT_SETUP)};
   const slots=studyAssignments('pilot');
   const records=slots.map((slot,i)=>enrollExpression(db,{...payload,group:slot.group,participantCode:slot.code},'pilot','token'+i,i));
   assert.deepEqual(records.map(p=>p.sequence),PILOT_SLOTS);

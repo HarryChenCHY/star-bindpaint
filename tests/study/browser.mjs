@@ -43,13 +43,6 @@ try {
   await admin.getByLabel('管理员密码').fill(password);
   await admin.getByRole('button',{name:'登录',exact:true}).click();
   await admin.getByRole('heading',{name:'知情同意书'}).waitFor();
-  for(const [label,text] of [['研究者与所属单位','Test fixture'],['联系及撤回方式','fixture@example.invalid'],['伦理审查信息','Isolated test only'],['补偿说明','Test fixture']]){
-    await admin.getByLabel(label).fill(text);
-  }
-  await admin.getByRole('checkbox',{name:/伦理审核决定/}).check();
-  await admin.getByRole('button',{name:'保存设置'}).click();
-  await admin.getByText('知情同意书设置已保存。').waitFor();
-
   const allocation=admin.getByRole('table',{name:'正式测试参与者分配表'});
   assert.equal(await allocation.locator('tbody tr').count(),24);
   await admin.getByRole('button',{name:'预试 · 6 个编号'}).click();
@@ -67,13 +60,17 @@ try {
   await page.locator('select[name=group]').selectOption(group);
   await numberSelect.selectOption(participantCode);
   await page.locator('.expression-assignment-preview').getByText(/第 2 轮/).waitFor();
-  await page.getByRole('checkbox',{name:/年满18岁/}).check();
   await page.getByLabel('姓名',{exact:true}).fill('Browser fixture');
   await page.getByLabel('年龄',{exact:true}).fill('28');
   await page.locator('select[name=gender]').selectOption('其他');
   await page.getByLabel('数字绘画经验').selectOption({label:'偶尔尝试'});
   await page.getByLabel('主要操作设备').selectOption({label:'电脑鼠标'});
   assert.equal(await page.getByLabel('研究招募码').count(),0);
+  const consent = page.getByRole('article',{name:'星迹智绘用户测试知情同意书'});
+  assert.equal(await consent.locator('output').textContent(),'Browser fixture');
+  const signedDate = await consent.locator('time').getAttribute('datetime');
+  assert.ok(await page.getByRole('button',{name:'同意并开始'}).isDisabled());
+  await page.getByRole('checkbox',{name:/年满 18 周岁/}).check();
   await page.getByRole('button',{name:'同意并开始'}).click();
   await page.getByRole('heading',{name:'记录初始想法'}).waitFor();
   for(const input of await page.getByLabel(/我想表达什么/).all()) await input.fill('把长椅放在视觉中心。');
@@ -221,6 +218,8 @@ try {
   assert.equal(report.rest.endedEarly,true);
   await allocation.getByRole('row',{name:new RegExp(participantCode)}).getByText('已完成').waitFor();
   assert.equal(report.identity.name,'Browser fixture');
+  assert.equal(report.consent.signedDate,signedDate);
+  assert.equal(report.consent.config.retentionYears,3);
   assert.equal(report.forms.intent.aFeeling,'安静、开阔。');
   assert.equal(report.forms.intent.bFeeling,'安静、开阔。');
   assert.equal(report.forms.survey1.sus01,4);
