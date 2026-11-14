@@ -189,7 +189,6 @@ export async function POST(req: NextRequest) {
       }
       const mode = data.mode;
       if (mode !== 'demo' && mode !== 'pilot' && mode !== 'formal') throw new StudyError('测试阶段无效。');
-      if (mode !== 'demo' && process.env.NODE_ENV === 'production' && !constantEqual(data.enrollmentCode,process.env.STUDY_ENROLLMENT_CODE)) throw new StudyError('招募码不正确，请联系研究者。',403);
       const token = randomBytes(32).toString('hex');
       const record = enrollExpression(repo,data,mode,token,now);
       return cookie(reply({ record, now },201),req,participantCookie,token,365*24*60*60);

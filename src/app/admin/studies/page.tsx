@@ -70,7 +70,7 @@ export default function ResearchDashboard() {
     const instructions = [
       `${stages[slot.stage]} · 参与者编号 ${slot.code} · ${GROUP_LABEL[slot.group]}`,
       ...slot.rounds.map((round, index) => `第 ${index + 1} 轮：${describeRound(round)}`),
-      '打开测试页，选择上面的阶段和组别，从下拉列表选择参与者编号。线上登记还需要研究者提供的招募码。',
+      '打开测试页，选择上面的阶段和组别，从下拉列表选择参与者编号。',
     ].join('\n');
     try {
       await navigator.clipboard.writeText(instructions);

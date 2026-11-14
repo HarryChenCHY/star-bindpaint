@@ -188,7 +188,7 @@ export default function StudyPage() {
       const data = await expressionRequest<StudyState>('',{
         action:'enroll',version:VERSION,setupSignature,mode,group,participantCode,accepted:values.get('accepted') === 'on',
         name:String(values.get('name') || ''),age:Number(values.get('age')),experience:String(values.get('experience') || ''),
-        device:String(values.get('device') || ''),gender:String(values.get('gender') || ''),enrollmentCode:String(values.get('enrollmentCode') || ''),
+        device:String(values.get('device') || ''),gender:String(values.get('gender') || ''),
       });
       accept(data,true);
     } catch (failure) { setError((failure as Error).message); }
@@ -347,7 +347,6 @@ export default function StudyPage() {
           <label>性别<select name="gender" defaultValue="" required><option value="" disabled>请选择</option><option>女</option><option>男</option><option>其他</option></select></label>
           <label>数字绘画经验<select name="experience" defaultValue="" required><option value="" disabled>请选择</option><option>没有经验</option><option>偶尔尝试</option><option>经常使用</option><option>有专业学习或从业经历</option></select></label>
           <label>主要操作设备<select name="device" defaultValue="" required><option value="" disabled>请选择</option><option>电脑鼠标</option><option>电脑触控板</option><option>数位板或手写笔</option><option>手机或平板触屏</option></select></label>
-          {mode !== 'demo' && process.env.NODE_ENV === 'production' && <label>研究招募码<input name="enrollmentCode" type="password" required maxLength={128} autoComplete="off" /></label>}
           <div className="study-tools"><button className="primary" disabled={busy || !group || (mode !== 'demo' && !assignmentPreview)}>{busy ? '正在登记…' : '同意并开始'}</button><Link className="study-link" href="/">不同意，返回</Link></div>
         </form>
     </section>}

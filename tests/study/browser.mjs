@@ -14,9 +14,9 @@ const { port }=listener.address();
 await new Promise(resolve=>listener.close(resolve));
 const base='http://127.0.0.1:'+port, api=base+'/api/expression-study';
 const dir=mkdtempSync(join(tmpdir(),'startrace-expression-browser-'));
-const password=randomBytes(16).toString('hex'), rater=randomBytes(16).toString('hex'), code=randomBytes(16).toString('hex');
+const password=randomBytes(16).toString('hex'), rater=randomBytes(16).toString('hex');
 const server=spawn(process.execPath,['node_modules/next/dist/bin/next','start','-p',String(port),'-H','127.0.0.1'],{
-  env:{...process.env,STUDY_DATA_DIR:dir,EXPRESSION_ADMIN_PASSWORD:password,STUDY_ENROLLMENT_CODE:code,STUDY_RATER_1_TOKEN:rater},
+  env:{...process.env,STUDY_DATA_DIR:dir,EXPRESSION_ADMIN_PASSWORD:password,STUDY_RATER_1_TOKEN:rater},
 });
 let log='', browser;
 const participantCode=process.env.STARTRACE_STUDY_TEST_CODE ?? 'F16';
@@ -73,7 +73,7 @@ try {
   await page.locator('select[name=gender]').selectOption('其他');
   await page.getByLabel('数字绘画经验').selectOption({label:'偶尔尝试'});
   await page.getByLabel('主要操作设备').selectOption({label:'电脑鼠标'});
-  await page.getByLabel('研究招募码').fill(code);
+  assert.equal(await page.getByLabel('研究招募码').count(),0);
   await page.getByRole('button',{name:'同意并开始'}).click();
   await page.getByRole('heading',{name:'记录初始想法'}).waitFor();
   for(const input of await page.getByLabel(/我想表达什么/).all()) await input.fill('把长椅放在视觉中心。');
