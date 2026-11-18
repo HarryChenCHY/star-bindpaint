@@ -93,6 +93,31 @@ export function enrollExpression(repo: StudyRepository, data: Record<string, unk
   });
 }
 
+export function resumeExpression(repo: StudyRepository, id: string, token: string, now: number) {
+  return repo.transaction(() => {
+    const record = repo.get<RecordState>(RECORD_KIND, id);
+    if (!record) throw new StudyError('找不到该测试记录。', 404);
+    if (record.version !== VERSION) throw new StudyError('该记录属于旧版测试，请联系研究者。', 409);
+    if (record.status !== 'completed') {
+      const ending = drawingStep(record.step) ? record.ended[record.step] : undefined;
+      const elapsed = record.status === 'exited' && ending
+        ? ending.elapsedMs
+        : Math.max(0, record.updatedAt - record.enteredAt);
+      record.events[record.step] = [...(record.events[record.step] ?? []), {
+        type: 'study_resumed', at: now, detail: JSON.stringify({ previousStatus: record.status, previousUpdatedAt: record.updatedAt, elapsedMs: elapsed }),
+      }];
+      record.enteredAt = now - elapsed;
+      if (drawingStep(record.step) && ending?.reason === 'exited') delete record.ended[record.step];
+      record.status = 'active';
+      record.updatedAt = now;
+      record.revision++;
+      persist(repo, record);
+    }
+    repo.put(AUTH_KIND, hash(token), { id });
+    return record;
+  });
+}
+
 function cleanForm(record: RecordState, value: unknown): Form {
   const data = input(value);
   const { step, version, interviewVersion, rounds } = record;

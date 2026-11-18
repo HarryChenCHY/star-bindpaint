@@ -4,7 +4,7 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { StudyRepository, hash } from '../../src/lib/study/server/repository';
-import { AUTH_KIND, consentSignature, IDENTITY_KIND, RECORD_KIND, enrollExpression, removeExpression, roundExperience, saveExpression, savedPath } from '../../src/lib/study/server/expression';
+import { AUTH_KIND, consentSignature, IDENTITY_KIND, RECORD_KIND, enrollExpression, removeExpression, resumeExpression, roundExperience, saveExpression, savedPath } from '../../src/lib/study/server/expression';
 import { CONSENT_VERSION, DEFAULT_SETUP, FORMAL_SLOTS, IMI, LIMITS, OUTCOME_QUESTIONS, PILOT_SLOTS, PRACTICE_MS, REST_MS, ROUND_MS, SUS, VERSION, roundsFor, scoreSurveys, studyAssignments, type RecordState } from '../../src/lib/study/expression';
 
 function storage(t: TestContext) {
@@ -110,4 +110,28 @@ test('standard scale scoring reverses keyed items and leaves partial scores miss
   assert.equal(partial.sus,null);
   assert.equal(partial.imi.interestEnjoyment,null);
   assert.equal(partial.imi.perceivedCompetence,7);
+});
+
+
+test('resume retains answers, layout and artwork and excludes time away from the task timer', t => {
+  const db = storage(t);
+  let p = enrollExpression(db, entrant, 'demo', 'original', 1000);
+  p = move(db,p,2000,{form:{a:'想法A',b:'想法B',aFeeling:'平静',bFeeling:'开阔'}});
+  p = move(db,p,4000,{action:'exit',image,layout:'{"pending":[]}'});
+  const revision = p.revision;
+  p = resumeExpression(db,p.id,'resumed',100000);
+  assert.equal(p.step,'practice');
+  assert.equal(p.status,'active');
+  assert.equal(p.enteredAt,98000);
+  assert.equal(p.revision,revision+1);
+  assert.equal(p.forms.intent?.a,'想法A');
+  assert.equal(p.layouts.practice,'{"pending":[]}');
+  assert.ok(p.artwork.practice);
+  assert.equal(p.ended.practice,undefined);
+  assert.equal(p.events.practice?.at(-1)?.type,'study_resumed');
+  assert.deepEqual(db.get(AUTH_KIND,hash('resumed')),{id:p.id});
+  p = move(db,p,101000,{action:'checkpoint',image});
+  p = resumeExpression(db,p.id,'another',200000);
+  assert.equal(p.enteredAt,197000);
+  assert.equal(p.status,'active');
 });

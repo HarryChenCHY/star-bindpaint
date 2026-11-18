@@ -3,7 +3,7 @@ import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { getRepository, hash, StudyStorageUnavailableError } from '@/lib/study/server/repository';
 import {
   AUTH_KIND, IDENTITY_KIND, ID_PATTERN, RECORD_KIND, StudyError, enrollExpression,
-  consentSignature, exportRecord, input, removeExpression, roundExperience, saveExpression, savedPath,
+  consentSignature, exportRecord, input, removeExpression, roundExperience, resumeExpression, saveExpression, savedPath,
 } from '@/lib/study/server/expression';
 import { DEFAULT_SETUP, LIMITS, PHOTOS, VERSION, drawingStep, type RecordState } from '@/lib/study/expression';
 
@@ -172,6 +172,33 @@ export async function POST(req: NextRequest) {
       return reply({ rating });
     }
     const existing = owner(repo,req);
+    if (data.action === 'resume') {
+      const code = typeof data.participantCode === 'string' ? data.participantCode.trim().toUpperCase() : '';
+      if (!/^[PF]\d{2}$/.test(code)) throw new StudyError('请输入完整参与者编号，例如 F01 或 P01。');
+      // A public assignment code is not an authentication credential.
+      if (existing?.assignment?.code !== code && !admin(repo, req)) {
+        const allowed = repo.transaction(() => {
+          const kind = 'expression-rate-limit', key = 'resume-login';
+          let limit = repo.get<{ since:number; attempts:number }>(kind, key);
+          if (!limit || now - limit.since >= 15*60_000) limit = { since:now, attempts:0 };
+          if (limit.attempts >= 8) throw new StudyError('恢复尝试过多，请15分钟后再试。', 429);
+          if (!constantEqual(data.password, process.env.EXPRESSION_ADMIN_PASSWORD)) {
+            repo.put(kind, key, { ...limit, attempts:limit.attempts+1 });
+            return false;
+          }
+          repo.delete(kind, key);
+          return true;
+        });
+        if (!allowed) throw new StudyError('跨浏览器恢复请填写正确的管理员密码。', 401);
+      }
+      if (existing?.status === 'active' && existing.assignment?.code !== code)
+        throw new StudyError('当前浏览器有其他进行中的测试，请先完成或退出。', 409);
+      const matches = repo.all<RecordState>(RECORD_KIND).filter(record => record.assignment?.code === code);
+      if (matches.length !== 1) throw new StudyError('找不到唯一对应的测试记录，请联系研究者核对。', 404);
+      const token = randomBytes(32).toString('hex');
+      const record = resumeExpression(repo, matches[0].id, token, now);
+      return cookie(reply({ record, now }), req, participantCookie, token, 365*24*60*60);
+    }
     if (data.action === 'enroll') {
       if (existing?.status === 'active') {
         if (data.mode === existing.mode && (!existing.assignment || (

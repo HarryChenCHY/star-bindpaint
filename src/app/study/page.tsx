@@ -34,6 +34,7 @@ export default function StudyPage() {
   const [mode,setMode] = useState<Mode|null>(null);
   const [group, setGroup] = useState<StudyGroup | ''>('');
   const [participantCode, setParticipantCode] = useState('');
+  const [showResume,setShowResume] = useState(false);
   const [loaded,setLoaded] = useState(false);
   const [form,setForm] = useState<Form>({});
   const [clock,setClock] = useState(0);
@@ -202,6 +203,20 @@ export default function StudyPage() {
     } catch (failure) { setError((failure as Error).message); }
     finally { setBusy(false); }
   }
+  async function resume(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const values = new FormData(event.currentTarget);
+    setBusy(true); setError('');
+    try {
+      const data = await expressionRequest<StudyState>('', {
+        action:'resume', participantCode:String(values.get('resumeCode') || ''), password:String(values.get('resumePassword') || ''),
+      });
+      events.current = []; setSaved(null); accept(data,true);
+      if (data.record) setMode(data.record.mode);
+      setShowResume(false);
+    } catch (failure) { setError((failure as Error).message); }
+    finally { setBusy(false); }
+  }
   async function release() {
     setBusy(true);
     try {
@@ -314,6 +329,15 @@ export default function StudyPage() {
     </header>
     {error && <p role="alert" className="study-error">{error}</p>}
     {!loaded && !error && <p role="status">正在读取测试进度…</p>}
+    {loaded && !active && <section className="study-card">
+      <button type="button" disabled={busy} aria-expanded={showResume} onClick={() => setShowResume(value => !value)}>恢复上次测试</button>
+      {showResume && <form onSubmit={resume} className="expression-fields">
+        <p className="study-muted">加载上次已保存的答案、画面与进度。同一浏览器可不填密码；更换浏览器请由研究者输入管理员密码。</p>
+        <label>参与者编号<input name="resumeCode" required placeholder="例如 F01 或 P01" maxLength={16} autoComplete="off" /></label>
+        <label>管理员密码（选填）<input name="resumePassword" type="password" autoComplete="off" /></label>
+        <button type="submit" className="primary" disabled={busy}>{busy ? '正在恢复…' : '加载并继续测试'}</button>
+      </form>}
+    </section>}
     {loaded && !record && <section className="study-card">
       <h2>选择测试阶段</h2>
       <p className="study-muted">请按研究者通知选择阶段，再核对绘制组别与编号。</p>
