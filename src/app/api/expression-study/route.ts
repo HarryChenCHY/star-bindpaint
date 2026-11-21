@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { getRepository, hash, StudyStorageUnavailableError } from '@/lib/study/server/repository';
 import {
-  AUTH_KIND, IDENTITY_KIND, ID_PATTERN, RECORD_KIND, StudyError, enrollExpression,
+  AUTH_KIND, IDENTITY_KIND, ID_PATTERN, RECORD_KIND, REVISION_KIND, StudyError, enrollExpression,
+  saveResearchRevision, type ResearchRevision,
   consentSignature, exportRecord, input, removeExpression, roundExperience, resumeExpression, saveExpression, savedPath,
 } from '@/lib/study/server/expression';
 import { DEFAULT_SETUP, LIMITS, PHOTOS, VERSION, drawingStep, type RecordState } from '@/lib/study/expression';
@@ -103,7 +104,7 @@ export async function GET(req: NextRequest) {
     });
     if (action === 'list') return reply({
       setup: DEFAULT_SETUP, limits: LIMITS,
-      records: records().map(p => ({ id:p.id, version:p.version, mode:p.mode, assignment:p.assignment, rounds:p.rounds, roundExperience:roundExperience(p), status:p.status, step:p.step, updatedAt:p.updatedAt, createdAt:p.createdAt, profile:p.profile, name:repo.get<{ name:string }>(IDENTITY_KIND,p.id)?.name, artwork:p.artwork, draftArtwork:p.draftArtwork })),
+      records: records().map(p => ({ id:p.id, version:p.version, mode:p.mode, assignment:p.assignment, rounds:p.rounds, roundExperience:roundExperience(p), status:p.status, step:p.step, updatedAt:p.updatedAt, hasRevision:!!repo.get(REVISION_KIND,p.id), createdAt:p.createdAt, profile:p.profile, name:repo.get<{ name:string }>(IDENTITY_KIND,p.id)?.name, artwork:p.artwork, draftArtwork:p.draftArtwork })),
     });
     if (action === 'export-all') {
       const mode = params.get('mode');
@@ -113,6 +114,25 @@ export async function GET(req: NextRequest) {
     const id = params.get('id') ?? '';
     const record = ID_PATTERN.test(id) && repo.get<RecordState>(RECORD_KIND,id);
     if (!record) throw new StudyError('找不到该测试记录。',404);
+    if (action === 'edit-record' || action === 'revised-json') {
+      const revision = repo.get<ResearchRevision>(REVISION_KIND,id);
+      if (action === 'edit-record') {
+        const current = revision?.sourceRevision === record.revision ? revision.record : record;
+        const { intent, plan1, plan2, survey1, survey2, interview } = current.forms;
+        return reply({
+          forms: { intent, plan1, plan2, survey1, survey2, interview }, number: revision?.number ?? 0,
+          sourceRevision: record.revision,
+        });
+      }
+      if (!revision) throw new StudyError('这条记录还没有保存修订。',404);
+      const { number, sourceRevision, savedAt, reason } = revision;
+      return new NextResponse(JSON.stringify({
+        ...report(revision.record), researchRevision: { number, sourceRevision, savedAt, reason },
+      },null,2),{ headers: {
+        ...noStore, 'Content-Type':'application/json; charset=utf-8',
+        'Content-Disposition': `attachment; filename="${id}-revised-v${number}.json"`,
+      }});
+    }
     if (action === 'json') return new NextResponse(JSON.stringify(report(record),null,2),{ headers: {
       ...noStore, 'Content-Type':'application/json; charset=utf-8',
       'Content-Disposition': `${params.get('view') === '1' ? 'inline' : 'attachment'}; filename="${id}.json"`,
@@ -213,6 +233,12 @@ export async function POST(req: NextRequest) {
       const token = randomBytes(32).toString('hex');
       const record = enrollExpression(repo,data,mode,token,now);
       return cookie(reply({ record, now },201),req,participantCookie,token,365*24*60*60);
+    }
+    if (data.action === 'admin-revise') {
+      if (!admin(repo,req)) throw new StudyError('请先登录研究后台。',401);
+      if (typeof data.id !== 'string' || !ID_PATTERN.test(data.id)) throw new StudyError('记录编号无效。');
+      const revision = saveResearchRevision(repo,data.id,data,now);
+      return reply({ number:revision.number },201);
     }
     if (data.action === 'admin-delete') {
       if (!admin(repo,req)) throw new StudyError('请先登录研究后台。',401);

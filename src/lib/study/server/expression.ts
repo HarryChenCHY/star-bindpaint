@@ -134,6 +134,48 @@ function cleanForm(record: RecordState, value: unknown): Form {
   return Object.fromEntries(keys.filter(key => Object.hasOwn(data,key)).map(key => [key, str(data[key], 1600)]));
 }
 
+export const REVISION_KIND = 'expression-research-revision';
+const editableSteps = ['intent','plan1','plan2','survey1','survey2','interview'] as const;
+export type ResearchRevision = {
+  record: RecordState;
+  number: number;
+  sourceRevision: number;
+  savedAt: number;
+  reason: string;
+};
+
+export function saveResearchRevision(repo: StudyRepository, id: string, data: Record<string, unknown>, now: number) {
+  const reason = str(data.reason, 500);
+  if (!reason) throw new StudyError('请填写修改原因。');
+  const draft = input(data.forms);
+  return repo.transaction(() => {
+    const source = repo.get<RecordState>(RECORD_KIND, id);
+    if (!source) throw new StudyError('找不到该测试记录。',404);
+    if (source.status === 'active') throw new StudyError('请等测试结束后再保存修订。',409);
+    const previous = repo.get<ResearchRevision>(REVISION_KIND, id);
+    const number = previous?.number ?? 0;
+    if (data.number !== number || data.sourceRevision !== source.revision)
+      throw new StudyError('记录或修订已更新，请重新打开编辑器。',409);
+
+    const forms = { ...source.forms };
+    if (Object.keys(draft).some(key => !editableSteps.some(step => step === key)))
+      throw new StudyError('只能修改任务表单中的作答。');
+    for (const step of editableSteps) {
+      if (!Object.hasOwn(draft,step)) continue;
+      const values = input(draft[step]);
+      const validated = cleanForm({ ...source, step }, values);
+      if (Object.keys(validated).length !== Object.keys(values).length)
+        throw new StudyError('作答包含未知题目，请核对字段。');
+      forms[step] = validated;
+    }
+    const revision: ResearchRevision = {
+      record: { ...source, forms }, number: number + 1, sourceRevision: source.revision, savedAt: now, reason,
+    };
+    repo.put(REVISION_KIND, id, revision);
+    return revision;
+  });
+}
+
 function jpeg(value: unknown): Buffer {
   const prefix = 'data:image/jpeg;base64,';
   if (typeof value !== 'string' || !value.startsWith(prefix) || value.length > 550_000) throw new StudyError('作品须为有效的JPEG画布。');
@@ -234,6 +276,7 @@ export function removeExpression(repo: StudyRepository, id: string) {
     repo.remove(savedPath(id, ''));
     repo.delete(RECORD_KIND, id);
     repo.delete(IDENTITY_KIND, id);
+    repo.delete(REVISION_KIND, id);
     const rows = repo.db.prepare('SELECT id FROM records WHERE kind=? AND json_extract(data,\'$.id\')=?').all(AUTH_KIND, id);
     for (const row of rows) repo.delete(AUTH_KIND, String(row.id));
     for (const role of [1,2]) for (const round of ['round1','round2']) repo.delete(`expression-rating-${role}`, `${id}-${round}`);

@@ -9,7 +9,7 @@ import type { roundExperience } from '@/lib/study/server/expression';
 import '../../study/study.css';
 import '../../study/expression.css';
 
-type Entry = Pick<RecordState,'id'|'version'|'mode'|'assignment'|'rounds'|'status'|'step'|'updatedAt'|'profile'|'artwork'|'draftArtwork'> & { name?:string; roundExperience: ReturnType<typeof roundExperience> };
+type Entry = Pick<RecordState,'id'|'version'|'mode'|'assignment'|'rounds'|'status'|'step'|'updatedAt'|'profile'|'artwork'|'draftArtwork'> & { name?:string; hasRevision:boolean; roundExperience: ReturnType<typeof roundExperience> };
 const stages = { pilot:'预试',formal:'正式测试',demo:'演示' } as const;
 const statuses = { active:'进行中',completed:'已完成',exited:'已保存并退出' } as const;
 const labels = { practice:'练习',round1:'第一轮',round2:'第二轮' } as const;
@@ -21,6 +21,7 @@ export default function ResearchDashboard() {
   const [busy,setBusy] = useState(false);
   const [notice,setNotice] = useState('');
   const [error,setError] = useState('');
+  const [editor,setEditor] = useState<{ id:string; number:number; sourceRevision:number; json:string; reason:string }|null>(null);
   const [filter,setFilter] = useState<Mode|'all'>('all');
   const [allocationStage, setAllocationStage] = useState<RecruitmentStage>('formal');
   const refresh = useCallback(async () => {
@@ -41,6 +42,30 @@ export default function ResearchDashboard() {
     catch (failure) { setError((failure as Error).message); }
     finally { setBusy(false); }
   }
+  async function editRecord(id:string) {
+    setBusy(true); setError(''); setNotice('');
+    try {
+      const data = await expressionRequest<{ forms:RecordState['forms']; number:number; sourceRevision:number }>(`?action=edit-record&id=${id}`);
+      setEditor({ id, number:data.number, sourceRevision:data.sourceRevision, json:JSON.stringify(data.forms,null,2), reason:'' });
+    } catch (failure) { setError((failure as Error).message); }
+    finally { setBusy(false); }
+  }
+  async function saveRevision(event:FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!editor) return;
+    let forms:unknown;
+    try { forms=JSON.parse(editor.json); }
+    catch { setError('JSON 格式有误，请检查引号、逗号和括号。'); return; }
+    setBusy(true); setError(''); setNotice('');
+    try {
+      const { id, number, sourceRevision, reason } = editor;
+      const saved = await expressionRequest<{ number:number }>('',{ action:'admin-revise',id,number,sourceRevision,reason,forms });
+      setEditor(null);
+      await refresh();
+      setNotice(`已保存第 ${saved.number} 版修订。请在该记录中点击「下载修订 JSON」。`);
+    } catch (failure) { setError((failure as Error).message); }
+    finally { setBusy(false); }
+  }
   async function remove(id:string) {
     if (!window.confirm('确认删除本次身份信息、作答、评分和作品？此操作用于处理撤回或到期清理。')) return;
     setBusy(true); setError(''); setNotice('');
@@ -49,7 +74,7 @@ export default function ResearchDashboard() {
     finally { setBusy(false); }
   }
   async function logout() {
-    try { await expressionRequest('',{action:'logout'}); setRows(null); setError(''); setNotice(''); }
+    try { await expressionRequest('',{action:'logout'}); setRows(null); setEditor(null); setError(''); setNotice(''); }
     catch (failure) { setError((failure as Error).message); }
   }
   async function copyAssignment(slot: StudyAssignment) {
@@ -120,8 +145,19 @@ export default function ResearchDashboard() {
           <div className="study-tools">
             <a className="expression-download" href={EXPRESSION_API+`?action=json&id=${row.id}&view=1`} target="_blank" rel="noreferrer">查看 JSON</a>
             <a className="expression-download" href={EXPRESSION_API+`?action=json&id=${row.id}`}>下载 JSON</a>
+            {row.status !== 'active' && <button type="button" disabled={busy} onClick={() => void editRecord(row.id)}>编辑作答</button>}
+            {row.hasRevision && <a className="expression-download" href={EXPRESSION_API+`?action=revised-json&id=${row.id}`}>下载修订 JSON</a>}
             <button type="button" disabled={busy} onClick={() => void remove(row.id)}>删除记录</button>
           </div>
+          {editor?.id === row.id && <form className="expression-fields" onSubmit={saveRevision}>
+            <p>可修改任务计划、问卷与访谈等作答。保存时重新计算量表分数，并记录修改原因。</p>
+            <label>作答 JSON<textarea rows={16} value={editor.json} spellCheck={false} onChange={e => setEditor({ ...editor, json:e.target.value })} required /></label>
+            <label>修改原因<input value={editor.reason} onChange={e => setEditor({ ...editor, reason:e.target.value })} maxLength={500} required /></label>
+            <div className="study-tools">
+              <button type="submit" className="primary" disabled={busy}>保存为修订 JSON</button>
+              <button type="button" disabled={busy} onClick={() => setEditor(null)}>取消</button>
+            </div>
+          </form>}
           <div className="expression-allocation-scroll">
             <table className="expression-allocation" aria-label="两轮创作体验">
               <thead><tr>
