@@ -6,7 +6,6 @@ import {
   Home,
   Palette,
   Image as ImageIcon,
-  BookOpen,
   Settings,
   FlaskConical,
 } from 'lucide-react';
@@ -31,7 +30,6 @@ export default function GlobalDock() {
     { icon: <Home size={iconSize} strokeWidth={2.5} />, label: '主页', color: '#F9B801', onClick: () => router.push('/') },
     { icon: <Palette size={iconSize} strokeWidth={2.5} />, label: '开始', color: '#FF8FAB', onClick: () => router.push('/create') },
     { icon: <ImageIcon size={iconSize} strokeWidth={2.5} />, label: '星图', color: '#69D2C2', onClick: () => router.push('/gallery') },
-    { icon: <BookOpen size={iconSize} strokeWidth={2.5} />, label: '介绍', color: '#6558D9', onClick: () => router.push('/intro') },
     { icon: <FlaskConical size={iconSize} strokeWidth={2.5} />, label: '测试', color: '#7BA7CC', onClick: () => router.push('/study') },
     { icon: <Settings size={iconSize} strokeWidth={2.5} />, label: '设置', color: '#1A1A1A', onClick: () => router.push('/settings') },
   ];

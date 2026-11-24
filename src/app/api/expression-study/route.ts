@@ -16,6 +16,11 @@ const maxAge = 8 * 60 * 60;
 const noStore = { 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' };
 const reply = (data: unknown, status = 200) => NextResponse.json(data, { status, headers: noStore });
 type Repo = ReturnType<typeof getRepository>;
+// Preserve archived consent details for researchers; do not send their identity to participants.
+const participantRecord = (record: RecordState | null) => record ? {
+  ...record, consent: { ...record.consent, config: DEFAULT_SETUP },
+} : null;
+
 const constantEqual = (left: unknown, right?: string) => typeof left === 'string' && left.length <= 256 && !!right
   && timingSafeEqual(Buffer.from(hash(left)), Buffer.from(hash(right)));
 const owner = (repo: Repo, req: NextRequest) => {
@@ -65,7 +70,7 @@ export async function GET(req: NextRequest) {
     const action = params.get('action') ?? 'state';
     if (action === 'state') {
       const setup = DEFAULT_SETUP;
-      return reply({ record: owner(repo,req), setup, setupSignature: consentSignature(setup), version: VERSION, now: Date.now() });
+      return reply({ record: participantRecord(owner(repo,req)), setup, setupSignature: consentSignature(setup), version: VERSION, now: Date.now() });
     }
     if (action === 'resume-image') {
       const record = owner(repo,req);
@@ -217,7 +222,7 @@ export async function POST(req: NextRequest) {
       if (matches.length !== 1) throw new StudyError('找不到唯一对应的测试记录，请联系研究者核对。', 404);
       const token = randomBytes(32).toString('hex');
       const record = resumeExpression(repo, matches[0].id, token, now);
-      return cookie(reply({ record, now }), req, participantCookie, token, 365*24*60*60);
+      return cookie(reply({ record: participantRecord(record), now }), req, participantCookie, token, 365*24*60*60);
     }
     if (data.action === 'enroll') {
       if (existing?.status === 'active') {
@@ -225,14 +230,14 @@ export async function POST(req: NextRequest) {
           typeof data.participantCode === 'string'
           && data.participantCode.trim().toUpperCase() === existing.assignment.code
           && data.group === existing.assignment.group
-        ))) return reply({ record:existing, now });
+        ))) return reply({ record:participantRecord(existing), now });
         throw new StudyError('当前浏览器已有进行中的测试，请先完成该测试。',409);
       }
       const mode = data.mode;
       if (mode !== 'demo' && mode !== 'pilot' && mode !== 'formal') throw new StudyError('测试阶段无效。');
       const token = randomBytes(32).toString('hex');
       const record = enrollExpression(repo,data,mode,token,now);
-      return cookie(reply({ record, now },201),req,participantCookie,token,365*24*60*60);
+      return cookie(reply({ record: participantRecord(record), now },201),req,participantCookie,token,365*24*60*60);
     }
     if (data.action === 'admin-revise') {
       if (!admin(repo,req)) throw new StudyError('请先登录研究后台。',401);
@@ -253,6 +258,6 @@ export async function POST(req: NextRequest) {
       return cookie(reply({ record:null, now, setup, setupSignature:consentSignature(setup) }),req,participantCookie,'',0);
     }
     if (data.action !== 'checkpoint' && data.action !== 'next' && data.action !== 'exit') throw new StudyError('测试操作无效。');
-    return reply({ record:saveExpression(repo,existing.id,data,now), now });
+    return reply({ record:participantRecord(saveExpression(repo,existing.id,data,now)), now });
   } catch (error) { return problem(error); }
 }

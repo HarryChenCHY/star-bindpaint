@@ -103,7 +103,7 @@ export type RecordState = {
   ended: Partial<Record<DrawingStep, { at: number; reason: 'submitted' | 'timeout' | 'exited'; elapsedMs: number }>>;
 };
 export type StudySetup = { researcher: string; contact: string; ethics?: string; compensation?: string; retentionDays?: number; retentionYears?: number };
-export const DEFAULT_SETUP: StudySetup = { researcher: '陈皓宇｜上海交通大学国际文化创意产业学院', contact: 'haharrychen@qq.com', retentionYears: 3 };
+export const DEFAULT_SETUP: StudySetup = { researcher: '星迹智绘研究团队', contact: '请联系组织本次测试的研究者', retentionYears: 3 };
 
 export const STEPS: Step[] = ['intent','practice','plan1','round1','survey1','rest','plan2','round2','survey2','interview','done'];
 export const STEP_LABEL: Record<Step, string> = {
@@ -170,7 +170,7 @@ export function scoreSurveys(form: Form = {}) {
   return { imi, sus };
 }
 
-export const CONSENT_VERSION = 'expression-consent-v3';
+export const CONSENT_VERSION = 'expression-consent-v4';
 export function consentDate(timestamp: number) {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
@@ -211,6 +211,6 @@ export const CONSENT_SECTIONS = [
   ] },
   { title: '六、自愿参加、退出与撤回', paragraphs: [
     '参加本研究由您自行决定。您可以拒绝参加，也可以在测试中随时停止。拒绝或退出不会受到处罚。退出后，服务器保留此前已成功保存的记录和画面。',
-    '如希望撤回已提交的数据，请发送邮件至 haharrychen@qq.com，并提供您的参与者编号。研究者核对后，将处理可关联至该编号的测试记录、作品和已导出的副本。已纳入汇总结果且无法关联到个人的数据，可能无法单独撤回。对测试流程、个人资料使用或退出方式有疑问，也可以通过该邮箱联系研究者。',
+    '如希望撤回已提交的数据，请联系组织本次测试的研究者，并提供您的参与者编号。研究者核对后，将处理可关联至该编号的测试记录、作品和已导出的副本。已纳入汇总结果且无法关联到个人的数据，可能无法单独撤回。对测试流程、个人资料使用或退出方式有疑问，也可以联系组织本次测试的研究者。',
   ] },
 ];

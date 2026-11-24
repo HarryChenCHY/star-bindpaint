@@ -9,7 +9,7 @@ import FloatingStudyReference from '@/components/study/FloatingStudyReference';
 import PaintWorkspace from '@/components/creation/PaintWorkspace';
 import type { StudyStudioHandle } from '@/components/creation/useStudyStudio';
 import {
-  CONSENT_VERSION, CONSENT_CONFIRMATION, CONSENT_SECTIONS, DEFAULT_SETUP, GROUP_LABEL, IMI, IMI_SOURCE, PHOTOS, PHOTO_LICENSE, PRACTICE_PHOTO,
+  CONSENT_VERSION, CONSENT_CONFIRMATION, CONSENT_SECTIONS, GROUP_LABEL, IMI, IMI_SOURCE, PHOTOS, PHOTO_LICENSE, PRACTICE_PHOTO,
   STEPS, STEP_LABEL, SUS, SUS_SOURCE, TASK_PROMPT, VERSION, consentDate, describeRound, drawingStep, experienceQuestions, studyAssignments, limitFor,
   type Form, type Mode, type RecordState, type StudyEvent, type StudyGroup,
 } from '@/lib/study/expression';
@@ -372,9 +372,6 @@ export default function StudyPage() {
           <label>姓名<input id="study-participant-name" name="name" required maxLength={80} autoComplete="off" value={participantName} onChange={event => setParticipantName(event.target.value)} placeholder={mode === 'demo' ? '演示化名' : '用于签署同意与联系研究者核对'} /></label>
           <article className="expression-consent-details" aria-label="星迹智绘用户测试知情同意书">
             <p className="study-muted">同意书版本 {CONSENT_VERSION}</p>
-            <p><strong>研究者</strong>　陈皓宇</p>
-            <p><strong>所属单位</strong>　上海交通大学国际文化创意产业学院</p>
-            <p><strong>联系邮箱</strong>　<a href={`mailto:${DEFAULT_SETUP.contact}`}>{DEFAULT_SETUP.contact}</a></p>
             {CONSENT_SECTIONS.map(section => <section className="expression-consent" key={section.title}>
               <h3>{section.title}</h3>
               {section.paragraphs?.map(paragraph => <p key={paragraph}>{paragraph}</p>)}

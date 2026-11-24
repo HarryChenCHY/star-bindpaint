@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import Link from 'next/link';
-import { ArrowDownWideNarrow, Brush, Clock3, Download, FlaskConical, Grid2X2, HelpCircle, Plus, Search, Settings2, Sparkles, Trash2, X } from 'lucide-react';
+import { ArrowDownWideNarrow, Brush, Clock3, Download, FlaskConical, Grid2X2, Plus, Search, Settings2, Sparkles, Trash2, X } from 'lucide-react';
 import { deleteFromGallery, clearGallery, loadGallery, type GalleryItem } from '@/lib/gallery-store';
 import styles from '@/app/workspace.module.css';
 import { useSceneTransition } from './motion/SceneTransition';
@@ -84,7 +84,6 @@ export default function ArtworkWorkspace({ gallery = false }: { gallery?: boolea
       <nav className={styles.actions} aria-label="主要功能">
         <Link href="/create" onClick={openCreation} className={styles.newButton}><Plus size={18} /><span>新建作品</span></Link>
         <span className={styles.divider} aria-hidden="true" />
-        <Link href="/intro" className={styles.iconLink} title="产品介绍" aria-label="产品介绍"><HelpCircle size={19} /><span>介绍</span></Link>
         <Link href="/study" className={styles.iconLink} title="用户测试" aria-label="用户测试"><FlaskConical size={19} /><span>测试</span></Link>
         <Link href="/settings" className={styles.iconLink} title="设置" aria-label="设置"><Settings2 size={19} /></Link>
       </nav>
